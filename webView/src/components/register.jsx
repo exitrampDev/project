@@ -63,7 +63,7 @@ const Register = () => {
     };
 
     try {
-      await axios.post("http://localhost:3000/auth/register", payload);
+      await axios.post("/api/auth/register", payload);
       setMessage({ text: "Registration successful!", type: "success" });
       navigate("/login");
     } catch (error) {

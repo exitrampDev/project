@@ -27,7 +27,7 @@ export default function BusinessListingDetail() {
     const fetchData = async () => {
       try {
         // Save favorite
-        const response = await fetch("http://localhost:3000/recently", {
+        const response = await fetch("/api/recently", {
           method: "POST",
           headers: {
             Authorization: `Bearer ${access_token}`,
@@ -48,7 +48,7 @@ export default function BusinessListingDetail() {
 
       try {
         // Fetch business detail
-        const res = await fetch(`http://localhost:3000/business-listing/${id}`);
+        const res = await fetch(`/api/business-listing/${id}`);
         const data = await res.json();
         console.log("data>>>>>>>>.",data.image);
         setBusiness(data);

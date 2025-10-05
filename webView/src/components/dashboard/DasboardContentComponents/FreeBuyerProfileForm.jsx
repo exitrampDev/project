@@ -53,7 +53,7 @@ const FreeBuyerForm = () => {
     if (!access_token) return;
 
     axios
-      .get("http://localhost:3000/free-buyer/public", {
+      .get("/api/free-buyer/public", {
         headers: { Authorization: `Bearer ${access_token}` },
       })
       .then((res) => {
@@ -88,7 +88,7 @@ const FreeBuyerForm = () => {
       if (existingId) {
         // PATCH update
         await axios.patch(
-          `http://localhost:3000/free-buyer/${existingId}`,
+          `/api/free-buyer/${existingId}`,
           formData,
           {
             headers: { Authorization: `Bearer ${access_token}` },
@@ -104,7 +104,7 @@ const FreeBuyerForm = () => {
       } else {
         // POST create
         const res = await axios.post(
-          "http://localhost:3000/free-buyer",
+          "/api/free-buyer",
           formData,
           {
             headers: { Authorization: `Bearer ${access_token}` },

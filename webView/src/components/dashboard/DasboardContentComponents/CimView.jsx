@@ -13,7 +13,7 @@ function CIMview() {
   useEffect(() => {
     const fetchListing = async () => {
       try {
-        const res = await axios.get(`http://localhost:3000/business-listing/${id}`);
+        const res = await axios.get(`/api/business-listing/${id}`);
         setListing(res.data);
       } catch (err) {
         console.error("Error fetching listing:", err);

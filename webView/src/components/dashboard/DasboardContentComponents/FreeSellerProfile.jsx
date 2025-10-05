@@ -44,7 +44,7 @@ const FreeSellerForm = () => {
     if (!access_token) return;
 
     axios
-      .get("http://localhost:3000/free-seller", {
+      .get("/api/free-seller", {
         headers: { Authorization: `Bearer ${access_token}` },
       })
       .then((res) => {
@@ -88,7 +88,7 @@ const FreeSellerForm = () => {
     try {
       if (existingId) {
         await axios.patch(
-          `http://localhost:3000/free-seller/${existingId}`,
+          `/api/free-seller/${existingId}`,
           formData,
           { headers: { Authorization: `Bearer ${access_token}` } }
         );
@@ -100,7 +100,7 @@ const FreeSellerForm = () => {
         });
       } else {
         const res = await axios.post(
-          "http://localhost:3000/free-seller",
+          "/api/free-seller",
           formData,
           { headers: { Authorization: `Bearer ${access_token}` } }
         );

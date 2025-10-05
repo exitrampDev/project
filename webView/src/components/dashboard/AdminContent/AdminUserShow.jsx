@@ -10,7 +10,7 @@ const AdminUserShow = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("http://localhost:3000/users")
+    fetch("/api/users")
       .then((res) => res.json())
       .then((data) => {
         setUsers(data); // assuming API returns an array of users

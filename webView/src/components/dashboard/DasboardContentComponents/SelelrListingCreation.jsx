@@ -76,7 +76,7 @@ export default function SelelrListingCreation() {
     });
 
     try {
-      await axios.post("http://localhost:3000/business-listing", formData, {
+      await axios.post("/api/business-listing", formData, {
         headers: { Authorization: `Bearer ${access_token}` },
       });
       alert("Listing submitted successfully!");

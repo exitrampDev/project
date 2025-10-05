@@ -206,7 +206,7 @@ const assetsIncludedOptions = [
   const fetchListings = async () => {
     setLoading(true);
     try {
-      const res = await axios.get("http://localhost:3000/business-listing", {
+      const res = await axios.get("/api/business-listing", {
         headers: { Authorization: `Bearer ${access_token}` },
       });
       if (Array.isArray(res.data)) {
@@ -255,7 +255,7 @@ const handleCreateListing = async () => {
 
     // Capture response here
     const response = await axios.post(
-      "http://localhost:3000/business-listing",
+      "/api/business-listing",
       payload,
       {
         headers: { Authorization: `Bearer ${access_token}` },
@@ -390,7 +390,7 @@ const handleSubmit = async () => {
           const formData = new FormData();
           formData.append("file", file);
           await axios.post(
-               `http://localhost:3000/business-listing/${fileListingUploadId}/upload/${key}`,
+               `/api/business-listing/${fileListingUploadId}/upload/${key}`,
               formData,
               {
                 headers: {
@@ -489,7 +489,7 @@ const moneyTemplate = (row, { field }) => {
       return;
 
     try {
-      await axios.delete(`http://localhost:3000/business-listing/${id}`, {
+      await axios.delete(`/api/business-listing/${id}`, {
         headers: { Authorization: `Bearer ${access_token}` },
       });
       // Refresh table

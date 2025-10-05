@@ -34,7 +34,7 @@ const FavoriteListings = () => {
   useEffect(() => {
     const fetchFavorites = async () => {
       try {
-        const response = await fetch("http://localhost:3000/favorite", {
+        const response = await fetch("/api/favorite", {
           headers: {
             Authorization: `Bearer ${access_token}`,
             "Content-Type": "application/json",
@@ -65,7 +65,7 @@ const FavoriteListings = () => {
   // Remove favorite
   const removeFavorite = async (favId) => {
     try {
-      const res = await fetch(`http://localhost:3000/favorite/${favId}`, {
+      const res = await fetch(`/api/favorite/${favId}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${access_token}`,

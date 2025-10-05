@@ -211,7 +211,7 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const res = await axios.post("http://localhost:3000/auth/login", {
+      const res = await axios.post("/api/auth/login", {
         email: formData.email,
         password: formData.password,
       });

@@ -30,7 +30,7 @@ const PropertyCard = () => {
 
   // Fetch Data
   useEffect(() => {
-    fetch("http://localhost:3000/business-listing/public")
+    fetch("/api/business-listing/public")
       .then((res) => res.json())
       .then((result) => {
         const data = Array.isArray(result.data) ? result.data : [];
@@ -44,7 +44,7 @@ const saveListingBtn = (businessId) => {
   if (access_token) {
     const handleSave = async () => {
       try {
-        const response = await fetch("http://localhost:3000/favorite", {
+        const response = await fetch("/api/favorite", {
           method: "POST",
           headers: {
             Authorization: `Bearer ${access_token}`,
