@@ -4,6 +4,8 @@ import axios from "axios";
 import { Password } from "primereact/password";
 import { Button } from "primereact/button";
 import { Message } from "primereact/message";
+import Header from "./Header";
+import Footer from "./Footer";
 
 const ResetPassword = () => {
   const navigate = useNavigate();
@@ -45,49 +47,53 @@ const ResetPassword = () => {
   };
 
   return (
-    <div className="reset-password-page">
-      <h2>Reset Password</h2>
+    <>
+      <Header />
+      <div className="reset-password-page">
+        <h2>Reset Password</h2>
 
-      <form onSubmit={handleSubmit} className="p-fluid">
-        <div className="p-field mb-3">
-          <label htmlFor="newPassword">New Password</label>
-          <Password
-            id="newPassword"
-            value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
-            feedback={false}
-            placeholder="***********"
-            toggleMask
-            required
+        <form onSubmit={handleSubmit} className="p-fluid">
+          <div className="p-field mb-3">
+            <label htmlFor="newPassword">New Password</label>
+            <Password
+              id="newPassword"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              feedback={false}
+              placeholder="***********"
+              toggleMask
+              required
+            />
+          </div>
+
+          <div className="p-field mb-3">
+            <label htmlFor="confirmPassword">Confirm Password</label>
+            <Password
+              id="confirmPassword"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              feedback={false}
+              placeholder="***********"
+              toggleMask
+              required
+            />
+          </div>
+
+          <Button
+            label={loading ? "Resetting..." : "Reset Password"}
+            type="submit"
+            loading={loading}
+            className="w-full"
           />
+        </form>
+
+        <div className="mt-3">
+          {message && <Message severity="success" text={message} />}
+          {error && <Message severity="error" text={error} />}
         </div>
-
-        <div className="p-field mb-3">
-          <label htmlFor="confirmPassword">Confirm Password</label>
-          <Password
-            id="confirmPassword"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            feedback={false}
-            placeholder="***********"
-            toggleMask
-            required
-          />
-        </div>
-
-        <Button
-          label={loading ? "Resetting..." : "Reset Password"}
-          type="submit"
-          loading={loading}
-          className="w-full"
-        />
-      </form>
-
-      <div className="mt-3">
-        {message && <Message severity="success" text={message} />}
-        {error && <Message severity="error" text={error} />}
       </div>
-    </div>
+      <Footer />
+    </>
   );
 };
 

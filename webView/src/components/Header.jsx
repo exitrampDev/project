@@ -5,6 +5,8 @@ import { Button } from "primereact/button";
 import logo from "../assets/logo.png";
 import signIcon from "../assets/signIcon.png";
 import SignupPopup from "./SignupPopup";
+import { useRecoilValue } from "recoil";
+import { authState } from "../recoil/ctaState";
 
 // Icons
 import icon1 from "../assets/buyerIcon.png";
@@ -39,7 +41,7 @@ const accountTypes = [
     icon: icon4,
     title: "I Just Want Updates",
     description: "Sign up for insights and M&A market news.",
-    value: "Subscriber",
+    value: "subscriber",
   },
 ];
 
@@ -121,7 +123,7 @@ const roleOptions = {
       },
     ],
   },
-  Subscriber: {
+  subscriber: {
     title: "I’m a Subscriber",
     subtitle: "Choose your Subscriber type.",
     subOptions: [
@@ -153,7 +155,7 @@ const Header = () => {
   const [selectedRole, setSelectedRole] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
-
+  const auth = useRecoilValue(authState);
   const currentPath = location.pathname;
 
   const openPopup = () => {
@@ -178,12 +180,11 @@ const Header = () => {
         },
       });
     }
-    if (roleKey === "Subscriber") {
+    if (roleKey === "subscriber") {
       closePopup();
       navigate("/register", {
         state: {
           role: roleKey,
-          plan: planOption,
         },
       });
     }
@@ -229,8 +230,12 @@ const Header = () => {
     </div>
   );
 
-  const end = (
-    <button onClick={openPopup}>
+  const end = auth?.access_token ? (
+    <NavLink to="/user/dashboard" className="signup-btn">
+      Dashboard <img src={signIcon} alt="signIcon" />
+    </NavLink>
+  ) : (
+    <button onClick={openPopup} className="signup-btn">
       Sign Up <img src={signIcon} alt="signIcon" />
     </button>
   );
