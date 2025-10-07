@@ -7,7 +7,7 @@ import { Slider } from "primereact/slider";
 import { Button } from "primereact/button";
 import { Tooltip } from "primereact/tooltip";
 import { useRecoilValue } from "recoil";
-import { authState } from "../../../recoil/ctaState";
+import { authState,apiBaseUrlState  } from "../../../recoil/ctaState";
 import serachIcon from "../../../assets/serachIcon.png";
 import notifInfo from "../../../assets/notifInfo.png";
 import userImg from "../../../assets/userImg.png";
@@ -16,6 +16,7 @@ import { Link } from "react-router-dom";
 
 const FavoriteListings = () => {
   const { user, access_token } = useRecoilValue(authState) ?? {};
+  const API_BASE = useRecoilValue(apiBaseUrlState);
   const [listings, setListings] = useState([]);
   const [filteredListings, setFilteredListings] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -34,7 +35,7 @@ const FavoriteListings = () => {
   useEffect(() => {
     const fetchFavorites = async () => {
       try {
-        const response = await fetch("/api/favorite", {
+        const response = await fetch(`${API_BASE}/favorite`, {
           headers: {
             Authorization: `Bearer ${access_token}`,
             "Content-Type": "application/json",
@@ -65,7 +66,7 @@ const FavoriteListings = () => {
   // Remove favorite
   const removeFavorite = async (favId) => {
     try {
-      const res = await fetch(`/api/favorite/${favId}`, {
+      const res = await fetch(`${API_BASE}/favorite/${favId}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${access_token}`,

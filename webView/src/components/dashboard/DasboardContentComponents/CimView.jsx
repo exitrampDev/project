@@ -4,16 +4,19 @@ import notifInfo from "../../../assets/notifInfo.png";
 import serachIcon from "../../../assets/serachIcon.png";
 import userImg from "../../../assets/userImg.png";
 import fileClip from "../../../assets/fileClip.png";
+import { useRecoilValue } from "recoil";
+import { authState,apiBaseUrlState  } from "../../../recoil/ctaState";
 import axios from "axios";
 
 function CIMview() {
   const { id } = useParams();
   const [listing, setListing] = useState(null);
+  const API_BASE = useRecoilValue(apiBaseUrlState);
 
   useEffect(() => {
     const fetchListing = async () => {
       try {
-        const res = await axios.get(`/api/business-listing/${id}`);
+        const res = await axios.get(`${API_BASE}/business-listing/${id}`);
         setListing(res.data);
       } catch (err) {
         console.error("Error fetching listing:", err);

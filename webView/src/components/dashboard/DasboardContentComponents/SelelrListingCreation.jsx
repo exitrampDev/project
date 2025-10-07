@@ -6,7 +6,7 @@ import { Button } from "primereact/button";
 import { RadioButton } from "primereact/radiobutton";
 import { FileUpload } from "primereact/fileupload";
 import { InputTextarea } from "primereact/inputtextarea";
-import { authState } from "../../../recoil/ctaState";
+import { authState,apiBaseUrlState  } from "../../../recoil/ctaState";
 import { useRecoilValue } from "recoil";
 
 import axios from "axios";
@@ -14,6 +14,7 @@ import axios from "axios";
 export default function SelelrListingCreation() {
   const { user, access_token } = useRecoilValue(authState) ?? {};
   const [step, setStep] = useState(1);
+const API_BASE = useRecoilValue(apiBaseUrlState);
   const [step1Data, setStep1Data] = useState({
     businessName: "",
     businessType: "",
@@ -76,7 +77,7 @@ export default function SelelrListingCreation() {
     });
 
     try {
-      await axios.post("/api/business-listing", formData, {
+      await axios.post(`${API_BASE}/business-listing`, formData, {
         headers: { Authorization: `Bearer ${access_token}` },
       });
       alert("Listing submitted successfully!");

@@ -22,3 +22,7 @@ export const activePageAtom = atom({
   key: "activePage",
   default: "Dashboard", // default page
 });
+export const apiBaseUrlState = atom({
+  key: "apiBaseUrlState",
+  default: "http://localhost:3000", //need to add till /api if needed
+});

@@ -4,13 +4,16 @@ import { Column } from "primereact/column";
 import notifInfo from "../../../assets/notifInfo.png";
 import serachIcon from "../../../assets/serachIcon.png";
 import userImg from "../../../assets/userImg.png";
+import { authState,apiBaseUrlState  } from "../../../recoil/ctaState";
+
 
 const AdminUserShow = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/users")
+    const API_BASE = useRecoilValue(apiBaseUrlState);
+    fetch(`${API_BASE}/api/users`)
       .then((res) => res.json())
       .then((data) => {
         setUsers(data); // assuming API returns an array of users

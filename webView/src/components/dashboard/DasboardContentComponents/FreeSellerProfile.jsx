@@ -3,7 +3,7 @@ import { Toast } from "primereact/toast";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { useRecoilValue } from "recoil";
-import { authState } from "../../../recoil/ctaState";
+import { authState,apiBaseUrlState  } from "../../../recoil/ctaState";
 import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Button } from "primereact/button";
@@ -15,6 +15,7 @@ import { Calendar } from "primereact/calendar";
 
 const FreeSellerForm = () => {
   const { access_token } = useRecoilValue(authState) ?? {};
+  const API_BASE = useRecoilValue(apiBaseUrlState);
   const user = useRecoilValue(authState).user;
   const toast = useRef(null);
   const [dirty, setDirty] = useState(false);
@@ -44,7 +45,7 @@ const FreeSellerForm = () => {
     if (!access_token) return;
 
     axios
-      .get("/api/free-seller", {
+      .get(`${API_BASE}/free-seller`, {
         headers: { Authorization: `Bearer ${access_token}` },
       })
       .then((res) => {
@@ -88,7 +89,7 @@ const FreeSellerForm = () => {
     try {
       if (existingId) {
         await axios.patch(
-          `/api/free-seller/${existingId}`,
+          `${API_BASE}/free-seller/${existingId}`,
           formData,
           { headers: { Authorization: `Bearer ${access_token}` } }
         );
@@ -100,7 +101,7 @@ const FreeSellerForm = () => {
         });
       } else {
         const res = await axios.post(
-          "/api/free-seller",
+         `${API_BASE}/free-seller`,
           formData,
           { headers: { Authorization: `Bearer ${access_token}` } }
         );

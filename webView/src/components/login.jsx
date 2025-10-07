@@ -5,13 +5,13 @@ import { Button } from "primereact/button";
 import { Checkbox } from "primereact/checkbox";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useSetRecoilState } from "recoil";
-import { authState } from "../recoil/ctaState";
+import { authState,apiBaseUrlState   } from "../recoil/ctaState";
 
 import Header from "./Header";
 import Footer from "./Footer";
 import SignupPopup from "./SignupPopup"; // 👈 Import your popup
 import axios from "axios";
-
+import { useRecoilValue } from "recoil";
 // Icons
 import icon1 from "../assets/buyerIcon.png";
 import icon2 from "../assets/sellerIcon.png";
@@ -168,7 +168,7 @@ const Login = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [popupStep, setPopupStep] = useState(1);
   const [selectedRole, setSelectedRole] = useState(null);
-
+const API_BASE = useRecoilValue(apiBaseUrlState);
   const openPopup = () => {
     setPopupStep(1);
     setSelectedRole(null);
@@ -211,7 +211,7 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const res = await axios.post("/api/auth/login", {
+      const res = await axios.post(`${API_BASE}/auth/login`, {
         email: formData.email,
         password: formData.password,
       });
