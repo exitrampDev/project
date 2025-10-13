@@ -5,12 +5,13 @@ import { Button } from "primereact/button";
 import serachIcon from "../../../assets/serachIcon.png";
 import notifInfo from "../../../assets/notifInfo.png";
 import userImg from "../../../assets/userImg.png";
-import { authState } from "../../../recoil/ctaState";
+import { authState,apiBaseUrlState } from "../../../recoil/ctaState";
 import { useRecoilValue } from "recoil";
 import { Tooltip } from "primereact/tooltip";
 
 const RecentViewListing = () => {
   const { user, access_token } = useRecoilValue(authState) ?? {};
+  const API_BASE = useRecoilValue(apiBaseUrlState);
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -18,7 +19,7 @@ const RecentViewListing = () => {
   useEffect(() => {
     const fetchFavorites = async () => {
       try {
-        const response = await fetch("/api/recently", {
+        const response = await fetch(`${API_BASE}/recently`, {
           headers: {
             Authorization: `Bearer ${access_token}`,
             "Content-Type": "application/json",
@@ -54,7 +55,7 @@ const RecentViewListing = () => {
   }, [access_token]);
   const removeFavorite = async (favId) => {
     try {
-      const res = await fetch(`/api/recently/${favId}`, {
+      const res = await fetch(`${API_BASE}/recently/${favId}`, {
         method: "DELETE", // as per your API requirement
         headers: {
           Authorization: `Bearer ${access_token}`,

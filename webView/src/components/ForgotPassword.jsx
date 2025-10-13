@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import axios from "axios";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
-
+import { useRecoilValue } from "recoil";
+import { authState,apiBaseUrlState  } from "../recoil/ctaState";
 import Header from "./Header";
 import Footer from "./Footer";
 
@@ -10,14 +11,14 @@ const ForgotPassword = () => {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
-
+const API_BASE = useRecoilValue(apiBaseUrlState);
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage("");
     setLoading(true);
 
     try {
-      await axios.post("/api/auth/send-password-reset-email", {
+      await axios.post(`${API_BASE}/auth/send-password-reset-email`, {
         email,
       });
 

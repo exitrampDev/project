@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { Toast } from "primereact/toast";
 import axios from "axios";
 import { useRecoilValue } from "recoil";
-import { authState } from "../../../recoil/ctaState";
+import { authState,apiBaseUrlState } from "../../../recoil/ctaState";
 import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
 import { InputTextarea } from "primereact/inputtextarea";
@@ -14,6 +14,7 @@ import userImg from "../../../assets/userImg.png";
 
 const FreeBuyerForm = () => {
   const { access_token } = useRecoilValue(authState) ?? {};
+  const API_BASE = useRecoilValue(apiBaseUrlState);
   const user = useRecoilValue(authState).user;
   const toast = useRef(null);
   const [dirty, setDirty] = useState(false);
@@ -53,7 +54,7 @@ const FreeBuyerForm = () => {
     if (!access_token) return;
 
     axios
-      .get("/api/free-buyer/public", {
+      .get(`${API_BASE}/free-buyer/public`, {
         headers: { Authorization: `Bearer ${access_token}` },
       })
       .then((res) => {
@@ -88,7 +89,7 @@ const FreeBuyerForm = () => {
       if (existingId) {
         // PATCH update
         await axios.patch(
-          `/api/free-buyer/${existingId}`,
+          `${API_BASE}/free-buyer/${existingId}`,
           formData,
           {
             headers: { Authorization: `Bearer ${access_token}` },
@@ -104,7 +105,7 @@ const FreeBuyerForm = () => {
       } else {
         // POST create
         const res = await axios.post(
-          "/api/free-buyer",
+          `${API_BASE}/free-buyer`,
           formData,
           {
             headers: { Authorization: `Bearer ${access_token}` },

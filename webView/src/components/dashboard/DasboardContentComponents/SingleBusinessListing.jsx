@@ -4,7 +4,7 @@ import { Card } from "primereact/card";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { Link } from "react-router-dom";
 import { useRecoilValue } from "recoil";
-import { authState } from "../../../recoil/ctaState";
+import { authState,apiBaseUrlState } from "../../../recoil/ctaState";
 import ArrowIcon from "../../../assets/arrowIcon.png";
 import SingleListingLocation from "../../../assets/singleListingLocation.png";
 
@@ -14,6 +14,7 @@ import { Chip } from "primereact/chip";
 
 export default function SingleBusinessListing() {
   const { user, access_token } = useRecoilValue(authState) ?? {};
+  const API_BASE = useRecoilValue(apiBaseUrlState);
   const { id } = useParams();
   const [business, setBusiness] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -25,7 +26,7 @@ export default function SingleBusinessListing() {
     const fetchData = async () => {
       try {
         // Save favorite
-        const response = await fetch("/api/recently", {
+        const response = await fetch(`${API_BASE}/recently`, {
           method: "POST",
           headers: {
             Authorization: `Bearer ${access_token}`,
@@ -46,7 +47,7 @@ export default function SingleBusinessListing() {
 
       try {
         // Fetch business detail
-        const res = await fetch(`/api/business-listing/${id}`);
+        const res = await fetch(`${API_BASE}/business-listing/${id}`);
         const data = await res.json();
         console.log("data>>>>>>>>.",data.image);
         setBusiness(data);

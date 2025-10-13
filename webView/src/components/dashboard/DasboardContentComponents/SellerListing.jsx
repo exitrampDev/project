@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Card } from "primereact/card";
 import { useRecoilValue } from "recoil";
-import { authState } from "../../../recoil/ctaState";
+import { authState,apiBaseUrlState  } from "../../../recoil/ctaState";
 import axios from "axios";
 import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
@@ -27,6 +27,8 @@ import { InputSwitch } from "primereact/inputswitch";
 
 export default function SellerListing() {
   const yearOptions = Array.from({ length: 101 }, (_, i) => ({ label: i, value: i }));
+  const API_BASE = useRecoilValue(apiBaseUrlState);
+
 const locationOptions = [
   { label: "Headquarters", value: "Headquarters" },
   { label: "Office", value: "Office" },
@@ -206,7 +208,7 @@ const assetsIncludedOptions = [
   const fetchListings = async () => {
     setLoading(true);
     try {
-      const res = await axios.get("/api/business-listing", {
+      const res = await axios.get(`${API_BASE}/business-listing`, {
         headers: { Authorization: `Bearer ${access_token}` },
       });
       if (Array.isArray(res.data)) {
@@ -255,7 +257,7 @@ const handleCreateListing = async () => {
 
     // Capture response here
     const response = await axios.post(
-      "/api/business-listing",
+      `${API_BASE}/business-listing`,
       payload,
       {
         headers: { Authorization: `Bearer ${access_token}` },
@@ -390,7 +392,7 @@ const handleSubmit = async () => {
           const formData = new FormData();
           formData.append("file", file);
           await axios.post(
-               `/api/business-listing/${fileListingUploadId}/upload/${key}`,
+               `${API_BASE}/business-listing/${fileListingUploadId}/upload/${key}`,
               formData,
               {
                 headers: {
@@ -489,7 +491,7 @@ const moneyTemplate = (row, { field }) => {
       return;
 
     try {
-      await axios.delete(`/api/business-listing/${id}`, {
+      await axios.delete(`${API_BASE}/business-listing/${id}`, {
         headers: { Authorization: `Bearer ${access_token}` },
       });
       // Refresh table

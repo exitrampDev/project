@@ -6,10 +6,12 @@ import { Button } from "primereact/button";
 import { Message } from "primereact/message";
 import Header from "./Header";
 import Footer from "./Footer";
+import { authState,apiBaseUrlState  } from "../recoil/ctaState";
 
 const ResetPassword = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const API_BASE = useRecoilValue(apiBaseUrlState);
   const { token } = useParams();
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -30,7 +32,7 @@ const ResetPassword = () => {
     setLoading(true);
 
     try {
-      await axios.post("/api/auth/reset-password", {
+      await axios.post(`${API_BASE}/auth/reset-password`, {
         newPassword,
         token,
       });

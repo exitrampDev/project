@@ -6,7 +6,7 @@ import { Tag } from "primereact/tag";
 import { Divider } from "primereact/divider";
 import { Dropdown } from "primereact/dropdown";
 import { useRecoilValue } from "recoil";
-import { authState } from "../recoil/ctaState";
+import { authState,apiBaseUrlState } from "../recoil/ctaState";
 import { Column } from "primereact/column";
 import { Link } from "react-router-dom";
 
@@ -14,6 +14,7 @@ const PropertyCard = () => {
   const { access_token } = useRecoilValue(authState) ?? {};
   const [allListings, setAllListings] = useState([]);
   const [listings, setListings] = useState([]);
+   const API_BASE = useRecoilValue(apiBaseUrlState);
 
   const [page, setPage] = useState(1);
   const limit = 25;
@@ -30,7 +31,7 @@ const PropertyCard = () => {
 
   // Fetch Data
   useEffect(() => {
-    fetch("/api/business-listing/public")
+    fetch(`${API_BASE}/business-listing/public`)
       .then((res) => res.json())
       .then((result) => {
         const data = Array.isArray(result.data) ? result.data : [];
@@ -44,7 +45,7 @@ const saveListingBtn = (businessId) => {
   if (access_token) {
     const handleSave = async () => {
       try {
-        const response = await fetch("/api/favorite", {
+        const response = await fetch(`${API_BASE}/favorite`, {
           method: "POST",
           headers: {
             Authorization: `Bearer ${access_token}`,

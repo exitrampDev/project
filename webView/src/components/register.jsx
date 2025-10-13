@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
-
+import { authState,apiBaseUrlState  } from "../recoil/ctaState";
 import { InputText } from "primereact/inputtext";
 import { Password } from "primereact/password";
 import { Button } from "primereact/button";
@@ -16,7 +16,7 @@ const Register = () => {
   const { state } = useLocation();
   const role = state?.role || "";
   const plan = state?.plan;
-
+const API_BASE = useRecoilValue(apiBaseUrlState);
   const [formData, setFormData] = useState({
     first_name: "",
     last_name: "",
@@ -63,7 +63,7 @@ const Register = () => {
     };
 
     try {
-      await axios.post("/api/auth/register", payload);
+      await axios.post(`${API_BASE}/auth/register`, payload);
       setMessage({ text: "Registration successful!", type: "success" });
       navigate("/login");
     } catch (error) {
