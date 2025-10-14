@@ -21,7 +21,7 @@ export class Nda {
   status: string;
 
   @Prop({ type: Date, default: null })
-  sellerResponse: Date | null;
+  sellerResponseOn: Date | null;
 
   @Prop({ type: String, default: '' })
   cimAccess: string;

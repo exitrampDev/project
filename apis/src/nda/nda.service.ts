@@ -113,7 +113,7 @@ export class NdaService {
           ndaStatus: '$status',
           cimAccess: 1,
           submittedOn: '$createdAt',
-          sellerResponse: 1,
+          sellerResponseOn: 1,
           message: 1,
           submittedByEmail: '$user.email',
           buyerName: {
@@ -321,6 +321,7 @@ export class NdaService {
       throw new ForbiddenException('You are not authorized to reject this NDA');
     }
 
+    nda.sellerResponseOn = new Date();
     nda.status = 'rejected';
     await nda.save();
     return nda;
@@ -338,6 +339,7 @@ export class NdaService {
       throw new ForbiddenException("You Are Not Authorized To Approve This Nda")
      }
      
+     nda.sellerResponseOn = new Date();
      nda.status = 'approved';
      await nda.save();
      return nda;
