@@ -107,6 +107,7 @@ export class NdaService {
       {
         $project: {
           _id: 1,
+          businessId:1,
           businessName: { $ifNull: ['$business.businessName', 'N/A'] },
           businessType: { $ifNull: ['$business.businessType', 'N/A'] },
           ndaStatus: '$status',
