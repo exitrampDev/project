@@ -43,13 +43,15 @@ export class NdaController {
   const ownerId: string = req.user.userId;
   return this.ndaService.findAllForOwner(query, ownerId);
   }
+
   //reject ka kaam hai 
    @UseGuards(JwtAuthGuard) // JWT guard add karein
     @Patch('reject')
     async rejectNda(@Body() rejectNdaDto: RejectNdaDto, @Req() req: any) {
         const userId = req.user.userId; // ab defined hoga
         return await this.ndaService.rejectNda(rejectNdaDto.ndaId, userId);
-    }   
+    }  
+     
     //approved ka kaam hai ye 
     @UseGuards(JwtAuthGuard) // JWT guard add karein
     @Patch('approve')

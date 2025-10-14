@@ -115,6 +115,24 @@ export class NdaService {
           sellerResponse: 1,
           message: 1,
           submittedByEmail: '$user.email',
+          buyerName: {
+            $let: {
+              vars: {
+                full: {
+                  $trim: {
+                    input: {
+                      $concat: [
+                        { $ifNull: ['$user.first_name', ''] },
+                        ' ',
+                        { $ifNull: ['$user.last_name', ''] }
+                      ]
+                    }
+                  }
+                }
+              },
+              in: { $cond: [{ $eq: ['$$full', ''] }, 'N/A', '$$full'] }
+            }
+          },
           submittedByRole: { $ifNull: ['$user.role', 'N/A'] },
         },
       }
