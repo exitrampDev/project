@@ -199,7 +199,7 @@ export class NdaService {
     const sortOrder = order === 'desc' ? -1 : 1;
 
     // Sirf current user ka data
-    const matchFilter: any = { businessOwnerId: new Types.ObjectId(userId) };
+    const matchFilter: any = { businessOwnerId: userId };
 
     if (ndaStatus) matchFilter.status = ndaStatus;
     if (cimStatus) matchFilter.cimAccess = cimStatus;
@@ -250,14 +250,33 @@ export class NdaService {
       {
         $project: {
           _id: 1,
+          businessId:1,
           businessName: { $ifNull: ['$business.businessName', 'N/A'] },
           businessType: { $ifNull: ['$business.businessType', 'N/A'] },
           ndaStatus: '$status',
           cimAccess: 1,
           submittedOn: '$createdAt',
-          sellerResponse: 1,
+          sellerResponseOn: 1,
           message: 1,
           submittedByEmail: '$user.email',
+          buyerName: {
+            $let: {
+              vars: {
+                full: {
+                  $trim: {
+                    input: {
+                      $concat: [
+                        { $ifNull: ['$user.first_name', ''] },
+                        ' ',
+                        { $ifNull: ['$user.last_name', ''] }
+                      ]
+                    }
+                  }
+                }
+              },
+              in: { $cond: [{ $eq: ['$$full', ''] }, 'N/A', '$$full'] }
+            }
+          },
           submittedByRole: { $ifNull: ['$user.role', 'N/A'] },
         },
       }
