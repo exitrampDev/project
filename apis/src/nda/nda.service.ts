@@ -206,6 +206,38 @@ export class NdaService {
 
     const aggregationPipeline: PipelineStage[] = [
       { $match: matchFilter },
+    //  {
+    //   $lookup: {
+    //     from: 'buyers',
+    //     localField: 'submittedBy',
+    //     foreignField: 'userId',
+    //     as: 'buyer',
+    //   }
+    // },
+    // {
+    //   $unwind: { path: '$buyer', preserveNullAndEmptyArrays: true }
+    // },
+
+   {
+    $lookup: {
+      from: 'buyers',
+      let: { buyerIdObj: "$submittedBy" },
+      pipeline: [
+        {
+          $match: {
+            $expr: {
+              $eq: [
+                { $toObjectId: "$userId" }, // convert buyer.userId (string) → ObjectId
+                "$$buyerIdObj"              // nda.submittedBy (already ObjectId)
+              ]
+            }
+          }
+        }
+      ],
+      as: 'buyer'
+    }
+  },
+     
       {
         $lookup: {
           from: 'businesses',
@@ -251,6 +283,7 @@ export class NdaService {
         $project: {
           _id: 1,
           businessId:1,
+          submittedBy:1,
           businessName: { $ifNull: ['$business.businessName', 'N/A'] },
           businessType: { $ifNull: ['$business.businessType', 'N/A'] },
           ndaStatus: '$status',
@@ -259,6 +292,7 @@ export class NdaService {
           sellerResponseOn: 1,
           message: 1,
           submittedByEmail: '$user.email',
+          buyer: { $ifNull: [{ $arrayElemAt: ['$buyer', 0] }, {}] },
           buyerName: {
             $let: {
               vars: {
