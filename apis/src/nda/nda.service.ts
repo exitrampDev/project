@@ -224,8 +224,7 @@ export class NdaService {
       let: { buyerIdObj: "$submittedBy" },
       pipeline: [
         {
-          $match: {
-            $expr: {
+          $match: {  $expr: {
               $eq: [
                 { $toObjectId: "$userId" }, // convert buyer.userId (string) → ObjectId
                 "$$buyerIdObj"              // nda.submittedBy (already ObjectId)
@@ -292,6 +291,7 @@ export class NdaService {
           sellerResponseOn: 1,
           message: 1,
           submittedByEmail: '$user.email',
+          // buyer: '$buyer', //for all buyers in array
           buyer: { $ifNull: [{ $arrayElemAt: ['$buyer', 0] }, {}] },
           buyerName: {
             $let: {
