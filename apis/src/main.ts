@@ -26,7 +26,7 @@ async function bootstrap() {
   // app.useGlobalGuards(new JwtAuthGuard());
 
    app.enableCors({
-    origin: ['http://localhost:5173','http://localhost:3000', 'http://3.87.119.123:5173'], 
+    origin: ['http://localhost:5173','http://localhost:3000', 'http://3.87.119.123:5173', 'http://test.exitramp.co', 'https://test.exitramp.co'], 
     credentials: true,
   });
   const port = 3000;
