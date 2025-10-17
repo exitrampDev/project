@@ -4,20 +4,38 @@ import { Card } from "primereact/card";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { Link } from "react-router-dom";
 import { useRecoilValue } from "recoil";
-import { authState,apiBaseUrlState } from "../../../recoil/ctaState";
+import { authState,apiBaseUrlState,showNDAAtom,ndaListingId } from "../../../recoil/ctaState";
 import ArrowIcon from "../../../assets/arrowIcon.png";
 import SingleListingLocation from "../../../assets/singleListingLocation.png";
-
+import { Button } from "primereact/button";
+import serachIcon from "../../../assets/serachIcon.png";
+import notifInfo from "../../../assets/notifInfo.png";
+import userImg from "../../../assets/userImg.png";  
 import { Divider } from "primereact/divider";
 import { Tag } from "primereact/tag";
 import { Chip } from "primereact/chip";
+import { useNavigate } from "react-router-dom";
+import NDASubmit from "../DasboardContentComponents/NdaSubmit";
+import { useRecoilState } from "recoil";
 
 export default function SingleBusinessListing() {
+  const [ndaListingIdAdd, setNdaListingIdAdd] = useRecoilState(ndaListingId);
+    const [showNDA, setShowNDA] = useRecoilState(showNDAAtom);
+  const navigate = useNavigate();
+ 
+
   const { user, access_token } = useRecoilValue(authState) ?? {};
   const API_BASE = useRecoilValue(apiBaseUrlState);
   const { id } = useParams();
   const [business, setBusiness] = useState(null);
   const [loading, setLoading] = useState(true);
+   const handleCompleteProfile = () => {
+    navigate("/user/complete-profile-buyer-free");
+  };
+  const handleSubmitNDA = (id) => {
+    setShowNDA(true);
+    setNdaListingIdAdd(id);
+  };
   const handleNonUserClick = () => {
     const signupBtn = document.querySelector(".signup-btn");
     if (signupBtn) signupBtn.click();
@@ -32,7 +50,7 @@ export default function SingleBusinessListing() {
             Authorization: `Bearer ${access_token}`,
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ businessId: id }), // ✅ correct payload
+          body: JSON.stringify({ businessId: id }), 
         });
 
         if (!response.ok) {
@@ -49,7 +67,6 @@ export default function SingleBusinessListing() {
         // Fetch business detail
         const res = await fetch(`${API_BASE}/business-listing/${id}`);
         const data = await res.json();
-        console.log("data>>>>>>>>.",data.image);
         setBusiness(data);
       } catch (err) {
         console.error("Error fetching business:", err);
@@ -66,7 +83,63 @@ export default function SingleBusinessListing() {
 
   return (
     <>
-      <div className="business__list_single_main_wrap">
+     <div className="dashboard__header_block">
+                <h3 className="heading__Digital_CIM">Business Listing</h3>
+        
+                <div className="dashboard__header_search_notification_wrap">
+                  <div className="dashboard__search_field_wrap">
+                    <input type="text" placeholder="Search" />
+                    <img src={serachIcon} alt="search" />
+                  </div>
+                  <div className="dashboard__notification_wrap">
+                    <button>
+                      <img src={notifInfo} alt="notifications" />
+                    </button>
+                  </div>
+                  <div className="dashboard__user_wrap">
+                    <button>
+                      <img src={userImg} alt="user" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+
+             
+      <div className="business__list_single_main_wrap dasb">
+
+          {user?.user_type === "buyer"  && (<>
+            <div className="business__list_single_nda_submit_row">
+              <div className="business__list_single_nda_submit_row_intro_head_copy">
+                <h2 className="business__list_single_nda_submit_row_intro_head">
+                  🔒 Confidential Information Memorandum (CIM)
+                </h2>
+                <p className="business__list_single_nda_submit_row_body_copy">
+                  To access this CIM, please complete your buyer profile and submit an NDA.
+                </p>
+              </div>
+              <div className="business__list_single_nda_submit_row_intro_btns">
+        <Button
+          className="business__list_complete_profile_btn"
+          onClick={handleCompleteProfile}
+        >
+          Complete Profile
+        </Button>
+
+        <Button
+          className="business__list_submit_nda_btn"
+          onClick={() => handleSubmitNDA(business._id)}
+        >
+          Submit NDA
+        </Button>
+                </div>
+
+                {/* Conditionally render NDAComponent */}
+                {showNDA && <NDASubmit ndaListingIdAdd={ndaListingIdAdd} />}
+            </div>
+          </> )}
+
+
         <div className="business__list_single_intro_block">
           <div className="business__list_single_intro_block_img_col">
             <img
@@ -149,7 +222,7 @@ export default function SingleBusinessListing() {
 
         <div className="business__list_single_description_row">
           <h3>Business Description:</h3>
-          <div className="business__list_single_description_content">{business.briefDescription}</div>
+          <div className="business__list_single_description_content">{business.listingDescription}</div>
         </div>
 
 

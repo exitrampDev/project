@@ -1964,12 +1964,60 @@ li.list__row_item
 
 .my__listing_render_table_filters span.p-input-icon-left {
     position: relative;
+        display: flex;
 }
 
 .my__listing_render_table_filters span.p-input-icon-left i.pi.pi-search {
     position: absolute;
     right: 14px;
     color: #7d7d7d;
+}.my__listing_render_table_filters .p-dropdown.p-component {
+    align-items: center;
+}
+
+.my__listing_render_table_filters .p-dropdown.p-component span.p-dropdown-label.p-inputtext.p-placeholder {
+    font-size: 14px;
+}
+
+button.btn__crt_listing.p-button.p-component {
+    background: #ffb100;
+    color: #775506;}
+
+.p-confirm-popup.p-component.confirm__dlt_listing .p-confirm-popup-footer {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.p-confirm-popup.p-component.confirm__dlt_listing .p-confirm-popup-footer button.p-confirm-popup-reject.p-button-sm.p-button-text.p-button.p-component {
+    margin: 0;
+    color: #000;
+    background: #ccc;
+    font-size:12px;
+}
+.confirm__dlt_listing {
+    margin: 0;
+}
+.confirm__dlt_listing:before{
+    border-bottom-color: #0046b6;
+    left: 96.7% !important;
+}
+
+.confirm__dlt_listing:after{
+    border-bottom-color: #ffffff;
+    left: 97% !important;
+}
+.p-confirm-popup.p-component.confirm__dlt_listing .p-confirm-popup-footer button.p-confirm-popup-accept.p-button-sm.p-button.p-component {
+    margin: 0;
+    font-size:12px;
+}
+
+.p-confirm-popup.p-component.confirm__dlt_listing .p-confirm-popup-content {
+    font-size: 13px;
+}
+
+.p-confirm-popup.p-component.confirm__dlt_listing span.p-confirm-popup-icon.pi.pi-exclamation-triangle {
+    font-size: 17px;
 }
 
 .my__listing_render_table_filters button.p-datepicker-trigger.p-button.p-component.p-button-icon-only {
@@ -2429,12 +2477,16 @@ button.button__remove_listing_fav .pi-heart-fill:before {
 
 .listing__creation_block_main_wrap .listing__creation_field_col label {
     width: 100%;
-    display: block;
+    display: flex;
     font-size: 14px;
     color: #002f67;
     margin-bottom: 5px;
 }
-
+.listing__creation_block_main_wrap .listing__creation_field_col span.required__star {
+    width: fit-content;
+    color: red;
+    padding-left: 5px;
+}
 .listing__creation_block_main_wrap .listing__creation_field_col textarea.p-inputtextarea {
     width: 100%;
 }
@@ -2650,6 +2702,7 @@ button.p-button-secondary.p-button.p-component {
     padding: 24px;
     margin-top: 30px;
     align-items: center;
+        background: #fff;
 }
 
 .business__list_single_main_wrap {max-width: 1500px;margin: 0 auto;}
@@ -2725,6 +2778,7 @@ button.p-button-secondary.p-button.p-component {
     border-radius: 24px;
     padding: 24px;
     margin-top: 30px;
+        background: #fff;
 }
 
 .business__list_single_highLevelSummary>h3 {
@@ -2745,6 +2799,7 @@ button.p-button-secondary.p-button.p-component {
     border-radius: 24px;
     padding: 24px;
     margin-top: 30px;
+        background: #fff;
 }
 
 .business__list_single_description_row h3 {
@@ -2765,8 +2820,37 @@ button.p-button-secondary.p-button.p-component {
     padding: 24px;
     margin-top: 30px;
     margin-bottom: 50px;
+        background: #fff;
+}
+.business__list_single_nda_submit_row {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    border: 1px solid #E5E8F6;
+    border-radius: 24px;
+    padding: 24px;
+    margin-top: 30px;
+    align-items: center;
+    background: #fff;
 }
 
+.business__list_single_nda_submit_row h2.business__list_single_nda_submit_row_intro_head {
+    margin: 0;
+}
+
+.business__list_single_nda_submit_row p.business__list_single_nda_submit_row_body_copy {
+    font-size: 14px;
+    margin-top: 10px;
+    color: #818a98;
+}
+
+.business__list_single_nda_submit_row_intro_btns {
+    display: flex;
+    gap: 15px;
+}
+.business__list_single_nda_submit_row_intro_btns button.business__list_submit_nda_btn.p-button.p-component {
+    background: #FFB100;
+}
 .business__list_single_key_highlights_col {
     display: inline-flex;
     flex-wrap: wrap;
@@ -2824,6 +2908,181 @@ ul.list__card_cim_row_sub_list {
 
     padding: 0;
     margin: 0;
+}
+.nda__submit_modal {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #00000099;
+    backdrop-filter: blur(3px);
+}
+
+.nda__submit_modal form {
+    max-height: 95vh;
+    overflow: auto;
+}
+.nda__submit_modal_wrap_overlay {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    cursor: pointer;
+    z-index: 0;
+}
+form.nda__submit_form {
+    max-width: 700px;
+    margin: 0px auto;
+    background: rgb(255, 255, 255);
+    border-radius: 10px;
+        z-index: 2;
+}
+.nda__agree_cehckbox {
+    display: flex;
+    gap: 5px;
+    font-size: 13px;
+    align-items: center;
+    justify-content: center;
+    margin: 14px 0;
+}
+.nda__submit_form_wrap {
+    text-align: center;
+}
+
+.nda__submit_form_wrap .p-inline-message.p-component.p-inline-message-warn * {
+    font-size: 12px;
+}
+
+.nda__submit_form_wrap .p-inline-message.p-component.p-inline-message-warn {
+    margin: 0 0 20px 0;
+}
+.nda__submit_form_body {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin: 20px 0 20px 0;
+}
+
+.nda__submit_form_body .nda__submit_form_body_elements {
+    width: calc(50% - 15px);
+    text-align: left;
+}
+
+.nda__submit_form_body .nda__submit_form_body_elements .fields__content {
+    border: 1px solid #c2c3c5;
+    min-height: 40px;
+    margin-top: 5px;
+    padding: 10px;
+    border-radius: 10px;
+    background: #F3F7FF;
+    color: #6d6d6d;
+}
+
+.nda__submit_form_body .nda__submit_form_body_elements label {
+    font-size: 14px;
+    color: #002F67;
+}
+.my__save_listing_wrap.my__listing_table.nda__request_block table.p-datatable-table {
+    width: 77vw;
+}
+h2.business__list_single_nda_submit_row_intro_head.nda__listing_heading {
+    font-size: 18px;
+    color: #002F68;
+}
+a.cim__view_CIMAccessLink {
+    text-decoration: none;
+    display: flex;
+    gap: 3px;
+    color: #002F68;
+}
+button.viewBuyer__button {
+    padding: 0;
+    background: transparent !important;
+    color: #002f68;
+        outline: none;
+    box-shadow: none;
+}
+
+button.viewBuyer__button span.p-button-label.p-c {
+    text-transform: capitalize !important;
+    text-decoration: underline;
+}
+.CIMAccessLink__accessDenied {
+    text-decoration: none;
+    display: flex;
+    gap: 3px;
+    color: #ef4444;
+}
+span.cimAccessNDAsubmit__fields_datatable.field__denied_NDA {
+    text-decoration: none;
+    display: flex;
+    gap: 3px;
+    color: #ef4444;
+}
+
+.nda__buyer_submission_details_wrap .p-dialog-title {
+    color: #4F93FF;
+}
+
+.nda__content_modal_element {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 6px;
+    font-size: 14px;
+    color: #002F68;
+}
+
+
+.nda__modal_content {
+    border-top: 1px solid #d4d4d4;
+    padding-top: 15px;
+}
+
+.nda__modal_actions {
+    display: flex;
+    margin-top: 30px;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.nda__modal_actions button.btn__NDARequest_shareCIM.p-button.p-component {
+    margin: 0;
+    background: #4F93FF !important;
+    padding: 5px 15px;
+}
+
+.nda__modal_actions button.btn__NDARequest_decline.p-button.p-component {
+    margin: 0;
+    color: #FF5353;
+    background: transparent;
+    border: 1px solid #FF5353;
+    padding: 5px 15px;
+}
+
+.nda__modal_actions button.btn__NDARequest_shareCIM.p-button.p-component span.p-button-label.p-c {
+    font-size: 12px;
+    text-transform: capitalize !important;
+}
+
+.nda__modal_actions button.btn__NDARequest_decline.p-button.p-component span.p-button-label.p-c {
+    text-transform: capitalize;
+}
+.nda__content_modal_element.rejected span {
+    color: red;
+}
+
+.nda__content_modal_element.approved span {
+    color: #22c55e;
+}
+.save__listing_filter_wrap {
+    display: flex;
+    gap: 15px;
+    margin: 30px 0 0 0;
 }
 @media screen and (min-width: 1024px) and (max-width: 1920px) {
   .header_container nav.nav_col a {

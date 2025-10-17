@@ -1,8 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Card } from "primereact/card";
 import { useRecoilValue } from "recoil";
 import { authState,apiBaseUrlState  } from "../../../recoil/ctaState";
 import axios from "axios";
+import { Toast } from 'primereact/toast';
+import { ConfirmPopup, confirmPopup } from "primereact/confirmpopup";
 import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
 import { Calendar } from "primereact/calendar";
@@ -26,9 +28,10 @@ import { Link } from "react-router-dom";
 import { InputSwitch } from "primereact/inputswitch";
 
 export default function SellerListing() {
+  const toast = useRef(null);
   const yearOptions = Array.from({ length: 101 }, (_, i) => ({ label: i, value: i }));
   const API_BASE = useRecoilValue(apiBaseUrlState);
-
+const [filteredListings, setFilteredListings] = useState([]);
 const locationOptions = [
   { label: "Headquarters", value: "Headquarters" },
   { label: "Office", value: "Office" },
@@ -105,7 +108,7 @@ const assetsIncludedOptions = [
     listingTitle: "",
     listingDescription: "",
     entityType: "",
-    yearStablished: "",
+    yearStablished: 1900,
     city: "",
     state: "",
     country: "",
@@ -131,7 +134,7 @@ const assetsIncludedOptions = [
     isOwnerInvolved: "",
     ownershipBreakdown: "",
     facilitiesOffices: "",
-    numberOfEmployees: "",
+    numberOfEmployees: 0,
     warehouseStaff: "",
     administrativeStaff: "",
     generalManager: "",
@@ -158,7 +161,7 @@ const assetsIncludedOptions = [
     yearsOwned: 0,
     reasonForSelling: "",
     businessAddress: "",
-    workforceAllocation: [],
+    workforceAllocation: "",
     averageTenureInYears: 0,
     laborMarket: "",
     workforceOverview: "",
@@ -263,7 +266,6 @@ const handleCreateListing = async () => {
         headers: { Authorization: `Bearer ${access_token}` },
       }
     );
-console.log("payload>>>>>>>>>>",payload);
     // If you only want the response data:
     setFileListingUploadId(response.data._id);
 
@@ -274,7 +276,7 @@ console.log("payload>>>>>>>>>>",payload);
     listingTitle: "",
     listingDescription: "",
     entityType: "",
-    yearStablished: "",
+    yearStablished: 1900,
     city: "",
     state: "",
     country: "",
@@ -300,7 +302,7 @@ console.log("payload>>>>>>>>>>",payload);
     isOwnerInvolved: "",
     ownershipBreakdown: "",
     facilitiesOffices: "",
-    numberOfEmployees: "",
+    numberOfEmployees: 0,
     warehouseStaff: "",
     administrativeStaff: "",
     generalManager: "",
@@ -327,7 +329,7 @@ console.log("payload>>>>>>>>>>",payload);
     yearsOwned: 0,
     reasonForSelling: "",
     businessAddress: "",
-    workforceAllocation: [],
+    workforceAllocation: "",
     averageTenureInYears: 0,
     laborMarket: "",
     workforceOverview: "",
@@ -375,8 +377,20 @@ console.log("payload>>>>>>>>>>",payload);
 
     fetchListings(); // refresh table
     setListingStep(listingStep + 1);
+
+     toast.current.show({
+      severity: "success",
+      detail: "Listing Form Submit Now Upload Files",
+      life: 4000,
+    });
   } catch (error) {
-    console.error("Error creating listing:", error.response?.data || error.message);
+   // console.error("Error creating listing:", error.response?.data || error.message);
+
+     toast.current.show({
+      severity: "error",
+      detail: error.message,
+      life: 4000,
+    });
   }
 };
 
@@ -386,31 +400,45 @@ console.log("payload>>>>>>>>>>",payload);
  setFiles((prev) => ({ ...prev, [type]: file }));
 };
 const handleSubmit = async () => {
-    try {
-      for (const [key, file] of Object.entries(files)) {
-        if (file) {
-          const formData = new FormData();
-          formData.append("file", file);
-          await axios.post(
-               `${API_BASE}/business-listing/${fileListingUploadId}/upload/${key}`,
-              formData,
-              {
-                headers: {
-                  "Content-Type": "multipart/form-data",
-                  Authorization: `Bearer ${access_token}`,
-                }, 
-              }
-            );
-        }
-      }
 
-      // redirect after uploads
-      window.location.href = `http://localhost:5173/user/cim/${fileListingUploadId}`;
-    } catch (error) {
-      console.error("File upload failed:", error);
-      alert("Failed to upload documents, please try again.");
+
+  const uploadUrl = `${API_BASE}/files/${fileListingUploadId}/upload`;
+const businessId = `${fileListingUploadId}`;
+  try {
+    for (const [key, fileObj] of Object.entries(files)) {
+      if (!fileObj?.objectURL) continue;
+
+      // Fetch blob from object URL
+      const response = await fetch(fileObj.objectURL);
+      const blob = await response.blob();
+      const typeName = blob.type ? blob.type.split("/")[1] : "unknown";
+      const formData = new FormData();
+      formData.append("file", blob, `${key}.${typeName}`);
+      formData.append("displayName", key);
+      formData.append("typeName", typeName); 
+      formData.append("businessId", businessId);
+
+      // Upload file
+      await axios.post(uploadUrl, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${access_token}`, 
+        },
+      });
+
+       
     }
-  };
+window.location.href = `/user/cim/${fileListingUploadId}`;
+   
+  } catch (error) {
+     toast.current.show({
+      severity: "error",
+      detail: error.message,
+      life: 4000,
+    });
+  }
+};
+
 
   // ==== Templates ====
   const listingNameTemplate = (row) => (
@@ -486,19 +514,25 @@ const moneyTemplate = (row, { field }) => {
       ? new Date(row.lastEdited).toLocaleDateString()
       : "Not Edited";
 
-  const handleDeleteListing = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this listing?"))
-      return;
-
-    try {
-      await axios.delete(`${API_BASE}/business-listing/${id}`, {
-        headers: { Authorization: `Bearer ${access_token}` },
-      });
-      // Refresh table
-      fetchListings();
-    } catch (error) {
-      console.error("Error deleting listing:", error);
-    }
+  const handleDeleteListing = async (event,id) => {
+    confirmPopup({
+    target: event.currentTarget,
+    message: "Are you sure you want to delete this listing?",
+    icon: "pi pi-exclamation-triangle",
+    className: "confirm__dlt_listing",
+    acceptLabel: "Yes",
+    rejectLabel: "No",
+    accept: async () => {
+      try {
+        await axios.delete(`${API_BASE}/business-listing/${id}`, {
+          headers: { Authorization: `Bearer ${access_token}` },
+        });
+        fetchListings(); // refresh table
+      } catch (error) {
+        console.error("Error deleting listing:", error);
+      }
+    },
+  });
   };
  const handleChange = (e, field) => {
     setNewListing({ ...newListing, [field]: e.target.value });
@@ -538,9 +572,10 @@ const moneyTemplate = (row, { field }) => {
 
       <i
         className="pi pi-trash cursor-pointer text-red-500 hover:text-red-700 button__delete_action_lisitng_seller"
-        onClick={() => handleDeleteListing(row._id)}
+        onClick={(e) => handleDeleteListing(e,row._id)}
          data-pr-tooltip="Remove"
         ></i>
+        
         <Tooltip target=".button__delete_action_lisitng_seller" position="top" />
     </div>
   );
@@ -554,11 +589,61 @@ const handleImageSelect = (e) => {
 
   reader.readAsDataURL(file);
 };
+useEffect(() => {
+  let filtered = [...listings];
+
+  // Search filter (check in name, location, or other text fields)
+  if (filters.search) {
+    const searchTerm = filters.search.toLowerCase();
+    filtered = filtered.filter(
+      (item) =>
+        item.listingName?.toLowerCase().includes(searchTerm) ||
+        item.location?.toLowerCase().includes(searchTerm)
+    );
+  }
+
+  // Industry filter
+  if (filters.industry) {
+    filtered = filtered.filter((item) => item.industry === filters.industry);
+  }
+
+  // Status filter
+  if (filters.status) {
+    filtered = filtered.filter((item) => item.status === filters.status);
+  }
+
+  // Year filter
+  if (filters.year) {
+    filtered = filtered.filter(
+      (item) => item.yearStablished?.toString() === filters.year.toString()
+    );
+  }
+
+  // Location filter
+  if (filters.location) {
+    const locationTerm = filters.location.toLowerCase();
+    filtered = filtered.filter((item) =>
+      item.location?.toLowerCase().includes(locationTerm)
+    );
+  }
+
+  // Last Edited filter (assuming item.lastEdited is a Date or ISO string)
+  if (filters.lastEdited) {
+    const selectedDate = new Date(filters.lastEdited).toDateString();
+    filtered = filtered.filter(
+      (item) => new Date(item.lastEdited).toDateString() === selectedDate
+    );
+  }
+
+  setFilteredListings(filtered);
+}, [filters, listings]);
 
   // ==== UI ====
   return (
     <>
+    <Toast ref={toast} />
       <div className="my-listings-page">
+        <ConfirmPopup />
         {showCreateDialog ? (
           <>
              {listingStep === 0 && (<>
@@ -595,7 +680,7 @@ const handleImageSelect = (e) => {
             <div className="listing__creation_block_main_wrap">
               {/* Business Name */}
       <div className="listing__creation_field_col md:col-4">
-        <label>Business Name</label>
+        <label>Business Name <span className="required__star">*</span></label>
         <InputText
           value={newListing.businessName}
           onChange={(e) => handleChange(e, "businessName")}
@@ -604,7 +689,7 @@ const handleImageSelect = (e) => {
 
       {/* Business Type */}
       <div className="listing__creation_field_col md:col-4">
-        <label>Business Type</label>
+        <label>Business Type </label>
           <InputText
             value={newListing.businessType || ""}
             onChange={(e) => handleChange(e, "businessType", e.target.value)}
@@ -614,20 +699,20 @@ const handleImageSelect = (e) => {
 
 {/* File Uploads */}
       <div className="listing__creation_field_col md:col-6">
-        <label>Business Image</label>
+        <label>Business Image <span className="required__star">*</span></label>
         <FileUpload
           mode="basic"
           accept="image/*"
           customUpload
           auto
-          chooseLabel="Upload Image"
+          chooseLabel="Upload Image (Max 500KB)"
           onSelect={handleImageSelect}
         />
       </div>
 
       {/* Business Type */}
       <div className="listing__creation_field_col md:col-4">
-        <label>Listing Title</label>
+        <label>Listing Title </label>
           <InputText
             value={newListing.listingTitle || ""}
             onChange={(e) => handleChange(e, "listingTitle", e.target.value)}
@@ -640,7 +725,7 @@ const handleImageSelect = (e) => {
       
       {/* Entity Type */}
       <div className="listing__creation_field_col md:col-4">
-        <label>Entity Type</label>
+        <label>Entity Type </label>
         <Dropdown
           value={newListing.entityType}
           options={[
@@ -661,7 +746,7 @@ const handleImageSelect = (e) => {
 
       {/* Key Highlights */}
       <div className="listing__creation_field_col">
-        <label>Key Highlights</label>
+        <label>Key Highlights </label>
         <Chips
           value={newListing.keyHighlights}
           onChange={(e) => setNewListing({ ...newListing, keyHighlights: e.value })}
@@ -671,7 +756,7 @@ const handleImageSelect = (e) => {
 
        {/* Industry */}
       <div className="listing__creation_field_col md:col-6">
-        <label>Industry</label>
+        <label>Industry </label>
         <InputTextarea
           value={newListing.industry?.join(", ") || ""}
           onChange={(e) =>
@@ -685,7 +770,7 @@ const handleImageSelect = (e) => {
 
        {/* Industry */}
       <div className="listing__creation_field_col md:col-6">
-        <label>Listing Description</label>
+        <label>Listing Description </label>
          <InputTextarea
             value={newListing.listingDescription || ""}
             onChange={(e) =>
@@ -700,7 +785,7 @@ const handleImageSelect = (e) => {
 
       {/* Asking Price */}
       <div className="listing__creation_field_col md:col-4">
-        <label>Asking Price</label>
+        <label>Asking Price </label>
         <InputNumber
           value={newListing.askingPrice}
           onValueChange={(e) => setNewListing({ ...newListing, askingPrice: e.value })}
@@ -711,7 +796,7 @@ const handleImageSelect = (e) => {
 
       {/* Cash Flow */}
       <div className="listing__creation_field_col md:col-4">
-        <label>Cash Flow</label>
+        <label>Cash Flow </label>
         <InputNumber
           value={newListing.cashFlow}
           onValueChange={(e) => setNewListing({ ...newListing, cashFlow: e.value })}
@@ -724,7 +809,7 @@ const handleImageSelect = (e) => {
      
 
      <div className="listing__creation_field_col md:col-4">
-  <label>Year Established</label>
+  <label>Year Established </label>
   <Calendar
     value={newListing.yearStablished ? new Date(newListing.yearStablished) : null}
     onChange={(e) =>
@@ -733,12 +818,12 @@ const handleImageSelect = (e) => {
     view="year"
     dateFormat="yy"   // shows only year
     placeholder="Select Year"
-    showIcon
+    
   />
 </div>
 {/* Reporting Year */}
 <div className="listing__creation_field_col md:col-6">
-  <label>Reporting Year</label>
+  <label>Reporting Year </label>
   <InputText
   type="number"
   value={newListing.annualRevenue?.reportingYear || ""}
@@ -758,7 +843,7 @@ const handleImageSelect = (e) => {
 
 {/* Revenue */}
 <div className="listing__creation_field_col md:col-6">
-  <label>Revenue</label>
+  <label>Revenue </label>
   <InputText
   type="number"
   value={newListing.annualRevenue?.revenue || ""}
@@ -778,7 +863,7 @@ const handleImageSelect = (e) => {
 
      {/* City */}
 <div className="listing__creation_field_col md:col-4">
-  <label>City</label>
+  <label>City </label>
   <InputText
     value={newListing.city || ""}
     onChange={(e) => handleChange(e, "city", e.target.value)}
@@ -787,7 +872,7 @@ const handleImageSelect = (e) => {
 </div>
 {/* ownershipBreakdown */}
 <div className="listing__creation_field_col md:col-4">
-  <label>Ownership Breakdown</label>
+  <label>Ownership Breakdown </label>
   <InputText
     value={newListing.ownershipBreakdown || ""}
     onChange={(e) => handleChange(e, "ownershipBreakdown", e.target.value)}
@@ -797,7 +882,7 @@ const handleImageSelect = (e) => {
 
 {/* State */}
 <div className="listing__creation_field_col md:col-4">
-  <label>State</label>
+  <label>State </label>
   <InputText
     value={newListing.state || ""}
     onChange={(e) => handleChange(e, "state", e.target.value)}
@@ -807,7 +892,7 @@ const handleImageSelect = (e) => {
 
 {/* Country */}
 <div className="listing__creation_field_col md:col-4">
-  <label>Country</label>
+  <label>Country </label>
   <InputText
     value={newListing.country || ""}
     onChange={(e) => handleChange(e, "country", e.target.value)}
@@ -817,7 +902,7 @@ const handleImageSelect = (e) => {
 
       {/* Ownership Structure */}
       <div className="listing__creation_field_col md:col-4">
-        <label>Ownership Structure</label>
+        <label>Ownership Structure </label>
         <InputText
           value={newListing.ownershipStructure}
           onChange={(e) => handleChange(e, "ownershipStructure")}
@@ -826,7 +911,7 @@ const handleImageSelect = (e) => {
 
       {/* Is Owner Involved */}
       <div className="listing__creation_field_col md:col-4">
-        <label>Is Owner Involved?</label>
+        <label>Is Owner Involved? </label>
         <div className="flex align-items-center gap-3 mt-2">
           <RadioButton
             inputId="yes"
@@ -837,7 +922,7 @@ const handleImageSelect = (e) => {
             }
             checked={newListing.isOwnerInvolved === "yes"}
           />
-          <label htmlFor="yes">Yes</label>
+          <label htmlFor="yes">Yes </label>
           <RadioButton
             inputId="no"
             name="isOwnerInvolved"
@@ -847,13 +932,13 @@ const handleImageSelect = (e) => {
             }
             checked={newListing.isOwnerInvolved === "no"}
           />
-          <label htmlFor="no">No</label>
+          <label htmlFor="no">No </label>
         </div>
       </div>
 
       {/* Number of Employees */}
       <div className="listing__creation_field_col md:col-4">
-        <label>Number of Employees</label>
+        <label>Number of Employees </label>
         <Dropdown
           value={newListing.numberOfEmployees}
           options={[{ label: "10-50", value: "10-50" }, { label: "50-100", value: "50-100" }]}
@@ -864,7 +949,7 @@ const handleImageSelect = (e) => {
 
       {/* Warehouse Staff */}
       <div className="listing__creation_field_col md:col-4">
-        <label>Warehouse Staff</label>
+        <label>Warehouse Staff </label>
         <InputNumber
           value={newListing.warehouseStaff || 0}
           onValueChange={(e) =>
@@ -875,7 +960,7 @@ const handleImageSelect = (e) => {
 
       {/* Administrative Staff */}
       <div className="listing__creation_field_col md:col-4">
-        <label>Administrative Staff</label>
+        <label>Administrative Staff </label>
         <InputNumber
           value={newListing.administrativeStaff}
           onChange={(e) => handleChange(e, "administrativeStaff")}
@@ -884,7 +969,7 @@ const handleImageSelect = (e) => {
 
       {/* General Manager */}
       <div className="listing__creation_field_col md:col-6">
-        <label>General Manager</label>
+        <label>General Manager </label>
         <InputText
           value={newListing.generalManager}
           onChange={(e) => handleChange(e, "generalManager")}
@@ -893,7 +978,7 @@ const handleImageSelect = (e) => {
 
       {/* Warehouse Supervisor */}
       <div className="listing__creation_field_col md:col-6">
-        <label>Warehouse Supervisor</label>
+        <label>Warehouse Supervisor </label>
         <InputText
           value={newListing.warehouseSupervisor}
           onChange={(e) => handleChange(e, "warehouseSupervisor")}
@@ -902,7 +987,7 @@ const handleImageSelect = (e) => {
 
       {/* Revenue Model */}
       <div className="listing__creation_field_col md:col-6">
-        <label>Revenue Model</label>
+        <label>Revenue Model </label>
         <Dropdown
           value={newListing.revenueModel}
           options={[{ label: "Subscription", value: "subscription" }, { label: "Sales", value: "sales" }]}
@@ -912,7 +997,7 @@ const handleImageSelect = (e) => {
       </div>
       
  <div className="listing__creation_field_col">
-        <label>Brief Description</label>
+        <label>Brief Description </label>
         <InputTextarea
           rows={3}
           value={newListing.briefDescription}
@@ -922,7 +1007,7 @@ const handleImageSelect = (e) => {
 
       {/* Business Overview */}
       <div className="listing__creation_field_col">
-        <label>Business Overview</label>
+        <label>Business Overview </label>
         <InputTextarea
           rows={3}
           value={newListing.businessOverview}
@@ -931,7 +1016,7 @@ const handleImageSelect = (e) => {
       </div>
       {/* Ownership % Breakdown */}
       <div className="listing__creation_field_col md:col-6">
-        <label>Ownership % Breakdown</label>
+        <label>Ownership % Breakdown </label>
         <InputTextarea
           rows={3}
           value={newListing.ownerShipBreakdown}
@@ -941,7 +1026,7 @@ const handleImageSelect = (e) => {
 
       {/* Facilities / Offices */}
       <div className="listing__creation_field_col md:col-6">
-        <label>Facilities / Offices</label>
+        <label>Facilities / Offices </label>
         <InputTextarea
           rows={3}
           value={newListing.facilitiesOffices}
@@ -951,7 +1036,7 @@ const handleImageSelect = (e) => {
 
       {/* Owner (Semi-Involved) */}
       <div className="listing__creation_field_col md:col-6">
-        <label>Owner (Semi-Involved)</label>
+        <label>Owner (Semi-Involved) </label>
         <InputTextarea
           rows={3}
           value={newListing.ownerSemiInvolved}
@@ -961,7 +1046,7 @@ const handleImageSelect = (e) => {
 
       {/* Workforce Description */}
       <div className="listing__creation_field_col md:col-6">
-        <label>Workforce Description</label>
+        <label>Workforce Description </label>
         <InputTextarea
           rows={3}
           value={newListing.workForceDescription}
@@ -971,7 +1056,7 @@ const handleImageSelect = (e) => {
 
       {/* Key Clients / Contracts */}
       <div className="listing__creation_field_col md:col-6">
-        <label>Key Clients / Contracts</label>
+        <label>Key Clients / Contracts </label>
         <InputTextarea
           rows={3}
           value={newListing.keyClientsContacts}
@@ -981,7 +1066,7 @@ const handleImageSelect = (e) => {
 
       {/* What does your business do? */}
       <div className="listing__creation_field_col md:col-6">
-        <label>What does your business do?</label>
+        <label>What does your business do? </label>
         <InputTextarea
           rows={3}
           value={newListing.whatDoseBusinessDo}
@@ -991,7 +1076,7 @@ const handleImageSelect = (e) => {
 
       {/* Seasonality or Trends */}
       <div className="listing__creation_field_col md:col-6">
-        <label>Seasonality or Trends</label>
+        <label>Seasonality or Trends </label>
         <InputTextarea
           rows={3}
           value={newListing.seasonalityOrTrends}
@@ -1001,7 +1086,7 @@ const handleImageSelect = (e) => {
 
       {/* Any Pending Legal Matters? */}
       <div className="listing__creation_field_col md:col-6">
-        <label>Any Pending Legal Matters?</label>
+        <label>Any Pending Legal Matters? </label>
         <InputTextarea
           rows={3}
           value={newListing.anyPendingLegalMatter}
@@ -1012,7 +1097,7 @@ const handleImageSelect = (e) => {
       
   {/* Your Role */}
       <div className="listing__creation_field_col md:col-6">
-        <label>Your Role</label>
+        <label>Your Role </label>
         <Dropdown
           value={newListing.yourRole}
           options={[{ label: "Legal Owner", value: "Legal Owner" }, { label: "Broker", value: "Broker" }, { label: "Other Third Party", value: "Other Third Party" }]}
@@ -1023,7 +1108,7 @@ const handleImageSelect = (e) => {
 
   {/* Willing To CoBroker */}
       <div className="listing__creation_field_col md:col-4">
-        <label>Willing To CoBroker</label>
+        <label>Willing To CoBroker </label>
         <div className="flex align-items-center gap-3 mt-2">
           <RadioButton
             inputId="yes"
@@ -1034,7 +1119,7 @@ const handleImageSelect = (e) => {
             }
             checked={newListing.willingToCoBroker === "yes"}
           />
-          <label htmlFor="yes">Yes</label>
+          <label htmlFor="yes">Yes </label>
           <RadioButton
             inputId="no"
             name="willingToCoBroker"
@@ -1044,13 +1129,13 @@ const handleImageSelect = (e) => {
             }
             checked={newListing.willingToCoBroker === "no"}
           />
-          <label htmlFor="no">No</label>
+          <label htmlFor="no">No </label>
         </div>
       </div>
 
   {/* Confidential */}
 <div className="listing__creation_field_col md:col-4">
-  <label>Confidentiality</label>
+  <label>Confidentiality </label>
   <div className="flex align-items-center gap-3 mt-2">
     <RadioButton
       inputId="confidential"
@@ -1061,7 +1146,7 @@ const handleImageSelect = (e) => {
       }
       checked={newListing.confidentiality === "Yes"}
     />
-    <label htmlFor="confidential">Yes</label>
+    <label htmlFor="confidential">Yes </label>
 
     <RadioButton
       inputId="nonConfidential"
@@ -1072,13 +1157,13 @@ const handleImageSelect = (e) => {
       }
       checked={newListing.confidentiality === "No"}
     />
-    <label htmlFor="nonConfidential">No</label>
+    <label htmlFor="nonConfidential">No </label>
   </div>
 </div>
 
 {/* Contact Name */}
 <div className="listing__creation_field_col md:col-6">
-  <label>Contact Name</label>
+  <label>Contact Name </label>
   <InputText
     value={newListing.contactName || ""}
     onChange={(e) =>
@@ -1090,7 +1175,7 @@ const handleImageSelect = (e) => {
 
 {/* Contact Phone */}
 <div className="listing__creation_field_col md:col-6">
-  <label>Contact Phone</label>
+  <label>Contact Phone </label>
   <InputText
     value={newListing.contactPhone || ""}
     onChange={(e) =>
@@ -1102,7 +1187,7 @@ const handleImageSelect = (e) => {
 
 {/* Contact Email */}
 <div className="listing__creation_field_col md:col-6">
-  <label>Contact Email</label>
+  <label>Contact Email </label>
   <InputText
     type="email"
     value={newListing.contactEmail || ""}
@@ -1115,7 +1200,7 @@ const handleImageSelect = (e) => {
 
 {/* Contact Zip Code */}
 <div className="listing__creation_field_col md:col-6">
-  <label>Contact Zip Code</label>
+  <label>Contact Zip Code </label>
   <InputText
     value={newListing.contactZipCode || ""}
     onChange={(e) =>
@@ -1127,7 +1212,7 @@ const handleImageSelect = (e) => {
 
 {/* DBA Name */}
 <div className="listing__creation_field_col md:col-6">
-  <label>Doing Business As Name</label>
+  <label>Doing Business As Name </label>
   <InputText
     value={newListing.dbaName || ""}
     onChange={(e) =>
@@ -1140,7 +1225,7 @@ const handleImageSelect = (e) => {
 
 {/* Legal Company Name */}
 <div className="listing__creation_field_col md:col-6">
-  <label>Legal Company Name</label>
+  <label>Legal Company Name </label>
   <InputText
     value={newListing.legalCompanyName || ""}
     onChange={(e) =>
@@ -1152,7 +1237,7 @@ const handleImageSelect = (e) => {
 
 {/* State Of Formation */}
 <div className="listing__creation_field_col md:col-6">
-  <label>State Of Formation</label>
+  <label>State Of Formation </label>
   <InputText
     value={newListing.stateOfFormation || ""}
     onChange={(e) =>
@@ -1165,7 +1250,7 @@ const handleImageSelect = (e) => {
 
 {/* NAICS Code */}
 <div className="listing__creation_field_col md:col-6">
-  <label>NAICS Code</label>
+  <label>NAICS Code </label>
   <InputText
     value={newListing.naicsCode || ""}
     onChange={(e) =>
@@ -1177,7 +1262,7 @@ const handleImageSelect = (e) => {
 
 {/* Years Owned */}
 <div className="listing__creation_field_col md:col-6">
-  <label>Years Owned</label>
+  <label>Years Owned </label>
   <Dropdown
     value={newListing.yearsOwned}
     options={yearOptions}
@@ -1191,7 +1276,7 @@ const handleImageSelect = (e) => {
 
   {/* Reason For Selling */}
       <div className="listing__creation_field_col md:col-6">
-        <label>Reason For Selling</label>
+        <label>Reason For Selling </label>
         <InputTextarea
           rows={3}
           value={newListing.reasonForSelling}
@@ -1202,7 +1287,7 @@ const handleImageSelect = (e) => {
 
 {/* Business Address */}
 <div className="listing__creation_field_col md:col-6">
-  <label>Business Address</label>
+  <label>Business Address </label>
   <InputText
     value={newListing.businessAddress || ""}
     onChange={(e) =>
@@ -1215,7 +1300,7 @@ const handleImageSelect = (e) => {
 
  {/* Workforce Allocation */}
       <div className="listing__creation_field_col md:col-6">
-        <label>Workforce Allocation</label>
+        <label>Workforce Allocation </label>
         <Dropdown
           value={newListing.workforceAllocation}
           options={[{ label: "Owners", value: "Owners" }, { label: " Full-Time", value: " Full-Time" }, { label: "Part-Time", value: "Part-Time" }, { label: "Contractors", value: "Contractors" }]}
@@ -1227,7 +1312,7 @@ const handleImageSelect = (e) => {
 
 {/* Average Tenure in Years */}
 <div className="listing__creation_field_col md:col-6">
-  <label>Average Tenure (Years)</label>
+  <label>Average Tenure (Years) </label>
   <InputText
     type="number"
     value={newListing.averageTenureInYears || 0}
@@ -1240,7 +1325,7 @@ const handleImageSelect = (e) => {
 
 {/* Labor Market */}
 <div className="listing__creation_field_col md:col-6">
-  <label>Labor Market</label>
+  <label>Labor Market </label>
   <InputText
     value={newListing.laborMarket || ""}
     onChange={(e) =>
@@ -1252,7 +1337,7 @@ const handleImageSelect = (e) => {
 
 {/* Work Force Overview */}
 <div className="listing__creation_field_col md:col-6">
-  <label>Work Force Overview</label>
+  <label>Work Force Overview </label>
   <InputTextarea
     rows={3}
     value={newListing.workforceOverview || ""}
@@ -1265,7 +1350,7 @@ const handleImageSelect = (e) => {
 
 {/* Ownership Involvement */}
 <div className="listing__creation_field_col md:col-6">
-  <label>Ownership Involvement</label>
+  <label>Ownership Involvement </label>
   <InputTextarea
     rows={3}
     value={newListing.ownershipInvolvement || ""}
@@ -1278,7 +1363,7 @@ const handleImageSelect = (e) => {
 
   {/* Management Willing to Stay */}
       <div className="listing__creation_field_col md:col-4">
-        <label>Management Willing to Stay</label>
+        <label>Management Willing to Stay </label>
         <div className="flex align-items-center gap-3 mt-2">
           <RadioButton
             inputId="yes"
@@ -1289,7 +1374,7 @@ const handleImageSelect = (e) => {
             }
             checked={newListing.ownershipInvolvement === "yes"}
           />
-          <label htmlFor="yes">Yes</label>
+          <label htmlFor="yes">Yes </label>
           <RadioButton
             inputId="no"
             name="ownershipInvolvement"
@@ -1299,13 +1384,13 @@ const handleImageSelect = (e) => {
             }
             checked={newListing.ownershipInvolvement === "no"}
           />
-          <label htmlFor="no">No</label>
+          <label htmlFor="no">No </label>
         </div>
       </div>
 
 {/* Affiliate Company Name */}
 <div className="listing__creation_field_col md:col-6">
-  <label>Affiliate Company Name</label>
+  <label>Affiliate Company Name </label>
   <InputText
     value={newListing.affiliateCompanies?.name || ""}
     onChange={(e) =>
@@ -1323,7 +1408,7 @@ const handleImageSelect = (e) => {
 
 {/* Affiliate Company Description */}
 <div className="listing__creation_field_col md:col-6">
-  <label>Affiliate Company Description</label>
+  <label>Affiliate Company Description </label>
   <InputTextarea
     value={newListing.affiliateCompanies?.description || ""}
     onChange={(e) =>
@@ -1342,7 +1427,7 @@ const handleImageSelect = (e) => {
 </div>
 {/* Growth Opportunities */}
 <div className="listing__creation_field_col md:col-12">
-  <label>Growth Opportunities (up to 6)</label>
+  <label>Growth Opportunities (up to 6) </label>
   <InputTextarea
   value={newListing.growthOpportunities?.join("\n") || ""}
   onChange={(e) =>
@@ -1364,7 +1449,7 @@ const handleImageSelect = (e) => {
 
 {/* Is Franchise */}
 <div className="listing__creation_field_col md:col-4">
-  <label>Is Franchise</label>
+  <label>Is Franchise </label>
   <InputSwitch
     checked={newListing.isFranchise}
     onChange={(e) =>
@@ -1375,7 +1460,7 @@ const handleImageSelect = (e) => {
 
 {/* Is Relocatable */}
 <div className="listing__creation_field_col md:col-4">
-  <label>Is Relocatable</label>
+  <label>Is Relocatable </label>
   <InputSwitch
     checked={newListing.isRelocatable}
     onChange={(e) =>
@@ -1386,7 +1471,7 @@ const handleImageSelect = (e) => {
 
 {/* Is Startup */}
 <div className="listing__creation_field_col md:col-4">
-  <label>Is Startup</label>
+  <label>Is Startup </label>
   <InputSwitch
     checked={newListing.isStartup}
     onChange={(e) =>
@@ -1396,7 +1481,7 @@ const handleImageSelect = (e) => {
 </div>
 {/* Message From Owner */}
 <div className="listing__creation_field_col md:col-6">
-  <label>Message From Owner</label>
+  <label>Message From Owner </label>
   <InputTextarea
     value={newListing.ownerMessage}
     onChange={(e) =>
@@ -1409,7 +1494,7 @@ const handleImageSelect = (e) => {
 </div>
 {/* Support and Training */}
 <div className="listing__creation_field_col md:col-6">
-  <label>Support and Training</label>
+  <label>Support and Training </label>
   <InputTextarea
     value={newListing.supportAndTraining || ""}
     onChange={(e) =>
@@ -1423,7 +1508,7 @@ const handleImageSelect = (e) => {
 
 {/* Products and Services */}
 <div className="listing__creation_field_col md:col-6">
-  <label>Products and Services</label>
+  <label>Products and Services </label>
   <InputTextarea
     value={newListing.productsAndServices || ""}
     onChange={(e) =>
@@ -1437,7 +1522,7 @@ const handleImageSelect = (e) => {
 
 {/* Marketing & Sales Tactics */}
 <div className="listing__creation_field_col md:col-12">
-  <label>Marketing & Sales Tactics</label>
+  <label>Marketing & Sales Tactics </label>
   <MultiSelect
     value={newListing.marketingAndSalesTactics || []}
     options={[
@@ -1464,7 +1549,7 @@ const handleImageSelect = (e) => {
 
 {/* Industry Analysis */}
 <div className="listing__creation_field_col md:col-6">
-  <label>Industry Analysis</label>
+  <label>Industry Analysis </label>
   <InputTextarea
     value={newListing.industryAnalysis || ""}
     onChange={(e) =>
@@ -1478,7 +1563,7 @@ const handleImageSelect = (e) => {
 
 {/* Competitor Analysis */}
 <div className="listing__creation_field_col md:col-6">
-  <label>Competitor Analysis</label>
+  <label>Competitor Analysis </label>
   <InputTextarea
     value={newListing.competitorAnalysis || ""}
     onChange={(e) =>
@@ -1491,7 +1576,7 @@ const handleImageSelect = (e) => {
 </div>
 {/* Competitors */}
 <div className="listing__creation_field_col md:col-12">
-  <label>Main Competitors (up to 5)</label>
+  <label>Main Competitors (up to 5) </label>
 
   {newListing.competitors?.map((item, index) => (
     <div key={index} className="flex gap-2 mb-2 items-center">
@@ -1553,7 +1638,7 @@ const handleImageSelect = (e) => {
 
 {/* Customers and Concentration */}
 <div className="listing__creation_field_col md:col-12">
-  <label>Customers & Concentration (up to 6)</label>
+  <label>Customers & Concentration (up to 6) </label>
 
   {newListing.customersAndConcentration?.map((item, index) => (
     <div key={index} className="flex gap-2 mb-2 items-center">
@@ -1629,7 +1714,7 @@ const handleImageSelect = (e) => {
 
 {/* Product Revenue Mix */}
 <div className="listing__creation_field_col md:col-12">
-  <label>Product Revenue Mix</label>
+  <label>Product Revenue Mix </label>
 
   {newListing.productRevenueMix?.map((item, index) => (
     <div key={index} className="flex gap-2 mb-2 items-center">
@@ -1691,7 +1776,7 @@ const handleImageSelect = (e) => {
 
 {/* Seasonality */}
 <div className="listing__creation_field_col md:col-6">
-  <label>Seasonality</label>
+  <label>Seasonality </label>
   <InputTextarea
     value={newListing.seasonality || ""}
     onChange={(e) =>
@@ -1704,7 +1789,7 @@ const handleImageSelect = (e) => {
 </div>
 {/* Key Suppliers */}
 <div className="listing__creation_field_col md:col-12">
-  <label>Key Supplier</label>
+  <label>Key Supplier </label>
   
   {/* Vendor Name */}
   <InputText
@@ -1741,7 +1826,7 @@ const handleImageSelect = (e) => {
 </div>
 {/* Facility and Location Details */}
 <div className="listing__creation_field_col md:col-6">
-  <label>Facility and Location Details</label>
+  <label>Facility and Location Details </label>
   <InputTextarea
   name="facilityAndLocationDetails"
   value={newListing.facilityAndLocationDetails}
@@ -1766,7 +1851,7 @@ const handleImageSelect = (e) => {
         })
       }
     />
-    <label htmlFor="pendingLawsuits">Pending Lawsuits</label>
+    <label htmlFor="pendingLawsuits">Pending Lawsuits </label>
   </div>
 
   {newListing.pendingLawsuits && (
@@ -1799,7 +1884,7 @@ const handleImageSelect = (e) => {
         })
       }
     />
-    <label htmlFor="liens">Liens</label>
+    <label htmlFor="liens">Liens </label>
   </div>
 
   {newListing.liens && (
@@ -1819,7 +1904,7 @@ const handleImageSelect = (e) => {
 </div>
 {/* Physical Locations */}
 <div className="listing__creation_field_col md:col-6">
-  <label>Physical Locations</label>
+  <label>Physical Locations </label>
   <Dropdown
     value={newListing.physicalLocations || "Undisclosed"}
     options={[
@@ -1839,7 +1924,7 @@ const handleImageSelect = (e) => {
 
 {/* Financials */}
 <div className="listing__creation_field_col md:col-6">
-  <label>Financials</label>
+  <label>Financials </label>
   <InputNumber
     value={newListing.financials || 0}
     onValueChange={(e) =>
@@ -1855,7 +1940,7 @@ const handleImageSelect = (e) => {
 
 {/* FFE Value */}
 <div className="listing__creation_field_col md:col-6">
-  <label>FFE Value</label>
+  <label>FFE Value </label>
   <InputNumber
     value={newListing.ffEValue || 0}
     onValueChange={(e) =>
@@ -1871,7 +1956,7 @@ const handleImageSelect = (e) => {
 
 {/* Inventory Value */}
 <div className="listing__creation_field_col md:col-6">
-  <label>Inventory Value</label>
+  <label>Inventory Value </label>
   <InputNumber
     value={newListing.inventoryValue || 0}
     onValueChange={(e) =>
@@ -1886,7 +1971,7 @@ const handleImageSelect = (e) => {
 </div>
 
 <div className="listing__creation_field_col md:col-12">
-  <label>Properties Included</label>
+  <label>Properties Included </label>
   
 
   {newListing.propertiesIncluded?.map((property, index) => (
@@ -1896,7 +1981,7 @@ const handleImageSelect = (e) => {
     >
       {/* Location Type */}
       <div>
-        <label className="block text-sm font-medium">Location Type</label>
+        <label className="block text-sm font-medium">Location Type </label>
         <Dropdown
           value={property.locationType || ""}
           options={locationOptions}
@@ -1912,7 +1997,7 @@ const handleImageSelect = (e) => {
 
       {/* Usage Description */}
       <div>
-        <label className="block text-sm font-medium">Usage Description</label>
+        <label className="block text-sm font-medium">Usage Description </label>
         <InputText
           value={property.usageDescription || ""}
           onChange={(e) => {
@@ -1927,7 +2012,7 @@ const handleImageSelect = (e) => {
 
       {/* Ownership */}
       <div>
-        <label className="block text-sm font-medium">Ownership</label>
+        <label className="block text-sm font-medium">Ownership </label>
         <Dropdown
           value={property.ownership || ""}
           options={ownershipOptions}
@@ -1943,7 +2028,7 @@ const handleImageSelect = (e) => {
 
       {/* Included in Sale */}
       <div>
-        <label className="block text-sm font-medium">Included in Sale?</label>
+        <label className="block text-sm font-medium">Included in Sale? </label>
         <Dropdown
           value={property.includedInSale || ""}
           options={includedOptions}
@@ -1998,7 +2083,7 @@ const handleImageSelect = (e) => {
   </div>
 </div>
 <div className="listing__creation_field_col md:col-12 ffe_assets_main_wrap">
-  <label>FFE Assets</label>
+  <label>FFE Assets </label>
     {newListing.ffeAssets?.map((asset, index) => (
     <div
       key={index}
@@ -2006,7 +2091,7 @@ const handleImageSelect = (e) => {
     >
       {/* Asset Type */}
       <div>
-        <label className="block text-sm font-medium">Asset Type</label>
+        <label className="block text-sm font-medium">Asset Type </label>
         <Dropdown
           value={asset.assetType || ""}
           options={assetTypeOptions}
@@ -2022,7 +2107,7 @@ const handleImageSelect = (e) => {
 
       {/* Included / Excluded */}
       <div>
-        <label className="block text-sm font-medium">Included / Excluded</label>
+        <label className="block text-sm font-medium">Included / Excluded </label>
         <Dropdown
           value={asset.includedStatus || ""}
           options={assetsIncludedOptions}
@@ -2038,7 +2123,7 @@ const handleImageSelect = (e) => {
 
       {/* Asset Description */}
       <div>
-        <label className="block text-sm font-medium">Asset Description</label>
+        <label className="block text-sm font-medium">Asset Description </label>
         <InputText
           value={asset.assetDescription || ""}
           onChange={(e) => {
@@ -2053,7 +2138,7 @@ const handleImageSelect = (e) => {
 
       {/* Estimated Value */}
 <div>
-  <label className="block text-sm font-medium">Estimated Value</label>
+  <label className="block text-sm font-medium">Estimated Value </label>
   <InputNumber
     value={asset.estimatedValue ?? 0}   // ensure it's a number
     onValueChange={(e) => {
@@ -2113,7 +2198,7 @@ const handleImageSelect = (e) => {
 </div>
 {/* FF&E Description */}
 <div className="listing__creation_field_col md:col-6">
-  <label>FF&E Description</label>
+  <label>FF&E Description </label>
     <InputTextarea
   id="ffeDescription"
   name="ffeDescription"
@@ -2132,7 +2217,7 @@ const handleImageSelect = (e) => {
 
 {/* Real Estate Value */}
 <div className="listing__creation_field_col md:col-6">
-  <label>Real Estate Value</label>
+  <label>Real Estate Value </label>
   <InputNumber
     value={newListing.realEstateValue || 0}
     onValueChange={(e) =>
@@ -2203,50 +2288,54 @@ const handleImageSelect = (e) => {
       <div className="listing__upload_files_grid">
        <div className="listing__upload_files_grid_wrap">
          <div className="listing__upload_files_uplosdFile">
-          <label>Profit &amp; Loss Statement</label>
-          <FileUpload
+          <label>Profit &amp; Loss Statement </label>
+          <FileUpload 
             mode="basic"
             accept=".pdf"
+            auto
             maxFileSize={10000000}
             customUpload
             chooseLabel="File Upload"
-            uploadHandler={(e) => handleFileUpload(e.files[0], "profit_loss")}
+            uploadHandler={(e) => handleFileUpload(e.files[0], "Profit Loss")}
           />
         </div>
 
         <div className="listing__upload_files_uplosdFile">
-          <label>Balance Sheet</label>
+          <label>Balance Sheet </label>
           <FileUpload
             mode="basic"
             accept=".pdf"
+            auto
             maxFileSize={10000000}
             customUpload
             chooseLabel="File Upload"
-            uploadHandler={(e) => handleFileUpload(e.files[0], "balance_sheet")}
+            uploadHandler={(e) => handleFileUpload(e.files[0], "Balance Sheet")}
           />
         </div>
 
         <div className="listing__upload_files_uplosdFile ">
-          <label>3 Years of Tax Returns</label>
+          <label>3 Years of Tax Returns </label>
           <FileUpload
             mode="basic"
             accept=".pdf"
+            auto
             maxFileSize={10000000}
             customUpload
             chooseLabel="File Upload"
-            uploadHandler={(e) => handleFileUpload(e.files[0], "three_year_tax_return")}
+            uploadHandler={(e) => handleFileUpload(e.files[0], "Three Year Tax Return")}
           />
         </div>
 
         <div className="listing__upload_files_uplosdFile ">
-          <label>Ownership or Cap Table</label>
+          <label>Ownership or Cap Table </label>
           <FileUpload
             mode="basic"
             accept=".pdf"
+            auto
             maxFileSize={10000000}
             customUpload
             chooseLabel="File Upload"
-            uploadHandler={(e) => handleFileUpload(e.files[0], "ownership_or_cap_table")}
+            uploadHandler={(e) => handleFileUpload(e.files[0], "Ownership or Cap Table")}
           />
         </div>
        </div>
@@ -2363,6 +2452,21 @@ const handleImageSelect = (e) => {
                 placeholder="Last Edited"
                 showIcon
               />
+              <Button
+                label="Clear Filters"
+                icon="pi pi-filter-slash"
+                className="btnClearFilter"
+                onClick={() =>
+                  setFilters({
+                    search: "",
+                    industry: null,
+                    status: null,
+                    year: null,
+                    location: null,
+                    lastEdited: null,
+                  })
+                }
+              />
 
               <Button
                 label="Create Listing"
@@ -2374,7 +2478,7 @@ const handleImageSelect = (e) => {
             {/* Data Table */}
             <div className="my__save_listing_wrap my__listing_table">
           <DataTable
-              value={listings}
+              value={filteredListings}
               paginator
               rows={10}
               loading={loading}

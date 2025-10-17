@@ -40,6 +40,14 @@ export default function BuyerFreeNav() {
             <img src={icon3} alt="Recently Viewed" /> Recently Viewed
           </NavLink>
         </li>
+         <li>
+          <NavLink
+            to="/user/nda-requested"
+            className={({ isActive }) => (isActive ? "active" : "")}
+          >
+            <img src={icon3} alt="Recently Viewed" /> NDA Requested
+          </NavLink>
+        </li>
       </ul>
     </div>
   );

@@ -84,7 +84,7 @@ const RecentViewListing = () => {
       <span>{rowData.businessName}</span>
     </div>
   );
-  const industryTemplate = (rowData) => rowData.businessType || "—";
+  const industryTemplate = (indusValue) => (JSON.parse(Object(indusValue?.industry)))
   const ndaStatusTemplate = () => "Pending"; // placeholder, adjust if API returns NDA info
   const cimTemplate = () => <button className="cim-btn">View CIM</button>;
   const actionTemplate = (rowData) => (
@@ -142,7 +142,6 @@ const RecentViewListing = () => {
           <Column
             field="revenue"
             header="Revenue"
-            body={(rowData) => moneyTemplate(rowData.revenue)}
           />
           <Column
             field="askingPrice"

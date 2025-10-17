@@ -14,6 +14,7 @@ import userImg from "../../../assets/userImg.png";
 import { Link } from "react-router-dom";
 
 
+
 const FavoriteListings = () => {
   const { user, access_token } = useRecoilValue(authState) ?? {};
   const API_BASE = useRecoilValue(apiBaseUrlState);
@@ -108,28 +109,38 @@ const FavoriteListings = () => {
   const listingNameTemplate = (rowData) => (
     <div className="flex items-center gap-2 img_my_save_lisiting">
       <img
-        src={rowData.image || "https://via.placeholder.com/40"}
-        alt={rowData.businessName}
+        src={rowData?.image || "https://via.placeholder.com/40"}
+        alt={rowData?.businessName}
         className=" rounded"
       />
-      <span>{rowData.businessName}</span>
+      <span>{rowData?.businessName}</span>
     </div>
   );
-  const moneyTemplate = (value) => (value ? `$${Number(value).toLocaleString()}` : "—");
+
 
   const actionTemplate = (rowData) => (
     <>
       <Button
-        icon="pi pi-heart-fill"
+        icon="pi pi-trash"
         className="button__remove_listing_fav"
-        onClick={() => removeFavorite(rowData._favId)}
+        onClick={() => removeFavorite(rowData?._favId)}
         data-pr-tooltip="Remove"
       />
-      <Tooltip target=".button__remove_listing_fav" position="top" />
+      
     </>
   );
- const cimTemplate = () => <button className="cim-btn">View CIM</button>;
+const cimTemplate = (rowData) => (
+  <>
+    <Tooltip target=".button__remove_listing_fav" position="top" />
+    <Link to={`/user/single-listing/${rowData?._id}`} className="flex gap-4">
+      View
+    </Link>
+  </>
+);
    const ndaStatusTemplate = () => <><div className="class__nda_not_started">Not Started</div></>;
+
+  const saveIndustryTemplate = (indusValue) => (JSON.parse(Object(indusValue?.industry)))
+  
   return (
     <>
 
@@ -156,7 +167,7 @@ const FavoriteListings = () => {
           </div>
       {user?.user_type === "buyer"  && ( 
         <>
-      <div className="flex gap-4 mb-4">
+      <div className="save__listing_filter_wrap">
         <Dropdown
           value={listingType}
           options={["Seller Listing", "M&A Listing"]}
@@ -167,10 +178,11 @@ const FavoriteListings = () => {
           placeholder="Search by keyword"
           value={keyword}
           onChange={(e) => setKeyword(e.target.value)}
+          style={{ minWidth: "30%" }}
         />
         <Dropdown
           value={industry}
-          options={[...new Set(listings.map((l) => l.businessType))]}
+          options={[...new Set(listings?.map((l) => l.businessType))]}
           placeholder="Industry"
           onChange={(e) => setIndustry(e.value)}
         />
@@ -180,26 +192,32 @@ const FavoriteListings = () => {
           placeholder="NDA Status"
           onChange={(e) => setNdaStatus(e.value)}
         />
-        <div>
-          <span>Asking Price:</span>
-          <Slider
+          <Dropdown
             value={priceRange}
+            options={[
+              { label: "All Prices", value: [0, Infinity] },
+              { label: "Under $100K", value: [0, 100000] },
+              { label: "$100K – $500K", value: [100000, 500000] },
+              { label: "$500K – $1M", value: [500000, 1000000] },
+              { label: "$1M – $5M", value: [1000000, 5000000] },
+              { label: "Over $5M", value: [5000000, Infinity] },
+            ]}
+            placeholder="Asking Price Range"
             onChange={(e) => setPriceRange(e.value)}
-            range
-            min={0}
-            max={1000000}
           />
-        </div>
-        <div>
-          <span>Cash Flow:</span>
-          <Slider
+
+          <Dropdown
             value={cashFlowRange}
+            options={[
+              { label: "All Cash Flows", value: [0, Infinity] },
+              { label: "Under $100K", value: [0, 100000] },
+              { label: "$100K – $500K", value: [100000, 500000] },
+              { label: "Over $500K", value: [500000, Infinity] },
+            ]}
+            placeholder="Cash Flow Range"
             onChange={(e) => setCashFlowRange(e.value)}
-            range
-            min={0}
-            max={500000}
+            
           />
-        </div>
       </div>
           <div className="my__save_listing_wrap">
            <DataTable
@@ -211,12 +229,12 @@ const FavoriteListings = () => {
         emptyMessage={error ? `Error: ${error}` : "No business listings found."}
       >
         <Column header="Listing Name" body={listingNameTemplate} />
-        <Column header="Industry" field="businessType" />
+        <Column header="Industry" body={saveIndustryTemplate}/>
         <Column header="NDA Status" body={ndaStatusTemplate} />
         <Column field="entityType" header="Type" />
-        <Column field="revenue" header="Revenue" body={(row) => moneyTemplate(row.revenue)} />
-        <Column field="askingPrice" header="Asking Price" body={(row) => moneyTemplate(row.askingPrice)} />
-        <Column header="CIM Access" body={cimTemplate} />
+        <Column field="revenue" header="Revenue" />
+        <Column field="askingPrice" header="Asking Price" />
+        <Column header="View Listing" body={cimTemplate} />
         <Column header="Action" body={actionTemplate} />
       </DataTable>
           </div>
@@ -229,37 +247,7 @@ const FavoriteListings = () => {
 
       {user?.user_type === "seller"  && ( 
         <>
-      <div className="flex gap-4 mb-4">
-        <InputText
-          placeholder="Search by keyword"
-          value={keyword}
-          onChange={(e) => setKeyword(e.target.value)}
-        />
-        <Dropdown
-          value={listingType}
-          options={["Seller Listing", "M&A Listing"]}
-          placeholder="Type"
-          onChange={(e) => setListingType(e.value)}
-        />
-        <Dropdown
-          value={industry}
-          options={[...new Set(listings.map((l) => l.businessType))]}
-          placeholder="Industry"
-          onChange={(e) => setIndustry(e.value)}
-        />
-        <Dropdown
-          value={region}
-          options={[...new Set(listings.map((l) => l.state))]}
-          placeholder="Region"
-          onChange={(e) => setRegion(e.value)}
-        />
-        <Dropdown
-          value={ndaStatus}
-          options={["Approved", "Submitted","Not Started"]}
-          placeholder="NDA Status"
-          onChange={(e) => setNdaStatus(e.value)}
-        />
-      </div>
+      <div className="brief__infor_content">Allow users to view listings they have bookmarked. No publishing, editing, or cancellation capabilities are available.</div>
           <div className="my__save_listing_wrap">
            <DataTable
         value={filteredListings}
@@ -269,15 +257,15 @@ const FavoriteListings = () => {
         responsiveLayout="scroll"
         emptyMessage={error ? `Error: ${error}` : "No business listings found."}
       >
-        <Column header="Listing Name" field="businessName" />
+        <Column header="Listing Name" body={saveIndustryTemplate}/>
         <Column field="entityType" header="Type" />
         <Column header="Region" field="state" />
-        <Column header="Industry" field="businessType" />
+        <Column header="Industry" body={saveIndustryTemplate} />
         <Column header="NDA Status" body={ndaStatusTemplate} />
        <Column
           header="Saved On"
           body={(row) => {
-            const date = new Date(row.createdAt);
+            const date = new Date(row?.createdAt);
             return date.toLocaleDateString("en-US", {
               month: "short",
               day: "numeric",
@@ -286,9 +274,9 @@ const FavoriteListings = () => {
           }}
         />
 
-        <Column field="revenue" header="Revenue" body={(row) => moneyTemplate(row.revenue)} />
-        <Column field="askingPrice" header="Asking Price" body={(row) => moneyTemplate(row.askingPrice)} />
-        <Column header="Action" body={(row)=> (<><Link to={`user/listing/${row._id}`} className="flex gap-4">View Listing</Link></>)} />
+        <Column field="revenue" header="Revenue" />
+        <Column field="askingPrice" header="Asking Price" />
+        <Column header="Action" body={(row)=> (<><Link to={`/user/single-listing/${row?._id}`} className="flex gap-4">View Listing</Link></>)} />
       </DataTable>
           </div>
    </>

@@ -18,10 +18,10 @@ export default function SellerListingNav() {
            </li>
            <li>
              <NavLink
-               to="/user/my-save-listing"
+               to="/user/buyer-submission"
                className={({ isActive }) => (isActive ? "active" : "")}
              >
-               <img src={icon2} alt="Saved Listing" /> Saved Listing
+               <img src={icon2} alt="Buyer Submission" /> Buyer Submission
              </NavLink>
            </li>
 <li>

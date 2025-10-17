@@ -24,6 +24,10 @@ import RecentViewListing from "./components/dashboard/DasboardContentComponents/
 import FreeSellerForm from "./components/dashboard/DasboardContentComponents/FreeSellerProfile";
 import CimView from "./components/dashboard/DasboardContentComponents/CimView";
 import SingleBusinessListing from "./components/dashboard/DasboardContentComponents/SingleBusinessListing";
+import NDARequested from "./components/dashboard/DasboardContentComponents/NDARequested";
+
+import BuyerSubmissionRequest from "./components/dashboard/DasboardContentComponents/BuyerSubmissionRequest";
+
 
 const App = () => {
   return (
@@ -57,6 +61,10 @@ const App = () => {
             path="complete-profile-buyer-free"
             element={<ProfileFormBuyer />}
           />
+           <Route
+            path="nda-requested"
+            element={<NDARequested />}
+          />
           <Route
             path="complete-profile-seller-free"
             element={<FreeSellerForm />}
@@ -64,6 +72,10 @@ const App = () => {
           <Route
             path="recent-view-listing"
             element={<RecentViewListing />}
+          />
+           <Route
+            path="buyer-submission"
+            element={<BuyerSubmissionRequest />}
           />
           
           <Route path="my-save-listing" element={<MySaveListing />} />

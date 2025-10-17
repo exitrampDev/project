@@ -18,6 +18,16 @@ export const pageTitleAtom = atom({
   default: "Dashboard",
 });
 
+export const ndaListingId = atom({
+  key: "ndaListingId",
+  default: null,
+});
+
+export const showNDAAtom = atom({
+  key: "showNDA",
+  default: false,
+});
+
 export const activePageAtom = atom({
   key: "activePage",
   default: "Dashboard", // default page

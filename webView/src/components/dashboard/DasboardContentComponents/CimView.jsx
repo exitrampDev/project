@@ -11,6 +11,7 @@ import axios from "axios";
 function CIMview() {
   const { id } = useParams();
   const [listing, setListing] = useState(null);
+  const [listingFiles, setListingFiles] = useState([]);
   const API_BASE = useRecoilValue(apiBaseUrlState);
 
   useEffect(() => {
@@ -23,6 +24,21 @@ function CIMview() {
       }
     };
     fetchListing();
+
+
+
+    const fetchListingfiles = async () => {
+      try {
+        const response = await axios.get(`${API_BASE}/files/${id}`);
+        setListingFiles(response.data);
+      } catch (err) {
+        console.error("Error fetching listing:", err);
+      }
+    };
+    fetchListingfiles();
+
+
+
   }, [id]);
 
   if (!listing) return <p>Loading...</p>;
@@ -452,11 +468,14 @@ function CIMview() {
       {/* Attached Files */}
       <div className="cim__view_main_card">
         <h2 className="heading__card_cim">Attached Files</h2>
-        {listing.profitAndLossFile && <div className="icon__file_cim"><img src={fileClip} alt=""/><a href={listing.profitAndLossFile}>P&L Statement</a></div>}
-        {listing.balanceSheetFile && <div className="icon__file_cim"><img src={fileClip} alt=""/><a href={listing.balanceSheetFile}>Balance Sheet</a></div>}
-        {listing.threeYearTaxReturnFile && <div className="icon__file_cim"><img src={fileClip} alt=""/><a href={listing.threeYearTaxReturnFile}>3-Year Tax Return</a></div>}
-        {listing.ownerShipCaptableFile && <div className="icon__file_cim"><img src={fileClip} alt=""/><a href={listing.ownerShipCaptableFile}>Ownership Cap Table</a></div>}
-      </div>
+        {listingFiles && listingFiles.map((file,index) => (
+           <div className="icon__file_cim" key={index}>
+          <a href={`${API_BASE}${file.url}`}  target="_blank" rel="noopener noreferrer">
+            {file.displayName}
+          </a>
+        </div>
+        ))}
+        </div>
 
     
     </div>
