@@ -25,8 +25,8 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
   // app.useGlobalGuards(new JwtAuthGuard());
 
-   app.enableCors({
-    origin: ['http://localhost:5173','http://localhost:3000', 'http://3.87.119.123:5173', 'http://test.exitramp.co', 'https://test.exitramp.co'], 
+  app.enableCors({
+    origin: true,
     credentials: true,
   });
   const port = 3000;
