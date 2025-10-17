@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [react()],
    server: {
     host: '0.0.0.0',
-    allowedHosts: ['ec2-3-87-119-123.compute-1.amazonaws.com'],
+    allowedHosts: ['test.exitramp.co'],
     port: 5173
   },
 })
