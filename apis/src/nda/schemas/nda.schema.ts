@@ -17,7 +17,7 @@ export class Nda {
   @Prop({ type: Types.ObjectId, ref: 'User', required: false })  
   businessOwnerId?: Types.ObjectId;
 
-  @Prop({ default: 'pending', enum: ['pending', 'approved', 'rejected'] })
+  @Prop({ default: 'pending', enum: ['pending', 'approved', 'rejected', 'allow-doc-room'] })
   status: string;
 
   @Prop({ type: Date, default: null })
