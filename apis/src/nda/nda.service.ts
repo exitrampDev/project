@@ -411,7 +411,25 @@ export class NdaService {
      }
      
      nda.sellerResponseOn = new Date();
-     nda.status = 'allow-doc-room';
+     nda.docRoomAccess = 'approved';
+     await nda.save();
+     return nda;
+  }
+
+    async rejectDocRoom(ndaId: string, userId: string): Promise<Nda>{
+     const nda = await this.ndaModel.findById(ndaId);
+     if(!nda) throw new NotFoundException("Nda Not Found");
+
+     //property owmer ko check kar raha hun
+     const business = await this.businessModel.findById(nda.businessId);
+     if(!business) throw new NotFoundException("Business Not Found");
+     
+     if(business.ownerId.toString() !== userId){
+      throw new ForbiddenException("You Are Not Authorized To Approve This Nda")
+     }
+     
+     nda.sellerResponseOn = new Date();
+     nda.docRoomAccess = 'rejected';
      await nda.save();
      return nda;
   }

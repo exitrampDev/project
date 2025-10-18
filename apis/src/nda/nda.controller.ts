@@ -74,7 +74,7 @@ export class NdaController {
     @Patch('disallow-doc-room')
     async disallowDocRoom(@Body() ApproveDto: ApproveNdaDto, @Req() req: any) {
         const userId = req.user.userId; // ab defined hoga
-        return await this.ndaService.approveNda(ApproveDto.ndaId, userId);
+        return await this.ndaService.rejectDocRoom(ApproveDto.ndaId, userId);
     }
 
 }

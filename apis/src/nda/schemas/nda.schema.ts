@@ -26,6 +26,9 @@ export class Nda {
   @Prop({ type: String, default: '' })
   cimAccess: string;
 
+  @Prop({ default: 'pending', enum: ['pending', 'approved', 'rejected'] })
+  docRoomAccess: string;
+
   @Prop({ type: String, default: '' })
   message: string;
 }
