@@ -31,4 +31,13 @@ async getFilesByBusiness(businessId: string) {
   return this.fileModel.find({ businessId }).exec();
 }
 
+
+async findById(id: string) {
+  return this.fileModel.findById(id);
+}
+
+async deleteFile(id: string) {
+  return this.fileModel.findByIdAndDelete(id);
+}
+
 }

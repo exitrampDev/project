@@ -1,8 +1,9 @@
-import { Controller, Post, Param, UseInterceptors, UploadedFile, Get, Body, BadRequestException } from '@nestjs/common';
+import { Controller, Post, Param, UseInterceptors, UploadedFile, Get, Body, BadRequestException, Delete, NotFoundException } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
-import { extname } from 'path';
+import { extname, join } from 'path';
 import { FilesService } from './files.service';
+import { existsSync, unlinkSync } from 'fs';
 
 @Controller('files')
 export class FilesController {
@@ -59,4 +60,24 @@ async uploadFile(
   async getFiles(@Param('businessId') businessId: string) {
     return this.filesService.getFilesByBusiness(businessId);
   }
+
+  // DELETE API to remove a file
+  @Delete(':id')
+  async deleteFile(@Param('id') id: string) {
+    const file = await this.filesService.findById(id);
+    if (!file) throw new NotFoundException('File not found');
+
+    // Delete file from disk
+    const filePath = join(__dirname, '..', '..', 'uploads', file.filename);
+    if (existsSync(filePath)) {
+      unlinkSync(filePath);
+    }
+
+    // Delete file record from DB
+    await this.filesService.deleteFile(id);
+
+    return { message: 'File deleted successfully' };
+  }
+
+  
 }
