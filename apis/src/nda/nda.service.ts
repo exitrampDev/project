@@ -108,6 +108,7 @@ export class NdaService {
         $project: {
           _id: 1,
           businessId:1,
+          docRoomAccess:1,
           businessName: { $ifNull: ['$business.businessName', 'N/A'] },
           businessType: { $ifNull: ['$business.businessType', 'N/A'] },
           ndaStatus: '$status',
@@ -283,6 +284,7 @@ export class NdaService {
           _id: 1,
           businessId:1,
           submittedBy:1,
+          docRoomAccess:1,
           businessName: { $ifNull: ['$business.businessName', 'N/A'] },
           businessType: { $ifNull: ['$business.businessType', 'N/A'] },
           ndaStatus: '$status',
