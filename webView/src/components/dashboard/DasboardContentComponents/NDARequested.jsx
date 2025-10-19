@@ -181,6 +181,7 @@ const CIMAccessLink = (ndaStatus,id) => {
         <Column body={(rowData) => CIMAccessNDASubmit(rowData.ndaStatus)} header="CIM Access" />
         <Column body={(rowData) =>  rowData.submittedOn ? new Date(rowData.submittedOn).toLocaleDateString() : "-"} header="Submitted On" />
         <Column body={(rowData) =>  rowData.sellerResponseOn ? new Date(rowData.sellerResponseOn).toLocaleDateString() : "-"} header="Seller Response" />
+        <Column body={(rowData) =>  rowData.sellerResponseOn ? new Date(rowData.sellerResponseOn).toLocaleDateString() : "-"} header="Document Room" />
         <Column body={(rowData) => CIMAccessLink(rowData.ndaStatus,rowData.businessId)} header="Actions" />
       </DataTable>
         </div>   

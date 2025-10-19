@@ -2090,7 +2090,7 @@ button.btn__crt_listing.p-button.p-component {
 
 .my__save_listing_wrap td {
   font-size: 14px;
-  padding: 5px 10px;
+  padding: 10px 10px;
   font-weight: 300;
 }
 
@@ -3083,6 +3083,100 @@ span.cimAccessNDAsubmit__fields_datatable.field__denied_NDA {
     display: flex;
     gap: 15px;
     margin: 30px 0 0 0;
+}
+.filterBar__mian_list_wrap {
+    display: flex;
+    justify-content: space-between;
+}
+
+.filterBar__mian_list_wrap span.filterBar__mian_list_search {
+    position: relative;
+}
+
+.filterBar__mian_list_wrap .filterBar__mian_list_filter_col {
+    display: flex;
+    gap: 10px;
+}
+
+.filterBar__mian_list_wrap span.filterBar__mian_list_search i.pi.pi-search {
+    position: absolute;
+    right: 10px;
+    top: 14px;
+    color: #868484;
+}
+
+label.p-button.p-component.cursor-pointer.filterBar__mian_list_file_upload_content {
+    display: flex;
+    gap: 8px;
+}
+
+label.p-button.p-component.cursor-pointer.filterBar__mian_list_file_upload_content span {
+    font-size: 11px;
+}
+.my__save_listing_wrap.my__listing_table.docRoom_data_table table.p-datatable-table {
+    width: 78vw;
+}
+.my__save_listing_wrap.my__listing_table.docRoom_data_table .renderActionDocRoomList {
+    display: flex;
+    gap: 8px;
+    max-width: max-content;
+}
+.my__save_listing_wrap.my__listing_table.docRoom_data_table .renderActionDocRoomList .renderActionDocRoomList_dlt_btn {
+    color: red;
+    text-decoration: underline;
+    cursor: pointer;
+}
+span.File_access_cim_sharing_approve {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+}
+
+span.File_access_cim_sharing_approve i.pi.pi-check {
+    background: #28C76F;
+    color: #fff;
+    padding: 4px;
+    font-size: 12px;
+    border-radius: 5px;
+}
+
+span.File_access_cim_sharing_reject {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+}
+
+
+span.File_access_cim_sharing_reject i.pi.pi-times {
+     background: #FF5353;
+    color: #fff;
+    padding: 4px;
+    font-size: 12px;
+    border-radius: 5px;
+}
+span.File_access_nda_status {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+}
+
+span.File_access_nda_status i.pi.pi-check {
+    background: #28C76F;
+    color: #fff;
+    padding: 4px;
+    font-size: 12px;
+    border-radius: 5px;
+}
+h3.docRoom_data_table_access_files_title {
+    color: #002F68;
+    font-size: 24px;
+    font-weight: 500;
+}
+.fileAccessControl_access {
+    color: #002F68;
+    text-decoration: underline;
+    font-weight: 400;
+    cursor:pointer;
 }
 @media screen and (min-width: 1024px) and (max-width: 1920px) {
   .header_container nav.nav_col a {

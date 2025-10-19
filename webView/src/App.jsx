@@ -27,6 +27,7 @@ import SingleBusinessListing from "./components/dashboard/DasboardContentCompone
 import NDARequested from "./components/dashboard/DasboardContentComponents/NDARequested";
 
 import BuyerSubmissionRequest from "./components/dashboard/DasboardContentComponents/BuyerSubmissionRequest";
+import DocumentRoom from "./components/dashboard/DasboardContentComponents/DoocumentRoom";
 
 
 const App = () => {
@@ -55,6 +56,7 @@ const App = () => {
           <Route path="dashboard" element={<DashboardContent />} />
           <Route path="saved-listing" element={<div>Saved Listing</div>} />
           <Route path="my-listing" element={<SellerListing />} />
+          <Route path="document-room/:id" element={<DocumentRoom/>} />
           <Route path="single-listing/:id" element={<SingleBusinessListing />} />
           <Route path="cim/:id" element={<CimView/>} />
           <Route

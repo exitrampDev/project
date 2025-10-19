@@ -207,12 +207,23 @@ const assetsIncludedOptions = [
     image: "",
   });
 
+
+const documentRoomLink = (id) => {
+  return(
+    <>
+    <Link to={`/user/document-room/${id}`} className="">View Doc Room</Link>
+    </>
+  )
+}
+
+
   // Fetch Listings
   const fetchListings = async () => {
     setLoading(true);
     try {
       const res = await axios.get(`${API_BASE}/business-listing`, {
         headers: { Authorization: `Bearer ${access_token}` },
+        Authorization: `Bearer ${access_token}`,
       });
       if (Array.isArray(res.data)) {
         setListings(res.data);
@@ -2501,8 +2512,8 @@ useEffect(() => {
                 header="CIM Status"
                 body={cimTemplate}
               />
-              <Column field="views" header="Views" />
               <Column header="Last Edited" body={dateTemplate} />
+              <Column body={(filteredListings) => documentRoomLink(filteredListings._id)} header="Document Room" />
               <Column header="Action" body={actionTemplate} />
             </DataTable>
             </div>
