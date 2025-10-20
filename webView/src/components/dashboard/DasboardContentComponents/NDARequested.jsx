@@ -168,20 +168,19 @@ const CIMAccessLink = (ndaStatus,id) => {
         paginator
         rows={10}
         stripedRows
-        responsiveLayout="scroll"
         emptyMessage="No NDA requests found."
       >
         <Column field="businessName" header="Listing Name" sortable />
        <Column
-                   field="ndaStatus"
-                   header="NDA Status"
-                   body={ndaStatusTemplate}
-                   sortable
-                 />
+          field="ndaStatus"
+          header="NDA Status"
+          body={ndaStatusTemplate}
+          sortable
+        />
         <Column body={(rowData) => CIMAccessNDASubmit(rowData.ndaStatus)} header="CIM Access" />
         <Column body={(rowData) =>  rowData.submittedOn ? new Date(rowData.submittedOn).toLocaleDateString() : "-"} header="Submitted On" />
         <Column body={(rowData) =>  rowData.sellerResponseOn ? new Date(rowData.sellerResponseOn).toLocaleDateString() : "-"} header="Seller Response" />
-        <Column body={(rowData) =>  rowData.sellerResponseOn ? new Date(rowData.sellerResponseOn).toLocaleDateString() : "-"} header="Document Room" />
+        <Column body={(rowData) =>  rowData.docRoomAccess === "approved" ? (<><Link to={`/user/document-room-buyer/${rowData.businessId}`} className="cim__view_CIMAccessLink">  <i className="pi pi-file"></i> View Doc Room</Link></>) : (<><div className="CIMAccessLink__accessDenied"> <i className="pi pi-lock"></i> View After Approval</div></>)} header="Document Room" />
         <Column body={(rowData) => CIMAccessLink(rowData.ndaStatus,rowData.businessId)} header="Actions" />
       </DataTable>
         </div>   

@@ -8,7 +8,7 @@ import { Column } from "primereact/column";
 import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
 import { Button } from "primereact/button";
-import { Toast } from "primereact/toast"; // ✅ Import Toast
+import { Toast } from "primereact/toast"; 
 import notifInfo from "../../../assets/notifInfo.png";
 import serachIcon from "../../../assets/serachIcon.png";
 import userImg from "../../../assets/userImg.png";
@@ -92,66 +92,7 @@ const fetchSubmissions = async () => {
 
   }, [id, API_BASE, refreshKey]);
 
-  const docRoomDocDlt = async (fileId) => {
-    try {
-      const response = await axios.delete(`${API_BASE}/files/${fileId}`);
-      toast.current.show({
-        severity: "success",
-        summary: "File Deleted",
-        detail: response.data.message || "The file has been removed successfully.",
-        life: 3000,
-      });
 
-      setFiles((prev) => prev.filter((file) => file._id !== fileId));
-    } catch (err) {
-      console.error("File Delete Error:", err);
-      toast.current.show({
-        severity: "error",
-        summary: "Delete Failed",
-        detail:
-          err.response?.data?.message ||
-          "Something went wrong while deleting the file.",
-        life: 3000,
-      });
-    }
-  };
-  //  Upload File
-  const handleFileUpload = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const formData = new FormData();
-  formData.append("file", file);
-  formData.append("displayName", displayName || file.name);
-  formData.append("typeName", typeName || (file.name.split(".").pop()));
-
-   
-  try {
-    const res = await axios.post(`${API_BASE}/files/${id}/upload`, formData, {
-      headers: {
-        Authorization: `Bearer ${access_token}`,
-      },
-    });
-
-      toast.current.show({
-        severity: "success",
-        summary: "Upload Successful",
-        detail: res?.data?.message || "File uploaded successfully",
-        life: 3000,
-      });
-       setDisplayName("");
-      setTypeName(null);
-      setRefreshKey((prev) => prev + 1);
-
-    } catch (err) {
-      console.error("Error uploading file:", err);
-      toast.current.show({
-        severity: "error",
-        summary: "Upload Failed",
-        detail: "Could not upload the file",
-        life: 3000,
-      });
-    }
-  };
   const renderActions = (rowData) => (
     <div className="renderActionDocRoomList">
       <a
@@ -162,117 +103,9 @@ const fetchSubmissions = async () => {
       >
         Preview
       </a>
-      <div
-        onClick={() => docRoomDocDlt(rowData._id)}
-        className="renderActionDocRoomList_dlt_btn"
-      >
-        Delete
-      </div>
     </div>
   );
 
-const fileAccessControl = (fileAccess, id) => { 
-
-    const handleAccessGrant = () => {
-    try{
-        const res = axios.patch(`${API_BASE}/nda/allow-doc-room`, { ndaId: id }, {
-            headers: {
-                Authorization: `Bearer ${access_token}`,
-            },  
-        });
-
-            toast.current.show({
-            severity: "success",
-            summary: "Access Updated",
-            detail: res?.data?.message || "Access status updated successfully",
-            life: 3000,
-        });
-        setRefreshKey((prev) => prev + 1);
-        }catch (err){
-            console.error("Error updating access:", err);
-            toast.current.show({
-                severity: "error",
-                summary: "Update Failed",
-                detail: err?.response?.data?.message || "Something went wrong",
-                life: 3000,
-            });
-        }
-    }
-
-    const handleAccessRevoke = () => {
-        try{
-        const res = axios.patch(`${API_BASE}/nda/disallow-doc-room`, { ndaId: id }, {
-            headers: {
-                Authorization: `Bearer ${access_token}`,
-            },  
-        });
-
-            toast.current.show({
-            severity: "success",
-            summary: "Access Updated",
-            detail: res?.data?.message || "Access status updated successfully",
-            life: 3000,
-        });
-        setRefreshKey((prev) => prev + 1);
-        }catch (err){
-            console.error("Error updating access:", err);
-            toast.current.show({
-                severity: "error",
-                summary: "Update Failed",
-                detail: err?.response?.data?.message || "Something went wrong",
-                life: 3000,
-            });
-        }
-    }
-
-     return (
-    <>
-      {fileAccess === "approved" ? (
-        <>
-         <div className="fileAccessControl_access" data-id={id} onClick={handleAccessRevoke}>Revoke Access</div>
-        </>
-      ) : (
-        <>
-         <div className="fileAccessControl_access"  data-id={id} onClick={handleAccessGrant}>Grant Access</div>
-        </>
-      )}
-    </>
-  );
-}
-
-
-const ndaStatusList = (status) => {
-  return (
-    <>
-      {status === "approved" ? (
-        <>
-         <span className="File_access_cim_sharing_approve"> <i className="pi pi-check text-green-500"></i> Approved</span>
-        </>
-      ) : (
-        <>
-          <span className="File_access_cim_sharing_reject"><i className="pi pi-times text-red-500"></i> Not Approved</span>
-        </>
-      )}
-    </>
-  );
-};
-
-
-const ndaDocRoomAccesList = (access) => { 
-    return (
-    <>
-      {access === "approved" ? (
-        <>
-         <span className="File_access_cim_sharing_approve"> <i className="pi pi-check text-green-500"></i> Approved</span>
-        </>
-      ) : (
-        <>
-          <span className="File_access_cim_sharing_reject"><i className="pi pi-times text-red-500"></i> Not Approved</span>
-        </>
-      )}
-    </>
-  );
-}
 
 
 
@@ -336,15 +169,6 @@ const ndaDocRoomAccesList = (access) => {
           placeholder="Size"
         />
         </div>
-       <label className="p-button p-component cursor-pointer filterBar__mian_list_file_upload_content">
-          <i className="pi pi-file mr-2"></i> Upload File <span>(PDF/JPEG/PNG)</span>
-          <input
-            type="file"
-            hidden
-            onChange={handleFileUpload}
-            accept="*/*"
-          />
-        </label>
       </div>
 
       {/* Document Table */}
@@ -384,24 +208,6 @@ const ndaDocRoomAccesList = (access) => {
         </DataTable>
       </div>
 
-      <div className="docRoom_data_table_access_files_wrap">
-        <h3 className="docRoom_data_table_access_files_title">File Access Control</h3>
-        <div className="my__save_listing_wrap my__listing_table docRoom_data_table">
-        <DataTable
-          value={submissions}
-          className="shadow-sm border-round-lg"
-          emptyMessage="No Data found."
-        >
-           <Column field="businessName" header="Listing Name" />
-           <Column field="buyerName"  header="Buyer Name" />
-            <Column body={() => { return <><span className="File_access_nda_status"><i className="pi pi-check text-green-500"></i> Signed</span></>}}  header="NDA Status" />
-            <Column body={(submissions) => ndaStatusList (submissions.ndaStatus)}  header="CIM Shared" />
-           <Column body={(submissions) => ndaDocRoomAccesList (submissions.docRoomAccess)}  header="Doc Room Access" />
-           <Column body={(submissions) => fileAccessControl (submissions.docRoomAccess,submissions._id) }  header="Action" />
-        </DataTable>
-        </div>
-       
-      </div>
     </div>
   );
 };
