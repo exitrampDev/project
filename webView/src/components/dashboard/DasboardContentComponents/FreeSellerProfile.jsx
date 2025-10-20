@@ -73,15 +73,18 @@ const FreeSellerForm = () => {
   };
 
   // Handle file upload
-  const handleFileUpload = (event, field) => {
-    const file = event.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      handleChange(field, reader.result); // store as base64
-    };
-    reader.readAsDataURL(file);
+   // Handle file upload
+ const handleFileUpload = (event, field) => {
+  const file = event.files?.[0] || event.originalEvent?.target?.files?.[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onloadend = () => {
+    handleChange(field, reader.result); // store as base64 string
   };
+  reader.readAsDataURL(file);
+};
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -176,6 +179,7 @@ const openFile = (base64Data, fileName, mimeType) => {
           <div className="field form__field_col">
             <label>Full Name</label>
             <InputText
+            required
               value={formData.fullName || ""}
               onChange={(e) => handleChange("fullName", e.target.value)}
             />
@@ -184,6 +188,7 @@ const openFile = (base64Data, fileName, mimeType) => {
           <div className="field form__field_col">
             <label>Phone</label>
             <InputText
+            required
               value={formData.phone || ""}
               onChange={(e) => handleChange("phone", e.target.value)}
             />
@@ -192,6 +197,7 @@ const openFile = (base64Data, fileName, mimeType) => {
           <div className="field form__field_col">
             <label>Role / Investment Range</label>
             <InputText
+            required
               value={formData.role || ""}
               onChange={(e) => handleChange("role", e.target.value)}
             />
@@ -200,6 +206,7 @@ const openFile = (base64Data, fileName, mimeType) => {
           <div className="field form__field_col">
             <label>Company Name</label>
             <InputText
+            required
               value={formData.companyName || ""}
               onChange={(e) => handleChange("companyName", e.target.value)}
             />
@@ -279,7 +286,7 @@ const openFile = (base64Data, fileName, mimeType) => {
                   e.options.clear();
                 }}
                 chooseLabel="Company Logo Upload"
-                chooseIcon="pi pi-image"
+                
               />
 
             {formData.companyLogo && (
@@ -303,7 +310,6 @@ const openFile = (base64Data, fileName, mimeType) => {
                   maxFileSize={2000000}
                   customUpload
                   chooseLabel="File Upload"
-                  chooseIcon="pi pi-file"
                   auto
                   uploadHandler={(e) => {
                     handleFileUpload(e, "teamSummaryDocument");
