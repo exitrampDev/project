@@ -20,6 +20,8 @@ import { NdaController } from './nda/nda.controller';
 import { NdaModule } from './nda/nda.module';
 import { FilesModule } from './files/files.module';
 import { FlagModule } from './flag/flag.module';
+import { DueDeliganceController } from './due-deligance/due-deligance.controller';
+import { DueDeliganceService } from './due-deligance/due-deligance.service';
 
 @Module({
   imports: [
@@ -66,7 +68,9 @@ import { FlagModule } from './flag/flag.module';
     NdaModule,
     FilesModule,
     FlagModule,
-  ]
+  ],
+  controllers: [DueDeliganceController],
+  providers: [DueDeliganceService]
  
 })
 export class AppModule implements NestModule {

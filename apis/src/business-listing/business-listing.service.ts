@@ -28,13 +28,18 @@ export class BusinessListingService {
      let imageBase64 = dto.image;
     if (imageBase64 && !imageBase64.startsWith("data:image")) {
     imageBase64 = `data:image/png;base64,${imageBase64}`;
-  }
+    }
+    
+    const cimStatus = dto.businessType === 'seller_central';
+
+
     const business = new this.businessModel({
                       ...dto,
                       createdBy: user.userId,
                       ownerId: user.userId,
                       isDeleted: false,
                       image: imageBase64,
+                      cimStatus,
                     });
     return business.save();
   }

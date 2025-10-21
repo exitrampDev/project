@@ -23,10 +23,10 @@ export class FlagController {
     return this.flagService.create(data);
   }
 
-  // ✅ GET all flags with filters, pagination, sorting
-  @UseGuards(JwtAuthGuard) // optional, agar auth chahiye
-    @Get()
-    async getFlags(@Query() query: QueryFlagDto) {
-      return this.flagService.findAll(query);
-    }
+  // GET all flags with filters, pagination, sorting
+  @UseGuards(JwtAuthGuard) 
+  @Get()
+  async getFlags(@Query() query: QueryFlagDto) {
+    return this.flagService.findAll(query);
+  }
 }

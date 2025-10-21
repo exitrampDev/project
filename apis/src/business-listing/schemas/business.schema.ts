@@ -261,8 +261,8 @@ image: string;
   @Prop({ default: 'draft' })
   status: string;
 
-  @Prop({ default: 'incomplete' })
-  cimStatus: string;
+  @Prop({ type: Boolean, default: false })
+  cimStatus: boolean;
 
   // @Prop({ type: [AffiliateCompanySchema], default: [] })
   // affiliateCompanies?: AffiliateCompany[];

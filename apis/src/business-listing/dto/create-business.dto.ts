@@ -9,11 +9,11 @@ export enum BusinessStatus {
 }
 
 // CIM status allowed values
-export enum CimStatus {
-  READY_TO_SHARE = 'ready_to_share',
-  INCOMPLETE = 'incomplete',
-  NOT_READY = 'not_ready',
-}
+// export enum CimStatus {
+//   READY_TO_SHARE = 'ready_to_share',
+//   INCOMPLETE = 'incomplete',
+//   NOT_READY = 'not_ready',
+// }
 
 export class CreateBusinessDto {
 
@@ -194,9 +194,12 @@ export class CreateBusinessDto {
   @IsEnum(BusinessStatus)
   status?: BusinessStatus;
 
+  // @IsOptional()
+  // @IsEnum(CimStatus)
+  // cimStatus?: CimStatus;
   @IsOptional()
-  @IsEnum(CimStatus)
-  cimStatus?: CimStatus;
+  @IsBoolean()
+  cimStatus?: boolean;
 
   // ----------------- Additional descriptive fields -----------------
   @IsOptional()
