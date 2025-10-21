@@ -14,13 +14,19 @@ export class BusinessListingService {
     @InjectModel(Business.name) private businessModel: Model<BusinessDocument>,
   ) {}
 
-  async findAll(query: QueryBusinessDto) {
+  async findAll(query: QueryBusinessDto, user?: any) {
+    const baseFilter: any = { isDeleted: false };
     
+    // If user is provided, only show businesses owned by that user
+    if (user?.userId) {
+      baseFilter.ownerId = user.userId;
+    }
+
     const features = new ApiFeatures(this.businessModel);
     return features.paginateAndFilter({
       ...query,
       searchFields: ['businessName', 'businessType', 'entityType'],
-       baseFilter: { isDeleted: false },
+      baseFilter,
     });
   }
 

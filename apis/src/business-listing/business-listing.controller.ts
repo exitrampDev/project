@@ -30,8 +30,8 @@ export class BusinessListingController {
 
     @UseGuards(JwtAuthGuard)
     @Get()
-    async findAll(@Query() query: QueryBusinessDto) {
-    return this.businessService.findAll(query);
+    async findAll(@Query() query: QueryBusinessDto,  @User() user: any) {
+    return this.businessService.findAll(query, user);
     }
 
     @Get(':id')
