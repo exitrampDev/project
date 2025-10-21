@@ -5,8 +5,8 @@ export type FlagDocument = Flag & Document;
 
 @Schema({ timestamps: true })
 export class Flag {
-  @Prop({ type: String, required: true })
-  userId: string;
+ @Prop({ type: Types.ObjectId, ref: 'User', required: true })
+userId: Types.ObjectId;
 
   @Prop({ type: String, required: true })
   description: string; 

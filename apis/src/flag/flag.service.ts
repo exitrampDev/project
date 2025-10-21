@@ -37,13 +37,27 @@ export class FlagService {
     }
   }
 
-  async findAll(query: QueryFlagDto) {
-    const features = new ApiFeatures(this.flagModel);
+ async findAll(query: QueryFlagDto) {
+  const features = new ApiFeatures(this.flagModel);
 
-    return features.paginateAndFilter({
-      ...query,
-      searchFields: ['description', 'userName'], // yahan search chalega
-      baseFilter: { isDeleted: false },
-    });
-  }
+  const result = await features.paginateAndFilter({
+    ...query,
+    searchFields: ['description'],
+    baseFilter: { isDeleted: false },
+  });
+
+  // ✅ Populate userId and createdBy with full user details (no field limit)
+  const populatedData = await this.flagModel.populate(result.data, [
+    { path: 'userId' },        // will include all fields like first_name, last_name, email, etc.
+    { path: 'createdBy' },
+  ]);
+
+  return {
+    ...result,
+    data: populatedData,
+  };
+}
+
+
+
 }
