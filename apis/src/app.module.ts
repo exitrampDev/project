@@ -19,6 +19,7 @@ import { NdaService } from './nda/nda.service';
 import { NdaController } from './nda/nda.controller';
 import { NdaModule } from './nda/nda.module';
 import { FilesModule } from './files/files.module';
+import { FlagModule } from './flag/flag.module';
 
 @Module({
   imports: [
@@ -64,6 +65,7 @@ import { FilesModule } from './files/files.module';
     FreeSellerModule,
     NdaModule,
     FilesModule,
+    FlagModule,
   ]
  
 })
