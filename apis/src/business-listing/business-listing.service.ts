@@ -25,8 +25,8 @@ export class BusinessListingService {
     const features = new ApiFeatures(this.businessModel);
     return features.paginateAndFilter({
       ...query,
-      searchFields: ['businessName', 'businessType', 'entityType'],
-      baseFilter,
+      searchFields: ['businessName', 'businessType', 'entityType','city','state','country'],
+       baseFilter: { isDeleted: false },
     });
   }
 
