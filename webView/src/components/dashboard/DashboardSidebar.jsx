@@ -15,6 +15,8 @@ const DashboardSidebar = () => {
   const handleLogout = () => {
     setAuth(null);
     localStorage.removeItem("auth");
+    localStorage.removeItem("user");
+    localStorage.removeItem("tokenLocalStorage");
     navigate("/");
   };
   return (
