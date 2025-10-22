@@ -150,13 +150,22 @@ export class Business {
   yearStablished?: number;
 
   @Prop({ default: null })
-  city?: string;
+  businessCity?: string;
 
   @Prop({ default: null })
-  state?: string;
+  businessState?: string;
 
   @Prop({ default: null })
-  country?: string;
+  businessCountry?: string;
+
+  @Prop({ type: String, default: '' })
+  businessAddress?: string;
+
+  @Prop({ type: String, default: '' })
+  businessZipCode?: string;
+
+  @Prop({ type: String, default: '' })
+  PostCloseSupport?: string;
 
   // ----------------- Ownership & Structure -----------------
   @Prop({ default: null })
@@ -199,6 +208,9 @@ image: string;
   @Prop({ type: String, default: '' })
   contactZipCode?: string;
 
+  @Prop({ type: String, default: '' })
+  contactAddress?: string;
+
   @Prop({ type: String, maxlength: 150, default: '' })
   dbaName?: string;
 
@@ -220,8 +232,6 @@ image: string;
   @Prop({ type: String, default: '' })
   reasonForSelling?: string;
 
-  @Prop({ type: String, default: '' })
-  businessAddress?: string;
 
   // ----------------- Workforce -----------------
   @Prop({ type: String, default: null })
@@ -372,13 +382,23 @@ image: string;
   financialFiles?: string[];
 
 
-
   @Prop({ type: String, default: 0 })
   businessDetails?: string;
 
   @Prop({ type: String, default: 0 })
   keyHighlights?: string;
 
+  @Prop({ type: String, default: 0 })
+  latestEBITDA?: string;
+
+  @Prop({ type: String, default: 0 })
+  latestSDE?: string;
+
+  @Prop({ type: String, default: 0 })
+  latestNetProfit?: string;
+
+  @Prop({ type: String, default: 0 })
+  ffeValue?: string;
 
   // ----------------- Relations -----------------
   @Prop({ type: Types.ObjectId, ref: 'User', required: true })

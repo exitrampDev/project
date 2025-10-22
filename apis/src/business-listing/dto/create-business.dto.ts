@@ -106,6 +106,10 @@ export class CreateBusinessDto {
 
   @IsOptional()
   @IsString()
+  contactAddress?: string;
+
+  @IsOptional()
+  @IsString()
   dbaName?: string;
 
   @IsOptional()
@@ -136,6 +140,14 @@ export class CreateBusinessDto {
   @IsOptional()
   @IsString()
   businessAddress?: string;
+
+  @IsOptional()
+  @IsString()
+  businessZipCode?: string;
+
+  @IsOptional()
+  @IsString()
+  PostCloseSupport?: string;
 
   // ----------------- Workforce -----------------
   @IsOptional()
@@ -361,6 +373,18 @@ export class CreateBusinessDto {
 
   @IsOptional()
   keyHighlights?: string;
+
+// -------------------------------------
+  @IsOptional()
+  latestEBITDA?: string;
+  @IsOptional()
+  latestSDE?: string;
+  @IsOptional()
+  latestNetProfit?: string;
+  @IsOptional()
+  ffeValue?: string;
+// -------------------------------------
+
 
   @IsOptional()
   businessDetails?: string;
