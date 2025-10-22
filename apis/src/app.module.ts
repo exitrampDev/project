@@ -20,6 +20,9 @@ import { NdaController } from './nda/nda.controller';
 import { NdaModule } from './nda/nda.module';
 import { FilesModule } from './files/files.module';
 import { FlagModule } from './flag/flag.module';
+import { CimController } from './cim/cim.controller';
+import { CimService } from './cim/cim.service';
+import { CimModule } from './cim/cim.module';
 
 @Module({
   imports: [
@@ -66,7 +69,9 @@ import { FlagModule } from './flag/flag.module';
     NdaModule,
     FilesModule,
     FlagModule,
-  ]
+    CimModule,
+  ],
+
  
 })
 export class AppModule implements NestModule {
