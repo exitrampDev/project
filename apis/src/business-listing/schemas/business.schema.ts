@@ -281,7 +281,7 @@ image: string;
   affiliateCompanies?: string;
 
   @Prop({ type: String, default: null })
-  growthOpportunities?: string;
+  growthExpansion?: string;
 
   @Prop({ type: String, default: '' })
   ownerMessage?: string;
@@ -349,8 +349,20 @@ image: string;
   @Prop({ type: String, default: '' })
   facilityAndLocationDetails?: string;
 
+  @Prop({ type: Boolean, default: false })
+  propertyIncludedinAskingPrice?: boolean;
+
   @Prop({ type: String, default: null })
   propertiesIncluded?: string;
+
+  @Prop({ type: String, default: null })
+  leaseExpiration?: string;
+
+  @Prop({ type: String, default: null })
+  buildingSF?: string;
+
+  @Prop({ type: Boolean, default: false })
+  ffEValueIncludeinAskingPrice?: boolean;
 
   // ----------------- FF&E -----------------
   @Prop({ type: String, default: '' })
@@ -361,7 +373,7 @@ image: string;
 
   // ----------------- Financial Entries -----------------
   @Prop({ type: String, default: null })
-  financials?: string;
+  financing?: string;
 
   @Prop({ type: Number, default: 0 })
   ffEValue?: number;

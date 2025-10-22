@@ -215,8 +215,7 @@ export class CreateBusinessDto {
   affiliateCompanies?: string;
 
   @IsOptional()
-
-  growthOpportunities?: string;
+  growthExpansion?: string;
 
   @IsOptional()
   @IsString()
@@ -302,8 +301,20 @@ export class CreateBusinessDto {
   facilityAndLocationDetails?: string;
 
   @IsOptional()
+  propertyIncludedinAskingPrice?:boolean;
 
+  @IsOptional()
   propertiesIncluded?: any;
+
+  @IsOptional()
+  leaseExpiration?: string;
+
+  @IsOptional()
+  buildingSF?: string;
+
+  @IsOptional()
+  ffEValueIncludeinAskingPrice?:boolean;
+
 
   @IsOptional()
   @IsString()
@@ -314,7 +325,7 @@ export class CreateBusinessDto {
   ffeAssets?: any;
 
   @IsOptional()
-  financials?: any;
+  financing?: any;
 
   @IsOptional()
   @IsNumber()
