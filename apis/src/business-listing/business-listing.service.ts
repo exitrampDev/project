@@ -1,5 +1,5 @@
 // business-listing.service.ts
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Business, BusinessDocument } from './schemas/business.schema';
@@ -25,6 +25,11 @@ export class BusinessListingService {
   }
 
   async create(dto: CreateBusinessDto, user: any): Promise<Business> {
+
+     const existingBusiness = await this.businessModel.findOne({ listingReferenceNumber: dto.listingReferenceNumber });
+      if (existingBusiness) {
+        throw new BadRequestException('Phone number already exists');
+      }
      let imageBase64 = dto.image;
     if (imageBase64 && !imageBase64.startsWith("data:image")) {
     imageBase64 = `data:image/png;base64,${imageBase64}`;
