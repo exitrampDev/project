@@ -16,19 +16,13 @@ import { Business } from 'src/business-listing/schemas/business.schema';
 export class BusinessExistsConstraint implements ValidatorConstraintInterface {
   constructor(@InjectModel(Business.name) private businessModel: Model<Business>) {}
 
-  async validate(businessId: string, args: ValidationArguments) {
-    const businessObjectId = new mongoose.Types.ObjectId(businessId);
-    if (!businessObjectId) return false;
-     //  Check if it's a valid ObjectId
-    if (!mongoose.Types.ObjectId.isValid(businessObjectId)) {
-        return false;
-    }
-    const exists = await this.businessModel.exists({ _id: businessObjectId });
-    return !!exists;
-  }
+  async validate(businessId: string) {
+    if (!businessId) return false;
+    if (!mongoose.Types.ObjectId.isValid(businessId)) return false;
 
-  defaultMessage(args: ValidationArguments) {
-    return `Business with ID "${args.value}" does not exist`;
+    const objectId = new mongoose.Types.ObjectId(businessId);
+    const exists = await this.businessModel.exists({ _id: objectId });
+    return !!exists;
   }
 }
 

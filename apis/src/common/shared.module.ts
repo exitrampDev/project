@@ -14,7 +14,7 @@ import { Business, BusinessSchema } from 'src/business-listing/schemas/business.
     { name: Business.name, schema: BusinessSchema },
   ]),
   ],
-  exports: [HttpModule,MongooseModule, MailService, BusinessExistsConstraint],
   providers: [MailService, BusinessExistsConstraint], 
+  exports: [HttpModule,MongooseModule, MailService, BusinessExistsConstraint],
 })  
 export class SharedModule {}
