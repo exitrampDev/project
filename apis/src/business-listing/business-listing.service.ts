@@ -26,7 +26,7 @@ export class BusinessListingService {
     return features.paginateAndFilter({
       ...query,
       searchFields: ['businessName', 'businessType', 'entityType','city','state','country'],
-       baseFilter: { isDeleted: false },
+       baseFilter: baseFilter,
     });
   }
 

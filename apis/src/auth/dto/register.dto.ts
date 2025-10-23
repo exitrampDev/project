@@ -20,7 +20,7 @@ export class RegisterDto {
   last_name: string;
 
  @IsEnum(UserType, {
-    message: 'User type must be one of: admin, subscriber, buyer, seller, m&a_expert',
+    message: 'User type must be one of: admin, subscriber, buyer_basic, buyer_premium, seller_basic, seller_listing, seller_central, m&a_expert_basic, m&a_expert_premium',
   })
   user_type: UserType;
 }

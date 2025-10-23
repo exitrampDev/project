@@ -18,7 +18,7 @@ export class BusinessListingController {
     @UseGuards(JwtAuthGuard)
     @Post()
     create(@Body() dto: CreateBusinessDto, @User() user: any) {
-      dto['userId'] = user.id;
+        dto['userId'] = user.id;
         return this.businessService.create(dto, user);
     }
 
