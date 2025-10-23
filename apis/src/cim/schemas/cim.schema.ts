@@ -414,7 +414,7 @@ image: string;
 
   // ----------------- Relations -----------------
 
-  @Prop({ type: Types.ObjectId, ref: 'Businesses', required: true })
+  @Prop({ type: Types.ObjectId, ref: 'Businesses', required: true, unique: true, sparse: true })
   businessId: Types.ObjectId;
 
   @Prop({ type: Types.ObjectId, ref: 'User', required: true })

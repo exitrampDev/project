@@ -1,6 +1,7 @@
 import { IsString, IsOptional, IsArray, IsNumber, Matches, IsObject, IsBoolean, IsEnum } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { BusinessExists } from 'src/common/decorators/business-exists.validator';
+import { UniqueInCollection } from 'src/common/decorators/unique-in-collection.validator';
 
 // Business status allowed values
 export enum BusinessStatus {
@@ -75,6 +76,7 @@ export class CreateCimDto {
 
   @IsOptional()
   @IsString()
+  @UniqueInCollection({ collection: 'cims', field: 'listingReferenceNumber', message: 'Listing reference number must be unique' })
   listingReferenceNumber?: string;
 
   @IsOptional()
@@ -388,6 +390,7 @@ export class CreateCimDto {
 // -------------------------------------
   @IsString()
   @BusinessExists({ message: 'Invalid businessId: Business does not exist' })
+  @UniqueInCollection({ collection: 'cims', field: 'businessId', message: 'CIM for this listibg already exist' })
   businessId: string;
 
 
@@ -398,3 +401,5 @@ export class CreateCimDto {
   @IsString()
   logoUrl?: string;
 }
+
+
