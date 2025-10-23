@@ -47,15 +47,15 @@ export class CreateBusinessDto {
 
   @IsOptional()
   @IsString()
-  city?: string;
+  businessCity?: string;
 
   @IsOptional()
   @IsString()
-  state?: string;
+  businessState?: string;
 
   @IsOptional()
   @IsString()
-  country?: string;
+  businessCountry?: string;
 
   // ----------------- Ownership & Structure -----------------
   @IsOptional()
