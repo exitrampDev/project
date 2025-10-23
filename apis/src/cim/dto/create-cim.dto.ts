@@ -8,13 +8,6 @@ export enum BusinessStatus {
   DRAFT = 'draft',
 }
 
-// CIM status allowed values
-export enum CimStatus {
-  READY_TO_SHARE = 'ready_to_share',
-  INCOMPLETE = 'incomplete',
-  NOT_READY = 'not_ready',
-}
-
 export class CreateCimDto {
 
   @IsString()
@@ -206,9 +199,6 @@ export class CreateCimDto {
   @IsEnum(BusinessStatus)
   status?: BusinessStatus;
 
-  @IsOptional()
-  @IsEnum(CimStatus)
-  cimStatus?: CimStatus;
 
   // ----------------- Additional descriptive fields -----------------
   @IsOptional()
