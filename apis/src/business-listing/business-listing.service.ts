@@ -14,21 +14,73 @@ export class BusinessListingService {
     @InjectModel(Business.name) private businessModel: Model<BusinessDocument>,
   ) {}
 
-  async findAll(query: QueryBusinessDto, user?: any) {
-    const baseFilter: any = { isDeleted: false };
+  // async findAll(query: QueryBusinessDto, user?: any) {
+  //   const baseFilter: any = { isDeleted: false };
     
-    // If user is provided, only show businesses owned by that user
-    if (user?.userId) {
-      baseFilter.ownerId = user.userId;
-    }
+  //   // If user is provided, only show businesses owned by that user
+  //   if (user?.userId) {
+  //     baseFilter.ownerId = user.userId;
+  //   }
 
-    const features = new ApiFeatures(this.businessModel);
-    return features.paginateAndFilter({
-      ...query,
-      searchFields: ['businessName', 'businessType', 'entityType','city','state','country'],
-       baseFilter: baseFilter,
-    });
+  //   const features = new ApiFeatures(this.businessModel);
+  //   return features.paginateAndFilter({
+  //     ...query,
+  //     searchFields: ['businessName', 'businessType', 'entityType','city','state','country'],
+  //      baseFilter: baseFilter,
+  //   });
+  // }
+  async findAll(query: QueryBusinessDto, user?: any) {
+  const {
+    page = 1,
+    limit = 10,
+    search,
+    sortBy = 'createdAt',
+    order = 'desc',
+  } = query;
+
+  const sortOrder = order === 'desc' ? -1 : 1;
+
+  const filter: any = { isDeleted: false };
+
+  // ✅ sirf apne user ke businesses
+  if (user?.userId) {
+    filter.ownerId = user.userId;
   }
+
+  // ✅ search fields
+  if (search) {
+    const regex = new RegExp(search, 'i');
+    filter.$or = [
+      { businessName: regex },
+      { businessType: regex },
+      { entityType: regex },
+      { city: regex },
+      { state: regex },
+      { country: regex },
+    ];
+  }
+
+  // ✅ data fetch with Cim
+  const data = await this.businessModel
+    .find(filter)
+    .sort({ [sortBy]: sortOrder })
+    .skip((page - 1) * limit)
+    .limit(limit)
+    .populate({
+      path: 'cim', // virtual field from schema
+    })
+    .lean();
+
+  const total = await this.businessModel.countDocuments(filter);
+
+  return {
+    total,
+    page,
+    limit,
+    data,
+  };
+}
+
 
   async create(dto: CreateBusinessDto, user: any): Promise<Business> {
      let imageBase64 = dto.image;

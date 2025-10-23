@@ -1,4 +1,4 @@
-import { IsString, IsOptional, IsArray, IsNumber, Matches, IsObject, IsBoolean, IsEnum } from 'class-validator';
+import { IsString, IsOptional, IsArray, IsNumber, Matches, IsObject, IsBoolean, IsEnum, IsNotEmpty } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { UniqueInCollection } from 'src/common/decorators/unique-in-collection.validator';
 
@@ -20,6 +20,7 @@ export class CreateBusinessDto {
 
   @IsString()
   businessName: string;
+  
 
   @IsOptional()
   @IsString()

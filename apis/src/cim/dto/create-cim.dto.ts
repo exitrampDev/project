@@ -1,4 +1,4 @@
-import { IsString, IsOptional, IsArray, IsNumber, Matches, IsObject, IsBoolean, IsEnum } from 'class-validator';
+import { IsString, IsOptional, IsArray, IsNumber, Matches, IsObject, IsBoolean, IsEnum, IsNotEmpty, IsMongoId } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { BusinessExists } from 'src/common/decorators/business-exists.validator';
 import { UniqueInCollection } from 'src/common/decorators/unique-in-collection.validator';
@@ -11,7 +11,7 @@ export enum BusinessStatus {
 }
 
 export class CreateCimDto {
-
+  
   @IsString()
   businessName: string;
 

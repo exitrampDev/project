@@ -128,6 +128,8 @@ export const FinancialEntrySchema = SchemaFactory.createForClass(FinancialEntry)
 // ----------------- Main Business Schema -----------------
 @Schema({ timestamps: true })
 export class Cim {
+ 
+
   @Prop({ required: true })
   businessName: string;
 
@@ -414,7 +416,7 @@ image: string;
 
   // ----------------- Relations -----------------
 
-  @Prop({ type: Types.ObjectId, ref: 'Businesses', required: true, unique: true, sparse: true })
+  @Prop({ type: Types.ObjectId, ref: 'Business', required: true, unique: true, sparse: true })
   businessId: Types.ObjectId;
 
   @Prop({ type: Types.ObjectId, ref: 'User', required: true })

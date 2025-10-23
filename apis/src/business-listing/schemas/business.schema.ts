@@ -427,3 +427,13 @@ image: string;
 }
 
 export const BusinessSchema = SchemaFactory.createForClass(Business);
+
+BusinessSchema.virtual('cim', {
+  ref: 'Cim',
+  localField: '_id',
+  foreignField: 'businessId',
+  justOne: true, // agar ek hi Cim per business hai
+});
+
+BusinessSchema.set('toObject', { virtuals: true });
+BusinessSchema.set('toJSON', { virtuals: true });

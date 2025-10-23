@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, Param, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { FreeBuyerService } from './free-buyer.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { User } from 'src/common/decorators/user.decorator';
@@ -22,19 +22,22 @@ export class FreeBuyerController {
         return this.freeBuyerService.create(dto, user);
     }
 
+    @UseGuards(JwtAuthGuard)
     @Get('public')
-        async findOnePublic() {
-        return this.freeBuyerService.findOneByQuery();
+    async getMyProfile(@Req() req) {
+        const userId = req.user.userId || req.user.sub; // JWT se user ka ID
+        return this.freeBuyerService.findOneByUser(userId);
     }
 
     @UseGuards(JwtAuthGuard)
-        @Patch(':id')
-        async update(
+  @Patch(':id')
+    async update(
         @Param('id') id: string,
         @Body() dto: UpdateBuyerDto,
-        @User() user: any,
-        ) {
-    return this.freeBuyerService.update(id, dto, user);
+        @Req() req
+    ) {
+        const userId = req.user.userId || req.user.sub;
+        return this.freeBuyerService.update(id, dto, userId);
     }
     
 }
