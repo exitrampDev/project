@@ -1,5 +1,6 @@
 // src/buyer/dto/create-buyer.dto.ts
 import { IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { UniqueInCollection } from 'src/common/decorators/unique-in-collection.validator';
 
 export class CreateBuyerDto { 
   
@@ -17,6 +18,7 @@ export class CreateBuyerDto {
 
   @IsEmail()
   @IsNotEmpty()
+  @UniqueInCollection({ collection: 'buyers', field: 'email', message: 'Email must be unique' })
   email: string;
 
   @IsOptional()

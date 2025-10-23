@@ -16,13 +16,24 @@ export class FreeSellerService {
     ) {}
    
    //get ka kaam
-   async findAll(query: QuerySellerDto) {
-      const features = new ApiFeatures(this.sellerModel);
-      return features.paginateAndFilter({
-        ...query,
-        searchFields: ['fullName', 'companyName', 'status', 'businessType'], 
-        baseFilter: { isDeleted: false },
-      });
+   async findAll(query: QuerySellerDto, user?: any) {
+
+    const baseFilter: any = { isDeleted: false };
+
+    if(user){
+       const userId = user.userId || user.sub || user.id;
+
+    
+    if (userId) {
+      baseFilter.userId = userId;  
+    }
+    }
+    const features = new ApiFeatures(this.sellerModel);
+    return features.paginateAndFilter({
+      ...query,
+      searchFields: ['fullName', 'companyName', 'status', 'businessType'], 
+      baseFilter,
+    });
     }
 
 

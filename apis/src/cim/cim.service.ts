@@ -1,7 +1,7 @@
 // business-listing.service.ts
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { Cim, CimDocument } from './schemas/cim.schema';
 import { ApiFeatures } from 'src/common/utils/api-features';
 import { QueryCimDto } from './dto/query-cim.dto';
@@ -41,6 +41,7 @@ export class CimService {
                       ownerId: user.userId,
                       isDeleted: false,
                       image: imageBase64,
+                       businessId: new Types.ObjectId(dto.businessId),
                     });
     return cim.save();
   }
