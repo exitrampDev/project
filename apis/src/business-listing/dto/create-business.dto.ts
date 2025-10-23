@@ -1,5 +1,6 @@
 import { IsString, IsOptional, IsArray, IsNumber, Matches, IsObject, IsBoolean, IsEnum } from 'class-validator';
 import { Transform } from 'class-transformer';
+import { UniqueInCollection } from 'src/common/decorators/unique-in-collection.validator';
 
 // Business status allowed values
 export enum BusinessStatus {
@@ -81,6 +82,7 @@ export class CreateBusinessDto {
 
   @IsOptional()
   @IsString()
+  @UniqueInCollection({ collection: 'businesses', field: 'listingReferenceNumber', message: 'Listing reference number must be unique' })
   listingReferenceNumber?: string;
 
   @IsOptional()
