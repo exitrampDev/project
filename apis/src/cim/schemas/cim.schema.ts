@@ -413,6 +413,10 @@ image: string;
   ffeValue?: string;
 
   // ----------------- Relations -----------------
+
+  @Prop({ type: Types.ObjectId, ref: 'Businesses', required: true })
+  businessId: Types.ObjectId;
+
   @Prop({ type: Types.ObjectId, ref: 'User', required: true })
   ownerId: Types.ObjectId;
 

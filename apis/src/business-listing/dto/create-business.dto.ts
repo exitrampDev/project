@@ -332,6 +332,9 @@ export class CreateBusinessDto {
   ffEValue?: number;
 
   @IsOptional()
+  inventoryIncludedinAskingPrice?: boolean;
+
+  @IsOptional()
   @IsNumber()
   inventoryValue?: number;
 

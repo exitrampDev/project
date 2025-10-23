@@ -412,6 +412,9 @@ image: string;
   @Prop({ type: String, default: 0 })
   ffeValue?: string;
 
+  @Prop({ type: Boolean, default: false })
+  inventoryIncludedinAskingPrice: boolean;
+
   // ----------------- Relations -----------------
   @Prop({ type: Types.ObjectId, ref: 'User', required: true })
   ownerId: Types.ObjectId;

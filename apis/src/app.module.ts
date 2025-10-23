@@ -23,6 +23,7 @@ import { FlagModule } from './flag/flag.module';
 import { CimController } from './cim/cim.controller';
 import { CimService } from './cim/cim.service';
 import { CimModule } from './cim/cim.module';
+import { SharedModule } from './common/shared.module';
 
 @Module({
   imports: [
@@ -70,6 +71,7 @@ import { CimModule } from './cim/cim.module';
     FilesModule,
     FlagModule,
     CimModule,
+    SharedModule
   ],
 
  

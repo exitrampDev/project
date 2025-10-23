@@ -7,6 +7,7 @@ import { ValidationExceptionFilter } from './common/filters/validation-exception
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import { join } from 'path';
 import { NestExpressApplication } from '@nestjs/platform-express';
+import { useContainer } from 'class-validator';
 
 
 async function bootstrap() {
@@ -24,6 +25,7 @@ async function bootstrap() {
   // Uncomment the following line to enable global validation pipes
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
   // app.useGlobalGuards(new JwtAuthGuard());
+  useContainer(app.select(AppModule), { fallbackOnErrors: true });
 
    app.enableCors({
     origin: ['http://localhost:5173','http://localhost:3000', 'http://3.87.119.123:5173', 'http://test.exitramp.co'], 

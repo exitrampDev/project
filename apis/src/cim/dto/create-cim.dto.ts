@@ -1,5 +1,6 @@
 import { IsString, IsOptional, IsArray, IsNumber, Matches, IsObject, IsBoolean, IsEnum } from 'class-validator';
 import { Transform } from 'class-transformer';
+import { BusinessExists } from 'src/common/decorators/business-exists.validator';
 
 // Business status allowed values
 export enum BusinessStatus {
@@ -385,6 +386,9 @@ export class CreateCimDto {
   @IsOptional()
   ffeValue?: string;
 // -------------------------------------
+  @IsString()
+  @BusinessExists({ message: 'Invalid businessId: Business does not exist' })
+  businessId: string;
 
 
   @IsOptional()

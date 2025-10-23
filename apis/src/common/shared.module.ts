@@ -1,15 +1,20 @@
 // shared.module.ts
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
 import { MongooseModule } from '@nestjs/mongoose';
 import { HeartBeat, HeartBeatSchema } from './schemas/heartbeat.schema';
 import { MailService } from './mail/mail.service';
-
+import { BusinessExistsConstraint } from './decorators/business-exists.validator';
+import { Business, BusinessSchema } from 'src/business-listing/schemas/business.schema';
+@Global()
 @Module({
   imports: [HttpModule,
-     MongooseModule.forFeature([{ name: HeartBeat.name, schema: HeartBeatSchema }]),
+   MongooseModule.forFeature([
+    { name: HeartBeat.name, schema: HeartBeatSchema },
+    { name: Business.name, schema: BusinessSchema },
+  ]),
   ],
-  exports: [HttpModule,MongooseModule, MailService],
-  providers: [MailService], 
+  exports: [HttpModule,MongooseModule, MailService, BusinessExistsConstraint],
+  providers: [MailService, BusinessExistsConstraint], 
 })  
 export class SharedModule {}
