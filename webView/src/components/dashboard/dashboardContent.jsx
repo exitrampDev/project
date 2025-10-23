@@ -34,7 +34,10 @@ const DashboardContent = () => {
       </div>
 
       {user?.user_type === "buyer" ? <FreeBuyerDashboard /> : " "}
-      {user?.user_type === "seller" ? <FreeSellerDashboard /> : " "}
+      {user?.user_type === "seller_basic" ? <FreeSellerDashboard /> : " "}
+      {user?.user_type === "seller_listing" ? <FreeSellerDashboard /> : " "}
+      {user?.user_type === "seller_central" ? <FreeSellerDashboard /> : " "}
+      
     </>
   );
 };

@@ -149,13 +149,13 @@ export default function SingleBusinessListing() {
             />
           </div>
           <div className="business__list_single_intro_block_content_col">
-            <h2 className="listing__single_title">{business.businessName}</h2>
+            <h2 className="listing__single_title">{business?.businessName ? (<>{business.businessName}</>) : "-"}</h2>
             <div className="listing__single_location">
               <img src={SingleListingLocation} alt="SingleListingLocation" />
-              {business.city}, {business.state}
+              {business?.businessCity && business.businessState ? (<>{business.businessCity}, {business.businessState} </>) : "-" }
             </div>
             <div className="listing__single_listingId">
-              <span>Listing ID :</span> #{business._id}
+              <span>Listing ID :</span> {business?._id ? (<>#{business._id}</>) : "-"}
             </div>
             <div className="listing__single_businessOverview">
               {business.businessOverview}
@@ -164,7 +164,7 @@ export default function SingleBusinessListing() {
                 {(() => {
                   let industries = [];
                   try {
-                    industries = JSON.parse(business.industry || "[]");
+                    industries = JSON.parse(business?.industry || "[]");
                   } catch {
                     industries = [];
                   }
@@ -182,70 +182,100 @@ export default function SingleBusinessListing() {
 
           <div className="busines_lisiting_highLevelSummary_list">
             <strong>Asking Price:</strong> $
-            {business.askingPrice.toLocaleString()}
+            {business?.askingPrice.toLocaleString() }
           </div>
           <div className="busines_lisiting_highLevelSummary_list">
-            <strong>Cash Flow:</strong> ${business.cashFlow.toLocaleString()}
-          </div>
-
-          <div className="busines_lisiting_highLevelSummary_list">
-            <strong>Industry: </strong>
-            <span>
-               {(() => {
-                  let industries = [];
-                  try {
-                    industries = JSON.parse(business.industry || "[]");
-                  } catch {
-                    industries = [];
-                  }
-
-                  return industries.map((ind, idx) => (
-                    <Chip key={idx} label={ind} />
-                  ));
-                })()}
-            </span>
-          </div>
-
-          <div className="busines_lisiting_highLevelSummary_list">
-            <strong>Business Type:</strong> {business.businessType}
+            <strong>Cash Flow:</strong> ${business?.cashFlow.toLocaleString()}
           </div>
           <div className="busines_lisiting_highLevelSummary_list">
-            <strong>Entity Type:</strong> {business.entityType.toUpperCase()}
+            <strong>Revenue:</strong> ${business?.revenue.toLocaleString()}
           </div>
           <div className="busines_lisiting_highLevelSummary_list">
-            <strong>Established:</strong> {business.yearStablished}
+            <strong>SDE:</strong> {business?.latestSDE ? (<>{business.latestSDE}</>) : "-"}
           </div>
           <div className="busines_lisiting_highLevelSummary_list">
-            <strong>Revenue:</strong> ${business.revenue.toLocaleString()}
+            <strong>EBITDA:</strong> {business?.latestEBITDA ? (<>{business.latestEBITDA}</>) : "-"}
           </div>
+            <div className="busines_lisiting_highLevelSummary_list">
+            <strong>Established:</strong> {business?.yearStablished ? (<>{business.yearStablished}</>) : "-"}
+          </div>
+          
         </div>
 
         <div className="business__list_single_description_row">
           <h3>Business Description:</h3>
           <div className="business__list_single_description_content">{business.listingDescription}</div>
+          <div className="about_listing_toggle">
+            <div className="about_listing_toggle_item"><strong>Franchies:</strong> {business?.isFranchise ? "Yes" : "No"}</div>
+            <div className="about_listing_toggle_item"><strong>Relocate:</strong>{business?.isRelocatable ? "Yes" : "No"}</div>
+            <div className="about_listing_toggle_item"><strong>Startup:</strong>{business?.isStartup ? "Yes" : "No"}</div>
+          </div>
+        </div>
+
+
+         <div className="business__list_single_description_row">
+          <h3>Addtiional Financial Details</h3>
+          <div className="about_listing_toggle">
+            <div className="about_listing_toggle_item"><strong>Real Estate:</strong> {business?.realEstateValue ? (<>${business?.realEstateValue}</>) : "-"}</div>
+            <div className="about_listing_toggle_item"><strong>Real Estate Included:</strong>{business?.propertyIncludedinAskingPrice ? "Yes" : "No"}</div>
+            <div className="about_listing_toggle_item"><strong>ffEValue:</strong>{business?.ffEValue ? (<>${business?.ffEValue}</>) : "-"}</div>
+            <div className="about_listing_toggle_item"><strong>FFE Include:</strong>{business?.ffEValueIncludeinAskingPrice ? "Yes" : "No"}</div>
+            <div className="about_listing_toggle_item"><strong>Inventory Value:</strong>{business?.inventoryValue ? (<>${business?.inventoryValue}</>) : "-"}</div>
+            <div className="about_listing_toggle_item"><strong>Inventory Included: </strong>{business?.inventoryIncludedinAskingPrice ? "Yes" : "No"}</div>
+          </div>  
         </div>
 
 
         <div className="business__list_single_key_highlights_Business_overview">
-          <div className="business__list_single_key_highlights_col">
-            <h3>Key Highlights</h3>
-            {JSON.parse(business.keyHighlights || "[]")?.map((ind, idx) => (
-              <span key={idx}> {ind} </span>
-            ))}
-          </div>
           <div className="business__list_single_business_overview">
-            <h3>Business Overview:</h3>
+            <h3 className="m-b-10">Detailed Information</h3>
             <div className="business_list_single_overview_list">
-              <strong>Employees:</strong> {business.numberOfEmployees}
+              <strong>Reason for Selling :</strong> {business?.reasonForSelling ? (<>{business.reasonForSelling}</>) : "-" }
             </div>
              <div className="business_list_single_overview_list">
-              <strong>Location:</strong> {business.city}, {business.state}
+              <strong>Support and Training:</strong> {business?.postCloseSupport ? (<>{business.postCloseSupport}</>) : "-" }
+              </div>
+             <div className="business_list_single_overview_list">
+              <strong>Management Will Stay:</strong>{business?.managementWillingToStay ? (<>{business.managementWillingToStay}</>) : "-" } 
             </div>
              <div className="business_list_single_overview_list">
-              <strong>Legal Entity:</strong> {business.entityType}
+              <strong>Number of Employees:</strong>{business?.numberOfEmployees ? (<>{business.numberOfEmployees}</>) : "-" } 
             </div>
+            <div className="business_list_single_overview_list">
+              <strong>Lease Expiration:</strong>{business?.leaseExpiration ? (<>{business.leaseExpiration}</>) : "-" } 
+            </div>
+            <div className="business_list_single_overview_list">
+              <strong>Building SF:</strong>{business?.buildingSF ? (<>{business.buildingSF}</>) : "-" } 
+            </div>
+            
           </div>
         </div>
+
+
+
+
+      <div className="business__list_single_key_highlights_Business_overview">
+          <div className="business__list_single_business_overview">
+            <h3 className="m-b-10">Growth and Expansion</h3>
+            <div className="business_list_single_overview_list">
+              {business?.growthExpansion ? (<> {JSON.parse(business.growthExpansion)}</>) : "-"}   
+            </div>
+           
+          </div>
+        </div>
+
+
+      <div className="business__list_single_key_highlights_Business_overview">
+          <div className="business__list_single_business_overview">
+            <h3 className="m-b-10">Facility</h3>
+            <div className="business_list_single_overview_list">
+              {business?.facilityAndLocationDetails ? (<> {business.facilityAndLocationDetails}</>) : "-"}   
+            </div>
+           
+          </div>
+        </div>
+        
+
       </div>
 
 

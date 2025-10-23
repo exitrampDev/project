@@ -312,13 +312,13 @@ const saveListingBtn = (businessId) => {
                   <span className="list_content_col">
                     <h4>{listing.businessName}</h4>
                     <p className="location__item_list">
-                      {listing.city}, {listing.state}
+                      {listing.businessCity}, {listing.businessState}
                     </p>
-
+{/* 
                     <p>
                       <b>Type:</b> {listing.businessType} | <b>Entity:</b>{" "}
                       {listing.entityType}
-                    </p>
+                    </p> */}
                     <p className="list__item_industry">
                       {(() => {
                         let industries = [];

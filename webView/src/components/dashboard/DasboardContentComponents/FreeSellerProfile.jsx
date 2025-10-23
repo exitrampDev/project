@@ -263,6 +263,7 @@ const openFile = (base64Data, fileName, mimeType) => {
         <div className="field form__field_col field form__field_col_yearOperation_content">
           <label>Years in Operation</label>
           <Calendar
+          required
             value={formData.yearsInOperation || null}
             onChange={(e) => handleChange("yearsInOperation", e.value)}
             dateFormat="yy" 

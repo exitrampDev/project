@@ -58,6 +58,7 @@ const roleOptions = {
         button: {
           text: "Continue with Free Account",
           link: "/register",
+          roleOptionValue: "buyer_basic",
         },
       },
       {
@@ -68,6 +69,7 @@ const roleOptions = {
         button: {
           text: "Upgrade to Premium Buyer",
           link: "/register",
+          roleOptionValue: "buyer_premium",
         },
       },
     ],
@@ -79,12 +81,24 @@ const roleOptions = {
     subOptions: [
       {
         icon: icon7,
-        title: "Free Seller Account",
+        title: "Seller Basic",
         description:
           "List your business, manage NDA requests, and message buyers privately — all while keeping your identity protected.",
         button: {
-          text: "Continue with Free Account",
+          text: "Register as Seller Basic",
           link: "/register",
+          roleOptionValue: "seller_basic",
+        },
+      },
+      {
+        icon: icon8,
+        title: "Seller Listing",
+        description:
+          "Can Create Listing of the Businesses",
+        button: {
+          text: "Register as Seller Listing",
+          link: "/register",
+          roleOptionValue: "seller_listing",
         },
       },
       {
@@ -95,6 +109,7 @@ const roleOptions = {
         button: {
           text: "Upgrade to Seller Central",
           link: "/register",
+          roleOptionValue: "seller_central",
         },
       },
     ],
@@ -110,6 +125,7 @@ const roleOptions = {
         button: {
           text: "Continue with Free Account",
           link: "/free-buyer",
+          roleOptionValue: "m&a_expert_basic",
         },
       },
       {
@@ -119,6 +135,7 @@ const roleOptions = {
         button: {
           text: "Continue with Free Account",
           link: "/free-buyer",
+          roleOptionValue: "m&a_expert_premium",
         },
       },
     ],
@@ -134,15 +151,7 @@ const roleOptions = {
         button: {
           text: "Continue with Free Account",
           link: "/subcriber",
-        },
-      },
-      {
-        icon: icon1,
-        title: "VC Firm",
-        description: "Find scalable investment opportunities.",
-        button: {
-          text: "Continue with Free Account",
-          link: "/subcriber",
+          roleOptionValue: "subscriber",
         },
       },
     ],
