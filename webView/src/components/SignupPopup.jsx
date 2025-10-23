@@ -70,9 +70,10 @@ const SignupPopup = ({
                     {sub.button && (
                       <button
                         className="popup_btn"
-                        onClick={() => onSelectPlan(selectedRole, sub)}
+                        onClick={() => onSelectPlan(sub.button.roleOptionValue, sub)}
                       >
                         {sub.button.text}{" "}
+                        {sub.button.roleOptionValue}{" "}
                         <img src={ArrowIcon} alt="ArrowIcon" />
                       </button>
                     )}

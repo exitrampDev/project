@@ -3178,6 +3178,22 @@ h3.docRoom_data_table_access_files_title {
     font-weight: 400;
     cursor:pointer;
 }
+.listing__creation_field_col.file_business_logo .p-fileupload-content {
+    padding: 0;
+}
+.p-datepicker:not(.p-datepicker-inline){opacity: 1;}
+.about_listing_toggle {
+    width: 50%;
+    margin: 20px 0 0 0;
+}
+
+.about_listing_toggle_item {
+    color: #002F68;
+    display: inline-flex;
+    justify-content: space-between;
+    width: 100%;
+}
+.m-b-10{margin-bottom: 10px !important;}
 @media screen and (min-width: 1024px) and (max-width: 1920px) {
   .header_container nav.nav_col a {
     font-size: 18px;
