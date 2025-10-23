@@ -24,6 +24,7 @@ import { CreateSellerDto } from './dto/create-seller.dto';
 import { existsSync, mkdirSync } from 'fs';
 import { UpdateSellerDto } from './dto/update-seller.dto';
 import { QuerySellerDto } from './dto/query-seller.dto';
+import { Request } from '@nestjs/common';
 
 @Controller('free-seller')
 export class FreeSellerController {
@@ -40,8 +41,8 @@ export class FreeSellerController {
    //get ka kaam
    @UseGuards(JwtAuthGuard)
       @Get('')
-      async findAll(@Query() query: QuerySellerDto) {
-        return this.freeSellerService.findAll(query);
+      async findAll(@Query() query: QuerySellerDto, @Request() req) {
+        return this.freeSellerService.findAll(query, req.user);
       }
   //update ka kaam
     @UseGuards(JwtAuthGuard)
