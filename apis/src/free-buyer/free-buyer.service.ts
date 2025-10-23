@@ -1,7 +1,7 @@
 import { ForbiddenException, Get, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Buyer, BuyerDocument } from './schemas/buyer.schema';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { CreateBuyerDto } from './dto/create-buyer.dto';
 import { UpdateBuyerDto } from './dto/update-buyer.dto';
 
@@ -12,9 +12,27 @@ export class FreeBuyerService {
     @InjectModel(Buyer.name) private buyerModel: Model<BuyerDocument>,
   ) {}
 
-   async findOneByUser(userId: string): Promise<BuyerDocument | null> {
-    return this.buyerModel.findOne({ userId, isDeleted: false }).exec();
-  }
+  // 🔹 Public list – sab buyers ke records
+    async findAllPublic(): Promise<BuyerDocument[]> {
+      return this.buyerModel
+        .find({ isDeleted: false })
+        .select('-__v -isDeleted') // unnecessary fields hide karne ke liye
+        .exec();
+    }
+
+   async findOneByUser(userId: string): Promise<BuyerDocument> {
+    const record = await this.buyerModel.findOne({
+      userId: userId,
+      isDeleted: false,
+    });
+
+
+    if (!record) {
+      throw new NotFoundException('No record found for this user');
+    }
+
+    return record;
+    }
 
   async create(dto: CreateBuyerDto, user: any): Promise<Buyer> {
     const business = new this.buyerModel({

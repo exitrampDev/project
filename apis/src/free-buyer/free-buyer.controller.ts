@@ -22,23 +22,29 @@ export class FreeBuyerController {
         return this.freeBuyerService.create(dto, user);
     }
 
-    @UseGuards(JwtAuthGuard)
+     // 🔹 PUBLIC ROUTE – sab buyers ke records
     @Get('public')
+    async getAllPublicBuyers() {
+        return this.freeBuyerService.findAllPublic();
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Get('')
     async getMyProfile(@Req() req) {
         const userId = req.user.userId || req.user.sub; // JWT se user ka ID
         return this.freeBuyerService.findOneByUser(userId);
     }
 
     @UseGuards(JwtAuthGuard)
-  @Patch(':id')
-    async update(
-        @Param('id') id: string,
-        @Body() dto: UpdateBuyerDto,
-        @Req() req
-    ) {
-        const userId = req.user.userId || req.user.sub;
-        return this.freeBuyerService.update(id, dto, userId);
-    }
+    @Patch(':id')
+        async update(
+            @Param('id') id: string,
+            @Body() dto: UpdateBuyerDto,
+            @Req() req
+        ) {
+            const userId = req.user.userId || req.user.sub;
+            return this.freeBuyerService.update(id, dto, userId);
+        }
     
 }
 
