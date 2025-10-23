@@ -165,7 +165,7 @@ export class Business {
   businessZipCode?: string;
 
   @Prop({ type: String, default: '' })
-  PostCloseSupport?: string;
+  postCloseSupport?: string;
 
   // ----------------- Ownership & Structure -----------------
   @Prop({ default: null })

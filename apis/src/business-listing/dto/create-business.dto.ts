@@ -147,7 +147,7 @@ export class CreateBusinessDto {
 
   @IsOptional()
   @IsString()
-  PostCloseSupport?: string;
+  postCloseSupport?: string;
 
   // ----------------- Workforce -----------------
   @IsOptional()
