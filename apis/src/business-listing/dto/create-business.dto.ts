@@ -391,6 +391,9 @@ export class CreateBusinessDto {
   @IsOptional()
   keyHighlights?: string;
 
+  @IsOptional()
+  cimUrl?: string;
+
 // -------------------------------------
   @IsOptional()
   latestEBITDA?: string;

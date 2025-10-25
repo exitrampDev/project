@@ -1,14 +1,18 @@
-import { Controller, Post, Param, UseInterceptors, UploadedFile, Get, Body, BadRequestException, Delete, NotFoundException } from '@nestjs/common';
+import { Controller, Post, Param, UseInterceptors, UploadedFile, Get, Body, BadRequestException, Delete, NotFoundException, UseGuards } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname, join } from 'path';
 import { FilesService } from './files.service';
 import { existsSync, unlinkSync } from 'fs';
+import { BusinessListingService } from 'src/business-listing/business-listing.service';
+import { User } from 'src/common/decorators/user.decorator';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @Controller('files')
 export class FilesController {
-  constructor(private readonly filesService: FilesService) {}
+  constructor(private readonly filesService: FilesService, private businessListingService:BusinessListingService) {}
 
+   @UseGuards(JwtAuthGuard)
   @Post(':businessId/upload')
 @UseInterceptors(
   FileInterceptor('file', {
@@ -40,10 +44,18 @@ export class FilesController {
 async uploadFile(
   @Param('businessId') businessId: string,
   @UploadedFile() file: Express.Multer.File,
-  @Body() dto: any
+  @Body() dto: any,
+   @User() user: any,
 ) {
   
   const fileUrl = `/uploads/${file.filename}`;
+  if(dto.typeName == 'cim_file'){
+    this.businessListingService.update(businessId, {
+        'cimUrl': fileUrl,
+      }, user);
+  }
+
+
   return this.filesService.saveFile({
     businessId, // 👈 add this
     displayName: dto.displayName??file.filename,

@@ -415,6 +415,9 @@ image: string;
   @Prop({ type: Boolean, default: false })
   inventoryIncludedinAskingPrice: boolean;
 
+  @Prop({ type: String, default: "" })
+  cimUrl?: string;
+
   // ----------------- Relations -----------------
   @Prop({ type: Types.ObjectId, ref: 'User', required: true })
   ownerId: Types.ObjectId;

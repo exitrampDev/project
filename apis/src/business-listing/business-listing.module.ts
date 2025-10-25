@@ -8,6 +8,6 @@ import { Business, BusinessSchema } from './schemas/business.schema';
   imports: [MongooseModule.forFeature([{ name: Business.name, schema: BusinessSchema }])],
   controllers: [BusinessListingController],
   providers: [BusinessListingService],
-  exports: [MongooseModule],
+  exports: [MongooseModule, BusinessListingService],
 })
 export class BusinessListingModule {}
