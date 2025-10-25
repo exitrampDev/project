@@ -3194,6 +3194,106 @@ h3.docRoom_data_table_access_files_title {
     width: 100%;
 }
 .m-b-10{margin-bottom: 10px !important;}
+.cim__file_exchange_wrap {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #fff;
+    padding: 15px;
+    border-radius: 15px;
+    border: 1px solid #c9c9c9;
+    margin-top: 30px;
+}
+
+.cim__file_exchange_wrap .cim__file_exchange_download_wrap {
+    display: flex;
+    gap: 11px;
+}
+
+.cim__file_exchange_wrap .cim__file_exchange_download_wrap a {
+    color: #505050;
+}
+.form__for_cim_intro_content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #fff;
+    padding: 15px;
+    border-radius: 15px;
+    border: 1px solid #c9c9c9;
+    margin-top: 30px;
+    color: #505050;
+}
+.cim__file_exchange_upload_btn {
+    display: inline-flex;
+    gap: 5px;
+}
+.cim__file_exchange_upload__cimbtn {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 7px;
+    flex-direction: column-reverse;
+}
+
+.cim__file_exchange_upload__cimbtn p {
+    width: 230px;
+    font-size: 11px;
+    margin: 5px 0 0 0;
+    background: #e4e4e4;
+    padding: 4px;
+    border-radius: 5px;
+    color: #5a5858;
+}
+.extraImage_wrap {
+    display: flex;
+    gap: 15px;
+}
+
+.extraImage_wrap label {
+    width: 100%;
+    display: block;
+    font-size: 14px;
+    color: #002f67;
+    margin-bottom: 0;
+}
+
+.extraImage_wrap .listing__upload_files_uploadFile {
+    display: flex;
+    gap: 4px;
+    background: #fff;
+    padding: 10px 15px 15px 15px;
+    border: 1px solid #d1d5db;
+    border-radius: 9px;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+.extraImage_wrap 
+.p-fileupload.p-fileupload-basic.p-component {
+    width: 100%;
+}
+
+.extraImage_wrap .p-fileupload.p-fileupload-basic.p-component span.p-button.p-component.p-fileupload-choose {
+    width: 100%;
+}
+.my__save_listing_wrap.my__listing_table.cim__file_data_tablw_view table.p-datatable-table {
+    width: 78vw;
+}
+.action__btn_file {
+    display: inline-flex;
+    gap: 7px;
+}
+
+.action__btn_file a {
+    text-decoration: none;
+}
+
+.action__btn_file div {
+    background: red;
+    border: transparent;
+}
 @media screen and (min-width: 1024px) and (max-width: 1920px) {
   .header_container nav.nav_col a {
     font-size: 18px;

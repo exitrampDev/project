@@ -8,6 +8,14 @@ export default function SellerFreeNav() {
   return (
     <div className="nav__dahboard">
       <ul>
+         <li>
+             <NavLink
+               to="/"
+               className={({ isActive }) => (isActive ? "active" : "")}
+             >
+               <img src={icon1} alt="Dashboard" /> Web View
+             </NavLink>
+           </li>
         <li>
           <Link to="/dashboard">
             <img src={icon1} alt="-" /> Dashboard

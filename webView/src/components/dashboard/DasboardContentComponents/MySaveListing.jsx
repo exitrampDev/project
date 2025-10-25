@@ -165,60 +165,9 @@ const cimTemplate = (rowData) => (
               </div>
             </div>
           </div>
-      {user?.user_type === "buyer"  && ( 
+      {user?.user_type === "buyer_basic"  && ( 
         <>
-      <div className="save__listing_filter_wrap">
-        <Dropdown
-          value={listingType}
-          options={["Seller Listing", "M&A Listing"]}
-          placeholder="Listing Type"
-          onChange={(e) => setListingType(e.value)}
-        />
-        <InputText
-          placeholder="Search by keyword"
-          value={keyword}
-          onChange={(e) => setKeyword(e.target.value)}
-          style={{ minWidth: "30%" }}
-        />
-        <Dropdown
-          value={industry}
-          options={[...new Set(listings?.map((l) => l.businessType))]}
-          placeholder="Industry"
-          onChange={(e) => setIndustry(e.value)}
-        />
-        <Dropdown
-          value={ndaStatus}
-          options={["Approved", "Submitted","Not Started"]}
-          placeholder="NDA Status"
-          onChange={(e) => setNdaStatus(e.value)}
-        />
-          <Dropdown
-            value={priceRange}
-            options={[
-              { label: "All Prices", value: [0, Infinity] },
-              { label: "Under $100K", value: [0, 100000] },
-              { label: "$100K – $500K", value: [100000, 500000] },
-              { label: "$500K – $1M", value: [500000, 1000000] },
-              { label: "$1M – $5M", value: [1000000, 5000000] },
-              { label: "Over $5M", value: [5000000, Infinity] },
-            ]}
-            placeholder="Asking Price Range"
-            onChange={(e) => setPriceRange(e.value)}
-          />
-
-          <Dropdown
-            value={cashFlowRange}
-            options={[
-              { label: "All Cash Flows", value: [0, Infinity] },
-              { label: "Under $100K", value: [0, 100000] },
-              { label: "$100K – $500K", value: [100000, 500000] },
-              { label: "Over $500K", value: [500000, Infinity] },
-            ]}
-            placeholder="Cash Flow Range"
-            onChange={(e) => setCashFlowRange(e.value)}
-            
-          />
-      </div>
+     
           <div className="my__save_listing_wrap">
            <DataTable
         value={filteredListings}

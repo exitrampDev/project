@@ -350,7 +350,15 @@ const ndaDocRoomAccesList = (access) => {
       {/* Document Table */}
       <div className="my__save_listing_wrap my__listing_table docRoom_data_table">
         <DataTable
-          value={files}
+          value={files.filter(
+                (file) =>
+                  file.typeName !== "cim_file" &&
+                  file.displayName !== "listingImage1" &&
+                  file.displayName !== "listingImage2" &&
+                  file.displayName !== "listingImage3" &&
+                  file.displayName !== "listingImage4" &&
+                  file.displayName !== "listingImage5"
+              )}
           className="shadow-sm border-round-lg"
           emptyMessage="No files found."
         >

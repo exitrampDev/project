@@ -200,6 +200,26 @@ const documentRoomLink = (id) => {
   )
 }
 
+const createCIMList = (id, cimUrl) => {
+  return(
+    <>
+ {user?.user_type === "seller_central" && <>
+ {cimUrl ? (<><Link to={`/user/create-cim/${id}`} className="">View CIM</Link></>) : (<><Link to={`/user/create-cim/${id}`} className="">Create CIM</Link></>)}
+      
+    </>}
+     {user?.user_type === "seller_listing" && <>
+      <span className="data__locked">
+        <i className="pi pi-lock"></i> Upgarade to unlock
+      </span>
+    </>}
+    
+    </>
+  )
+}
+
+
+
+
 
   // Fetch Listings
   const fetchListings = async () => {
@@ -431,7 +451,7 @@ const handleSubmit = async () => {
       severity={
         row.cimStatus === "ready_to_share"
           ? "success"
-          : row.cimStatus === "in_progress"
+          : row.cimStatus === "incomplete"
           ? "warning"
           : "danger"
       }
@@ -1309,84 +1329,73 @@ useEffect(() => {
             uploadHandler={(e) => handleFileUpload(e.files[0], "Ownership or Cap Table")}
           />
         </div>
-        <div className="listing__upload_files_uploadFile">
-  <label>Business Logo</label>
+     <div className="extraImage_wrap">
+         <div className="listing__upload_files_uploadFile">
+  <label>Listing Extra Image 1</label>
   <FileUpload
     mode="basic"
     accept="image/*"
     auto
     maxFileSize={5000000}
     customUpload
-    chooseLabel="Upload Logo"
-    uploadHandler={(e) => handleFileUpload(e.files[0], "Business Logo")}
+    chooseLabel="Upload"
+    uploadHandler={(e) => handleFileUpload(e.files[0], "listingImage1")}
   />
 </div>
 
 <div className="listing__upload_files_uploadFile">
-  <label>Office Image</label>
+   <label>Listing Extra Image 2</label>
   <FileUpload
     mode="basic"
     accept="image/*"
     auto
     maxFileSize={5000000}
     customUpload
-    chooseLabel="Upload Office Image"
-    uploadHandler={(e) => handleFileUpload(e.files[0], "Office Image")}
+    chooseLabel="Upload"
+    uploadHandler={(e) => handleFileUpload(e.files[0], "listingImage2")}
   />
 </div>
 
 <div className="listing__upload_files_uploadFile">
-  <label>Team Photo</label>
+   <label>Listing Extra Image 3</label>
   <FileUpload
     mode="basic"
     accept="image/*"
     auto
     maxFileSize={5000000}
     customUpload
-    chooseLabel="Upload Team Photo"
-    uploadHandler={(e) => handleFileUpload(e.files[0], "Team Photo")}
+    chooseLabel="Upload"
+    uploadHandler={(e) => handleFileUpload(e.files[0], "listingImage3")}
   />
 </div>
 
 <div className="listing__upload_files_uploadFile">
-  <label>Product Image</label>
+   <label>Listing Extra Image 4</label>
   <FileUpload
     mode="basic"
     accept="image/*"
     auto
     maxFileSize={5000000}
     customUpload
-    chooseLabel="Upload Product Image"
-    uploadHandler={(e) => handleFileUpload(e.files[0], "Product Image")}
+    chooseLabel="Upload"
+    uploadHandler={(e) => handleFileUpload(e.files[0], "listingImage4")}
   />
 </div>
 
 <div className="listing__upload_files_uploadFile">
-  <label>Storefront Image</label>
+   <label>Listing Extra Image 5</label>
   <FileUpload
     mode="basic"
     accept="image/*"
     auto
     maxFileSize={5000000}
     customUpload
-    chooseLabel="Upload Storefront Image"
-    uploadHandler={(e) => handleFileUpload(e.files[0], "Storefront Image")}
+    chooseLabel="Upload"
+    uploadHandler={(e) => handleFileUpload(e.files[0], "listingImage5")}
   />
 </div>
 
-<div className="listing__upload_files_uploadFile">
-  <label>Additional Image</label>
-  <FileUpload
-    mode="basic"
-    accept="image/*"
-    auto
-    maxFileSize={5000000}
-    customUpload
-    chooseLabel="Upload Additional Image"
-    uploadHandler={(e) => handleFileUpload(e.files[0], "Additional Image")}
-  />
-</div>
-
+     </div>
        </div>
       </div>
 
@@ -1542,7 +1551,7 @@ useEffect(() => {
                 body={cimTemplate}
               />
               <Column body={(filteredListings) => documentRoomLink(filteredListings._id)} header="Document Room" />
-              <Column body={(filteredListings) => documentRoomLink(filteredListings._id)} header="CIM View" />
+              <Column body={(filteredListings) => createCIMList(filteredListings._id, filteredListings.cimUrl)} header="CIM View" />
               <Column header="Action" body={actionTemplate} />
             </DataTable>
             </div>

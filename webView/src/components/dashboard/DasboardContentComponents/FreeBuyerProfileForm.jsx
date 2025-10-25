@@ -21,6 +21,7 @@ const FreeBuyerForm = () => {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
+    email: user?.email,
     phone: "",
     investmentBudget: "",
     industryOfInterest: "",
@@ -54,7 +55,7 @@ const FreeBuyerForm = () => {
     if (!access_token) return;
 
     axios
-      .get(`${API_BASE}/free-buyer/public`, {
+      .get(`${API_BASE}/buyer-profile/public`, {
         headers: { Authorization: `Bearer ${access_token}` },
       })
       .then((res) => {
@@ -89,7 +90,7 @@ const FreeBuyerForm = () => {
       if (existingId) {
         // PATCH update
         await axios.patch(
-          `${API_BASE}/free-buyer/${existingId}`,
+          `${API_BASE}/buyer-profile/${existingId}`,
           formData,
           {
             headers: { Authorization: `Bearer ${access_token}` },
@@ -105,7 +106,7 @@ const FreeBuyerForm = () => {
       } else {
         // POST create
         const res = await axios.post(
-          `${API_BASE}/free-buyer`,
+          `${API_BASE}/buyer-profile`,
           formData,
           {
             headers: { Authorization: `Bearer ${access_token}` },

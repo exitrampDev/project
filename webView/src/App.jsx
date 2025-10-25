@@ -29,6 +29,7 @@ import NDARequested from "./components/dashboard/DasboardContentComponents/NDARe
 import BuyerSubmissionRequest from "./components/dashboard/DasboardContentComponents/BuyerSubmissionRequest";
 import DocumentRoom from "./components/dashboard/DasboardContentComponents/DoocumentRoom";
 import DocumentRoomBuyer from "./components/dashboard/DasboardContentComponents/DocumentRoomBuyer";
+import CreateCIM from "./components/dashboard/DasboardContentComponents/CreateCIM";
 
 
 const App = () => {
@@ -60,6 +61,7 @@ const App = () => {
           <Route path="document-room/:id" element={<DocumentRoom/>} />
           <Route path="document-room-buyer/:id" element={<DocumentRoomBuyer/>} />
           <Route path="single-listing/:id" element={<SingleBusinessListing />} />
+          <Route path="create-cim/:id" element={<CreateCIM/>} />
           <Route path="cim/:id" element={<CimView/>} />
           <Route
             path="complete-profile-buyer-free"
@@ -70,7 +72,7 @@ const App = () => {
             element={<NDARequested />}
           />
           <Route
-            path="complete-profile-seller-free"
+            path="complete-profile-seller"
             element={<FreeSellerForm />}
           />
           <Route

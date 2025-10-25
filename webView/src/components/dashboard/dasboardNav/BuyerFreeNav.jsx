@@ -10,6 +10,13 @@ export default function BuyerFreeNav() {
       <ul>
         <li>
           <NavLink
+            to="/"
+            className={({ isActive }) => (isActive ? "active" : "")}>
+            <img src={icon1} alt="Dashboard" /> Web View
+          </NavLink>
+        </li>
+        <li>
+          <NavLink
             to="/user/dashboard"
             className={({ isActive }) => (isActive ? "active" : "")}
           >

@@ -108,7 +108,7 @@ export default function SingleBusinessListing() {
              
       <div className="business__list_single_main_wrap dasb">
 
-          {user?.user_type === "buyer"  && (<>
+          {user?.user_type === "buyer_basic"  && (<>
             <div className="business__list_single_nda_submit_row">
               <div className="business__list_single_nda_submit_row_intro_head_copy">
                 <h2 className="business__list_single_nda_submit_row_intro_head">
@@ -119,12 +119,16 @@ export default function SingleBusinessListing() {
                 </p>
               </div>
               <div className="business__list_single_nda_submit_row_intro_btns">
-        <Button
+
+                {user?.user_type === "buyer_basic"  && (<>
+                 <Button
           className="business__list_complete_profile_btn"
           onClick={handleCompleteProfile}
         >
           Complete Profile
         </Button>
+                </>)}
+       
 
         <Button
           className="business__list_submit_nda_btn"

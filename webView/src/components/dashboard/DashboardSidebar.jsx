@@ -28,7 +28,7 @@ const DashboardSidebar = () => {
       {user?.user_type === "seller_basic" ? <SellerFreeNav /> : " "}
       {user?.user_type === "seller_listing" ? <SelleListingNav /> : " "}
       {user?.user_type === "seller_central" ? <SelleListingNav /> : " "}
-      {user?.user_type === "buyer" ? <BuyerFreeNav /> : " "}
+      {user?.user_type === "buyer_basic" ? <BuyerFreeNav /> : " "}
       {user?.user_type === "subscriber" ? <SellerFreeNav /> : " "}
       {user?.user_type === "m&a_expert" ? <SellerFreeNav /> : " "}
       {user?.user_type === "admin" ? <AdminNav /> : " "}

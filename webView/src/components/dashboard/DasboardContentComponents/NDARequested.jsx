@@ -12,10 +12,11 @@ import { Link } from "react-router-dom";
 import { Tag } from "primereact/tag";
 
 
+
 export default function NdaRequests() {
   const [ndaList, setNdaList] = useState([]);
   const [loading, setLoading] = useState(true);
-
+const API_BASE = useRecoilValue(apiBaseUrlState);
   const apiBaseUrl = useRecoilValue(apiBaseUrlState);
   const { access_token } = useRecoilValue(authState) ?? {};
 
@@ -71,11 +72,11 @@ const CIMAccessNDASubmit = (ndaStatus) => {
 };
 
 
-const CIMAccessLink = (ndaStatus,id) => {
+const CIMAccessLink = (ndaStatus,cimUrl) => {
   if (ndaStatus === "approved") {
     return (
       <div className="">
-        <Link to={`/user/cim/${id}`} className="cim__view_CIMAccessLink">
+        <Link to={`${API_BASE}${cimUrl}`} className="cim__view_CIMAccessLink">
          <i className="pi pi-file"></i> 
           View CIM
         </Link>
@@ -181,7 +182,7 @@ const CIMAccessLink = (ndaStatus,id) => {
         <Column body={(rowData) =>  rowData.submittedOn ? new Date(rowData.submittedOn).toLocaleDateString() : "-"} header="Submitted On" />
         <Column body={(rowData) =>  rowData.sellerResponseOn ? new Date(rowData.sellerResponseOn).toLocaleDateString() : "-"} header="Seller Response" />
         <Column body={(rowData) =>  rowData.docRoomAccess === "approved" ? (<><Link to={`/user/document-room-buyer/${rowData.businessId}`} className="cim__view_CIMAccessLink">  <i className="pi pi-file"></i> View Doc Room</Link></>) : (<><div className="CIMAccessLink__accessDenied"> <i className="pi pi-lock"></i> View After Approval</div></>)} header="Document Room" />
-        <Column body={(rowData) => CIMAccessLink(rowData.ndaStatus,rowData.businessId)} header="Actions" />
+        <Column body={(rowData) => CIMAccessLink(rowData.ndaStatus,rowData.cimUrl)} header="Actions" />
       </DataTable>
         </div>   
         

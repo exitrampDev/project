@@ -9,6 +9,14 @@ export default function SellerListingNav() {
     <div className="nav__dashboard">
          <ul>
            <li>
+             <li>
+             <NavLink
+               to="/"
+               className={({ isActive }) => (isActive ? "active" : "")}
+             >
+               <img src={icon1} alt="Dashboard" /> Web View
+             </NavLink>
+           </li>
              <NavLink
                to="/user/dashboard"
                className={({ isActive }) => (isActive ? "active" : "")}
@@ -35,7 +43,7 @@ export default function SellerListingNav() {
            
            <li>
              <NavLink
-               to="/user/complete-profile-seller-free"
+               to="/user/complete-profile-seller"
                className={({ isActive }) => (isActive ? "active" : "")}
              >
                <img src={icon2} alt="My Listing" /> Profile
