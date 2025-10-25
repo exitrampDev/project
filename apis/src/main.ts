@@ -33,8 +33,8 @@ async function bootstrap() {
   });
 
   // Increase POST body size limits
-  app.use(bodyParser.json({ limit: '50mb' }));
-  app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
+  app.use(bodyParser.json({ limit: '16mb' }));
+  app.use(bodyParser.urlencoded({ limit: '16mb', extended: true }));
   const port = 3000;
   await app.listen(port,'0.0.0.0');
   Logger.log(`🚀 Application is running on http://localhost:${port}`);
