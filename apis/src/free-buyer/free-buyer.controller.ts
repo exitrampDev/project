@@ -8,7 +8,7 @@ import { QueryBuyerDto } from './dto/query-buyer.dto';
 
 
 
-@Controller('free-buyer')
+@Controller('buyer-profile')
 export class FreeBuyerController {
   constructor(private readonly freeBuyerService: FreeBuyerService) {}
 
