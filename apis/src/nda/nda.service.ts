@@ -112,8 +112,15 @@ export class NdaService {
           businessName: { $ifNull: ['$business.businessName', 'N/A'] },
           businessType: { $ifNull: ['$business.businessType', 'N/A'] },
           ndaStatus: '$status',
-          cimUrl: { $ifNull: ['$business.cimUrl', 'N/A'] },
-          business: '$business',
+          // cimUrl: { $ifNull: ['$business.cimUrl', 'N/A'] },
+          cimUrl: {
+                    $cond: {
+                      if: { $eq: ['$status', 'approved'] },
+                      then: { $ifNull: ['$business.cimUrl', 'N/A'] },
+                      else: null
+                    }
+                  },
+        
           submittedOn: '$createdAt',
           sellerResponseOn: 1,
           message: 1,
