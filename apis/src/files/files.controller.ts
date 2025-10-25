@@ -7,6 +7,7 @@ import { existsSync, unlinkSync } from 'fs';
 import { BusinessListingService } from 'src/business-listing/business-listing.service';
 import { User } from 'src/common/decorators/user.decorator';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { CimStatus } from 'src/business-listing/dto/create-business.dto';
 
 @Controller('files')
 export class FilesController {
@@ -52,6 +53,7 @@ async uploadFile(
   if(dto.typeName == 'cim_file'){
     this.businessListingService.update(businessId, {
         'cimUrl': fileUrl,
+        'cimStatus': CimStatus.READY_TO_SHARE
       }, user);
   }
 
