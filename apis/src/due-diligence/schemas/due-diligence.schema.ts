@@ -5,6 +5,7 @@ export type DueDiligenceDocument = DueDiligence & Document;
 
 export enum DueDiligenceStatus {
   NotStarted = 'no_started',
+  Inprogress = 'in_progress',
   Completed = 'completed',
 }
 

@@ -11,6 +11,7 @@ import {
 import { DueDiligenceService } from './due-diligence.service';
 import { CreateDueDiligenceDto } from './dto/create-due-diligence.dto';
 import { UpdateDueDiligenceDto } from './dto/update-due-diligence.dto';
+import { AddCommentDto } from './dto/add-comment.dto';
 
 @Controller('due-diligence')
 export class DueDiligenceController {
@@ -45,4 +46,13 @@ export class DueDiligenceController {
   async delete(@Param('id') id: string) {
     return this.dueDiligenceService.delete(id);
   }
+
+//   -------------------------------
+@Post(':id/comments')
+async addComment(
+  @Param('id') id: string,
+  @Body() addCommentDto: AddCommentDto,
+) {
+  return this.dueDiligenceService.addComment(id, addCommentDto);
+}
 }

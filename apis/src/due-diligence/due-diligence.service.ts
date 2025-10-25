@@ -1,7 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { DueDiligence } from './schemas/due-diligence.schema';
+import { AddCommentDto } from './dto/add-comment.dto';
 
 @Injectable()
 export class DueDiligenceService {
@@ -32,4 +33,26 @@ async findByNda(ndaId: string) {
   async delete(id: string) {
     return this.dueDiligenceModel.findByIdAndDelete(id);
   }
+
+
+async addComment(id: string, commentDto: AddCommentDto) {
+  const due = await this.dueDiligenceModel.findById(id);
+  if (!due) {
+    throw new NotFoundException('Due diligence record not found');
+  }
+
+  // Ensure comments array exists
+  if (!due.comments) {
+    due.comments = [];
+  }
+
+  due.comments.push({
+    author: commentDto.author,
+    message: commentDto.message,
+    createdAt: new Date(),
+  });
+
+  return due.save();
+}
+
 }
