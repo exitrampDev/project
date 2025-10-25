@@ -8,7 +8,7 @@ import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import { join } from 'path';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { useContainer } from 'class-validator';
-
+import * as bodyParser from 'body-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
@@ -31,6 +31,10 @@ async function bootstrap() {
     origin: ['http://localhost:5173','http://localhost:3000', 'http://3.87.119.123:5173', 'http://test.exitramp.co'], 
     credentials: true,
   });
+
+  // Increase POST body size limits
+  app.use(bodyParser.json({ limit: '50mb' }));
+  app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
   const port = 3000;
   await app.listen(port,'0.0.0.0');
   Logger.log(`🚀 Application is running on http://localhost:${port}`);
