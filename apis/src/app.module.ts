@@ -24,6 +24,8 @@ import { CimController } from './cim/cim.controller';
 import { CimService } from './cim/cim.service';
 import { CimModule } from './cim/cim.module';
 import { SharedModule } from './common/shared.module';
+import { DueDiligenceModule } from './due-diligence/due-diligence.module';
+
 
 @Module({
   imports: [
@@ -71,7 +73,8 @@ import { SharedModule } from './common/shared.module';
     FilesModule,
     FlagModule,
     CimModule,
-    SharedModule
+    SharedModule,
+    DueDiligenceModule,   
   ],
 
  
