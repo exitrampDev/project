@@ -1,8 +1,8 @@
-import { IsString, IsNotEmpty } from 'class-validator';
+import { IsString, IsNotEmpty, IsOptional } from 'class-validator';
 
 export class AddCommentDto {
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   author: string;
 
   @IsString()
