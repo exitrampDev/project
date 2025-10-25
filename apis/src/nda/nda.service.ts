@@ -69,7 +69,7 @@ export class NdaService {
           let: { businessIdObj: { $toObjectId: "$businessId" } },
           pipeline: [
             { $match: { $expr: { $eq: ["$_id", "$$businessIdObj"] } } },
-            { $project: { businessName: 1, businessType: 1 } }
+            { $project: { businessName: 1, businessType: 1, cimUrl:1 } }
           ],
           as: 'business'
         }
@@ -112,7 +112,8 @@ export class NdaService {
           businessName: { $ifNull: ['$business.businessName', 'N/A'] },
           businessType: { $ifNull: ['$business.businessType', 'N/A'] },
           ndaStatus: '$status',
-          cimUrl: '$business.cimUrl',
+          cimUrl: { $ifNull: ['$business.cimUrl', 'N/A'] },
+          business: '$business',
           submittedOn: '$createdAt',
           sellerResponseOn: 1,
           message: 1,
