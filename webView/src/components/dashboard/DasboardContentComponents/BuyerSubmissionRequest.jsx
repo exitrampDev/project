@@ -11,6 +11,7 @@ import { Tag } from "primereact/tag";
 import { Dialog } from "primereact/dialog";
 import { Button } from "primereact/button";
 import { Toast } from "primereact/toast";
+import { Link } from "react-router-dom";
 
 const BuyerSubmissionRequest = () => {
   const [buyerSubmissions, setBuyerSubmissions] = useState([]);
@@ -48,7 +49,7 @@ const BuyerSubmissionRequest = () => {
 
   const listingBuyerName = (businessId, name) => (
     <>
-      <span>#{businessId}</span> | <span>{name}</span>
+     <span>{name}</span>
     </>
   );
 
@@ -128,6 +129,16 @@ const BuyerSubmissionRequest = () => {
     />
   );
 
+
+const DueDiligenceAction = (statusNDA, Id) => { 
+  return (
+    <>
+ {statusNDA === "approved" ? (<><Link to={`/user/due-diligence/${Id}`}> view</Link></>) : statusNDA === "pending" ? (<><Tag value={statusNDA} severity="warning" /></>) : (<><Tag value={statusNDA} severity="danger" /></>)}
+    </>
+  );
+}
+
+
   return (
     <>
       <Toast ref={toast} />
@@ -180,7 +191,7 @@ const BuyerSubmissionRequest = () => {
             body={(rowData) =>
               listingBuyerName(rowData.businessId, rowData.businessName)
             }
-            header="Listing ID | Name"
+            header="Name"
             sortable
           />
           <Column field="buyerName" header="Business Name" sortable />
@@ -201,6 +212,7 @@ const BuyerSubmissionRequest = () => {
             body={ndaStatusTemplate}
             sortable
           />
+          <Column body={(row) => DueDiligenceAction(row.ndaStatus, row.businessId)} header="Due Diligence" />
           <Column header="Action" body={ndaViewActionTemplate} />
         </DataTable>
       </div>

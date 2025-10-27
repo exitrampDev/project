@@ -90,7 +90,7 @@ const RecentViewListing = () => {
   const actionTemplate = (rowData) => (
     <>
       <Button
-        icon="pi pi-heart-fill"
+        icon="pi pi-trash"
         className="button__remove_listing_fav"
         onClick={() => removeFavorite(rowData._favId)}
         data-pr-tooltip="Remove" // tooltip text
@@ -148,7 +148,6 @@ const RecentViewListing = () => {
             header="Asking Price"
             body={(rowData) => moneyTemplate(rowData.askingPrice)}
           />
-          <Column header="CIM Access" body={cimTemplate} />
           <Column header="Action" body={actionTemplate} />
         </DataTable>
       </div>

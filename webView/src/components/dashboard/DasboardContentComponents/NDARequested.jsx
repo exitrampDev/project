@@ -113,6 +113,16 @@ const CIMAccessLink = (ndaStatus,cimUrl) => {
         : "danger";
     return <Tag value={row.ndaStatus} severity={severity} />;
   };
+
+
+const DueDiligenceAction = (statusNDA, Id) => { 
+  return (
+    <>
+ {statusNDA === "approved" ? (<><Link to={`/user/due-diligence/${Id}`}> view</Link></>) : statusNDA === "pending" ? (<><Tag value={statusNDA} severity="warning" /></>) : (<><Tag value={statusNDA} severity="danger" /></>)}
+    </>
+  );
+}
+
   return (
     <div className="p-4">
       <div className="dashboard__header_block">
@@ -182,6 +192,7 @@ const CIMAccessLink = (ndaStatus,cimUrl) => {
         <Column body={(rowData) =>  rowData.submittedOn ? new Date(rowData.submittedOn).toLocaleDateString() : "-"} header="Submitted On" />
         <Column body={(rowData) =>  rowData.sellerResponseOn ? new Date(rowData.sellerResponseOn).toLocaleDateString() : "-"} header="Seller Response" />
         <Column body={(rowData) =>  rowData.docRoomAccess === "approved" ? (<><Link to={`/user/document-room-buyer/${rowData.businessId}`} className="cim__view_CIMAccessLink">  <i className="pi pi-file"></i> View Doc Room</Link></>) : (<><div className="CIMAccessLink__accessDenied"> <i className="pi pi-lock"></i> View After Approval</div></>)} header="Document Room" />
+       <Column body={(rowData) => DueDiligenceAction(rowData.ndaStatus, rowData.businessId)} header="Due Diligence" />
         <Column body={(rowData) => CIMAccessLink(rowData.ndaStatus,rowData.cimUrl)} header="Actions" />
       </DataTable>
         </div>   

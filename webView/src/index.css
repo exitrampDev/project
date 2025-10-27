@@ -3294,6 +3294,82 @@ h3.docRoom_data_table_access_files_title {
     background: red;
     border: transparent;
 }
+.modal__notes_commets_discussion_list {width: 100%;}
+
+.modal__notes_commets_discussion_list .modal__notes_commets_discussion_date {font-size: 10px;}
+
+.modal__notes_commets_discussion_comment {
+    background: #dfdfdf;
+    color: #000;
+    font-weight: 300;
+    font-size: 13px;
+    padding: 6px;
+    border-radius: 6px;
+}
+
+
+.modal__notes_commets_discussion_block {
+    border: 1px solid #ccc;
+    padding: 15px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 9px;
+}
+.modal__notes_commets_discussion_block_content {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+.modal__notes_commets_discussion_block_content strong.modal__notes_commets_discussion_name_author {
+    font-size: 13px;
+    border: none;
+    background: #ffb100;
+    padding: 8px;
+    border-radius: 8px;
+    width: 25px;
+    height: 25px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal__notes_commets_discussion_block_content .modal__notes_commets_discussion_comment {
+    width: 100%;
+}
+form.commect__submit {display: flex;gap: 15px;margin: 20px 0 0 0;}
+
+form.commect__submit button.p-button-primary.p-button.p-component.p-disabled {
+    margin: 0;
+}
+
+form.commect__submit span.p-input-icon-left.flex-grow {
+    width: calc(100% - 115px);
+}
+
+form.commect__submit span.p-input-icon-left.flex-grow input.w-full.p-inputtext.p-component {
+    width: 100%;
+    text-indent: 20px;
+}
+
+form.commect__submit span.p-input-icon-left.flex-grow i.pi.pi-comment {
+    left: 7px;
+}
+
+.modal__notes_commets_discussion_list.my-comment .modal__notes_commets_discussion_date {
+    text-align: right;
+}
+
+.modal__notes_commets_discussion_list.my-comment .modal__notes_commets_discussion_block_content {flex-direction: row-reverse;}
+
+.modal__notes_commets_discussion_list.my-comment .modal__notes_commets_discussion_block_content strong.modal__notes_commets_discussion_name_author {
+    background: #002f68;
+    color: #fff;
+}
+button.p-button-danger.desc__create_submit.p-button.p-component {
+    margin-left: auto;
+    margin-right: 0;
+}
 @media screen and (min-width: 1024px) and (max-width: 1920px) {
   .header_container nav.nav_col a {
     font-size: 18px;
