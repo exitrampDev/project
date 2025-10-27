@@ -8,4 +8,8 @@ export class AddCommentDto {
   @IsString()
   @IsNotEmpty()
   message: string;
+
+  @IsString()
+  @IsOptional()
+  createdBy: string;
 }

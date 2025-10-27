@@ -60,13 +60,17 @@ export class DueDiligenceController {
 async addComment(
   @Param('id') id: string,
   @Body() addCommentDto: AddCommentDto,
-   @User() user: any,
+  @User() user: any,
 ) {
-    const dbUser = await this.usersService.findOne(user.userId);
-    if (!dbUser) throw new NotFoundException('User not found');
+  const dbUser = await this.usersService.findOne(user.userId);
+  if (!dbUser) throw new NotFoundException('User not found');
 
-    const author = `${dbUser.first_name} ${dbUser.last_name}`.trim();
-    const dtoWithAuthor = { ...addCommentDto, author };
-    return this.dueDiligenceService.addComment(id, dtoWithAuthor);
+  const author = `${dbUser.first_name} ${dbUser.last_name}`.trim();
+  const dtoWithAuthor = { ...addCommentDto, author, createdBy: user.userId };
+
+  console.log('Adding comment with DTO:', dtoWithAuthor);
+
+  return this.dueDiligenceService.addComment(id, dtoWithAuthor);
 }
+
 }

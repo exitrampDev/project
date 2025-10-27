@@ -49,6 +49,7 @@ async addComment(id: string, commentDto: AddCommentDto) {
   due.comments.push({
     author: commentDto.author,
     message: commentDto.message,
+    createdBy: new Types.ObjectId(commentDto.createdBy),
     createdAt: new Date(),
   });
 

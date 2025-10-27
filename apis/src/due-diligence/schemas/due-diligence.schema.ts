@@ -25,12 +25,13 @@ export class DueDiligence {
       {
         author: { type: String, required: true, trim: true },
         message: { type: String, required: true, trim: true },
+        createdBy: { type: Types.ObjectId, ref: 'users' },
         createdAt: { type: Date, default: () => new Date() },
       },
     ],
     default: [],
   })
-  comments?: { author: string; message: string; createdAt?: Date }[];
+  comments?: { author: string; message: string; createdBy?: Types.ObjectId; createdAt?: Date }[];
 
   @Prop({
     enum: Object.values(DueDiligenceStatus),
