@@ -23,7 +23,9 @@ async findAll() {
 }
 
 async findByNda(ndaId: string) {
-  return this.dueDiligenceModel.find({ ndaId }).exec();
+  return this.dueDiligenceModel.find({ ndaId })
+   .populate('comments.createdBy', 'first_name last_name email')
+  .exec();
 }
 
   async update(id: string, updateData: any) {

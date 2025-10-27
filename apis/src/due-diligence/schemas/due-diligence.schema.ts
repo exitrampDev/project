@@ -25,7 +25,7 @@ export class DueDiligence {
       {
         author: { type: String, required: true, trim: true },
         message: { type: String, required: true, trim: true },
-        createdBy: { type: Types.ObjectId, ref: 'users' },
+        createdBy: { type: Types.ObjectId, ref: 'User' },
         createdAt: { type: Date, default: () => new Date() },
       },
     ],
