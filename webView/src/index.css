@@ -1539,6 +1539,7 @@ button.p-button.p-component {
   background: #4f93ff;
   font-size: 14px;
   border: none;
+  
 }
 
 button.p-button.p-component span.p-button-label.p-c {
@@ -3332,6 +3333,7 @@ h3.docRoom_data_table_access_files_title {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    color: #fff;
 }
 
 .modal__notes_commets_discussion_block_content .modal__notes_commets_discussion_comment {
@@ -3339,12 +3341,13 @@ h3.docRoom_data_table_access_files_title {
 }
 form.commect__submit {display: flex;gap: 15px;margin: 20px 0 0 0;}
 
-form.commect__submit button.p-button-primary.p-button.p-component.p-disabled {
+form.commect__submit button.p-button-primary.p-button.p-component{
+      min-width: 45px;
     margin: 0;
 }
 
 form.commect__submit span.p-input-icon-left.flex-grow {
-    width: calc(100% - 115px);
+    width: calc(100% - 45px);
 }
 
 form.commect__submit span.p-input-icon-left.flex-grow input.w-full.p-inputtext.p-component {
@@ -3369,6 +3372,55 @@ form.commect__submit span.p-input-icon-left.flex-grow i.pi.pi-comment {
 button.p-button-danger.desc__create_submit.p-button.p-component {
     margin-left: auto;
     margin-right: 0;
+}
+.flag__form_wrap label {
+    font-size: 15px;
+}
+.dropdown__satatus_diligence_list * {
+    font-size: 12px;
+}
+
+
+.due__diligence_form_cat {
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 15px;
+}
+
+.due__diligence_form_cat label.due__diligence_form_label {
+    width: 100%;
+    font-size: 14px;
+    margin-bottom: 7px;
+}
+
+.due__diligence_form_cat .p-dropdown.p-component.p-inputwrapper {
+    width: 100%;
+}
+
+.due__diligence_form_description {
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 25px;
+}
+
+.due__diligence_form_description label.due__diligence_form_label {
+    width: 100%;
+    font-size: 14px;
+    margin-bottom: 7px;
+}
+
+.due__diligence_form_description  textarea.p-inputtextarea.p-inputtext.p-component {
+    width: 100%;
+}
+
+form.due__diligence_form_section {
+    padding-bottom: 25px;
+    margin-bottom: 25px;
+    border-bottom: 1px solid #e0dfdf;
+}
+span.comment__list_btn {
+    color: #000;
+    cursor: pointer;
 }
 @media screen and (min-width: 1024px) and (max-width: 1920px) {
   .header_container nav.nav_col a {

@@ -264,7 +264,7 @@ const openFile = (base64Data, fileName, mimeType) => {
           <label>Years in Operation</label>
           <Calendar
           required
-            value={formData.yearsInOperation || null}
+            value={new Date(formData.yearsInOperation) || new Date()}
             onChange={(e) => handleChange("yearsInOperation", e.value)}
             dateFormat="yy" 
             view="year"     
