@@ -30,6 +30,7 @@ import BuyerSubmissionRequest from "./components/dashboard/DasboardContentCompon
 import DocumentRoom from "./components/dashboard/DasboardContentComponents/DoocumentRoom";
 import DocumentRoomBuyer from "./components/dashboard/DasboardContentComponents/DocumentRoomBuyer";
 import CreateCIM from "./components/dashboard/DasboardContentComponents/CreateCIM";
+import DueDiligence from "./components/dashboard/DasboardContentComponents/DueDiligence";
 
 
 const App = () => {
@@ -63,6 +64,7 @@ const App = () => {
           <Route path="single-listing/:id" element={<SingleBusinessListing />} />
           <Route path="create-cim/:id" element={<CreateCIM/>} />
           <Route path="cim/:id" element={<CimView/>} />
+          <Route path="due-diligence/:id" element={<DueDiligence/>} />
           <Route
             path="complete-profile-buyer-free"
             element={<ProfileFormBuyer />}

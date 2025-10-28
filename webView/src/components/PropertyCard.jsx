@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { InputText } from "primereact/inputtext";
 import { Slider } from "primereact/slider";
 import { Button } from "primereact/button";
@@ -9,13 +9,14 @@ import { useRecoilValue } from "recoil";
 import { authState,apiBaseUrlState } from "../recoil/ctaState";
 import { Column } from "primereact/column";
 import { Link } from "react-router-dom";
+import { Toast } from "primereact/toast";
 
 const PropertyCard = () => {
   const { access_token } = useRecoilValue(authState) ?? {};
   const [allListings, setAllListings] = useState([]);
   const [listings, setListings] = useState([]);
    const API_BASE = useRecoilValue(apiBaseUrlState);
-
+ const toast = useRef(null);
   const [page, setPage] = useState(1);
   const limit = 25;
   const [filters, setFilters] = useState({
@@ -42,7 +43,10 @@ const PropertyCard = () => {
   }, []);
 
 const saveListingBtn = (businessId) => {
+ 
+
   if (access_token) {
+    // --- Save Favorite ---
     const handleSave = async () => {
       try {
         const response = await fetch(`${API_BASE}/favorite`, {
@@ -61,20 +65,91 @@ const saveListingBtn = (businessId) => {
         const data = await response.json();
         console.log("Favorite saved:", data);
 
-        // optional: update local state to reflect saved
-        // setSavedIds((prev) => [...prev, businessId]);
-
+        toast.current.show({
+          severity: "success",
+          summary: "Added to Favorites",
+          detail: "This listing has been added to your favorites.",
+          life: 3000,
+        });
       } catch (error) {
         console.error("Error saving favorite:", error);
+        toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: "Failed to save favorite. Please try again.",
+          life: 3000,
+        });
       }
     };
 
+    // --- Flag Listing ---
+    const markFlag = async () => {
+
+      const confirmFlag = window.confirm(
+      "Are you sure you want to flag this listing as suspicious?"
+    );
+
+    if (!confirmFlag) return;
+
+      try {
+        const payload = {
+          description: "This business is suspicious",
+          businessId,
+        };
+
+        const response = await fetch(`${API_BASE}/flag`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${access_token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log("Flag created:", data);
+
+        toast.current.show({
+          severity: "warn",
+          summary: "Business Flagged",
+          detail: "This business has been flagged for review.",
+          life: 3000,
+        });
+      } catch (error) {
+        console.error("Error flagging business:", error);
+        toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: "Failed to flag this business. Please try again.",
+          life: 3000,
+        });
+      }
+    };
     return (
-      <Button
-        icon="pi pi-heart-fill"
-        className="button__save_listing_global"
-        onClick={handleSave}
-      />
+      <>
+      <Toast ref={toast} position="top-right" />
+        <Button
+          icon="pi pi-heart-fill"
+          className="button__save_listing_global"
+          onClick={handleSave}
+        />
+
+        <div className="flag__hit_list" onClick={markFlag}>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 512 512"
+            fill="#002F68"
+          >
+            <path d="M64 32v448h32V288h320l-96-128 96-128H64z" />
+          </svg>
+        </div>
+      </>
     );
   }
 
