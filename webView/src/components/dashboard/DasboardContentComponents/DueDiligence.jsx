@@ -171,10 +171,12 @@ const DueDiligence = () => {
 
 
 const notesCreation = (rowData) => (
-  <i
+  <span className="comment__list_btn">
+    <i
     className="pi pi-list cursor-pointer text-blue-600"
     onClick={() => openModal(rowData)}
   ></i>
+  </span>
 );
 
 const dltDiligence = async (itemId) => {
@@ -266,7 +268,7 @@ const statusDropdownTemplate = (rowData) => {
       value={rowData.status || "no_started"}
       options={statusOptions}
       onChange={(e) => updateStatus(rowData._id, e.value)}
-      className="w-full"
+      className="dropdown__satatus_diligence_list"
     />
   );
 };
@@ -326,18 +328,18 @@ setVisible(false)
       {/* ---------- Info ---------- */}
       <div className="brief__infor_content">
         <p>
-          Securely manage and share files with buyers who have been approved to
-          access your CIM. All access is logged and controlled by you.
+          Create and manage your due diligence document list. You can track which files have been uploaded, 
+what’s still pending, and collaborate with buyers who may suggest additional checklist items.
         </p>
       </div>
 
       {/* ---------- Form ---------- */}
-      <div className="flag__form_wrap p-4 max-w-xl mt-6 border rounded-lg shadow-sm bg-white">
+      <div className="due__diligence_form_wrap">
         
 
-        <form onSubmit={handleSubmit} className="p-fluid flex flex-col gap-4">
-          <div>
-            <label className="block mb-2 font-medium">Category</label>
+        <form onSubmit={handleSubmit} className="due__diligence_form_section">
+          <div className="due__diligence_form_cat">
+            <label className="due__diligence_form_label">Category</label>
             <Dropdown
               value={formData.category}
               options={flagOptions}
@@ -346,8 +348,8 @@ setVisible(false)
             />
           </div>
 
-          <div>
-            <label className="block mb-2 font-medium">Description</label>
+          <div className="due__diligence_form_description">
+            <label className="due__diligence_form_label">Description</label>
             <InputTextarea
               value={formData.reason}
               onChange={(e) => setFormData({ ...formData, reason: e.target.value })}
@@ -448,7 +450,6 @@ setVisible(false)
 
             <Button
                 type="submit"
-                label={loading ? "Posting..." : "Submit"}
                 icon={loading ? "pi pi-spin pi-spinner" : "pi pi-send"}
                 disabled={loading || !message.trim()}
                 className=" p-button-primary"
