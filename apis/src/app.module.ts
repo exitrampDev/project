@@ -25,6 +25,7 @@ import { CimService } from './cim/cim.service';
 import { CimModule } from './cim/cim.module';
 import { SharedModule } from './common/shared.module';
 import { DueDiligenceModule } from './due-diligence/due-diligence.module';
+import { NotificationModule } from './notification/notification.module';
 
 
 @Module({
@@ -74,7 +75,8 @@ import { DueDiligenceModule } from './due-diligence/due-diligence.module';
     FlagModule,
     CimModule,
     SharedModule,
-    DueDiligenceModule,   
+    DueDiligenceModule,  
+    NotificationModule 
   ],
 
  
