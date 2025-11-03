@@ -8,6 +8,7 @@ import userImg from "../../../assets/userImg.png";
 import { authState,apiBaseUrlState } from "../../../recoil/ctaState";
 import { useRecoilValue } from "recoil";
 import { Tooltip } from "primereact/tooltip";
+import DashboardHeader from "./DashboardHeaderBlock";
 
 const RecentViewListing = () => {
   const { user, access_token } = useRecoilValue(authState) ?? {};
@@ -103,27 +104,7 @@ const RecentViewListing = () => {
 
   return (
     <>
-      <div className="dashboard__header_block">
-        <h3 className="heading__Digital_CIM">Recent View</h3>
-
-        <div className="dashboard__header_search_notification_wrap">
-          <div className="dashboard__search_field_wrap">
-            <input type="text" placeholder="Search" />
-            <img src={serachIcon} alt="search" />
-          </div>
-          <div className="dashboard__notification_wrap">
-            <button>
-              <img src={notifInfo} alt="notifications" />
-            </button>
-          </div>
-          <div className="dashboard__user_wrap">
-            <button>
-              <img src={userImg} alt="user" />
-            </button>
-          </div>
-        </div>
-      </div>
-
+<DashboardHeader headingData="Recent View"/>
       <div className="my__save_listing_wrap">
         <DataTable
           value={listings}

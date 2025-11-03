@@ -26,6 +26,7 @@ import { Checkbox } from "primereact/checkbox";
 import { Chips } from "primereact/chips";
 import { Link } from "react-router-dom";
 import { InputSwitch } from "primereact/inputswitch";
+import DashboardHeader from "./DashboardHeaderBlock";
 
 export default function SellerListing() {
   const toast = useRef(null);
@@ -610,30 +611,8 @@ useEffect(() => {
         {showCreateDialog ? (
           <>
              {listingStep === 0 && (<>
-            <div className="dashboard__header_block">
-              <h3 className="heading__Digital_CIM">
-                {" "}
-                Create Your Business Listing
-              </h3>
-
-              <div className="dashboard__header_search_notification_wrap">
-                <div className="dashboard__search_field_wrap">
-                  <input type="text" placeholder="Search" />
-                  <img src={serachIcon} alt="" />
-                </div>
-                <div className="dashboard__notification_wrap">
-                  <button>
-                    <img src={notifInfo} alt="" />
-                  </button>
-                </div>
-                <div className="dashboard__user_wrap">
-                  <button>
-                    <img src={userImg} alt="" />
-                  </button>
-                </div>
-              </div>
-            </div>
-
+           
+            <DashboardHeader headingData="Create Your Business Listing"/>
             <div className="brief__infor_content">
               <p>
                 This information is used to generate your business listing and prepare your business for buyer review.
@@ -1416,27 +1395,8 @@ useEffect(() => {
           </>
         ) : (
           <>
-            <div className="dashboard__header_block">
-              <h3>My Listing</h3>
-
-              <div className="dashboard__header_search_notification_wrap">
-                <div className="dashboard__search_field_wrap">
-                  <input type="text" placeholder="Search" />
-                  <img src={serachIcon} alt="" />
-                </div>
-                <div className="dashboard__notification_wrap">
-                  <button>
-                    <img src={notifInfo} alt="" />
-                  </button>
-                </div>
-                <div className="dashboard__user_wrap">
-                  <button>
-                    <img src={userImg} alt="" />
-                  </button>
-                </div>
-              </div>
-            </div>
-
+           
+<DashboardHeader headingData="My Listing"/>
             <div className="brief__infor_content">
               <p>
                 Manage all your business listings. View, edit, publish, and

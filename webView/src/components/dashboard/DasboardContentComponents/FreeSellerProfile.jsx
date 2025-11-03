@@ -12,6 +12,7 @@ import notifInfo from "../../../assets/notifInfo.png";
 import serachIcon from "../../../assets/serachIcon.png";
 import userImg from "../../../assets/userImg.png";
 import { Calendar } from "primereact/calendar";
+import DashboardHeader from "./DashboardHeaderBlock";
 
 const FreeSellerForm = () => {
   const { access_token } = useRecoilValue(authState) ?? {};
@@ -143,26 +144,8 @@ const openFile = (base64Data, fileName, mimeType) => {
   return (
     <>
       <Toast ref={toast} />
-      <div className="dashboard__header_block">
-        <h3 className="heading__Digital_CIM">My Seller Profile</h3>
-        <div className="dashboard__header_search_notification_wrap">
-          <div className="dashboard__search_field_wrap">
-            <input type="text" placeholder="Search" />
-            <img src={serachIcon} alt="search" />
-          </div>
-          <div className="dashboard__notification_wrap">
-            <button>
-              <img src={notifInfo} alt="notifications" />
-            </button>
-          </div>
-          <div className="dashboard__user_wrap">
-            <button>
-              <img src={userImg} alt="user" />
-            </button>
-          </div>
-        </div>
-      </div>
-
+   
+<DashboardHeader headingData="My Seller Profile"/>
       <div className="brief__infor_content">
         Update your seller details and company information. This helps buyers
         understand who you are and improves listing visibility.

@@ -9,6 +9,7 @@ import React, { useRef, useState, useEffect } from "react";
 import axios from "axios";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
+import DashboardHeader from "./DashboardHeaderBlock";
 
 const CreateCIM = () => {
   const { id } = useParams();
@@ -115,29 +116,8 @@ const handleDelete = async (fileId) => {
     <>
       <Toast ref={toast} />
 
-      <div className="dashboard__header_block">
-        <h3 className="heading__Digital_CIM">
-          Confidential Information Memorandum
-        </h3>
-
-        <div className="dashboard__header_search_notification_wrap">
-          <div className="dashboard__search_field_wrap">
-            <input type="text" placeholder="Search" />
-            <img src={serachIcon} alt="" />
-          </div>
-          <div className="dashboard__notification_wrap">
-            <button>
-              <img src={notifInfo} alt="" />
-            </button>
-          </div>
-          <div className="dashboard__user_wrap">
-            <button>
-              <img src={userImg} alt="" />
-            </button>
-          </div>
-        </div>
-      </div>
-
+    
+<DashboardHeader headingData="Confidential Information Memorandum"/>
       <div className="brief__infor_content">
         <p>
           This information is used to generate your Confidential Information

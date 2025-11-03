@@ -115,27 +115,8 @@ const fetchSubmissions = async () => {
       {/* Toast Component */}
       <Toast ref={toast} position="top-right" />
 
-      <div className="dashboard__header_block">
-        <h3>Document Room | {listingData.businessName}</h3>
-
-        <div className="dashboard__header_search_notification_wrap">
-          <div className="dashboard__search_field_wrap">
-            <input type="text" placeholder="Search" />
-            <img src={serachIcon} alt="" />
-          </div>
-          <div className="dashboard__notification_wrap">
-            <button>
-              <img src={notifInfo} alt="" />
-            </button>
-          </div>
-          <div className="dashboard__user_wrap">
-            <button>
-              <img src={userImg} alt="" />
-            </button>
-          </div>
-        </div>
-      </div>
-
+    
+<DashboardHeader headingData={`Document Room | ${listingData.businessName}`}/>
       <div className="brief__infor_content">
         <p>
           Securely Manage And Share Files With Buyers Who Have Been Approved To

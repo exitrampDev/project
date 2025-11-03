@@ -31,6 +31,7 @@ import DocumentRoom from "./components/dashboard/DasboardContentComponents/Doocu
 import DocumentRoomBuyer from "./components/dashboard/DasboardContentComponents/DocumentRoomBuyer";
 import CreateCIM from "./components/dashboard/DasboardContentComponents/CreateCIM";
 import DueDiligence from "./components/dashboard/DasboardContentComponents/DueDiligence";
+import FlaggedListing from "./components/dashboard/AdminContent/FlaggedListing";
 
 
 const App = () => {
@@ -90,7 +91,7 @@ const App = () => {
         </Route>
         <Route path="admin" element={<Dashboard />}>
           <Route path="users" element={<AdminUsersShow />} />
-          <Route path="inquiries" element={"inquiries are here!"} />
+          <Route path="inquiries" element={<FlaggedListing/>} />
         </Route>
       </Routes>
     </>

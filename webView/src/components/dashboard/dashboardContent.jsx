@@ -6,38 +6,20 @@ import userImg from "../../assets/userImg.png";
 import { Routes, Route } from "react-router-dom";
 import FreeBuyerDashboard from "./DasboardContentComponents/FreeBuyerComponent";
 import FreeSellerDashboard from "./DasboardContentComponents/FreeSellerDashboard";
+import DashboardHeader from "./DasboardContentComponents/DashboardHeaderBlock";
+import AdminDashboard from "./AdminContent/AdminDashboard";
 
 const DashboardContent = () => {
   const user = useRecoilValue(authState).user;
 
   return (
     <>
-      <div className="dashboard__header_block">
-        <h3>{user.user_type} Dashboard</h3>
-
-        <div className="dashboard__header_search_notification_wrap">
-          <div className="dashboard__search_field_wrap">
-            <input type="text" placeholder="Search" />
-            <img src={serachIcon} alt="" />
-          </div>
-          <div className="dashboard__notification_wrap">
-            <button>
-              <img src={notifInfo} alt="" />
-            </button>
-          </div>
-          <div className="dashboard__user_wrap">
-            <button>
-              <img src={userImg} alt="" />
-            </button>
-          </div>
-        </div>
-      </div>
-
+      <DashboardHeader headingData={`${user.user_type} Dashboard`}/>
       {user?.user_type === "buyer_basic" ? <FreeBuyerDashboard /> : " "}
       {user?.user_type === "seller_basic" ? <FreeSellerDashboard /> : " "}
       {user?.user_type === "seller_listing" ? <FreeSellerDashboard /> : " "}
       {user?.user_type === "seller_central" ? <FreeSellerDashboard /> : " "}
-      
+      {user?.user_type === "admin" ? <AdminDashboard /> : " "}
     </>
   );
 };

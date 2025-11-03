@@ -10,6 +10,7 @@ import { apiBaseUrlState, authState } from "../../../recoil/ctaState";
 import { Button } from "primereact/button";
 import { Link } from "react-router-dom";
 import { Tag } from "primereact/tag";
+import DashboardHeader from "./DashboardHeaderBlock";
 
 
 
@@ -125,30 +126,7 @@ const DueDiligenceAction = (statusNDA, Id) => {
 
   return (
     <div className="p-4">
-      <div className="dashboard__header_block">
-              <h3 className="heading__Digital_CIM">
-                {" "}
-               NDA Requests 
-              </h3>
-
-              <div className="dashboard__header_search_notification_wrap">
-                <div className="dashboard__search_field_wrap">
-                  <input type="text" placeholder="Search" />
-                  <img src={serachIcon} alt="" />
-                </div>
-                <div className="dashboard__notification_wrap">
-                  <button>
-                    <img src={notifInfo} alt="" />
-                  </button>
-                </div>
-                <div className="dashboard__user_wrap">
-                  <button>
-                    <img src={userImg} alt="" />
-                  </button>
-                </div>
-              </div>
-            </div>
-
+          <DashboardHeader headingData="NDA Requests"/>
             <div className="brief__infor_content">
               <p>
                 View and manage all your NDA submissions for private listings. NDAs must be approved to unlock CIMs and seller messaging.

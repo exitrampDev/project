@@ -3422,6 +3422,44 @@ span.comment__list_btn {
     color: #000;
     cursor: pointer;
 }
+.form__field_wrap {
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+}
+
+.form__field_wrap label {
+    width: 100%;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.form__field_wrap [type="password"], .form__field_wrap input {
+    width: 100%;
+}
+
+.form__field_wrap div#user_type {
+    width: 100%;
+}
+
+.form__field_wrap div#user_type * {
+    font-size: 13px;
+}
+
+.form__field_wrap div#password {
+    width: 100%;
+}
+
+.form__field_wrap .p-icon-field.p-icon-field-right {
+    width: 100%;
+}
+
+.admin__register_new_user_form button.p-button-success.p-button.p-component {
+    margin-top: 15px;
+    background: #ffb100;
+    color: #290100;
+}
 @media screen and (min-width: 1024px) and (max-width: 1920px) {
   .header_container nav.nav_col a {
     font-size: 18px;

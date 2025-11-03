@@ -12,6 +12,7 @@ import { Dialog } from "primereact/dialog";
 import { Button } from "primereact/button";
 import { Toast } from "primereact/toast";
 import { Link } from "react-router-dom";
+import DashboardHeader from "./DashboardHeaderBlock";
 
 const BuyerSubmissionRequest = () => {
   const [buyerSubmissions, setBuyerSubmissions] = useState([]);
@@ -142,33 +143,7 @@ const DueDiligenceAction = (statusNDA, Id) => {
   return (
     <>
       <Toast ref={toast} />
-
-      <div className="dashboard__header_block">
-        <h3 className="heading__Digital_CIM">Buyer Submissions</h3>
-
-        <div className="dashboard__header_search_notification_wrap">
-          <div className="dashboard__search_field_wrap">
-            <input
-              type="text"
-              placeholder="Search"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-            <img src={serachIcon} alt="search" />
-          </div>
-          <div className="dashboard__notification_wrap">
-            <button>
-              <img src={notifInfo} alt="notification" />
-            </button>
-          </div>
-          <div className="dashboard__user_wrap">
-            <button>
-              <img src={userImg} alt="user" />
-            </button>
-          </div>
-        </div>
-      </div>
-
+      <DashboardHeader headingData="Buyer Submissions"/>
       <div className="brief__infor_content">
         <p>
           These buyers have shown interest in your listing by submitting a

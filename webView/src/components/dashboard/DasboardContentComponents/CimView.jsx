@@ -7,6 +7,7 @@ import fileClip from "../../../assets/fileClip.png";
 import { useRecoilValue } from "recoil";
 import { authState,apiBaseUrlState  } from "../../../recoil/ctaState";
 import axios from "axios";
+import DashboardHeader from "./DashboardHeaderBlock";
 
 function CIMview() {
   const { id } = useParams();
@@ -45,30 +46,8 @@ function CIMview() {
 
   return (
     <div className="cim__view_main_container">
-     <div className="dashboard__header_block">
-                  <h3 className="heading__Digital_CIM">
-                    {" "}
-                    Confidential Information Memorandum
-                  </h3>
-    
-                  <div className="dashboard__header_search_notification_wrap">
-                    <div className="dashboard__search_field_wrap">
-                      <input type="text" placeholder="Search" />
-                      <img src={serachIcon} alt="" />
-                    </div>
-                    <div className="dashboard__notification_wrap">
-                      <button>
-                        <img src={notifInfo} alt="" />
-                      </button>
-                    </div>
-                    <div className="dashboard__user_wrap">
-                      <button>
-                        <img src={userImg} alt="" />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-    
+     
+    <DashboardHeader headingData="Confidential Information Memorandum"/>
                 <div className="brief__infor_content">
                   <p>
                     This information is used to generate your Confidential Information Memorandum (CIM) and prepare your business for buyer review.

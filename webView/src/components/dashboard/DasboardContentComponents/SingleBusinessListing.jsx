@@ -17,6 +17,7 @@ import { Chip } from "primereact/chip";
 import { useNavigate } from "react-router-dom";
 import NDASubmit from "../DasboardContentComponents/NdaSubmit";
 import { useRecoilState } from "recoil";
+import DashboardHeader from "./DashboardHeaderBlock";
 
 export default function SingleBusinessListing() {
   const [ndaListingIdAdd, setNdaListingIdAdd] = useRecoilState(ndaListingId);
@@ -83,28 +84,7 @@ export default function SingleBusinessListing() {
 
   return (
     <>
-     <div className="dashboard__header_block">
-                <h3 className="heading__Digital_CIM">Business Listing</h3>
-        
-                <div className="dashboard__header_search_notification_wrap">
-                  <div className="dashboard__search_field_wrap">
-                    <input type="text" placeholder="Search" />
-                    <img src={serachIcon} alt="search" />
-                  </div>
-                  <div className="dashboard__notification_wrap">
-                    <button>
-                      <img src={notifInfo} alt="notifications" />
-                    </button>
-                  </div>
-                  <div className="dashboard__user_wrap">
-                    <button>
-                      <img src={userImg} alt="user" />
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-
+<DashboardHeader headingData="Business Listing"/>
              
       <div className="business__list_single_main_wrap dasb">
 
