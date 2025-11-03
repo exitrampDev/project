@@ -7,15 +7,19 @@ import { MailService } from './mail/mail.service';
 import { BusinessExistsConstraint } from './decorators/business-exists.validator';
 import { Business, BusinessSchema } from 'src/business-listing/schemas/business.schema';
 import { UniqueInCollectionConstraint } from './decorators/unique-in-collection.validator';
+import { Notification, NotificationSchema } from './schemas/notification.schema';
+import { NotificationHelper } from './helpers/notification.helper'; 
+
 @Global()
 @Module({
   imports: [HttpModule,
    MongooseModule.forFeature([
     { name: HeartBeat.name, schema: HeartBeatSchema },
     { name: Business.name, schema: BusinessSchema },
+    { name: Notification.name, schema: NotificationSchema },
   ]),
   ],
-  providers: [MailService, BusinessExistsConstraint, UniqueInCollectionConstraint], 
-  exports: [HttpModule,MongooseModule, MailService, BusinessExistsConstraint, UniqueInCollectionConstraint],
+  providers: [MailService, BusinessExistsConstraint, UniqueInCollectionConstraint, NotificationHelper], 
+  exports: [HttpModule,MongooseModule, MailService, BusinessExistsConstraint, UniqueInCollectionConstraint, NotificationHelper],
 })  
 export class SharedModule {}

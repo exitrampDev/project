@@ -6,12 +6,13 @@ import { RegisterDto } from './dto/register.dto';
 import * as bcrypt from 'bcrypt';
 import { ConflictException } from '@nestjs/common';
 import { ResetPasswordDto } from './dto/reset-password.dto';
-
+import { NotificationHelper } from 'src/common/helpers/notification.helper';
 @Injectable()
 export class AuthService {
   constructor(
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
+    private readonly notificationHelper: NotificationHelper,
   ) {}
 
   async validateUser(email: string, password: string) {
@@ -21,8 +22,8 @@ export class AuthService {
     }
     console.log('Validating user with email:', email, password, user.password);
 
-     console.log('🔐 Incoming password:', password);
-     console.log('🗄️ Stored hash:', user.password);
+     console.log(' Incoming password:', password);
+     console.log(' Stored hash:', user.password);
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
@@ -36,8 +37,16 @@ export class AuthService {
 
   async login(user: any) {
     const payload = { sub: user._id, email: user.email, role: user.role };
+    const token = this.jwtService.sign(payload);
+    
+    await this.notificationHelper.createNotification({
+    userId: user._id,
+    title: 'Login Successful',
+    message: `Hi ${user.first_name || user.email}, you have successfully logged in.`,
+  });
+
     return {
-      access_token: this.jwtService.sign(payload),
+      access_token: token,
       data: user,
     };
   }
