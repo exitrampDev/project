@@ -27,6 +27,9 @@ export class User {
   @Prop({ required: true, enum: UserType, default: UserType.SUBSCRIBER })
   user_type: string;
 
+  @Prop({ default: false })
+  isDeleted: boolean;
+
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
