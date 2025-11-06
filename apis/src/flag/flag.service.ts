@@ -81,11 +81,11 @@ export class FlagService {
       }
     },
     { $replaceRoot: { newRoot: "$flags" } },
-    { $sort: { createdAt: -1 } }, // latest first
+    { $sort: { createdAt: -1 } }, 
     { $skip: Number(skip) },
     { $limit: Number(limit) },
   ];
-  
+
   const data = await this.flagModel.aggregate<any>(pipeline as any[]);
 
   const total = await this.flagModel.countDocuments(baseFilter);
