@@ -13,7 +13,7 @@ export class FlagService {
   ) {}
 
   async create(createFlagDto: CreateFlagDto) {
-    // ✅ Check if user already flagged this business
+    // ✅ Check if user already flagged this 
     const existingFlag = await this.flagModel.findOne({
       userId: createFlagDto.userId,
       businessId: createFlagDto.businessId,
