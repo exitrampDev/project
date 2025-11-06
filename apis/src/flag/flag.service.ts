@@ -37,13 +37,65 @@ export class FlagService {
     }
   }
 
-  async findAll(query: QueryFlagDto) {
-    const features = new ApiFeatures(this.flagModel);
+  // async findAll(query: QueryFlagDto) {
+  //   const features = new ApiFeatures(this.flagModel);
 
-    return features.paginateAndFilter({
-      ...query,
-      searchFields: ['description', 'userName'], // yahan search chalega
-      baseFilter: { isDeleted: false },
-    });
+  //   return features.paginateAndFilter({
+  //     ...query,
+  //     searchFields: ['description', 'userName'], // yahan search chalega
+  //     baseFilter: { isDeleted: false },
+  //   });
+  // }
+  async findAll(query: any) {
+  const features = new ApiFeatures(this.flagModel);
+  
+  const {
+    page = 1,
+    limit = 10,
+    search,
+  } = query;
+
+  const skip = (page - 1) * limit;
+  const baseFilter = { isDeleted: false };
+
+  if (search) {
+    baseFilter['$or'] = [
+      { description: new RegExp(search, 'i') },
+      { userName: new RegExp(search, 'i') },
+    ];
   }
+
+  const pipeline = [
+    { $match: baseFilter },
+    {
+      $group: {
+        _id: "$businessId",
+        flagCount: { $sum: 1 },
+        flags: { $push: "$$ROOT" }
+      }
+    },
+    { $unwind: "$flags" },
+    {
+      $addFields: {
+        "flags.flagCount": "$flagCount"
+      }
+    },
+    { $replaceRoot: { newRoot: "$flags" } },
+    { $sort: { createdAt: -1 } }, // latest first
+    { $skip: Number(skip) },
+    { $limit: Number(limit) },
+  ];
+  
+  const data = await this.flagModel.aggregate<any>(pipeline as any[]);
+
+  const total = await this.flagModel.countDocuments(baseFilter);
+
+  return {
+    total,
+    page: Number(page),
+    limit: Number(limit),
+    data,
+  };
+}
+
 }
