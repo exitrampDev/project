@@ -37,15 +37,6 @@ export class FlagService {
     }
   }
 
-  // async findAll(query: QueryFlagDto) {
-  //   const features = new ApiFeatures(this.flagModel);
-
-  //   return features.paginateAndFilter({
-  //     ...query,
-  //     searchFields: ['description', 'userName'], // yahan search chalega
-  //     baseFilter: { isDeleted: false },
-  //   });
-  // }
   async findAll(query: any) {
   const features = new ApiFeatures(this.flagModel);
   
@@ -67,6 +58,35 @@ export class FlagService {
 
   const pipeline = [
     { $match: baseFilter },
+    {
+      $addFields: {
+        userId: { $toObjectId: "$userId" },
+        businessId: { $toObjectId: "$businessId" }
+      }
+    },
+
+
+  // Join user data
+    {
+      $lookup: {
+        from: 'users',             
+        localField: 'userId',
+        foreignField: '_id',
+        as: 'user',
+      },
+    },
+    { $unwind: { path: '$user', preserveNullAndEmptyArrays: true } },
+
+    //  Join business data
+    {
+      $lookup: {
+        from: 'businesses',         
+        localField: 'businessId',
+        foreignField: '_id',
+        as: 'business',
+      },
+    },
+    { $unwind: { path: '$business', preserveNullAndEmptyArrays: true } },
     {
       $group: {
         _id: "$businessId",
