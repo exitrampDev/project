@@ -77,7 +77,7 @@ export class FlagService {
     },
     { $unwind: { path: '$user', preserveNullAndEmptyArrays: true } },
 
-    //  Join business data
+    //  Join business 
     {
       $lookup: {
         from: 'businesses',         
