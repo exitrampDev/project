@@ -7,6 +7,7 @@ export enum BusinessStatus {
   LIVE = 'live',
   INACTIVE = 'inactive',
   DRAFT = 'draft',
+  BLOCK = 'block',
 }
 
 // CIM status allowed values
