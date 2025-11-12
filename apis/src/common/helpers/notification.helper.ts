@@ -15,10 +15,11 @@ export class NotificationHelper {
   ) {}
 
   async createNotification(data: {
-    userId: string;
+    userId: Types.ObjectId;
     title: string;
     message: string;
     link?: string;
+    businessId?: Types.ObjectId;
   }) {
     const notification = new this.notificationModel({
       ...data,

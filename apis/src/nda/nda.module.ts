@@ -5,6 +5,7 @@ import { NdaService } from './nda.service';
 import { NdaController } from './nda.controller';
 import { Nda, NdaSchema } from './schemas/nda.schema';
 import { Business, BusinessSchema } from 'src/business-listing/schemas/business.schema';
+import { NotificationHelper } from 'src/common/helpers/notification.helper';
 
 @Module({
   imports: [
@@ -12,7 +13,7 @@ import { Business, BusinessSchema } from 'src/business-listing/schemas/business.
      MongooseModule.forFeature([{ name: Business.name, schema: BusinessSchema }]),
   ],
   controllers: [NdaController],
-  providers: [NdaService],
+  providers: [NdaService, NotificationHelper],
   exports: [NdaService],
 })
 export class NdaModule {}

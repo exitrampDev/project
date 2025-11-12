@@ -6,35 +6,49 @@ import { Nda, NdaDocument } from './schemas/nda.schema';
 import { CreateNdaDto } from './dto/create-nda.dto';
 import { QueryNdaDto } from './dto/query-nda.dto';
 import { Business, BusinessDocument } from 'src/business-listing/schemas/business.schema';
+import { NotificationHelper } from 'src/common/helpers/notification.helper';
 
 @Injectable()
 export class NdaService {
   constructor(
     @InjectModel(Nda.name) private readonly ndaModel: Model<NdaDocument>,
      @InjectModel(Business.name) private readonly businessModel: Model<BusinessDocument>,
+     private readonly notificationHelper: NotificationHelper,
   ) {}
 
   // User submits NDA
-  async create(dto: { businessId: string }, userId: Types.ObjectId) {
+  async create(dto: { businessId: string }, userId: string | Types.ObjectId) {
+    const userObjectId = typeof userId === 'string' ? new Types.ObjectId(userId) : userId;
+
+    // Check if NDA already exists
     const existingNda = await this.ndaModel.findOne({
       businessId: dto.businessId,
-      submittedBy: userId,
+      submittedBy: userObjectId,
     });
-
-    const business = await this.businessModel.findOne({
-      _id: dto.businessId      
-    });
-
 
     if (existingNda) {
       throw new BadRequestException('You have already applied');
     }
 
+    // Find business
+    const business = await this.businessModel.findById(dto.businessId);
+    if (!business || !business.ownerId) {
+      throw new BadRequestException('Business or owner not found');
+    }
+
+    // Create NDA
     const newNda = new this.ndaModel({
       businessId: dto.businessId,
-      businessOwnerId: business?.ownerId,
-      submittedBy: userId,
+      businessOwnerId: business.ownerId,
+      submittedBy: userObjectId,
       status: 'pending',
+    });
+
+    // Create notification for business owner
+    await this.notificationHelper.createNotification({
+      userId: new Types.ObjectId(business.ownerId),
+      title: 'NDA Submitted',
+      message: `A new NDA has been submitted for on your business "${business.businessName}"`,
     });
 
     return newNda.save();
@@ -235,8 +249,8 @@ export class NdaService {
         {
           $match: {  $expr: {
               $eq: [
-                { $toObjectId: "$userId" }, // convert buyer.userId (string) → ObjectId
-                "$$buyerIdObj"              // nda.submittedBy (already ObjectId)
+                { $toObjectId: "$userId" }, 
+                "$$buyerIdObj"             
               ]
             }
           }
@@ -372,6 +386,7 @@ export class NdaService {
     };
   }
   ///reject ka kaam hai ye
+
   async rejectNda(ndaId: string, userId: string): Promise<Nda> {
     const nda = await this.ndaModel.findById(ndaId);
     if (!nda) throw new NotFoundException('NDA not found');
@@ -387,8 +402,16 @@ export class NdaService {
     nda.sellerResponseOn = new Date();
     nda.status = 'rejected';
     await nda.save();
+      console.log('Sending notification to:', nda.submittedBy);
+    await this.notificationHelper.createNotification({
+        // new Types.ObjectId(commentDto.createdBy),
+        userId: new Types.ObjectId(nda.submittedBy),    
+        title: 'Reject Nda',
+        message: `Your request has been rejected`,
+      });
     return nda;
   }
+
   //approve ka kaam hai ye 
   async approveNda(ndaId: string, userId: string): Promise<Nda>{
      const nda = await this.ndaModel.findById(ndaId);
@@ -405,6 +428,13 @@ export class NdaService {
      nda.sellerResponseOn = new Date();
      nda.status = 'approved';
      await nda.save();
+
+     await this.notificationHelper.createNotification({
+        // new Types.ObjectId(commentDto.createdBy),
+        userId: nda.submittedBy,    
+        title: 'Flag Submitted',
+        message: `Your request has been approved.`,
+      });
      return nda;
   }
 
@@ -423,6 +453,13 @@ export class NdaService {
      nda.sellerResponseOn = new Date();
      nda.docRoomAccess = 'approved';
      await nda.save();
+
+     await this.notificationHelper.createNotification({
+        // new Types.ObjectId(commentDto.createdBy),
+        userId: nda.submittedBy,    
+        title: 'Flag Submitted',
+        message: `Your request has been Allow.`,
+      });
      return nda;
   }
 
@@ -441,6 +478,13 @@ export class NdaService {
      nda.sellerResponseOn = new Date();
      nda.docRoomAccess = 'rejected';
      await nda.save();
+
+     await this.notificationHelper.createNotification({
+        // new Types.ObjectId(commentDto.createdBy),
+        userId: nda.submittedBy,    
+        title: 'Flag Submitted',
+        message: `Your request has been rejected.`,
+      });
      return nda;
   }
 

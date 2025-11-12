@@ -10,6 +10,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 // import { JwtUser } from '../auth/interfaces/jwt-user.interface';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
+import { RoleGuard } from 'src/common/decorators/admin.decorator';
 
 @Controller('business-listing')
 export class BusinessListingController {
@@ -47,6 +48,12 @@ export class BusinessListingController {
         @User() user: any,
     ) {
         return this.businessService.update(id, dto, user);
+    }
+
+    @UseGuards(JwtAuthGuard, RoleGuard('admin'))
+    @Patch(':id/block')
+    async blockBusiness(@Param('id') id: string) {
+      return this.businessService.blockBusiness(id);
     }
     
 

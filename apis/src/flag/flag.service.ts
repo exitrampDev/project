@@ -1,15 +1,19 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { Flag, FlagDocument } from './schemas/flag.schema';
 import { CreateFlagDto } from './dto/create-flag.dto';
 import { QueryFlagDto } from './dto/query-flag.dto';
 import { ApiFeatures } from 'src/common/utils/api-features';
+import { Business, BusinessDocument } from 'src/business-listing/schemas/business.schema';
+import { NotificationHelper } from 'src/common/helpers/notification.helper';
 
 @Injectable()
 export class FlagService {
   constructor(
     @InjectModel(Flag.name) private readonly flagModel: Model<FlagDocument>,
+    @InjectModel(Business.name) private readonly businessModel: Model<BusinessDocument>,
+    private readonly notificationHelper: NotificationHelper,
   ) {}
 
   async create(createFlagDto: CreateFlagDto) {
@@ -27,7 +31,21 @@ export class FlagService {
     // Save new flag
     try {
       const flag = new this.flagModel(createFlagDto);
+      //////////
+      const business = await this.businessModel.findById(createFlagDto.businessId);
+
+      if (business) {
+        await this.notificationHelper.createNotification({
+          // new Types.ObjectId(commentDto.createdBy),
+          userId: new Types.ObjectId(business.ownerId),    
+          title: 'Flag Submitted',
+          message: `Someone flagged your business`,
+        });
+      }
       return await flag.save();
+      
+
+  
     } catch (error) {
       // handle unique index error
       if (error.code === 11000) {

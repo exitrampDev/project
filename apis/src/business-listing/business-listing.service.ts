@@ -5,6 +5,7 @@ import { Model } from 'mongoose';
 import { Business, BusinessDocument } from './schemas/business.schema';
 import { ApiFeatures } from 'src/common/utils/api-features';
 import { QueryBusinessDto } from './dto/query-business.dto';
+import { NotificationHelper } from 'src/common/helpers/notification.helper';
 import { CreateBusinessDto } from './dto/create-business.dto';
 import { UpdateBusinessDto } from './dto/update-business.dto';
 
@@ -12,74 +13,61 @@ import { UpdateBusinessDto } from './dto/update-business.dto';
 export class BusinessListingService {
   constructor(
     @InjectModel(Business.name) private businessModel: Model<BusinessDocument>,
+    private readonly notificationHelper: NotificationHelper,
   ) {}
 
-  // async findAll(query: QueryBusinessDto, user?: any) {
-  //   const baseFilter: any = { isDeleted: false };
-    
-  //   // If user is provided, only show businesses owned by that user
-  //   if (user?.userId) {
-  //     baseFilter.ownerId = user.userId;
-  //   }
-
-  //   const features = new ApiFeatures(this.businessModel);
-  //   return features.paginateAndFilter({
-  //     ...query,
-  //     searchFields: ['businessName', 'businessType', 'entityType','city','state','country'],
-  //      baseFilter: baseFilter,
-  //   });
-  // }
+ 
   async findAll(query: QueryBusinessDto, user?: any) {
-  const {
-    page = 1,
-    limit = 10,
-    search,
-    sortBy = 'createdAt',
-    order = 'desc',
-  } = query;
+    const {
+      page = 1,
+      limit = 10,
+      search,
+      sortBy = 'createdAt',
+      order = 'desc',
+    } = query;
 
-  const sortOrder = order === 'desc' ? -1 : 1;
+    const sortOrder = order === 'desc' ? -1 : 1;
 
-  const filter: any = { isDeleted: false };
+    const filter: any = { isDeleted: false };
 
-  // ✅ sirf apne user ke businesses
-  if (user?.userId) {
-    filter.ownerId = user.userId;
+    // ✅ sirf apne user ke businesses
+    if (user?.userId) {
+      filter.ownerId = user.userId;
+    }
+
+    // ✅ search fields
+    if (search) {
+      const regex = new RegExp(search, 'i');
+      filter.$or = [
+        { businessName: regex },
+        { businessType: regex },
+        { entityType: regex },
+        { city: regex },
+        { state: regex },
+        { country: regex },
+      ];
+    }
+
+    // ✅ data fetch with Cim
+    const data = await this.businessModel
+      .find(filter)
+      .sort({ [sortBy]: sortOrder })
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .populate({
+        path: 'cim', // virtual field from schema
+      })
+      .lean();
+
+    const total = await this.businessModel.countDocuments(filter);
+
+    return {
+      total,
+      page,
+      limit,
+      data,
+    };
   }
-
-  // ✅ search fields
-  if (search) {
-    const regex = new RegExp(search, 'i');
-    filter.$or = [
-      { businessName: regex },
-      { businessType: regex },
-      { entityType: regex },
-      { city: regex },
-      { state: regex },
-      { country: regex },
-    ];
-  }
-
-  // ✅ data fetch with Cim
-  const data = await this.businessModel
-    .find(filter)
-    .sort({ [sortBy]: sortOrder })
-    .skip((page - 1) * limit)
-    .limit(limit)
-    .populate({
-      path: 'cim', // virtual field from schema
-    })
-    .lean();
-
-  const total = await this.businessModel.countDocuments(filter);
-
-  return {
-    total,
-    page,
-    limit,
-    data,
-  };
-}
 
 
   async create(dto: CreateBusinessDto, user: any): Promise<Business> {
@@ -145,12 +133,36 @@ async attachFile(businessId: string, fileUrl: string, fileType: string = 'profit
   }
 
   // You can store multiple files or specific keys (profitAndLossFile, etc.)
-  business[fileType] = fileUrl; // or push into array of files
+  business[fileType] = fileUrl; 
   await business.save();
 
   return { message: 'File uploaded successfully', fileUrl };
 }
 
+// business-listing.service.ts
+async blockBusiness(businessId: string) {
+  // Find the business
+  const business = await this.businessModel.findById(businessId) as BusinessDocument;
+  if (!business) {
+    throw new NotFoundException('Business not found');
+  }
 
+  // Update status
+  business.status = 'blocked';
+  await business.save();
 
+  // Create notification for the business owner
+  await this.notificationHelper.createNotification({
+    // new Types.ObjectId(commentDto.createdBy),
+    userId: business.ownerId, 
+    title: 'Business Blocked',
+    message: `Hi, Your business "${business.businessName}" has been blocked by admin.`,
+    
+  });
+
+  return {
+    message: 'Business blocked successfully',
+    business,
+  };
+}
 }

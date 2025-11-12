@@ -3,6 +3,7 @@ import { FlagService } from './flag.service';
 import { CreateFlagDto } from './dto/create-flag.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { QueryFlagDto } from './dto/query-flag.dto';
+import { User } from 'src/common/decorators/user.decorator';
 
 @Controller('flag')
 export class FlagController {
@@ -23,10 +24,10 @@ export class FlagController {
     return this.flagService.create(data);
   }
 
-  // ✅ GET all flags with filters, pagination, sorting
+  // GET all flags with filters, pagination, sorting
   @UseGuards(JwtAuthGuard) // optional, agar auth chahiye
     @Get()
-    async getFlags(@Query() query: QueryFlagDto) {
+    async getFlags(@Query() query: QueryFlagDto, @User() user: any) {
       return this.flagService.findAll(query);
     }
 }

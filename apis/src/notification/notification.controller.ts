@@ -8,7 +8,7 @@ import { NotificationHelper } from 'src/common/helpers/notification.helper';
 @UseGuards(JwtAuthGuard)
 export class NotificationController {
   constructor(private readonly notificationService: NotificationService, 
-private readonly notificationHelper: NotificationHelper
+  private readonly notificationHelper: NotificationHelper
 
   ) {}
 
@@ -17,12 +17,6 @@ private readonly notificationHelper: NotificationHelper
   async getMyNotifications(@User() user: any) {
     return this.notificationService.findByUser(user.userId);
   }
-
-//   @UseGuards(JwtAuthGuard)
-//   @Get()
-//   async getUserNotifications(@User() user: any) {
-//     return this.notificationHelper.getUserNotifications(user.userId);
-//   }
 
   @UseGuards(JwtAuthGuard)
   @Get(':id/read')
