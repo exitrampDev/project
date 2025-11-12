@@ -55,84 +55,102 @@ export class FlagService {
     }
   }
 
-  async findAll(query: any) {
-  const features = new ApiFeatures(this.flagModel);
-  
-  const {
-    page = 1,
-    limit = 10,
-    search,
-  } = query;
+   async findAll(query: any) {
+      const {
+        page = 1,
+        limit = 10,
+        search,
+      } = query;
 
-  const skip = (page - 1) * limit;
-  const baseFilter = { isDeleted: false };
+      const skip = (page - 1) * limit;
+      const baseFilter = { isDeleted: false };
 
-  if (search) {
-    baseFilter['$or'] = [
-      { description: new RegExp(search, 'i') },
-      { userName: new RegExp(search, 'i') },
-    ];
+      if (search) {
+        baseFilter['$or'] = [
+          { description: new RegExp(search, 'i') },
+          { userName: new RegExp(search, 'i') },
+        ];
+      }
+
+      const pipeline = [
+        { $match: baseFilter },
+        {
+          $addFields: {
+            userId: { $toObjectId: "$userId" },
+            businessId: { $toObjectId: "$businessId" }
+          }
+        },
+
+        // Join flag's user data
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'userId',
+            foreignField: '_id',
+            as: 'user',
+          },
+        },
+        { $unwind: { path: '$user', preserveNullAndEmptyArrays: true } },
+
+        // Join business
+        {
+          $lookup: {
+            from: 'businesses',
+            localField: 'businessId',
+            foreignField: '_id',
+            as: 'business',
+          },
+        },
+        { $unwind: { path: '$business', preserveNullAndEmptyArrays: true } },
+
+        // Ensure business.ownerId is ObjectId
+        {
+          $addFields: {
+            "business.ownerId": { $toObjectId: "$business.ownerId" }
+          }
+        },
+
+        // Join business owner (creator)
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'business.ownerId',
+            foreignField: '_id',
+            as: 'businessOwner',
+          },
+        },
+        { $unwind: { path: '$businessOwner', preserveNullAndEmptyArrays: true } },
+
+        // Group for flag count
+        {
+          $group: {
+            _id: "$businessId",
+            flagCount: { $sum: 1 },
+            flags: { $push: "$$ROOT" }
+          }
+        },
+        { $unwind: "$flags" },
+        {
+          $addFields: {
+            "flags.flagCount": "$flagCount"
+          }
+        },
+        { $replaceRoot: { newRoot: "$flags" } },
+
+        { $sort: { createdAt: -1 } },
+        { $skip: Number(skip) },
+        { $limit: Number(limit) },
+      ];
+
+      const data = await this.flagModel.aggregate(pipeline as any[]);
+      const total = await this.flagModel.countDocuments(baseFilter);
+
+      return {
+        total,
+        page: Number(page),
+        limit: Number(limit),
+        data,
+      };
   }
 
-  const pipeline = [
-    { $match: baseFilter },
-    {
-      $addFields: {
-        userId: { $toObjectId: "$userId" },
-        businessId: { $toObjectId: "$businessId" }
-      }
-    },
-
-
-  // Join user data
-    {
-      $lookup: {
-        from: 'users',             
-        localField: 'userId',
-        foreignField: '_id',
-        as: 'user',
-      },
-    },
-    { $unwind: { path: '$user', preserveNullAndEmptyArrays: true } },
-
-    //  Join business 
-    {
-      $lookup: {
-        from: 'businesses',         
-        localField: 'businessId',
-        foreignField: '_id',
-        as: 'business',
-      },
-    },
-    { $unwind: { path: '$business', preserveNullAndEmptyArrays: true } },
-    {
-      $group: {
-        _id: "$businessId",
-        flagCount: { $sum: 1 },
-        flags: { $push: "$$ROOT" }
-      }
-    },
-    { $unwind: "$flags" },
-    {
-      $addFields: {
-        "flags.flagCount": "$flagCount"
-      }
-    },
-    { $replaceRoot: { newRoot: "$flags" } },
-    { $sort: { createdAt: -1 } }, 
-    { $skip: Number(skip) },
-    { $limit: Number(limit) },
-  ];
-
-  const data = await this.flagModel.aggregate<any>(pipeline as any[]);
-
-  const total = await this.flagModel.countDocuments(baseFilter);
-
-  return {
-    total,
-    page: Number(page),
-    limit: Number(limit),
-    data,
-  };
-}
 }

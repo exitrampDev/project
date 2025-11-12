@@ -56,24 +56,24 @@ export class NdaController {
     @UseGuards(JwtAuthGuard) // JWT guard add karein
     @Patch('approve')
     async approveNda(@Body() ApproveDto: ApproveNdaDto, @Req() req: any) {
-        const userId = req.user.userId; // ab defined hoga
+        const userId = req.user.userId;
         return await this.ndaService.approveNda(ApproveDto.ndaId, userId);
     }  
 
 
       //approved ka kaam hai ye 
-    @UseGuards(JwtAuthGuard) // JWT guard add karein
+    @UseGuards(JwtAuthGuard) 
     @Patch('allow-doc-room')
     async allowDocRoom(@Body() ApproveDto: ApproveNdaDto, @Req() req: any) {
-        const userId = req.user.userId; // ab defined hoga
+        const userId = req.user.userId; 
         return await this.ndaService.allowDocRoom(ApproveDto.ndaId, userId);
     }
     
        //approved ka kaam hai ye 
-    @UseGuards(JwtAuthGuard) // JWT guard add karein
+    @UseGuards(JwtAuthGuard) 
     @Patch('disallow-doc-room')
     async disallowDocRoom(@Body() ApproveDto: ApproveNdaDto, @Req() req: any) {
-        const userId = req.user.userId; // ab defined hoga
+        const userId = req.user.userId; 
         return await this.ndaService.rejectDocRoom(ApproveDto.ndaId, userId);
     }
 
