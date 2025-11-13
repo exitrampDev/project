@@ -12,6 +12,7 @@ import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { RolesGuard } from 'src/auth/roles.guards';
+import { StatusBusinessDto } from './dto/status-business.dto';
 
 @Controller('business-listing')
 export class BusinessListingController {
@@ -56,6 +57,14 @@ export class BusinessListingController {
     @Patch(':id/block')
     async blockBusiness(@Param('id') id: string) {
       return this.businessService.blockBusiness(id);
+    }
+    
+
+     @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles('admin')
+    @Patch(':id/update-business-status')
+    async updateBusinessStatus(@Param('id') id: string, @Body() dto: StatusBusinessDto,) {
+      return this.businessService.updateBusinessStatus(id, <string> dto.status);
     }
     
 

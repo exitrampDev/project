@@ -140,29 +140,56 @@ async attachFile(businessId: string, fileUrl: string, fileType: string = 'profit
 }
 
 // business-listing.service.ts
-async blockBusiness(businessId: string) {
-  // Find the business
-  const business = await this.businessModel.findById(businessId) as BusinessDocument;
-  if (!business) {
-    throw new NotFoundException('Business not found');
+  async blockBusiness(businessId: string) {
+    // Find the business
+    const business = await this.businessModel.findById(businessId) as BusinessDocument;
+    if (!business) {
+      throw new NotFoundException('Business not found');
+    }
+
+    // Update status
+    business.status = 'blocked';
+    await business.save();
+
+    // Create notification for the business owner
+    await this.notificationHelper.createNotification({
+      // new Types.ObjectId(commentDto.createdBy),
+      userId: business.ownerId, 
+      title: 'Business Blocked',
+      message: `Your business has been blocked by admin.`,
+      
+    });
+
+    return {
+      message: 'Business blocked successfully',
+      business,
+    };
   }
 
-  // Update status
-  business.status = 'blocked';
-  await business.save();
+  //  -----------------------------
+    async updateBusinessStatus(businessId: string, status: string) {
+    // Find the business
+    const business = await this.businessModel.findById(businessId) as BusinessDocument;
+    if (!business) {
+      throw new NotFoundException('Business not found');
+    }
 
-  // Create notification for the business owner
-  await this.notificationHelper.createNotification({
-    // new Types.ObjectId(commentDto.createdBy),
-    userId: business.ownerId, 
-    title: 'Business Blocked',
-    message: `Your business has been blocked by admin.`,
-    
-  });
+    // Update status
+    business.status = status;
+    await business.save();
 
-  return {
-    message: 'Business blocked successfully',
-    business,
-  };
-}
+    // Create notification for the business owner
+    await this.notificationHelper.createNotification({
+      // new Types.ObjectId(commentDto.createdBy),
+      userId: business.ownerId, 
+      title: 'Business Blocked',
+      message: `Your business has been ${status} by admin.`,
+      
+    });
+
+    return {
+      message: `Business ${status} successfully`,
+      business,
+    };
+  }
 }
