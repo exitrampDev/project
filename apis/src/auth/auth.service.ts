@@ -36,7 +36,7 @@ export class AuthService {
   }
 
   async login(user: any) {
-    const payload = { sub: user._id, email: user.email, role: user.role };
+    const payload = { sub: user._id, email: user.email, role: user.user_type };
     const token = this.jwtService.sign(payload);
     
     await this.notificationHelper.createNotification({
@@ -71,7 +71,7 @@ export class AuthService {
 
   // Hash password
   const hashedPassword = await bcrypt.hash(password, 10);
-  console.log('Hashed password:', hashedPassword);
+  // console.log('Hashed password:', hashedPassword);
   // Create user
   const newUser = await this.usersService.create({
     email: normalizedEmail,

@@ -156,7 +156,7 @@ async blockBusiness(businessId: string) {
     // new Types.ObjectId(commentDto.createdBy),
     userId: business.ownerId, 
     title: 'Business Blocked',
-    message: `Hi, Your business "${business.businessName}" has been blocked by admin.`,
+    message: `Your business has been blocked by admin.`,
     
   });
 
