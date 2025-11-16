@@ -1,7 +1,7 @@
 // business-listing.service.ts
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { Business, BusinessDocument } from './schemas/business.schema';
 import { ApiFeatures } from 'src/common/utils/api-features';
 import { QueryBusinessDto } from './dto/query-business.dto';
@@ -181,8 +181,8 @@ async attachFile(businessId: string, fileUrl: string, fileType: string = 'profit
     // Create notification for the business owner
     await this.notificationHelper.createNotification({
       // new Types.ObjectId(commentDto.createdBy),
-      userId: business.ownerId, 
-      title: 'Business Blocked',
+      userId: new Types.ObjectId(business.ownerId),
+      title: `Business ${status}`,
       message: `Your business has been ${status} by admin.`,
       
     });
