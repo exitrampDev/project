@@ -1,5 +1,5 @@
 import React from "react";
-
+import { NavLink } from "react-router-dom";
 export default function SellerPremiumNav() {
   return <div className="nav__dashboard">
          <ul>
