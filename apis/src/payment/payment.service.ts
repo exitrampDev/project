@@ -7,6 +7,7 @@ export class PaymentService {
 
 
     async createCheckoutSession(amount: number, userId: string) {
+        console.log('Creating checkout session for user:', userId, 'with amount:', amount,process.env.FRONTEND_SUCCESS_URL);
     const payload = qs.stringify({
       'payment_method_types[]': 'card',
       mode: 'payment',
