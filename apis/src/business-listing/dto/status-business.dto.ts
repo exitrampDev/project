@@ -7,3 +7,4 @@ export class StatusBusinessDto {
   @IsEnum(BusinessStatus)
   status?: BusinessStatus;
 }
+ 
