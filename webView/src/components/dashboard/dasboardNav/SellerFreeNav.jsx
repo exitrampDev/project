@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import icon1 from "../../../assets/d-icon.png";
 import icon2 from "../../../assets/d-icon1.png";
 import icon3 from "../../../assets/d-icon2.png";
@@ -17,7 +18,7 @@ export default function SellerFreeNav() {
              </NavLink>
            </li>
         <li>
-          <Link to="/dashboard">
+          <Link to="/user/dashboard">
             <img src={icon1} alt="-" /> Dashboard
           </Link>
         </li>

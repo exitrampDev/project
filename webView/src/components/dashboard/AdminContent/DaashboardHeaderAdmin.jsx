@@ -3,12 +3,8 @@ import React from "react"
 import notifInfo from "../../../assets/notifInfo.png";
 import serachIcon from "../../../assets/serachIcon.png";
 import userImg from "../../../assets/userImg.png";
-import { Link } from "react-router-dom";
-import { useRecoilValue } from "recoil";
-import { authState } from "../../../recoil/ctaState";
 
-const DashboardHeader = ({headingData}) => {
-  const user = useRecoilValue(authState).user;
+const DashboardHeaderAdmin = ({headingData}) => {
     return(
         <>
         <div className="dashboard__header_block">
@@ -20,17 +16,12 @@ const DashboardHeader = ({headingData}) => {
           </div>
           <div className="dashboard__notification_wrap">
             <button>
-             <Link to={`/user/notifications/${user._id}`}>
               <img src={notifInfo} alt="Notifications" />
-             </Link>
             </button>
           </div>
           <div className="dashboard__user_wrap">
             <button>
-               <Link to={`/user/complete-profile-seller`}>
-               <img src={userImg} alt="User" />
-               </Link>
-              
+              <img src={userImg} alt="User" />
             </button>
           </div>
         </div>
@@ -38,4 +29,4 @@ const DashboardHeader = ({headingData}) => {
         </>
     )
 }
-export default DashboardHeader
+export default DashboardHeaderAdmin
