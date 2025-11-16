@@ -14,6 +14,10 @@ export class NotificationService {
     return this.notificationModel.find({ userId: new Types.ObjectId(userId) }).sort({ createdAt: -1 }).exec();
   }
 
+  async findByid(userId: string) {
+    return this.notificationModel.find({ userId: new Types.ObjectId(userId) }).sort({ createdAt: -1 }).exec();
+  }
+
   async markAsRead(notificationId: string) {
     return this.notificationModel.findByIdAndUpdate(notificationId, { isRead: true }, { new: true });
   }

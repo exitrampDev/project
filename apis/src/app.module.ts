@@ -26,6 +26,7 @@ import { CimModule } from './cim/cim.module';
 import { SharedModule } from './common/shared.module';
 import { DueDiligenceModule } from './due-diligence/due-diligence.module';
 import { NotificationModule } from './notification/notification.module';
+import { PaymentModule } from './payment/payment.module';
 
 
 @Module({
@@ -76,7 +77,7 @@ import { NotificationModule } from './notification/notification.module';
     CimModule,
     SharedModule,
     DueDiligenceModule,  
-    NotificationModule 
+    NotificationModule, PaymentModule 
   ],
 
  
