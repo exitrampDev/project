@@ -390,7 +390,9 @@ const handleSubmit = async () => {
     }
 
     // Optional: navigate after upload
-    window.location.href = `/user/single-listing/${fileListingUploadId}`;
+    // window.location.href = `/user/single-listing/${fileListingUploadId}`;
+window.location.href = "/user/payment-process";
+
   } catch (error) {
     toast.current.show({
       severity: "error",

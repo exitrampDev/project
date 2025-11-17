@@ -3488,7 +3488,13 @@ span.comment__list_btn {
   align-items: center;
   pointer-events: none;
 }
+.pay__btn_listing {
+    display: flex;
+}
 
+.pay__btn_listing .button__save_listing_global {
+    margin: 0 !important;
+}
 @media screen and (min-width: 1024px) and (max-width: 1920px) {
   .header_container nav.nav_col a {
     font-size: 18px;
