@@ -28,7 +28,7 @@ export class BusinessListingService {
 
     const sortOrder = order === 'desc' ? -1 : 1;
 
-    const filter: any = { isDeleted: false };
+    const filter: any = { isDeleted: false, status: 'live' };
 
     // ✅ sirf apne user ke businesses
     if (user?.userId) {
