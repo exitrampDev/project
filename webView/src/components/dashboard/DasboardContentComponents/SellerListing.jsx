@@ -390,7 +390,9 @@ const handleSubmit = async () => {
     }
 
     // Optional: navigate after upload
-    window.location.href = `/user/single-listing/${fileListingUploadId}`;
+    // window.location.href = `/user/single-listing/${fileListingUploadId}`;
+window.location.href = "/user/payment-process";
+
   } catch (error) {
     toast.current.show({
       severity: "error",
@@ -1486,34 +1488,31 @@ useEffect(() => {
             <div className="my__save_listing_wrap my__listing_table">
               
           <DataTable
-              value={filteredListings}
-              paginator
-              rows={10}
-              loading={loading}
-              responsiveLayout="scroll"
-              className="listing__main_wrap"
-            >
-              <Column header="Listing Name dada" body={listingNameTemplate} />
-              <Column header="Industry" body={industryTemplate} />
-              <Column field="yearStablished" header="Year" />
-              <Column header="Location" body={locationTemplate} />
-              <Column field="revenue" header="Revenue" body={moneyTemplate} />
-              <Column
-                field="askingPrice"
-                header="Asking Price"
-                body={moneyTemplate}
-              />
-              <Column header="Last Edited" body={dateTemplate} />
-              
-              <Column
-                field="cimStatus"
-                header="CIM Status"
-                body={cimTemplate}
-              />
-              <Column body={(filteredListings) => documentRoomLink(filteredListings._id)} header="Document Room" />
-              <Column body={(filteredListings) => createCIMList(filteredListings._id, filteredListings.cimUrl)} header="CIM View" />
-              <Column header="Action" body={actionTemplate} />
-            </DataTable>
+  value={filteredListings}
+  paginator
+  rows={10}
+  loading={loading}
+  responsiveLayout="scroll"
+  className="listing__main_wrap"
+  rowClassName={(rowData) => {
+    return {
+      "blocked-row": rowData.status === "block"
+    };
+  }}
+>
+  <Column header="Listing Name dada" body={listingNameTemplate} />
+  <Column header="Industry" body={industryTemplate} />
+  <Column field="yearStablished" header="Year" />
+  <Column header="Location" body={locationTemplate} />
+  <Column field="revenue" header="Revenue" body={moneyTemplate} />
+  <Column field="askingPrice" header="Asking Price" body={moneyTemplate} />
+  <Column header="Last Edited" body={dateTemplate} />
+  <Column field="cimStatus" header="CIM Status" body={cimTemplate} />
+  <Column body={(row) => documentRoomLink(row._id)} header="Document Room" />
+  <Column body={(row) => createCIMList(row._id, row.cimUrl)} header="CIM View" />
+  <Column header="Action" body={actionTemplate} />
+</DataTable>
+
             </div>
             
           </>

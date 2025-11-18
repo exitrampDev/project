@@ -10,8 +10,7 @@ export class PaymentController {
 //   @UseGuards(JwtAuthGuard)
   async createCheckout(@Body() body: { amount: number; userId: string }) {
     const session = await this.paymentsService.createCheckoutSession(
-      body.amount,
-      body.userId,
+      60, 'user_12345',
     );
 
     return { url: session.url };

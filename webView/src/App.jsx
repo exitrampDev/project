@@ -32,6 +32,9 @@ import DocumentRoomBuyer from "./components/dashboard/DasboardContentComponents/
 import CreateCIM from "./components/dashboard/DasboardContentComponents/CreateCIM";
 import DueDiligence from "./components/dashboard/DasboardContentComponents/DueDiligence";
 import FlaggedListing from "./components/dashboard/AdminContent/FlaggedListing";
+import UserNotifications from "./components/dashboard/DasboardContentComponents/UserNotifications";
+import PaymentProcess from "./components/dashboard/DasboardContentComponents/PaymentProcess";
+import SuccessPayment from "./components/dashboard/DasboardContentComponents/SuccessPayment";
 
 
 const App = () => {
@@ -63,9 +66,11 @@ const App = () => {
           <Route path="document-room/:id" element={<DocumentRoom/>} />
           <Route path="document-room-buyer/:id" element={<DocumentRoomBuyer/>} />
           <Route path="single-listing/:id" element={<SingleBusinessListing />} />
+          <Route path="notifications/:id" element={<UserNotifications/>} />
           <Route path="create-cim/:id" element={<CreateCIM/>} />
           <Route path="cim/:id" element={<CimView/>} />
           <Route path="due-diligence/:id" element={<DueDiligence/>} />
+          <Route path="payment-process" element={<PaymentProcess/>} />
           <Route
             path="complete-profile-buyer-free"
             element={<ProfileFormBuyer />}
@@ -92,6 +97,9 @@ const App = () => {
         <Route path="admin" element={<Dashboard />}>
           <Route path="users" element={<AdminUsersShow />} />
           <Route path="inquiries" element={<FlaggedListing/>} />
+        </Route>
+        <Route path="payment" element={<Dashboard />}>
+          <Route path="success" element={<SuccessPayment />} />
         </Route>
       </Routes>
     </>
