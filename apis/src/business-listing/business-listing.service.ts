@@ -55,7 +55,7 @@ export class BusinessListingService {
       .skip((page - 1) * limit)
       .limit(limit)
       .populate({
-        path: 'cim', // virtual field from schema
+        path: 'cim', 
       })
       .lean();
 
