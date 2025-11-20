@@ -1,10 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
 import * as qs from 'qs';
+import { CreatePaymentDto } from './dto/create-payment.dto';
+import { Model, Types } from 'mongoose';
+import { InjectModel } from '@nestjs/mongoose';
+import { Payment, PaymentDocument } from './schemas/payment.schema';
+import { ApiFeatures } from 'src/common/utils/api-features';
 
 @Injectable()
 export class PaymentService {
-
+     constructor(
+        @InjectModel(Payment.name) private readonly paymentModel: Model<PaymentDocument>,
+     ){}
 
     async createCheckoutSession(amount: number, userId: string) {
         console.log('Creating checkout session for user:', userId, 'with amount:', amount,process.env.FRONTEND_SUCCESS_URL);
@@ -38,5 +45,48 @@ export class PaymentService {
 
     return response.data;
   }
+
+  //create payment 
+  async create(dto:CreatePaymentDto, userId: Types.ObjectId){
+     const payment = new this.paymentModel({
+      ...dto,
+      userId
+     });
+     return payment.save();
+  }
+  //get payment for specific user
+  async getByUser(user: any, query: any) {
+  const userId = user.userId || user.sub || user.id;
+
+  const baseFilter: any = {};
+  if (userId) {
+    baseFilter.userId = new Types.ObjectId(userId);
+  }
+
+  const features = new ApiFeatures(this.paymentModel);
+  return features.paginateAndFilter({
+    ...query,
+    searchFields: ['transactionId', 'message'], // searchable fields
+    baseFilter,
+  });
+}
+
+  //find by id
+  async getById(id: Types.ObjectId){
+    return this.paymentModel.findById(id);
+  }
+
+  //admin get all apyments
+  async findAll(query: any) {
+     console.log("🔥 incoming query:", query);
+  const baseFilter: any = {}; // admin → no user filter
+
+  const features = new ApiFeatures(this.paymentModel);
+  return features.paginateAndFilter({
+    ...query,
+    searchFields: ['transactionId', 'message'], // searchable fields
+    baseFilter,
+  });
+}
 
 }

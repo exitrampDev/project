@@ -20,10 +20,10 @@ export class AuthService {
     if (!user) {
       throw new UnauthorizedException('Invalid credentials1');
     }
-    console.log('Validating user with email:', email, password, user.password);
+    // console.log('Validating user with email:', email, password, user.password);
 
-     console.log(' Incoming password:', password);
-     console.log(' Stored hash:', user.password);
+    //  console.log(' Incoming password:', password);
+    //  console.log(' Stored hash:', user.password);
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {

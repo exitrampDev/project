@@ -48,7 +48,7 @@ export class BusinessListingService {
       ];
     }
 
-    // ✅ data fetch with Cim
+    // ✅ data fetch with
     const data = await this.businessModel
       .find(filter)
       .sort({ [sortBy]: sortOrder })
