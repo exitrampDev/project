@@ -21,9 +21,10 @@ export class PaymentService {
 
       // line items
       'line_items[0][price_data][currency]': 'usd',
-      'line_items[0][price_data][product_data][name]': 'Wallet Top-Up',
+      'line_items[0][price_data][product_data][name]': 'Business Posting',
       'line_items[0][price_data][unit_amount]': amount * 100,
       'line_items[0][quantity]': 1,
+      'allow_promotion_codes': 'true',
 
       // optional metadata
       'metadata[userId]': userId,

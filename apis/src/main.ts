@@ -32,9 +32,12 @@ async function bootstrap() {
     credentials: true,
   });
 
+  // Stripe webhook route must be raw
+  app.use('/payment/webhook', bodyParser.raw({ type: 'application/json' }))
   // Increase POST body size limits
   app.use(bodyParser.json({ limit: '16mb' }));
   app.use(bodyParser.urlencoded({ limit: '16mb', extended: true }));
+   
   const port = 3000;
   await app.listen(port,'0.0.0.0');
   Logger.log(`🚀 Application is running on http://localhost:${port}`);

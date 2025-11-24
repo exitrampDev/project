@@ -22,6 +22,15 @@ export class Payment {
 
   @Prop({ type: String, default: '' })
   message: string;
+
+  @Prop({ type: String, default: 'pending' })
+  objectId: string;
+
+  @Prop({ type: String, default: 'pending' })
+  paymentFor: string;
+
+  @Prop({ type: String, default: 'pending' })
+  paymentStatus: string;
 }
 
 export const PaymentSchema = SchemaFactory.createForClass(Payment);
