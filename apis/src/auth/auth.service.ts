@@ -111,7 +111,7 @@ async resetPassword({ token, newPassword }: ResetPasswordDto) {
   } catch (e) {
     throw new BadRequestException('Invalid or expired token');
   }
-
+  console.log('Reset password payload:', payload);
   const user = await this.usersService.findByEmail(payload.email);
   if (!user || user.email !== payload.email) {
     throw new BadRequestException('User not found');
