@@ -8,10 +8,14 @@ import { Roles } from 'src/common/decorators/roles.decorator';
 import * as crypto from 'crypto';
 import { User } from 'src/common/decorators/user.decorator';
 import { QueryPaymentDto } from './dto/query-payment.dto';
+import { BusinessListingService } from 'src/business-listing/business-listing.service';
 @Controller('payment')
 export class PaymentController {
   private readonly webhookSecret = <string> process.env.STRIPE_WEBHOOK_SECRET;
-     constructor(private readonly paymentsService: PaymentService) {}
+     constructor(private readonly paymentsService: PaymentService,
+      private bunisessService: BusinessListingService
+
+     ) {}
 
   @Post('create-checkout-session')
   async createCheckout(@Body() body: { amount: number; userId: string }) {
@@ -78,7 +82,22 @@ export class PaymentController {
     const userId = session.client_reference_id;
     console.log('Session details:', session.id);
     console.log('Checkout completed for user:', userId);
+    //get record from db using session id and update status and transaction id in that record
+    const paymentRecord = await this.paymentsService.getBySessionId(session.id);
+    console.log('Payment record found:', paymentRecord);
+    if (paymentRecord) {
+      paymentRecord.paymentStatus = 'completed';
+      paymentRecord.transactionDateTime = new Date();
+      paymentRecord.transactionId = session.payment_intent;
+      await paymentRecord.save();
 
+      //get business id from payment record and update business status to active
+      this.bunisessService.updateBusinessStatus(paymentRecord.objectId, 'active');
+
+      console.log('Payment record updated:', paymentRecord);
+    } else {
+      console.log('No payment record found for session ID:', session.id);
+    }
     // TODO: Update your DB here
   }
 

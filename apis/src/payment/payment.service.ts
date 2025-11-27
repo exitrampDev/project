@@ -103,6 +103,10 @@ export class PaymentService {
     .exec();
 }
 
+  async getBySessionId(id: Types.ObjectId) {
+    return this.paymentModel.findOne({ sessionId: id }).exec();
+}
+
   //admin get all apyments
   async findAll(query: QueryPaymentDto, user?: any) {
   const { page = 1, limit = 10, search } = query;

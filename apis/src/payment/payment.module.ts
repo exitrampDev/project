@@ -5,12 +5,13 @@ import mongoose from 'mongoose';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Payment, PaymentSchema } from './schemas/payment.schema';
 import { PaymentWebhookService } from './payment-webhook.service';
+import { BusinessListingService } from 'src/business-listing/business-listing.service';
 
 @Module({
   imports:[
      MongooseModule.forFeature([{ name : Payment.name, schema : PaymentSchema }])
   ],
   controllers: [PaymentController],
-  providers: [PaymentService, PaymentWebhookService]
+  providers: [PaymentService, PaymentWebhookService, BusinessListingService]
 })
 export class PaymentModule {}
