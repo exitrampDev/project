@@ -6,6 +6,7 @@ import { Model, Types } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { Payment, PaymentDocument } from './schemas/payment.schema';
 import { ApiFeatures } from 'src/common/utils/api-features';
+import { QuerySellerDto } from 'src/free-seller/dto/query-seller.dto';
 
 @Injectable()
 export class PaymentService {
@@ -78,14 +79,14 @@ export class PaymentService {
   }
 
   //admin get all apyments
-  async findAll(query: any) {
+  async findAll(query: QuerySellerDto, user?:any) {
      console.log("🔥 incoming query:", query);
-  const baseFilter: any = {}; // admin → no user filter
+  const baseFilter: any = {}; 
 
   const features = new ApiFeatures(this.paymentModel);
   return features.paginateAndFilter({
     ...query,
-    searchFields: ['transactionId', 'message'], // searchable fields
+    searchFields: ['transactionId', 'message'], 
     baseFilter,
   });
 }

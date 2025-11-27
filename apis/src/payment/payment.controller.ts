@@ -7,6 +7,7 @@ import { RolesGuard } from 'src/auth/roles.guards';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import * as crypto from 'crypto';
 import { User } from 'src/common/decorators/user.decorator';
+import { QueryPaymentDto } from './dto/query-payment.dto';
 @Controller('payment')
 export class PaymentController {
   private readonly webhookSecret = <string> process.env.STRIPE_WEBHOOK_SECRET;
@@ -101,7 +102,7 @@ export class PaymentController {
 
   @Get()
   @UseGuards(JwtAuthGuard)
-  async getMyPayments(@Req() req:any, @Query() query: any){
+  async getMyPayments(@Query() query: CreatePaymentDto, @Req() req){
        const userId = new Types.ObjectId(req.user.userId);
        return this.paymentsService.getByUser(req.user, query)
   }
@@ -110,10 +111,10 @@ export class PaymentController {
    @Get('all')
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles('admin')
-    async getAllPayments(@Req() req: any, @Query() query: any) {
+    async getAllPayments(@Query() query: QueryPaymentDto, @Req() req) {
       console.log("JWT payload:", req.user);  // ab show hoga
 
-      return this.paymentsService.findAll(query);
+      return this.paymentsService.findAll(query, req.user);
     }
 
   //get id
