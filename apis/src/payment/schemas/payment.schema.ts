@@ -20,7 +20,7 @@ export class Payment {
   @Prop({ type: String, default: '' })
   message: string;
 
-  @Prop({ type: String, default: 'pending' })
+  @Prop({ type: Types.ObjectId, default: 'pending' })
   objectId: string;
 
   //business_posting, business

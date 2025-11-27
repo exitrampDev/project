@@ -7,6 +7,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Payment, PaymentDocument } from './schemas/payment.schema';
 import { ApiFeatures } from 'src/common/utils/api-features';
 import { QuerySellerDto } from 'src/free-seller/dto/query-seller.dto';
+import { QueryPaymentDto } from './dto/query-payment.dto';
 
 @Injectable()
 export class PaymentService {
@@ -35,7 +36,7 @@ export class PaymentService {
     });
 
     const response = await axios.post(
-      'https://api.stripe.com/v1/checkout/sessions',
+      'https://api.stripe.com/v1/checkout/sessions', 
       payload,
       {
         headers: {
@@ -58,37 +59,84 @@ export class PaymentService {
   }
   //get payment for specific user
   async getByUser(user: any, query: any) {
-  const userId = user.userId || user.sub || user.id;
+   const { page = 1, limit = 10, search } = query;
+  const skip = (page - 1) * limit;
 
   const baseFilter: any = {};
-  if (userId) {
-    baseFilter.userId = new Types.ObjectId(userId);
+
+  if (search) {
+    baseFilter['$or'] = [
+      { transactionId: new RegExp(search, 'i') },
+      { message: new RegExp(search, 'i') },
+    ];
   }
 
-  const features = new ApiFeatures(this.paymentModel);
-  return features.paginateAndFilter({
-    ...query,
-    searchFields: ['transactionId', 'message'], // searchable fields
-    baseFilter,
-  });
+  const payments = await this.paymentModel.find(baseFilter)
+    .populate('userId')       
+    .populate({ 
+      path: 'objectId',       
+      model: 'Business',
+      select: 'businessName businessType listingTitle listingDescription'
+    })
+    .skip(skip)
+    .limit(limit)
+    .sort({ createdAt: -1 });
+
+  const total = await this.paymentModel.countDocuments(baseFilter);
+
+  return {
+    total,
+    page,
+    limit,
+    data: payments
+  };
 }
 
   //find by id
-  async getById(id: Types.ObjectId){
-    return this.paymentModel.findById(id);
-  }
+  async getById(id: Types.ObjectId) {
+  return this.paymentModel.findById(id)
+    .populate({
+      path: 'objectId',  
+      model: 'Business', 
+      select: '_id businessName businessType listingTitle listingDescription' 
+    })
+    .exec();
+}
 
   //admin get all apyments
-  async findAll(query: QuerySellerDto, user?:any) {
-     console.log("🔥 incoming query:", query);
-  const baseFilter: any = {}; 
+  async findAll(query: QueryPaymentDto, user?: any) {
+  const { page = 1, limit = 10, search } = query;
+  const skip = (page - 1) * limit;
 
-  const features = new ApiFeatures(this.paymentModel);
-  return features.paginateAndFilter({
-    ...query,
-    searchFields: ['transactionId', 'message'], 
-    baseFilter,
-  });
+  const baseFilter: any = {};
+
+  if (search) {
+    baseFilter['$or'] = [
+      { transactionId: new RegExp(search, 'i') },
+      { message: new RegExp(search, 'i') },
+    ];
+  }
+
+  const payments = await this.paymentModel.find(baseFilter)
+    .populate('userId')       
+    .populate({ 
+      path: 'objectId',       
+      model: 'Business',
+      select: 'businessName businessType listingTitle listingDescription'
+    })
+    .skip(skip)
+    .limit(limit)
+    .sort({ createdAt: -1 });
+
+  const total = await this.paymentModel.countDocuments(baseFilter);
+
+  return {
+    total,
+    page,
+    limit,
+    data: payments
+  };
 }
+
 
 }

@@ -127,22 +127,12 @@ export class PaymentController {
 
   @Get()
   @UseGuards(JwtAuthGuard)
-  async getMyPayments(@Query() query: CreatePaymentDto, @Req() req){
+  async getMyPayments(@Query() query: QueryPaymentDto, @Req() req){
        const userId = new Types.ObjectId(req.user.userId);
        return this.paymentsService.getByUser(req.user, query)
   }
 
   //admin get 
-<<<<<<< HEAD
-   @Get('all')
-    @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles('admin')
-    async getAllPayments(@Query() query: QueryPaymentDto, @Req() req) {
-      console.log("JWT payload:", req.user);  // ab show hoga
-
-      return this.paymentsService.findAll(query, req.user);
-    }
-=======
   @Get('all')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
@@ -151,7 +141,6 @@ export class PaymentController {
 
     return this.paymentsService.findAll(query);
   }
->>>>>>> c717c32e8bfa003ad566830be05d07f8cedc7777
 
   //get id
   @Get(':id')
