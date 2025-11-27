@@ -107,7 +107,10 @@ nest g module companies
 nest g controller companies
 nest g service companies
 
-
 nest g module readers
 nest g controller readers
 nest g service readers
+
+---------------------------------
+stripe login
+stripe listen --forward-to http://localhost:3000/payment/webhook

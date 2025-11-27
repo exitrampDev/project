@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
+import { BusinessStatus } from '../dto/create-business.dto';
 
 export type BusinessDocument = Business & Document & { createdAt: Date; updatedAt: Date };
 
@@ -185,7 +186,7 @@ export class Business {
   yourRole?: string;
 
   @Prop()
-image: string;
+  image: string;
 
   @Prop({ type: String, default: null })
   willingToCoBroker?: string;
@@ -232,7 +233,6 @@ image: string;
   @Prop({ type: String, default: '' })
   reasonForSelling?: string;
 
-
   // ----------------- Workforce -----------------
   @Prop({ type: String, default: null })
   workforceAllocation?: string;
@@ -268,16 +268,13 @@ image: string;
   @Prop({ type: Number, default: 0 })
   cashFlow: number;
 
-  @Prop({ default: 'draft' })
+  @Prop({ default: BusinessStatus.PENDING_FOR_PAYMENT })
   status: string;
 
   @Prop({ default: 'incomplete' })
   cimStatus: string;
 
-  // @Prop({ type: [AffiliateCompanySchema], default: [] })
-  // affiliateCompanies?: AffiliateCompany[];
-
-    @Prop({ type: String, default: null })
+  @Prop({ type: String, default: null })
   affiliateCompanies?: string;
 
   @Prop({ type: String, default: null })

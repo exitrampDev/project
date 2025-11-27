@@ -75,6 +75,7 @@ export class PaymentController {
 
   async handleCheckoutCompleted(session) {
     const userId = session.client_reference_id;
+    console.log('Session details:', session.id);
     console.log('Checkout completed for user:', userId);
 
     // TODO: Update your DB here
@@ -111,7 +112,6 @@ export class PaymentController {
     const session = await this.paymentsService.createCheckoutSession(
       amount, userId,
     );
-
    
 
     data.amount = amount;

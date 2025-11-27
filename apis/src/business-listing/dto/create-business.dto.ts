@@ -4,6 +4,7 @@ import { UniqueInCollection } from 'src/common/decorators/unique-in-collection.v
 
 // Business status allowed values
 export enum BusinessStatus {
+  PENDING_FOR_PAYMENT = 'pending_for_payment',
   LIVE = 'live',
   INACTIVE = 'inactive',
   DRAFT = 'draft',
