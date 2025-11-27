@@ -60,7 +60,7 @@ export class BusinessListingController {
     }
     
 
-     @UseGuards(JwtAuthGuard, RolesGuard)
+    @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles('admin')
     @Patch(':id/update-business-status')
     async updateBusinessStatus(@Param('id') id: string, @Body() dto: StatusBusinessDto,) {

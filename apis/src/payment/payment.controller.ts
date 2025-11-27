@@ -76,6 +76,7 @@ export class PaymentController {
 
   async handleCheckoutCompleted(session) {
     const userId = session.client_reference_id;
+    console.log('Session details:', session.id);
     console.log('Checkout completed for user:', userId);
 
     // TODO: Update your DB here
@@ -95,9 +96,33 @@ export class PaymentController {
   //post ki hai 
   @Post()
   @UseGuards(JwtAuthGuard)
-  async create(@Body() dto:CreatePaymentDto, @Req() req:any){
-      const userId = new Types.ObjectId(req.user.userId);
-      return this.paymentsService.create(dto,userId);
+  async create(@Body() dto:CreatePaymentDto, @Req() req:any, @User() user: any){
+    let data: any = {};
+    const userId = new Types.ObjectId(req.user.userId);
+    let amount = 0;
+  
+      if(user.role == 'seller_basic'){
+        amount = 30; //30 USD for basic sellers
+      }else if(user.role == 'seller_listing'){
+        amount = 30; //60 USD for premium sellers
+      }
+      else if(user.role == 'seller_central'){
+        amount = 60; //60 USD for premium sellers
+      }
+    
+    const session = await this.paymentsService.createCheckoutSession(
+      amount, userId,
+    );
+   
+
+    data.amount = amount;
+    data.sessionId = session.id;
+    data.objectId  = new Types.ObjectId(dto.businessId);
+
+    this.paymentsService.create(data,userId);
+    console.log('Checkout session created:', session);
+
+    return { url: session.url };
   }
 
   @Get()
@@ -108,6 +133,7 @@ export class PaymentController {
   }
 
   //admin get 
+<<<<<<< HEAD
    @Get('all')
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles('admin')
@@ -116,6 +142,16 @@ export class PaymentController {
 
       return this.paymentsService.findAll(query, req.user);
     }
+=======
+  @Get('all')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  async getAllPayments(@Req() req: any, @Query() query: any) {
+    console.log("JWT payload:", req.user);  // ab show hoga
+
+    return this.paymentsService.findAll(query);
+  }
+>>>>>>> c717c32e8bfa003ad566830be05d07f8cedc7777
 
   //get id
   @Get(':id')
@@ -135,7 +171,7 @@ export class PaymentController {
     return payment
   } 
 
-
+// ------------------------------------------
   verifyStripeSignature(rawBody: Buffer, sigHeader: string, secret: string) {
   if (!sigHeader) return false;
 

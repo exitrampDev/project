@@ -14,7 +14,7 @@ export class PaymentService {
         @InjectModel(Payment.name) private readonly paymentModel: Model<PaymentDocument>,
      ){}
 
-    async createCheckoutSession(amount: number, userId: string) {
+    async createCheckoutSession(amount: number, userId: Types.ObjectId|string) {
         console.log('Creating checkout session for user:', userId, 'with amount:', amount,process.env.FRONTEND_SUCCESS_URL);
     const payload = qs.stringify({
       'payment_method_types[]': 'card',
@@ -28,7 +28,7 @@ export class PaymentService {
       'allow_promotion_codes': 'true',
 
       // optional metadata
-      'metadata[userId]': userId,
+      // 'metadata[userId]': userId,
 
       success_url: `${process.env.FRONTEND_SUCCESS_URL}?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: process.env.FRONTEND_CANCEL_URL,

@@ -17,7 +17,7 @@ export class RolesGuard implements CanActivate {
     }
 
     if (!requiredRoles.includes(user.role)) {
-      throw new ForbiddenException('You are not authorized to access this resource');
+      throw new ForbiddenException('You are not authorized to access this resource..');
     }
 
     return true;
