@@ -35,6 +35,8 @@ import FlaggedListing from "./components/dashboard/AdminContent/FlaggedListing";
 import UserNotifications from "./components/dashboard/DasboardContentComponents/UserNotifications";
 import PaymentProcess from "./components/dashboard/DasboardContentComponents/PaymentProcess";
 import SuccessPayment from "./components/dashboard/DasboardContentComponents/SuccessPayment";
+import PaymentHistory from "./components/dashboard/DasboardContentComponents/PymentHistory";
+import UserPaymentHistory from "./components/dashboard/AdminContent/UsersPaymentsHistory";
 
 
 const App = () => {
@@ -70,10 +72,14 @@ const App = () => {
           <Route path="create-cim/:id" element={<CreateCIM/>} />
           <Route path="cim/:id" element={<CimView/>} />
           <Route path="due-diligence/:id" element={<DueDiligence/>} />
-          <Route path="payment-process" element={<PaymentProcess/>} />
+          <Route path="payment-process/:id" element={<PaymentProcess/>} />
           <Route
             path="complete-profile-buyer-free"
             element={<ProfileFormBuyer />}
+          />
+           <Route
+            path="payment-history"
+            element={<PaymentHistory/>}
           />
            <Route
             path="nda-requested"
@@ -96,6 +102,7 @@ const App = () => {
         </Route>
         <Route path="admin" element={<Dashboard />}>
           <Route path="users" element={<AdminUsersShow />} />
+           <Route path="users-payments" element={<UserPaymentHistory />} />
           <Route path="inquiries" element={<FlaggedListing/>} />
         </Route>
         <Route path="payment" element={<Dashboard />}>

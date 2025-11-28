@@ -18,6 +18,14 @@ export default function AdminNav() {
         </li>
         <li>
           <NavLink
+            to="/admin/users-payments"
+            className={({ isActive }) => (isActive ? "active" : "")}
+          >
+            <img src={icon1} alt="Dashboard" /> Users Payments
+          </NavLink>
+        </li>
+        <li>
+          <NavLink
             to="/admin/users"
             className={({ isActive }) => (isActive ? "active" : "")}
           >

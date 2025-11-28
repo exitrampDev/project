@@ -391,7 +391,7 @@ const handleSubmit = async () => {
 
     // Optional: navigate after upload
     // window.location.href = `/user/single-listing/${fileListingUploadId}`;
-window.location.href = "/user/payment-process";
+window.location.href = `/user/payment-process/${businessId}`;
 
   } catch (error) {
     toast.current.show({
