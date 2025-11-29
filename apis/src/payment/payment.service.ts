@@ -63,7 +63,7 @@ export class PaymentService {
   const skip = (page - 1) * limit;
 
   const baseFilter: any = {
-    userId: user.userId
+    userId: new Types.ObjectId(user.userId)
   };
 
   if (search) {
