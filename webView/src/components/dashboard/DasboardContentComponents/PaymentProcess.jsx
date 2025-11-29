@@ -3,20 +3,31 @@ import axios from "axios";
 import DashboardHeader from "./DashboardHeaderBlock";
 import { Button } from "primereact/button";
 import React from "react";
+import { useParams } from "react-router-dom";
+import { useRecoilValue } from "recoil";
+import { apiBaseUrlState, authState } from "../../../recoil/ctaState";
 
 const PaymentProcess = () => {
+  const { id } = useParams();
   const [loading, setLoading] = useState(false);
+  const API_BASE = useRecoilValue(apiBaseUrlState);
+  const { user, access_token } = useRecoilValue(authState) ?? {};
 
   const handlePayNow = async () => {
     try {
       setLoading(true);
 
-      const response = await axios.post(
-        "http://localhost:3000/payment/create-checkout-session",
-        {
-          return_url: "http://localhost:5173/user/payment-process"
-        }
-      );
+       const response = await axios.post(
+      `${API_BASE}/payment`,
+      {
+        businessId:id
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+        },
+      }
+    );
 
       // Redirect to Stripe checkout page
       window.location.href = response.data.url;

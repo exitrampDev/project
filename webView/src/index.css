@@ -3495,6 +3495,76 @@ span.comment__list_btn {
 .pay__btn_listing .button__save_listing_global {
     margin: 0 !important;
 }
+
+.invoice__wrapper h3 {
+  font-size: 20px;
+  margin-bottom: 20px;
+  font-weight: 600;
+  text-align: center;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #e5e5e5;
+}
+
+/* Invoice box */
+.invoice__box {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 20px;
+  background: #fafafa;
+}
+
+/* Key-value row */
+.invoice__box p {
+  margin: 10px 0;
+  font-size: 15px;
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px dashed #ddd;
+  padding-bottom: 6px;
+}
+
+/* Label styling */
+.invoice__box p strong {
+  color: #333;
+  min-width: 160px;
+  font-weight: 600;
+}
+
+/* Amount highlight */
+.invoice__box p:nth-child(4) {
+  font-size: 18px;
+  font-weight: 700;
+  color: #2b8a3e;
+}
+
+/* Status tag spacing fix */
+.invoice__box .p-tag {
+  margin-left: auto;
+}
+
+/* Footer / Buttons */
+.invoice__footer {
+  text-align: right;
+  margin-top: 20px;
+  border-top: 2px solid #eee;
+  padding-top: 15px;
+}
+
+/* Optional download button for future */
+.invoice__download_btn {
+  background: #1b74e4;
+  border: none;
+  padding: 10px 15px;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.invoice__download_btn:hover {
+  background: #155cb4;
+}
+
 @media screen and (min-width: 1024px) and (max-width: 1920px) {
   .header_container nav.nav_col a {
     font-size: 18px;

@@ -183,7 +183,7 @@ async attachFile(businessId: string, fileUrl: string, fileType: string = 'profit
       // new Types.ObjectId(commentDto.createdBy),
       userId: new Types.ObjectId(business.ownerId),
       title: `Business ${status}`,
-      message: `Your business has been ${status} by admin.`,
+      message: `Your business has been ${status}.`,
       
     });
 

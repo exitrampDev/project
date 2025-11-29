@@ -40,7 +40,14 @@ export default function SellerListingNav() {
                <img src={icon2} alt="My Listing" /> My Listing
              </NavLink>
            </li>
-           
+           <li>
+             <NavLink
+               to="/user/payment-history"
+               className={({ isActive }) => (isActive ? "active" : "")}
+             >
+               <img src={icon2} alt="My Listing" /> Payment History
+             </NavLink>
+           </li>
            <li>
              <NavLink
                to="/user/complete-profile-seller"
