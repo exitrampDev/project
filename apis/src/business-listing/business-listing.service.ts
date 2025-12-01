@@ -16,6 +16,58 @@ export class BusinessListingService {
     private readonly notificationHelper: NotificationHelper,
   ) {}
 
+  async findAllPublic(query: QueryBusinessDto, user?: any) {
+    const {
+      page = 1,
+      limit = 10,
+      search,
+      sortBy = 'createdAt',
+      order = 'desc',
+    } = query;
+
+    const sortOrder = order === 'desc' ? -1 : 1;
+
+    const filter: any = { isDeleted: false, status: 'live' };
+
+    // ✅ sirf apne user ke businesses
+    if (user?.userId) {
+      filter.ownerId = user.userId;
+    }
+
+    // ✅ search fields
+    if (search) {
+      const regex = new RegExp(search, 'i');
+      filter.$or = [
+        { businessName: regex },
+        { businessType: regex },
+        { entityType: regex },
+        { city: regex },
+        { state: regex },
+        { country: regex },
+      ];
+    }
+
+    // ✅ data fetch with
+    const data = await this.businessModel
+      .find(filter)
+      .sort({ [sortBy]: sortOrder })
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .populate({
+        path: 'cim', 
+      })
+      .lean();
+
+    const total = await this.businessModel.countDocuments(filter);
+
+    return {
+      total,
+      page,
+      limit,
+      data,
+    };
+  }
+
  
   async findAll(query: QueryBusinessDto, user?: any) {
     const {

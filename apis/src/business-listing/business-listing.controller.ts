@@ -28,7 +28,7 @@ export class BusinessListingController {
    
     @Get('public')
     async findAllPublic(@Query() query: QueryBusinessDto) {
-    return this.businessService.findAll(query);
+    return this.businessService.findAllPublic(query);
     }
 
     @UseGuards(JwtAuthGuard)
