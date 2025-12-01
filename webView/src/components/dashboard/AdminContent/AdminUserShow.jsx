@@ -5,21 +5,25 @@ import { InputText } from "primereact/inputtext";
 import { Password } from "primereact/password";
 import { Dropdown } from "primereact/dropdown";
 import { Column } from "primereact/column";
-import { Dialog } from "primereact/dialog"; // 👈 Import Dialog
-import notifInfo from "../../../assets/notifInfo.png";
-import serachIcon from "../../../assets/serachIcon.png";
-import userImg from "../../../assets/userImg.png";
-import { authState, apiBaseUrlState } from "../../../recoil/ctaState";
-import { useRecoilValue } from "recoil";
+import { Dialog } from "primereact/dialog";
 import { Button } from "primereact/button";
+import { useRecoilValue, useSetRecoilState } from "recoil";
+import { authState, apiBaseUrlState } from "../../../recoil/ctaState";
 import DashboardHeaderAdmin from "./DaashboardHeaderAdmin";
+import { useNavigate } from "react-router-dom";
 
 const AdminUserShow = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [visible, setVisible] = useState(false); // 👈 Controls popup visibility
+  const [visible, setVisible] = useState(false);
+  const [message, setMessage] = useState("");
+
   const API_BASE = useRecoilValue(apiBaseUrlState);
   const auth = useRecoilValue(authState);
+
+  // ⬇️ Recoil setter (used for login-as-user)
+  const setAuth = useSetRecoilState(authState);
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     email: "",
@@ -28,7 +32,6 @@ const AdminUserShow = () => {
     last_name: "",
     user_type: "",
   });
-  const [message, setMessage] = useState("");
 
   const userTypes = [
     { label: "Admin", value: "admin" },
@@ -42,9 +45,8 @@ const AdminUserShow = () => {
     { label: "M&A Expert Premium", value: "m&a_expert_premium" },
   ];
 
-  //  Fetch all users
+  // Fetch all users
   useEffect(() => {
-   
     const fetchUsers = async () => {
       try {
         const res = await axios.get(`${API_BASE}/users`, {
@@ -52,7 +54,7 @@ const AdminUserShow = () => {
             Authorization: `Bearer ${auth?.access_token || ""}`,
           },
         });
-        console.log("res.data>>>>>>>>>>.",res.data.data);
+
         setUsers(res.data.data);
       } catch (err) {
         console.error("Error fetching users:", err);
@@ -69,15 +71,16 @@ const AdminUserShow = () => {
     setFormData({ ...formData, [field]: value });
   };
 
+  // Register new user
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setMessage("");
 
     try {
-      const response = await axios.post(`${API_BASE}/auth/register`, formData, {
+      await axios.post(`${API_BASE}/auth/register`, formData, {
         headers: {
-          Authorization: `Bearer ${auth?.token || ""}`,
+          Authorization: `Bearer ${auth?.access_token || ""}`,
         },
       });
 
@@ -90,7 +93,7 @@ const AdminUserShow = () => {
         user_type: "",
       });
 
-      setVisible(false); // 👈 Close popup after success
+      setVisible(false);
     } catch (error) {
       console.error("❌ Error creating user:", error);
       setMessage(error.response?.data?.message || "Something went wrong.");
@@ -99,7 +102,7 @@ const AdminUserShow = () => {
     }
   };
 
-  //  Date formatter
+  // Format created date
   const formatDate = (isoDate) => {
     if (!isoDate) return "-";
     const date = new Date(isoDate);
@@ -110,12 +113,52 @@ const AdminUserShow = () => {
     });
   };
 
+  // ⬇️ LOGIN-AS-USER Using Recoil + Navigation ONLY
+  const loginAsUser = async (userId) => {
+    try {
+      const res = await axios.post(
+        `${API_BASE}/auth/login-by-admin`,
+        { userId },
+        {
+          headers: {
+            Authorization: `Bearer ${auth?.access_token || ""}`,
+          },
+        }
+      );
+
+      const token = res.data?.access_token;
+      const user = res.data?.data;
+
+      // ⬇️ Set new auth state (NO localStorage)
+      setAuth({
+        access_token: token,
+        user: user,
+      });
+
+      setMessage("✅ Logged in as user successfully!");
+
+      navigate("/user/dashboard");
+    } catch (error) {
+      console.error("Error logging in user:", error);
+      setMessage("❌ Error logging in as this user.");
+    }
+  };
+
+  const loginButtonTemplate = (row) => {
+    return (
+      <Button
+        label="Login"
+        icon="pi pi-sign-in"
+        className="p-button-warning p-button-sm"
+        onClick={() => loginAsUser(row._id)}
+      />
+    );
+  };
+
   return (
     <>
-      {/* Header */}
-     <DashboardHeaderAdmin  headingData="Users"/>
+      <DashboardHeaderAdmin headingData="Users" />
 
-      {/* Section Title */}
       <div className="dashboard__free_buyer_complete_profile mb-4">
         <div className="p-d-flex p-jc-between p-ai-center">
           <h2>Add New User Profile</h2>
@@ -125,7 +168,7 @@ const AdminUserShow = () => {
           label="Create New User"
           icon="pi pi-user"
           className="p-button-primary"
-          onClick={() => setVisible(true)} // 👈 Open popup
+          onClick={() => setVisible(true)}
         />
       </div>
 
@@ -142,10 +185,12 @@ const AdminUserShow = () => {
             header="Created At"
             body={(row) => formatDate(row.createdAt)}
           />
+
+          <Column header="Actions" body={loginButtonTemplate} />
         </DataTable>
       </div>
 
-      {/* 👇 PrimeReact Dialog (Popup) */}
+      {/* Popup */}
       <Dialog
         header="Register New User"
         visible={visible}
@@ -154,8 +199,7 @@ const AdminUserShow = () => {
         onHide={() => setVisible(false)}
       >
         <form onSubmit={handleSubmit} className="admin__register_new_user_form">
-
-             <div className="form__field_wrap">
+          <div className="form__field_wrap">
             <label htmlFor="user_type">User Type</label>
             <Dropdown
               id="user_type"
@@ -166,6 +210,7 @@ const AdminUserShow = () => {
               required
             />
           </div>
+
           <div className="form__field_wrap">
             <label htmlFor="first_name">First Name</label>
             <InputText
@@ -208,8 +253,6 @@ const AdminUserShow = () => {
               required
             />
           </div>
-
-       
 
           <Button
             label={loading ? "Registering..." : "Register User"}
