@@ -27,10 +27,12 @@ export class AuthController {
   }
 
    @Post('login-by-admin')
-  async loginByAdmin(@Body() loginDto:{ userId: object }) {
-    // console.log('Login attempt with:', loginDto);
+  async loginByAdmin(@Body() loginDto:{ userId: string }) {
+    console.log('Login attempt with:', loginDto.userId);
     const user = await this.authService.loginById(loginDto.userId);
-    return this.authService.login(user);
+    // console.log('User found for admin login:', user);
+    // return this.authService.login(user);
+    return true;
   }
 
   @Post('register')

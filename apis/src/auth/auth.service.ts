@@ -7,6 +7,7 @@ import * as bcrypt from 'bcrypt';
 import { ConflictException } from '@nestjs/common';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { NotificationHelper } from 'src/common/helpers/notification.helper';
+import * as mongoose from 'mongoose';
 @Injectable()
 export class AuthService {
   constructor(
@@ -35,7 +36,8 @@ export class AuthService {
     return userWithoutPassword;
   }
 
-   async loginById(userId: object) {
+   async loginById(userId: any) {
+    userId =  new mongoose.Types.ObjectId(userId);
     const user = await this.usersService.findById(userId);
     if (!user) {
       throw new UnauthorizedException('Invalid user ID');

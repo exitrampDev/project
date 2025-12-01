@@ -19,8 +19,9 @@ export class UsersService {
   }
 
   //login by id
-   async findById(id: object): Promise<UserDocument | null> {
+   async findById(id: string): Promise<UserDocument | null> {
     return this.userModel.findOne({ id }).exec();
+  }
  
   async create(createUserDto: CreateUserDto): Promise<Omit<User & { _id: any }, 'password'>> {
     const normalizedEmail = createUserDto.email.trim().toLowerCase();
