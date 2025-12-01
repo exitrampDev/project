@@ -37,7 +37,7 @@ export class AuthService {
   }
 
    async loginById(userId: any) {
-    userId =  new mongoose.Types.ObjectId(userId);
+    // userId =  new mongoose.Types.ObjectId(userId);
     const user = await this.usersService.findById(userId);
     if (!user) {
       throw new UnauthorizedException('Invalid user ID');

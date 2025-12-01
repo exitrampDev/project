@@ -19,8 +19,8 @@ export class UsersService {
   }
 
   //login by id
-   async findById(id: string): Promise<UserDocument | null> {
-    return this.userModel.findOne({ id }).exec();
+   async findById(_id: string): Promise<UserDocument | null> {
+    return this.userModel.findOne({ _id }).exec();
   }
  
   async create(createUserDto: CreateUserDto): Promise<Omit<User & { _id: any }, 'password'>> {

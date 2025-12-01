@@ -30,8 +30,8 @@ export class AuthController {
   async loginByAdmin(@Body() loginDto:{ userId: string }) {
     console.log('Login attempt with:', loginDto.userId);
     const user = await this.authService.loginById(loginDto.userId);
-    // console.log('User found for admin login:', user);
-    // return this.authService.login(user);
+    console.log('User found for admin login:', user);
+    return this.authService.login(user);
     return true;
   }
 
