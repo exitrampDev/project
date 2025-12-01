@@ -128,6 +128,8 @@ const AdminUserShow = () => {
 
       const token = res.data?.access_token;
       const user = res.data?.data;
+      localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("tokenLocalStorage", token);
 
       // ⬇️ Set new auth state (NO localStorage)
       setAuth({
