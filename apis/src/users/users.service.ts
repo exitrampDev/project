@@ -18,6 +18,10 @@ export class UsersService {
     return this.userModel.findOne({ email }).exec();
   }
 
+  //login by id
+   async findById(id: object): Promise<UserDocument | null> {
+    return this.userModel.findOne({ id }).exec();
+ 
   async create(createUserDto: CreateUserDto): Promise<Omit<User & { _id: any }, 'password'>> {
     const normalizedEmail = createUserDto.email.trim().toLowerCase();
 

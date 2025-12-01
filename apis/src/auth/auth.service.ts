@@ -35,6 +35,18 @@ export class AuthService {
     return userWithoutPassword;
   }
 
+   async loginById(userId: object) {
+    const user = await this.usersService.findById(userId);
+    if (!user) {
+      throw new UnauthorizedException('Invalid user ID');
+    }
+      
+
+    // return user data excluding password
+    const { password: _, ...userWithoutPassword } = user.toObject();
+    return userWithoutPassword;
+  }
+
   async login(user: any) {
     const payload = { sub: user._id, email: user.email, role: user.user_type };
     const token = this.jwtService.sign(payload);
