@@ -62,7 +62,9 @@ export class PaymentService {
    const { page = 1, limit = 10, search } = query;
   const skip = (page - 1) * limit;
 
-  const baseFilter: any = {};
+  const baseFilter: any = {
+    userId: new Types.ObjectId(user.userId)
+  };
 
   if (search) {
     baseFilter['$or'] = [
