@@ -8,11 +8,13 @@ import { QueryBusinessDto } from './dto/query-business.dto';
 import { NotificationHelper } from 'src/common/helpers/notification.helper';
 import { CreateBusinessDto } from './dto/create-business.dto';
 import { UpdateBusinessDto } from './dto/update-business.dto';
+import { Nda, NdaDocument } from 'src/nda/schemas/nda.schema';
 
 @Injectable()
 export class BusinessListingService {
   constructor(
     @InjectModel(Business.name) private businessModel: Model<BusinessDocument>,
+     @InjectModel(Nda.name) private readonly ndaModel: Model<NdaDocument>,
     private readonly notificationHelper: NotificationHelper,
   ) {}
 
@@ -244,4 +246,22 @@ async attachFile(businessId: string, fileUrl: string, fileType: string = 'profit
       business,
     };
   }
+
+    async getCounts(user: any): Promise<any> {
+    const ownerId = user.userId;
+
+    const totalBusinesses = await this.businessModel.countDocuments({ ownerId, isDeleted: false });
+    const liveBusinesses = await this.businessModel.countDocuments({ ownerId, status: 'live', isDeleted: false });
+    const pendingBusinesses = await this.businessModel.countDocuments({ ownerId, status: 'pending', isDeleted: false });
+    const blockedBusinesses = await this.businessModel.countDocuments({ ownerId, status: 'blocked', isDeleted: false });
+    const pendingNdaSubmiaaions = await this.ndaModel.countDocuments({ businessOwnerId:ownerId, ndaStatus: 'pending' });
+    
+    return {
+      totalBusinesses,
+      liveBusinesses, 
+      pendingBusinesses,
+      blockedBusinesses,
+      pendingNdaSubmiaaions
+  }
+}
 }

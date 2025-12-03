@@ -37,6 +37,12 @@ export class BusinessListingController {
     return this.businessService.findAll(query, user);
     }
 
+    @UseGuards(JwtAuthGuard)
+    @Get('user-dashboard-counts')
+    async getBusinessCount(  @User() user: any) {
+    return this.businessService.getCounts(user);
+    }
+
     @Get(':id')
     findOne(@Param('id') id: string) {
         return this.businessService.findOne(id);
