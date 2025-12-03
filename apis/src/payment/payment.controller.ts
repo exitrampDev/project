@@ -92,7 +92,7 @@ export class PaymentController {
       await paymentRecord.save();
 
       //get business id from payment record and update business status to active
-      this.bunisessService.updateBusinessStatus(paymentRecord.objectId, 'active');
+      this.bunisessService.updateBusinessStatus(paymentRecord.objectId, 'live');
 
       console.log('Payment record updated:', paymentRecord);
     } else {
