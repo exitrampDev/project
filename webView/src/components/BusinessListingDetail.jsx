@@ -1,6 +1,7 @@
 import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Card } from "primereact/card";
+import { Button } from "primereact/button";
 import { ProgressSpinner } from "primereact/progressspinner";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
@@ -13,12 +14,14 @@ import SingleListingLocation from "../assets/singleListingLocation.png";
 import { Divider } from "primereact/divider";
 import { Tag } from "primereact/tag";
 import { Chip } from "primereact/chip";
+import { Toast } from "primereact/toast";
 
 export default function BusinessListingDetail() {
   const { user, access_token } = useRecoilValue(authState) ?? {};
   const { id } = useParams();
   const [business, setBusiness] = useState(null);
   const [loading, setLoading] = useState(true);
+   const toast = useRef(null);
   const API_BASE = useRecoilValue(apiBaseUrlState);
   const handleNonUserClick = () => {
     const signupBtn = document.querySelector(".signup-btn");
@@ -65,8 +68,45 @@ export default function BusinessListingDetail() {
   if (loading) return <ProgressSpinner />;
   if (!business) return <p>Business not found</p>;
 
+
+  const handleSave = async () => {
+    try {
+      const response = await fetch(`${API_BASE}/favorite`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ businessId: id }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log("Favorite saved:", data);
+
+      toast.current.show({
+        severity: "success",
+        summary: "Added to Favorites",
+        detail: "This listing has been added to your favorites.",
+        life: 3000,
+      });
+    } catch (error) {
+      console.error("Error saving favorite:", error);
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Failed to save favorite. Please try again.",
+        life: 3000,
+      });
+    }
+  };
+
   return (
     <>
+    <Toast ref={toast} position="top-right" />
       <Header />
       <div className="breadcrubs__main_container">
         <Link to={`/`} className="">
@@ -120,6 +160,25 @@ export default function BusinessListingDetail() {
                      </div>
        
                  </div>
+                 <div className="save_button_wrap">
+                      {access_token ? (
+                        <>
+                          <Button
+                            icon="pi pi-heart-fill"
+                            className="button__save_listing_global_single_listing"
+                            onClick={handleSave}
+                          />
+                        </>
+                      ) : (
+                        <Button
+                          icon="pi pi-heart"
+                          className="button__save_listing_non_user"
+                          onClick={handleNonUserClick}
+                        />
+                      )}
+                    </div>
+
+                 
                </div>
                <div className="business__list_single_highLevelSummary">
                  <h3>High-Level Summary</h3>

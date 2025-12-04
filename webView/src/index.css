@@ -3564,7 +3564,21 @@ span.comment__list_btn {
 .invoice__download_btn:hover {
   background: #155cb4;
 }
+button.button__save_listing_global_single_listing.p-button.p-component.p-button-icon-only {
+        position: absolute;
+    width: fit-content;
+    background: transparent;
+    padding: 0;
+    top: 25px;
+    right: 25px;
+    color: #ff5353;
+    outline: none !important;
+    box-shadow: none !important;
+}
 
+.business__list_single_intro_block {
+    position: relative;
+}
 @media screen and (min-width: 1024px) and (max-width: 1920px) {
   .header_container nav.nav_col a {
     font-size: 18px;
