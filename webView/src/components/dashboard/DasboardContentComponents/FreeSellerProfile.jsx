@@ -258,7 +258,7 @@ const openFile = (base64Data, fileName, mimeType) => {
 
           {/* Image Uploader */}
           <div className="field form__field_col field__image_uploader_profile">
-            <label>Company Logo / Image</label>
+            <label>Company Logo / Image *</label>
             <div className="field__image_uploader_profile_block">
                <FileUpload
                 accept="image/*"

@@ -139,6 +139,9 @@ const PaymentHistory = () => {
           <Column header="Email" body={emailTemplate} />
           <Column header="Listing Title" body={listingTitleTemplate} />
           <Column header="Business Name" body={businessNameTemplate} />
+          <Column header="Listing Description" body={(row) => row?.objectId?.listingDescription || "-"} />
+<Column header="Business Type" body={(row) => row?.objectId?.businessType || "-"} />
+
 
           <Column field="amount" header="Amount ($)" />
 
@@ -194,7 +197,7 @@ const PaymentHistory = () => {
 
               <p><strong>Amount:</strong> ${singlePayment.amount}</p>
 
-              <p><strong>Payment For:</strong> {singlePayment.paymentFor}</p>
+              {/* <p><strong>Payment For:</strong> {singlePayment.paymentFor}</p> */}
 
               <p>
                 <strong>Status:</strong>{" "}

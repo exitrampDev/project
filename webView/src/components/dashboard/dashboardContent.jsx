@@ -8,6 +8,7 @@ import FreeBuyerDashboard from "./DasboardContentComponents/FreeBuyerComponent";
 import FreeSellerDashboard from "./DasboardContentComponents/FreeSellerDashboard";
 import DashboardHeader from "./DasboardContentComponents/DashboardHeaderBlock";
 import AdminDashboard from "./AdminContent/AdminDashboard";
+import SellerCentralDasboard from "./DasboardContentComponents/SellerCentralDashboard";
 
 const DashboardContent = () => {
   const user = useRecoilValue(authState).user;
@@ -18,7 +19,7 @@ const DashboardContent = () => {
       {user?.user_type === "buyer_basic" ? <FreeBuyerDashboard /> : " "}
       {user?.user_type === "seller_basic" ? <FreeSellerDashboard /> : " "}
       {user?.user_type === "seller_listing" ? <FreeSellerDashboard /> : " "}
-      {user?.user_type === "seller_central" ? <FreeSellerDashboard /> : " "}
+      {user?.user_type === "seller_central" ? <SellerCentralDasboard /> : " "}
       {user?.user_type === "admin" ? <AdminDashboard /> : " "}
     </>
   );

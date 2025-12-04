@@ -118,10 +118,9 @@ const PaymentHistory = () => {
           dataKey="_id"
           emptyMessage="No payments found."
         >
-            
+            <Column header="Listing Title" body={(row) => row?.objectId?.listingTitle || "-"} />
           <Column field="_id" header="ID" style={{ width: "250px" }} />
           <Column field="amount" header="Amount ($)" />
-          <Column field="paymentFor" header="Payment For" />
           <Column
             field="paymentStatus"
             header="Status"
@@ -156,7 +155,7 @@ const PaymentHistory = () => {
               <p><strong>Transaction ID:</strong> {singlePayment._id}</p>
               <p><strong>User ID:</strong> {singlePayment.userId}</p>
               <p><strong>Amount:</strong> ${singlePayment.amount}</p>
-              <p><strong>Payment For:</strong> {singlePayment.paymentFor}</p>
+              {/* <p><strong>Payment For:</strong> {singlePayment.paymentFor}</p> */}
               <p>
                 <strong>Status:</strong>{" "}
                 <Tag value={singlePayment.paymentStatus} />
