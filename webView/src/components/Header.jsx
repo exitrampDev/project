@@ -244,9 +244,20 @@ const Header = () => {
       Dashboard <img src={signIcon} alt="signIcon" />
     </NavLink>
   ) : (
-    <button onClick={openPopup} className="signup-btn">
+    <>
+    <button  className="login-btn">
+      <NavLink
+            to="/login"
+          >
+             login <img src={signIcon} alt="signIcon" />
+          </NavLink>
+     
+    </button>
+        <button onClick={openPopup} className="signup-btn">
       Sign Up <img src={signIcon} alt="signIcon" />
     </button>
+    </>
+    
   );
   return (
     <header className="signup_content">
