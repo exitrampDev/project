@@ -563,14 +563,16 @@ useEffect(() => {
     const searchTerm = filters.search.toLowerCase();
     filtered = filtered.filter(
       (item) =>
-        item.listingName?.toLowerCase().includes(searchTerm) ||
-        item.location?.toLowerCase().includes(searchTerm)
+        item.businessName?.toLowerCase().includes(searchTerm) ||
+        item.industry?.toLowerCase().includes(searchTerm)||
+        item.askingPrice?.toString().includes(searchTerm)
     );
   }
 
   // Industry filter
+  
   if (filters.industry) {
-    filtered = filtered.filter((item) => item.industry === filters.industry);
+    filtered = filtered.filter((item) => item.industry.includes(filters.industry) );
   }
 
   // Status filter
@@ -586,10 +588,13 @@ useEffect(() => {
   }
 
   // Location filter
+  console.log('industry filter', filters.location, filtered)
   if (filters.location) {
     const locationTerm = filters.location.toLowerCase();
     filtered = filtered.filter((item) =>
-      item.location?.toLowerCase().includes(locationTerm)
+      // item.location?.toLowerCase().includes(locationTerm)
+    // item.location?.toLowerCase().includes(item.businessCity.toLowerCase())
+    item.businessCity?.toLowerCase().includes(filters.location) || item.businessCountry?.toLowerCase().includes(filters.location)
     );
   }
 
@@ -794,11 +799,11 @@ useEffect(() => {
 
 {/* Country */}
 <div className="listing__creation_field_col md:col-4">
-  <label> Business Country </label>
+  <label> Business County </label>
   <InputText
     value={newListing.businessCountry || ""}
     onChange={(e) => handleChange(e, "businessCountry", e.target.value)}
-    placeholder="Enter Business Country"
+    placeholder="Enter Business County"
   />
 </div> 
 
@@ -1453,14 +1458,7 @@ useEffect(() => {
                 placeholder="Location"
               />
 
-              <Calendar
-                value={filters.lastEdited}
-                onChange={(e) =>
-                  setFilters((f) => ({ ...f, lastEdited: e.value }))
-                }
-                placeholder="Last Edited"
-                showIcon
-              />
+       
               <Button
                 label="Clear Filters"
                 icon="pi pi-filter-slash"

@@ -22,7 +22,7 @@ const PropertyCard = () => {
   const [filters, setFilters] = useState({
     type: "",
     industry: "",
-    country: "",
+    county: "",
     city: "",
     askingPrice: [0, 5000000],
     annualRevenue: [0, 5000000],
@@ -168,66 +168,78 @@ const saveListingBtn = (businessId) => {
 };
 
   // Apply Filters
-  const applyFilters = () => {
-    let filtered = [...allListings];
+ const applyFilters = () => {
+  let filtered = [...allListings];
 
-    if (filters.type) {
-      filtered = filtered.filter((item) =>
-        item.businessType?.toLowerCase().includes(filters.type.toLowerCase())
+  // Type
+  if (filters.type) {
+    filtered = filtered.filter((item) => {
+      const type = item.businessType ?? "";
+      return type.toLowerCase().includes(filters.type.toLowerCase());
+    });
+  }
+
+  // Industry
+  if (filters.industry) {
+    filtered = filtered.filter((item) => {
+      let industries = [];
+      try {
+        industries = JSON.parse(item.industry || "[]");
+      } catch {}
+
+      return industries.some((i) =>
+        i.toLowerCase().includes(filters.industry.toLowerCase())
       );
-    }
+    });
+  }
 
-    if (filters.industry) {
-      filtered = filtered.filter((item) =>
-        item.industry?.some((i) =>
-          i.toLowerCase().includes(filters.industry.toLowerCase())
-        )
-      );
-    }
-
-    if (filters.country) {
-      filtered = filtered.filter(
-        (item) => item.country?.toLowerCase() === filters.country.toLowerCase()
-      );
-    }
-
-    if (filters.city) {
-      filtered = filtered.filter(
-        (item) => item.city?.toLowerCase() === filters.city.toLowerCase()
-      );
-
-      console.log("filtered>>>>>>>", filtered);
-    }
-
+  // City
+  if (filters.city) {
     filtered = filtered.filter(
       (item) =>
-        item.askingPrice >= filters.askingPrice[0] &&
-        item.askingPrice <= filters.askingPrice[1]
+        item.businessCity?.toLowerCase() === filters.city.toLowerCase()
     );
+  }
 
+  // Country
+  if (filters.county) {
     filtered = filtered.filter(
       (item) =>
-        item.revenue >= filters.annualRevenue[0] &&
-        item.revenue <= filters.annualRevenue[1]
+        item.businessCountry?.toLowerCase() === filters.county.toLowerCase()
     );
+  }
 
-    filtered = filtered.filter(
-      (item) =>
-        item.cashFlow >= filters.cashFlow[0] &&
-        item.cashFlow <= filters.cashFlow[1]
-    );
+  // Asking Price
+  filtered = filtered.filter(
+    (item) =>
+      item.askingPrice >= filters.askingPrice[0] &&
+      item.askingPrice <= filters.askingPrice[1]
+  );
 
-    setListings(filtered);
+  // Revenue
+  filtered = filtered.filter(
+    (item) =>
+      item.revenue >= filters.annualRevenue[0] &&
+      item.revenue <= filters.annualRevenue[1]
+  );
 
-    setPage(1); // reset to first page when filters applied
-  };
+  // Cash Flow
+  filtered = filtered.filter(
+    (item) =>
+      item.cashFlow >= filters.cashFlow[0] &&
+      item.cashFlow <= filters.cashFlow[1]
+  );
+
+  setListings(filtered);
+  setPage(1);
+};
 
   // Reset Filters
   const clearFilters = () => {
     setFilters({
       type: "",
       industry: "",
-      country: "",
+      county: "",
       city: "",
       askingPrice: [0, 5000000],
       annualRevenue: [0, 5000000],
@@ -277,15 +289,15 @@ const saveListingBtn = (businessId) => {
           />
         </div>
 
-        {/* Country */}
+        {/* County */}
         <div className="p-field">
-          <label>Country</label>
+          <label>County</label>
           <InputText
-            value={filters.country}
+            value={filters.county}
             onChange={(e) =>
-              setFilters({ ...filters, country: e.target.value })
+              setFilters({ ...filters, county: e.target.value })
             }
-            placeholder="Country"
+            placeholder="County"
             style={{ width: "100%" }}
           />
         </div>
