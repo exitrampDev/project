@@ -3579,7 +3579,21 @@ button.button__save_listing_global_single_listing.p-button.p-component.p-button-
 .business__list_single_intro_block {
     position: relative;
 }
-@media screen and (min-width: 1024px) and (max-width: 1920px) {
+.ComplienceStatement_image_box {
+    width: 50%;
+}
+
+.ComplienceStatement_content_box {
+    width: 50%;
+}
+
+.ComplienceStatement_image_box img {
+    width: 100%;
+}
+.business__listing_content {
+    padding: 0 15px;
+}
+@media screen and (min-width: 1024px) and (max-width: 2500px) {
   .header_container nav.nav_col a {
     font-size: 18px;
   }

@@ -84,7 +84,8 @@ export default function SingleBusinessListing() {
 
   return (
     <>
-<DashboardHeader headingData="Business Listing"/>
+<div className="listing__content_wrap">
+  <DashboardHeader headingData="Business Listing"/>
              
       <div className="business__list_single_main_wrap dasb">
 
@@ -261,6 +262,7 @@ export default function SingleBusinessListing() {
         
 
       </div>
+</div>
 
 
     </>

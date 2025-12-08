@@ -108,6 +108,8 @@ export default function BusinessListingDetail() {
     <>
     <Toast ref={toast} position="top-right" />
       <Header />
+   <div className="business__listing_content">
+     
       <div className="breadcrubs__main_container">
         <Link to={`/`} className="">
           Home
@@ -281,7 +283,10 @@ export default function BusinessListingDetail() {
 
 
 
-        <div className="UpgradeFree_when_ready_wrap">
+       
+     
+   </div>
+    <div className="UpgradeFree_when_ready_wrap">
         <div className="UpgradeFree_when_ready_container">
           <h3>
             <span>Interested?</span> Create a Buyer Profile to Get Started
@@ -298,7 +303,7 @@ export default function BusinessListingDetail() {
           </button>
         </div>
       </div>
-      <Footer />
+    <Footer />
     </>
   );
 }

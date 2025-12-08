@@ -136,7 +136,6 @@ const API_BASE = useRecoilValue(apiBaseUrlState);
               name="phone"
               value={formData.phone_number}
               onChange={handleChange}
-              required
             />
           </div>
 
