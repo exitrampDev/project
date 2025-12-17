@@ -530,10 +530,12 @@ const moneyTemplate = (row, { field }) => {
       </>
        
       ) : (
+         <Link to={`/user/edit-listing/${row._id}`} className="flex gap-4">
         <i
           className="pi pi-pencil cursor-pointer text-green-500 hover:text-green-700"
           onClick={() => console.log("Publish", row._id)}
         ></i>
+        </Link>
       )}
 
       <i
@@ -1412,6 +1414,7 @@ useEffect(() => {
             </div>
             {/* Top Filters + Create Button */}
             <div className="my__listing_render_table_filters">
+              <div className="my__listing_render_table_filters_fields">
               <span className="p-input-icon-left">
                 <i className="pi pi-search" />
                 <InputText
@@ -1457,8 +1460,8 @@ useEffect(() => {
                 }
                 placeholder="Location"
               />
-
-       
+</div>
+       <div className="my__listing_render_table_filters_btn__block_content ">
               <Button
                 label="Clear Filters"
                 icon="pi pi-filter-slash"
@@ -1481,6 +1484,7 @@ useEffect(() => {
                 className="btn__crt_listing"
                 onClick={() => setShowCreateDialog((prev) => !prev)}
               />
+              </div>
             </div>
             {/* Data Table */}
             <div className="my__save_listing_wrap my__listing_table">

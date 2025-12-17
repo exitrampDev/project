@@ -38,7 +38,7 @@ const DocumentRoom = () => {
 
   const categoryOptions = [
     { label: "PDF", value: "pdf" },
-    { label: "JPEG", value: "jpeg" },
+    { label: "JPG", value: "jpg" },
     { label: "PNG", value: "png" },
   ];
 
