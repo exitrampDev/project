@@ -56,7 +56,8 @@ export class PaymentService {
     currency: 'usd',
     'automatic_payment_methods[enabled]': true,
     // 'metadata[userId]': userId,
-    'metadata[purpose]': 'Business Posting',
+    'metadata[purpose]': 'Business Posting'
+    
   });
 
   const response = await axios.post(

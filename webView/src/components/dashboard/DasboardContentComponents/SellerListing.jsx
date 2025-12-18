@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Card } from "primereact/card";
-import { useRecoilValue } from "recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import { authState,apiBaseUrlState  } from "../../../recoil/ctaState";
 import axios from "axios";
 import { Toast } from 'primereact/toast';
@@ -27,9 +27,12 @@ import { Chips } from "primereact/chips";
 import { Link } from "react-router-dom";
 import { InputSwitch } from "primereact/inputswitch";
 import DashboardHeader from "./DashboardHeaderBlock";
+import { useNavigate } from "react-router-dom";
 
 export default function SellerListing() {
   const toast = useRef(null);
+  const setAuth = useSetRecoilState(authState);
+  const navigate = useNavigate();
   const yearOptions = Array.from({ length: 101 }, (_, i) => ({ label: i, value: i }));
   const API_BASE = useRecoilValue(apiBaseUrlState);
 const [filteredListings, setFilteredListings] = useState([]);
@@ -238,8 +241,17 @@ const createCIMList = (id, cimUrl) => {
         setListings([]);
       }
     } catch (err) {
-      console.error("Error fetching listings:", err);
-      setListings([]);
+        if (err.response?.status == 403) {
+            console.log("403 Forbidden: Access denied while fetching listings");
+                setAuth(null);
+                localStorage.removeItem("auth");
+                localStorage.removeItem("user");
+                localStorage.removeItem("tokenLocalStorage");
+                navigate("/login");
+          } else {
+            console.error("Error fetching listings:", err);
+          }
+    setListings([]);
     } finally {
       setLoading(false);
     }
