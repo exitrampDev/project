@@ -37,6 +37,7 @@ import PaymentProcess from "./components/dashboard/DasboardContentComponents/Pay
 import SuccessPayment from "./components/dashboard/DasboardContentComponents/SuccessPayment";
 import PaymentHistory from "./components/dashboard/DasboardContentComponents/PymentHistory";
 import UserPaymentHistory from "./components/dashboard/AdminContent/UsersPaymentsHistory";
+import EditBusineddListing from "./components/dashboard/DasboardContentComponents/EditBusineddListing";
 
 
 const App = () => {
@@ -68,6 +69,7 @@ const App = () => {
           <Route path="document-room/:id" element={<DocumentRoom/>} />
           <Route path="document-room-buyer/:id" element={<DocumentRoomBuyer/>} />
           <Route path="single-listing/:id" element={<SingleBusinessListing />} />
+           <Route path="edit-listing/:id" element={<EditBusineddListing />} />
           <Route path="notifications/:id" element={<UserNotifications/>} />
           <Route path="create-cim/:id" element={<CreateCIM/>} />
           <Route path="cim/:id" element={<CimView/>} />

@@ -10,6 +10,7 @@ import { ResetPasswordDto } from './dto/reset-password.dto';
 import { JwtService } from '@nestjs/jwt';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { User } from 'src/common/decorators/user.decorator';
+import { NewsLetterSubscription } from './dto/newsletter-subscription.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -62,6 +63,11 @@ export class AuthController {
   async getProfile(@User() user: any) {
      const dbUser = await this.authService.findById(user.userId);
      return dbUser;
+  }
+
+  @Post('newsletter-subscription')
+  async newsLetterSubscription(@Body() registerDto: NewsLetterSubscription) {
+    return this.mailService.newsletterSubscription(registerDto);
   }
   
 }

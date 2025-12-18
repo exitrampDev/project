@@ -144,6 +144,38 @@ export class PaymentController {
     return { url: session.url };
   }
 
+  @Post('inpage-checkout-intent')
+  @UseGuards(JwtAuthGuard)
+  async inpagePayment(@Body() dto:CreatePaymentDto, @Req() req:any, @User() user: any){
+    let data: any = {};
+    const userId = new Types.ObjectId(req.user.userId);
+    let amount = 0;
+  
+      if(user.role == 'seller_basic'){
+        amount = 30; //30 USD for basic sellers
+      }else if(user.role == 'seller_listing'){
+        amount = 30; //60 USD for premium sellers
+      }
+      else if(user.role == 'seller_central'){
+        amount = 60; //60 USD for premium sellers
+      }
+    
+    const session = await this.paymentsService.createPaymentIntent(
+      amount, userId,
+    );
+   
+    console.log('Payment Intent created:', session);
+    data.amount = amount;
+    data.sessionId = session.id;
+    data.objectId  = new Types.ObjectId(dto.businessId);
+
+    this.paymentsService.create(data,userId);
+    console.log('Checkout session created:', session);
+
+    return { clientSecret: session.clientSecret };
+    // return { message: 'In-page payment intent endpoint under construction' };
+  }
+
   @Get()
   @UseGuards(JwtAuthGuard)
   async getMyPayments(@Query() query: QueryPaymentDto, @Req() req){

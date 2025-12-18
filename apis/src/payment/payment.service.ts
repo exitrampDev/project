@@ -49,6 +49,35 @@ export class PaymentService {
     return response.data;
   }
 
+  // ------------------
+  async  createPaymentIntent(amount: number, userId: any) {
+  const payload = qs.stringify({
+    amount: Math.round(amount * 100),
+    currency: 'usd',
+    'automatic_payment_methods[enabled]': true,
+    // 'metadata[userId]': userId,
+    'metadata[purpose]': 'Business Posting'
+    
+  });
+
+  const response = await axios.post(
+    'https://api.stripe.com/v1/payment_intents',
+    payload,
+    {
+      headers: {
+        Authorization: `Bearer ${process.env.STRIPE_SECRET_KEY}`,
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+    }
+  );
+
+  console.log('Payment Intent created:', response.data.client_secret);
+
+  return {
+    clientSecret: response.data.client_secret,
+    id:response.data.id
+  };
+}
   //create payment 
   async create(dto:CreatePaymentDto, userId: Types.ObjectId){
      const payment = new this.paymentModel({

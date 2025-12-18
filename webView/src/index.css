@@ -3618,6 +3618,16 @@ button.login-btn a {
 
 button.login-btn a img {    filter: invert(68%) sepia(94%) saturate(1094%) hue-rotate(-12deg) brightness(101%) contrast(101%);
 }
+.my__listing_render_table_filters_fields {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.my__listing_render_table_filters_btn__block_content {
+    display: flex;
+    gap: 10px;
+}
 @media screen and (min-width: 1024px) and (max-width: 2500px) {
   .header_container nav.nav_col a {
     font-size: 18px;
