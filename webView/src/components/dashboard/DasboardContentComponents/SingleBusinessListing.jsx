@@ -140,7 +140,7 @@ export default function SingleBusinessListing() {
               {business?.businessCity && business.businessState ? (<>{business.businessCity}, {business.businessState} </>) : "-" }
             </div>
             <div className="listing__single_listingId">
-              <span>Listing ID :</span> {business?._id ? (<>#{business._id}</>) : "-"}
+              <span>Listing ID :</span> {business?._id ? (<>#{business._id.toString().slice(-6)}</>) : "-"}
             </div>
             <div className="listing__single_businessOverview">
               {business.businessOverview}
