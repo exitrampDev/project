@@ -43,13 +43,15 @@ const PaymentProcess = () => {
           and Google Pay.
         </p>
 
-        {clientSecret ? (
+       <div className="payment__box_wrap">
+         {clientSecret ? (
           <StripeProvider clientSecret={clientSecret}>
             <CheckoutForm />
           </StripeProvider>
         ) : (
           <p>Loading payment form...</p>
         )}
+       </div>
       </div>
     </>
   );

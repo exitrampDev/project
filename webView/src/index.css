@@ -3628,6 +3628,32 @@ button.login-btn a img {    filter: invert(68%) sepia(94%) saturate(1094%) hue-r
     display: flex;
     gap: 10px;
 }
+.action__listing_btns button.p-button-text.p-button-sm.btn-pay.p-button.p-component {
+   margin: 0;
+    font-size: 12px;
+    color: #0b7331;
+    background: transparent;
+    border: 1px solid;
+    padding: 8px 8px;
+}
+
+.action__listing_btns button.p-button-text.p-button-sm.btn-invoice.p-button.p-component {
+    margin: 0;
+    font-size: 12px;
+    color: #002f68;
+    background: transparent;
+    border: 1px solid;
+    padding: 8px 8px;
+}
+.payment__box_wrap {
+    max-width: 520px;
+    background: #fff;
+    padding: 30px 30px 20px 30px;
+}
+
+.payment__box_wrap .StripeElement {
+    margin-bottom: 25px;
+}
 @media screen and (min-width: 1024px) and (max-width: 2500px) {
   .header_container nav.nav_col a {
     font-size: 18px;
