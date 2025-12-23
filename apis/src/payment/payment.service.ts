@@ -54,7 +54,8 @@ export class PaymentService {
   const payload = qs.stringify({
     amount: Math.round(amount * 100),
     currency: 'usd',
-    'automatic_payment_methods[enabled]': true,
+      payment_method_types: ['card'], 
+    //  'automatic_payment_methods[enabled]': true,
     // 'metadata[userId]': userId,
     'metadata[purpose]': 'Business Posting'
     

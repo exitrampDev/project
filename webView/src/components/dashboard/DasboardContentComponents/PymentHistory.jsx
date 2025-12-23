@@ -4,14 +4,15 @@ import axios from "axios";
 import { useRecoilValue } from "recoil";
 import { apiBaseUrlState, authState } from "../../../recoil/ctaState";
 import DashboardHeader from "./DashboardHeaderBlock";
-
+import { Button } from "primereact/button";
+import { useNavigate } from "react-router-dom";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Tag } from "primereact/tag";
 import { Dialog } from "primereact/dialog";
-import { Button } from "primereact/button";
 
 const PaymentHistory = () => {
+  const navigate = useNavigate();
   const API_BASE = useRecoilValue(apiBaseUrlState);
   const { access_token } = useRecoilValue(authState) ?? {};
 
@@ -65,7 +66,7 @@ const PaymentHistory = () => {
   // Payment Status Tag
   const statusTemplate = (row) => {
     const severity =
-      row.paymentStatus === "succeeded"
+      row.paymentStatus === "completed"
         ? "success"
         : row.paymentStatus === "pending"
         ? "warning"
@@ -95,12 +96,28 @@ const PaymentHistory = () => {
 
   // Action btn
   const actionTemplate = (row) => (
-    <div className="action__listing_btns">
-      <i
-        className="pi pi-eye cursor-pointer text-blue-500 hover:text-blue-700"
-        onClick={() => fetchSinglePayment(row._id)}
-      ></i>
-    </div>
+   <div className="action__listing_btns">
+  {row.paymentStatus === "completed" ? (
+    <Button
+      label="Invoice"
+      icon="pi pi-file-pdf"
+      className="p-button-text p-button-sm btn-invoice"
+      onClick={() => fetchSinglePayment(row._id)}
+      tooltip="Download Invoice"
+      tooltipOptions={{ position: "top" }}
+    />
+  ) : (
+    <Button
+      label="Pay Now"
+      icon="pi pi-credit-card"
+      className="p-button-text p-button-sm btn-pay"
+      onClick={() => navigate(`/user/payment-process/${row._id}`)}
+      tooltip="Complete Payment"
+      tooltipOptions={{ position: "top" }}
+    />
+  )}
+</div>
+
   );
 
   return (
@@ -157,9 +174,19 @@ const PaymentHistory = () => {
               <p><strong>Amount:</strong> ${singlePayment.amount}</p>
               {/* <p><strong>Payment For:</strong> {singlePayment.paymentFor}</p> */}
               <p>
-                <strong>Status:</strong>{" "}
-                <Tag value={singlePayment.paymentStatus} />
-              </p>
+              <strong>Status:</strong>{" "}
+              <Tag
+                value={singlePayment.paymentStatus}
+                severity={
+                  singlePayment.paymentStatus === "completed"
+                    ? "success"
+                    : singlePayment.paymentStatus === "pending"
+                    ? "warning"
+                    : "danger"
+                }
+              />
+            </p>
+
               <p>
                 <strong>Date:</strong>{" "}
                 {new Date(singlePayment.transactionDateTime).toLocaleString()}
