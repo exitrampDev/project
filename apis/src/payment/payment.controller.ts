@@ -63,10 +63,11 @@ export class PaymentController {
     // 2️⃣ Handle Stripe events
     switch (event.type) {
       case 'checkout.session.completed':
-        await this.handleCheckoutCompleted(event.data.object);
+        // await this.handleCheckoutCompleted(event.data.object);
         break;
 
       case 'payment_intent.succeeded':
+        console.log('payment_intent.succeeded:-->', event.data);
         await this.handlePaymentSucceeded(event.data.object);
         break;
 
@@ -102,7 +103,29 @@ export class PaymentController {
   }
 
   async handlePaymentSucceeded(intent) {
-    console.log('Payment succeeded:', intent.id);
+    // console.log('Payment succeeded:', intent.id);
+    // const userId = session.client_reference_id;
+    // console.log('Session details:', session.id);
+    // console.log('Checkout completed for user:', userId);
+    //get record from db using session id and update status and transaction id in that record
+    const paymentRecord = await this.paymentsService.getBySessionId(intent.id);
+    // console.log('Payment record found:', paymentRecord);
+    if (paymentRecord) {
+      paymentRecord.paymentStatus = 'completed';
+      paymentRecord.transactionDateTime = new Date();
+      paymentRecord.transactionId = intent.id;
+      await paymentRecord.save();
+
+      //get business id from payment record and update business status to active
+      console.log('Updating business status for business ID:', paymentRecord.objectId.toString());
+      
+      this.bunisessService.updateBusinessStatus(paymentRecord.objectId.toString(), 'live');
+
+      console.log('Payment record updated:', paymentRecord);
+    } else {
+      console.log('No payment record found for session ID:', intent.id);
+    }
+    // TODO: Update your DB here
     // Database update
   }
 
