@@ -18,57 +18,57 @@ export default function PricingFeaturesTable() {
           <tbody>
             <tr>
               <td>Save Favorites</td>
-              <td>✔</td>
-              <td>✔</td>
-              <td>✔</td>
+              <td><span>✔</span></td>
+              <td><span>✔</span></td>
+              <td><span>✔</span></td>
             </tr>
             <tr>
               <td>Previously Viewed Listings</td>
-              <td>✔</td>
-              <td>✔</td>
-              <td>✔</td>
+              <td><span>✔</span></td>
+              <td><span>✔</span></td>
+              <td><span>✔</span></td>
             </tr>
             <tr>
               <td>Confidential Profile</td>
-              <td>✔</td>
-              <td>✔</td>
-              <td>✔</td>
+              <td><span>✔</span></td>
+              <td><span>✔</span></td>
+              <td><span>✔</span></td>
             </tr>
             <tr>
               <td>Profile Connections</td>
-              <td>✔</td>
-              <td>✔</td>
-              <td>✔</td>
+              <td><span>✔</span></td>
+              <td><span>✔</span></td>
+              <td><span>✔</span></td>
             </tr>
             <tr>
               <td>View CIMs*</td>
               <td></td>
-              <td>✔</td>
-              <td>✔</td>
+              <td><span>✔</span></td>
+              <td><span>✔</span></td>
             </tr>
             <tr>
               <td>Document Room*</td>
               <td></td>
               <td></td>
-              <td>✔</td>
+              <td><span>✔</span></td>
             </tr>
             <tr>
               <td>Due Diligence List*</td>
               <td></td>
-              <td>✔</td>
-              <td>✔</td>
+              <td><span>✔</span></td>
+              <td><span>✔</span></td>
             </tr>
             <tr>
               <td>Seller Central</td>
               <td></td>
               <td></td>
-              <td>✔</td>
+              <td><span>✔</span></td>
             </tr>
             <tr>
               <td>NDA Management</td>
               <td></td>
               <td></td>
-              <td>✔</td>
+              <td><span>✔</span></td>
             </tr>
           </tbody>
         </table>

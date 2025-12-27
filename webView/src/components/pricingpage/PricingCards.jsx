@@ -70,7 +70,7 @@ export default function PricingCards() {
             <p className="PricingCard__description">{plan.description}</p>
             <ul className="PricingCard__features">
               {plan.features.map((feature, i) => (
-                <li key={i}>✔ {feature}</li>
+                <li key={i}><span>✔</span> {feature}</li>
               ))}
             </ul>
             <button className="PricingCard__cta">{plan.cta}</button>
