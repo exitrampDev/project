@@ -931,6 +931,39 @@ input {
   font-weight: 400;
   margin: 40px 0 0 0;
 }
+
+.PricingpageHero__main_wrapper {
+  background: #002f68;
+}
+
+.PricingpageHero__container {
+  max-width: 1500px;
+  margin: 0 auto;
+  text-align: center;
+  padding: 120px 0;
+}
+
+.PricingpageHero__container h4 {
+  margin: 0;
+  font-size: 80px;
+  line-height: 1.3;
+  color: #fff;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.PricingpageHero__container p {
+  color: #fff;
+  font-size: 24px;
+  font-weight: 400;
+  margin: 40px 0 0 0;
+}
+form.p-fluid.login__form_wrap button.mb-3.p-button.p-component {
+    margin: 0 auto;
+    min-width: 170px;
+    min-height: 45px;
+    font-size: 15px;
+}
 .OurMission__main_wrap {
   padding: 140px 0;
 }
@@ -1533,18 +1566,18 @@ form.p-fluid.space-y-4.register_form_col {
   align-items: center;
 }
 button.p-button.p-component {
-  display: flex;
-  max-width: fit-content;
-  margin: 0 auto;
-  background: #4f93ff;
-  font-size: 14px;
-  border: none;
+     display: flex;
+    max-width: fit-content;
+    margin: 0;
+    background: #4f93ff;
+    font-size: 13px;
+    border: none;
+    padding: 8px 12px;
   
 }
-
 button.p-button.p-component span.p-button-label.p-c {
   font-weight: 500;
-  text-transform: uppercase;
+  text-transform: capitalize;
 }
 
 .login_block_col {
@@ -3654,6 +3687,19 @@ button.login-btn a img {    filter: invert(68%) sepia(94%) saturate(1094%) hue-r
 .payment__box_wrap .StripeElement {
     margin-bottom: 25px;
 }
+button.logout-btn.header-logout-btn {
+    text-decoration: none;
+    color: #ee6a3a;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 15px 40px;
+    background: #fff;
+}
+
+button.logout-btn.header-logout-btn img {    filter: invert(68%) sepia(94%) saturate(1094%) hue-rotate(-12deg) brightness(101%) contrast(101%);
+}
+
 @media screen and (min-width: 1024px) and (max-width: 2500px) {
   .header_container nav.nav_col a {
     font-size: 18px;

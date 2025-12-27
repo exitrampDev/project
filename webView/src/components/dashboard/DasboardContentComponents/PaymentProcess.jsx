@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import DashboardHeader from "./DashboardHeaderBlock";
 import React from "react";
@@ -14,24 +14,28 @@ const PaymentProcess = () => {
   const API_BASE = useRecoilValue(apiBaseUrlState);
   const { access_token } = useRecoilValue(authState) ?? {};
   const [clientSecret, setClientSecret] = useState(null);
+  const hasCreatedIntent = useRef(false);
 
-  useEffect(() => {
-    const createPaymentIntent = async () => {
-      const response = await axios.post(
-        `${API_BASE}/payment/inpage-checkout-intent`,
-        { businessId: id },
-        {
-          headers: {
-            Authorization: `Bearer ${access_token}`,
-          },
-        }
-      );
+useEffect(() => {
+  if (hasCreatedIntent.current) return;
+  hasCreatedIntent.current = true;
 
-      setClientSecret(response.data.clientSecret);
-    };
+  const createPaymentIntent = async () => {
+    const response = await axios.post(
+      `${API_BASE}/payment/inpage-checkout-intent`,
+      { businessId: id },
+      {
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+        },
+      }
+    );
 
-    createPaymentIntent();
-  }, [API_BASE, access_token, id]);
+    setClientSecret(response.data.clientSecret);
+  };
+
+  createPaymentIntent();
+}, []);
 
   return (
     <>
