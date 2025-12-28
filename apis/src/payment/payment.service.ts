@@ -50,14 +50,15 @@ export class PaymentService {
   }
 
   // ------------------
-  async  createPaymentIntent(amount: number, userId: any) {
+  async  createPaymentIntent(amount: number, userId: any, businessId?: string) {
   const payload = qs.stringify({
     amount: Math.round(amount * 100),
     currency: 'usd',
-      payment_method_types: ['card'], 
+    'payment_method_types[0]': 'card',
     //  'automatic_payment_methods[enabled]': true,
-    // 'metadata[userId]': userId,
-    'metadata[purpose]': 'Business Posting'
+    'metadata[userId]': userId.toString(),
+    'metadata[businessId]': businessId?.toString(),
+    'metadata[purpose]': 'Business Posting',
     
   });
 
@@ -80,7 +81,7 @@ export class PaymentService {
   };
 }
   //create payment 
-  async create(dto:CreatePaymentDto, userId: Types.ObjectId){
+  async create(dto:any, userId: Types.ObjectId){
      const payment = new this.paymentModel({
       ...dto,
       userId
@@ -106,7 +107,7 @@ export class PaymentService {
   const payments = await this.paymentModel.find(baseFilter)
     .populate('userId')       
     .populate({ 
-      path: 'objectId',       
+      path: 'referenceId',       
       model: 'Business',
       select: 'businessName businessType listingTitle listingDescription'
     })

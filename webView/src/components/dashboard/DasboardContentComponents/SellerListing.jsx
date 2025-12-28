@@ -557,6 +557,14 @@ const moneyTemplate = (row, { field }) => {
         ></i>
         
         <Tooltip target=".button__delete_action_lisitng_seller" position="top" />
+         <Button
+                label="Pay Now"
+                icon="pi pi-credit-card"
+                className="p-button-text p-button-sm btn-pay"
+                onClick={() => navigate(`/user/payment-process/${row._id}`)}
+                tooltip="Complete Payment"
+                tooltipOptions={{ position: "top" }}
+              />
     </div>
   );
 const handleImageSelect = (e) => {
