@@ -3833,6 +3833,95 @@ section.PricingTable__wrapper .PricingTable__container>h2 {
     color: #002f68;
 }
 /**/
+
+/*invoice start*/
+.invoice__wrapper .invoice__row {
+    display: flex;
+    gap: 20px;
+    border-bottom: 2px dashed #bababa;
+    width: 100%;
+    padding: 6px 0 20px 0;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.invoice__row {
+  display: flex;
+  justify-content: space-between;
+  gap: 40px;
+}
+
+.invoice__row h4 {
+  margin-bottom: 6px;
+  font-size: 14px;
+  color: #002f68;
+  margin: 0;
+}
+
+.invoice__row p {
+  font-size: 16px;
+  font-weight: 500;
+  margin: 0;
+}
+
+.invoice__actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+ .invoice__wrapper .invoice__row>div {
+    width: 33.3%;
+}
+.invoice__model_wrap .p-dialog-header {
+    padding: 0;
+    position: absolute;
+    right: 20px;
+    top: 20px;
+}
+
+.invoice__model_wrap .invoice__wrapper h2 {
+    font-size: 65px;
+    margin: 20px 0 50px 0;
+    color: #002f68;
+}
+
+
+.invoice__wrapper  .invoice__actions{
+    position: absolute;
+    right: 70px;
+    top: 0px;
+}
+.invoice__wrapper .wrapper_for_print{
+    padding: 20px 40px;
+}
+.inv__footer {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    padding: 30px 0;
+    background: #002f68;
+}
+
+.inv__footer .copyright__content_footer_inv {
+    color: #fff;
+}
+
+.invoice__wrapper .invoice__row:last-child {
+    border: none;
+    margin: 0;
+}
+.payment-status-success {
+    background: #22c55e;
+    display: inline-block;
+    color: #fff;
+    padding: 5px;
+    font-size: 13px;
+    border-radius: 5px;
+    margin-top: 2px;
+}
+/*invoice end*/
 @media screen and (min-width: 1024px) and (max-width: 2500px) {
   .header_container nav.nav_col a {
     font-size: 18px;
