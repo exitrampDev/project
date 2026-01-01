@@ -12,6 +12,7 @@ import { Link } from "react-router-dom";
 import { Toast } from "primereact/toast";
 
 const PropertyCard = () => {
+  const [favoriteIds, setFavoriteIds] = useState([]);
   const { access_token } = useRecoilValue(authState) ?? {};
   const [allListings, setAllListings] = useState([]);
   const [listings, setListings] = useState([]);
@@ -47,40 +48,37 @@ const saveListingBtn = (businessId) => {
 
   if (access_token) {
     // --- Save Favorite ---
-    const handleSave = async () => {
-      try {
-        const response = await fetch(`${API_BASE}/favorite`, {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${access_token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ businessId }),
-        });
+   const handleSave = async () => {
+  try {
+    const response = await fetch(`${API_BASE}/favorite`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${access_token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ businessId }),
+    });
 
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
+    const data = await response.json();
 
-        const data = await response.json();
-        console.log("Favorite saved:", data);
+    // ✅ add to local state instantly
+    setFavoriteIds(prev => [...prev, businessId]);
+    toast.current.show({
+      severity: "success",
+      summary: "Added to Favorites",
+      detail: "This listing has been added to your favorites.",
+      life: 3000,
+    });
+  } catch (error) {
+    toast.current.show({
+      severity: "error",
+      summary: "Error",
+      detail: "Failed to save favorite.",
+      life: 3000,
+    });
+  }
+};
 
-        toast.current.show({
-          severity: "success",
-          summary: "Added to Favorites",
-          detail: "This listing has been added to your favorites.",
-          life: 3000,
-        });
-      } catch (error) {
-        console.error("Error saving favorite:", error);
-        toast.current.show({
-          severity: "error",
-          summary: "Error",
-          detail: "Failed to save favorite. Please try again.",
-          life: 3000,
-        });
-      }
-    };
 
     // --- Flag Listing ---
     const markFlag = async () => {
@@ -129,15 +127,16 @@ const saveListingBtn = (businessId) => {
         });
       }
     };
+    const isFavorite = favoriteIds.includes(businessId);
+    console.log("isFavorite>>>>>", businessId);
     return (
       <>
       <Toast ref={toast} position="top-right" />
         <Button
-          icon="pi pi-heart-fill"
-          className="button__save_listing_global"
+          icon={isFavorite ? "pi pi-heart-fill" : "pi pi-heart"}
+          className={`button__save_listing_global ${isFavorite ? "active" : ""}`}
           onClick={handleSave}
         />
-
         <div className="flag__hit_list" onClick={markFlag}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -255,6 +254,29 @@ const saveListingBtn = (businessId) => {
   const start = (page - 1) * limit + 1;
   const end = Math.min(page * limit, total);
   const currentPageData = listings.slice(start - 1, end);
+useEffect(() => {
+  if (!access_token) return;
+
+  const fetchFavorites = async () => {
+    try {
+      const res = await fetch(`${API_BASE}/favorite`, {
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+        },
+      });
+
+      const result = await res.json();
+
+      // assuming result.data = [{ businessId: "..." }]
+      const ids = result.data.map(fav => fav.businessId._id);
+      setFavoriteIds(ids);
+    } catch (err) {
+      console.error("Failed to fetch favorites", err);
+    }
+  };
+
+  fetchFavorites();
+}, [access_token]);
 
   return (
     <div className="main__listing_grid">

@@ -1,5 +1,5 @@
 // PaymentHistory.jsx
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { useRecoilValue } from "recoil";
 import { apiBaseUrlState, authState } from "../../../recoil/ctaState";
@@ -10,6 +10,8 @@ import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Tag } from "primereact/tag";
 import { Dialog } from "primereact/dialog";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 
 const PaymentHistory = () => {
   const navigate = useNavigate();
@@ -23,12 +25,16 @@ const PaymentHistory = () => {
   const [totalRecords, setTotalRecords] = useState(0);
   const [limit, setLimit] = useState(10);
 
-  // Popup state
+  // Invoice modal state
   const [visible, setVisible] = useState(false);
   const [singlePayment, setSinglePayment] = useState(null);
-  const [loadingSingle, setLoadingSingle] = useState(false);
 
-  // Fetch payments list
+  const invoiceRef = useRef(null);
+const [isPdf, setIsPdf] = useState(false);
+
+  /* ===========================
+     Fetch Payments List
+  ============================ */
   const fetchPayments = async (pageNumber = 1) => {
     try {
       setLoading(true);
@@ -39,10 +45,10 @@ const PaymentHistory = () => {
       });
 
       setPayments(res.data.data || []);
-      setTotalRecords(res.data.total);
+      setTotalRecords(res.data.total || 0);
       setLimit(res.data.limit || 10);
-    } catch (err) {
-      console.error("Error loading payments:", err);
+    } catch (error) {
+      console.error("Error loading payments:", error);
       alert("Unable to load payment history.");
     } finally {
       setLoading(false);
@@ -54,19 +60,18 @@ const PaymentHistory = () => {
   }, [page]);
 
   const onPageChange = (e) => {
-    const newPage = e.page + 1;
-    setPage(newPage);
+    setPage(e.page + 1);
   };
 
-  // Format date
-  const dateTemplate = (row) => {
-    return new Date(row.transactionDateTime).toLocaleString();
-  };
+  /* ===========================
+     Helpers
+  ============================ */
+  const formatDate = (row) =>
+    row?.createdAt ? new Date(row.createdAt).toLocaleString() : "-";
 
-  // Payment Status Tag
   const statusTemplate = (row) => {
     const severity =
-      row.paymentStatus === "completed"
+      row.paymentStatus === "SUCCEEDED"
         ? "success"
         : row.paymentStatus === "pending"
         ? "warning"
@@ -75,55 +80,69 @@ const PaymentHistory = () => {
     return <Tag value={row.paymentStatus} severity={severity} />;
   };
 
-  // Fetch single payment details
-  const fetchSinglePayment = async (id) => {
-    try {
-      setLoadingSingle(true);
-      const res = await axios.get(`${API_BASE}/payment/${id}`, {
-        headers: {
-          Authorization: `Bearer ${access_token}`,
-        },
-      });
-
-      setSinglePayment(res.data);
-      setVisible(true);
-    } catch (error) {
-      console.error("Error loading single payment:", error);
-    } finally {
-      setLoadingSingle(false);
-    }
+  /* ===========================
+     Invoice Handlers
+  ============================ */
+  const openInvoice = (row) => {
+    setSinglePayment(row);
+    setVisible(true);
   };
 
-  // Action btn
-  const actionTemplate = (row) => (
-   <div className="action__listing_btns">
-  {row.paymentStatus === "completed" ? (
-    <Button
-      label="Invoice"
-      icon="pi pi-file-pdf"
-      className="p-button-text p-button-sm btn-invoice"
-      onClick={() => fetchSinglePayment(row._id)}
-      tooltip="Download Invoice"
-      tooltipOptions={{ position: "top" }}
-    />
-  ) : (
-    <Button
-      label="Pay Now"
-      icon="pi pi-credit-card"
-      className="p-button-text p-button-sm btn-pay"
-      onClick={() => navigate(`/user/payment-process/${row._id}`)}
-      tooltip="Complete Payment"
-      tooltipOptions={{ position: "top" }}
-    />
-  )}
-</div>
+  const downloadInvoicePDF = async () => {
+    if (!invoiceRef.current) return;
+ setIsPdf(true);
+    const canvas = await html2canvas(invoiceRef.current, {
+      scale: 2,
+      useCORS: true,
+    });
+setIsPdf(false);
+    const imgData = canvas.toDataURL("image/png");
+    const pdf = new jsPDF("p", "mm", "a4");
 
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+    pdf.addImage(imgData, "PNG", 0, 10, pdfWidth, pdfHeight);
+   const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+
+pdf.save(
+  `Invoice-${singlePayment._id}-${singlePayment.paymentFor}-${timestamp}.pdf`
+);
+  };
+
+  /* ===========================
+     Table Actions
+  ============================ */
+  const actionTemplate = (row) => (
+    <div className="action__listing_btns inv_poup">
+      {row.paymentStatus === "SUCCEEDED" ? (
+        <Button
+          label="Invoice"
+          icon="pi pi-file-pdf"
+           className="p-button-text p-button-sm btn-invoice"
+          onClick={() => openInvoice(row)}
+           tooltip="View Invoice"
+      tooltipOptions={{ position: "top" }}
+        />
+        
+      ) : (
+        <Button
+          label="Pay Now"
+          icon="pi pi-credit-card"
+          className="p-button-text p-button-sm"
+          onClick={() => navigate(`/user/payment-process/${row._id}`)}
+        />
+      )}
+    </div>
   );
 
   return (
     <>
       <DashboardHeader headingData="Payment History" />
 
+      {/* ===========================
+          Payments Table
+      ============================ */}
       <div className="my__save_listing_wrap my__payment_history_table">
         <DataTable
           value={payments}
@@ -135,66 +154,123 @@ const PaymentHistory = () => {
           dataKey="_id"
           emptyMessage="No payments found."
         >
-            <Column header="Listing Title" body={(row) => row?.objectId?.listingTitle || "-"} />
-          <Column field="_id" header="ID" style={{ width: "250px" }} />
+          <Column
+            header="Business Name"
+            body={(row) => row?.referenceId?.businessName || "-"}
+          />
+          <Column field="_id" header="Payment ID" style={{ width: "260px" }} />
           <Column field="amount" header="Amount ($)" />
           <Column
-            field="paymentStatus"
             header="Status"
             body={statusTemplate}
             style={{ width: "140px" }}
           />
-          
           <Column
-            field="transactionDateTime"
             header="Date"
-            body={dateTemplate}
+            body={formatDate}
             style={{ width: "200px" }}
           />
-          
           <Column header="Action" body={actionTemplate} />
         </DataTable>
       </div>
 
-      {/* Invoice Popup */}
+      {/* ===========================
+          Invoice Dialog
+      ============================ */}
       <Dialog
-        header="Payment Invoice"
         visible={visible}
-        style={{ width: "600px" }}
         modal
+        style={{ width: "992px" }}
+        className="invoice__model_wrap"
         onHide={() => setVisible(false)}
       >
-        {loadingSingle ? (
+        {!singlePayment ? (
           <p>Loading...</p>
-        ) : singlePayment ? (
-          <div className="invoice__wrapper">
-            <div className="invoice__box">
-              <p><strong>Transaction ID:</strong> {singlePayment._id}</p>
-              <p><strong>User ID:</strong> {singlePayment.userId}</p>
-              <p><strong>Amount:</strong> ${singlePayment.amount}</p>
-              {/* <p><strong>Payment For:</strong> {singlePayment.paymentFor}</p> */}
-              <p>
-              <strong>Status:</strong>{" "}
-              <Tag
-                value={singlePayment.paymentStatus}
-                severity={
-                  singlePayment.paymentStatus === "completed"
-                    ? "success"
-                    : singlePayment.paymentStatus === "pending"
-                    ? "warning"
-                    : "danger"
-                }
-              />
-            </p>
-
-              <p>
-                <strong>Date:</strong>{" "}
-                {new Date(singlePayment.transactionDateTime).toLocaleString()}
-              </p>
-            </div>
-          </div>
         ) : (
-          <p>No data available</p>
+          <>
+            <div  className="invoice__wrapper">
+               <div className="invoice__actions">
+     {!isPdf && (
+                  <Button
+                    label="Download PDF"
+                    icon="pi pi-download"
+                    className="p-button-sm"
+                    onClick={downloadInvoicePDF}
+                  />
+                )}
+ </div>
+ <div ref={invoiceRef} className="wrapper_for_print">
+              <div className="invoice__header">
+                <h2>Invoice</h2>
+
+               
+              </div>
+
+              <div className="invoice__row">
+                <div>
+                  <h4>Business Name</h4>
+                  <p>{singlePayment?.referenceId?.businessName}</p>
+                </div>
+
+                <div>
+                  <h4>Amount</h4>
+                  <p>${singlePayment?.amount}</p>
+                </div>
+
+                <div>
+                  <h4>Payment Status</h4>
+                    {singlePayment.paymentStatus === "SUCCEEDED"
+                          ? <><div className="payment-status-success">{singlePayment.paymentStatus}</div></>
+                          : <><div className="payment-status-other">{singlePayment.paymentStatus}</div></>
+                      }
+                 
+                </div>
+              </div>
+
+              <div className="invoice__row">
+                <div>
+                  <h4>Payment ID</h4>
+                  <p>{singlePayment?._id}</p>
+                </div>
+
+                <div>
+                  <h4>Payment For</h4>
+                  <p>{singlePayment?.paymentFor}</p>
+                </div>
+
+                <div>
+                  <h4>Transaction Date</h4>
+                  <p>{formatDate(singlePayment)}</p>
+                </div>
+              </div>
+
+              <div className="invoice__row">
+                <div>
+                  <h4>Payer Name</h4>
+                  <p>
+                    {singlePayment?.userId?.first_name}{" "}
+                    {singlePayment?.userId?.last_name}
+                  </p>
+                </div>
+
+                <div>
+                  <h4>Payer Email</h4>
+                  <p>{singlePayment?.userId?.email}</p>
+                </div>
+
+                <div>
+                  <h4>Reference ID</h4>
+                  <p>{singlePayment?.referenceId?._id}</p>
+                </div>
+              </div>
+            <div className="inv__footer">
+             <div className="copyright__content_footer_inv">© {new Date().getFullYear()} ExitRamp. All rights reserved.</div> 
+            </div>
+
+  </div>          
+  </div>
+
+          </>
         )}
       </Dialog>
     </>
