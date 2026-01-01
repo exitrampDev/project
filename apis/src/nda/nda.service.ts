@@ -7,6 +7,7 @@ import { CreateNdaDto } from './dto/create-nda.dto';
 import { QueryNdaDto } from './dto/query-nda.dto';
 import { Business, BusinessDocument } from 'src/business-listing/schemas/business.schema';
 import { NotificationHelper } from 'src/common/helpers/notification.helper';
+import { ApproveNdaDto } from './dto/approve-nda.dto';
 
 @Injectable()
 export class NdaService {
@@ -17,7 +18,7 @@ export class NdaService {
   ) {}
 
   // User submits NDA
-  async create(dto: { businessId: string }, userId: string | Types.ObjectId) {
+  async create(dto: CreateNdaDto, userId: string | Types.ObjectId) {
     const userObjectId = typeof userId === 'string' ? new Types.ObjectId(userId) : userId;
 
     // Check if NDA already exists
@@ -42,6 +43,10 @@ export class NdaService {
       businessOwnerId: business.ownerId,
       submittedBy: userObjectId,
       status: 'pending',
+       // Base64 fields (only set if provided)
+      buyerSignature: dto.buyerSignature,
+      sellerSignature: dto.sellerSignature,
+      agreedDocument: dto.agreedDocument,
     });
 
     // Create notification for business owner
@@ -413,7 +418,7 @@ export class NdaService {
   }
 
   //approve ka kaam hai ye 
-  async approveNda(ndaId: string, userId: string): Promise<Nda>{
+  async approveNda(ndaId: string, userId: string, data: ApproveNdaDto): Promise<Nda>{
      const nda = await this.ndaModel.findById(ndaId);
      if(!nda) throw new NotFoundException("Nda Not Found");
 
@@ -427,6 +432,7 @@ export class NdaService {
      
      nda.sellerResponseOn = new Date();
      nda.status = 'approved';
+     nda.sellerSignature = data.sellerSignature;
      await nda.save();
 
      await this.notificationHelper.createNotification({

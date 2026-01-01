@@ -57,7 +57,7 @@ export class NdaController {
     @Patch('approve')
     async approveNda(@Body() ApproveDto: ApproveNdaDto, @Req() req: any) {
         const userId = req.user.userId;
-        return await this.ndaService.approveNda(ApproveDto.ndaId, userId);
+        return await this.ndaService.approveNda(ApproveDto.ndaId, userId, ApproveDto);
     }  
 
 
