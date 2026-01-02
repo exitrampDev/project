@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState,useRef } from "react";
 import notifInfo from "../../../assets/notifInfo.png";
 import serachIcon from "../../../assets/serachIcon.png";
 import userImg from "../../../assets/userImg.png";
@@ -12,19 +12,24 @@ import { Dialog } from "primereact/dialog";
 import { Button } from "primereact/button";
 import { Toast } from "primereact/toast";
 import { Link } from "react-router-dom";
+import { Message } from "primereact/message";
+
+import SignatureCanvas from "react-signature-canvas";
 import DashboardHeader from "./DashboardHeaderBlock";
 
 const BuyerSubmissionRequest = () => {
   const [buyerSubmissions, setBuyerSubmissions] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { access_token } = useRecoilValue(authState) ?? {};
+  const [buyerSignature, setBuyerSignature] = useState(null);
+  const {user, access_token } = useRecoilValue(authState) ?? {};
   const apiBaseUrl = useRecoilValue(apiBaseUrlState);
   const [search, setSearch] = useState("");
   const [visible, setVisible] = useState(false);
   const [selectedSubmission, setSelectedSubmission] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const toast = React.useRef(null);
-
+  const sigCanvasRef = useRef(null);
+  const today = new Date().toLocaleDateString("en-US");
   // Fetch Buyer NDA submissions
   useEffect(() => {
     fetchBuyerSubmissions();
@@ -75,6 +80,25 @@ const BuyerSubmissionRequest = () => {
         : "danger";
     return <Tag value={row.ndaStatus} severity={severity} />;
   };
+    /* =========================
+     Signature Handlers
+  ========================= */
+const handleSignatureSave = () => {
+  if (!sigCanvasRef.current || sigCanvasRef.current.isEmpty()) {
+    setBuyerSignature("");
+    return;
+  }
+
+  // react-signature-canvas already trims whitespace
+  const dataUrl = sigCanvasRef.current
+    .toDataURL("image/png");
+
+  setBuyerSignature(dataUrl);
+};
+  const clearSignature = () => {
+  sigCanvasRef.current?.clear();
+  setBuyerSignature(null);
+};
 
   // Open Modal
   const openModal = (row) => {
@@ -83,43 +107,51 @@ const BuyerSubmissionRequest = () => {
   };
 
   // Approve / Reject handlers
-  const handleNDAAction = async (actionType) => {
-    if (!selectedSubmission?._id) return;
+ const handleNDAAction = async (actionType, signatureData = "") => {
+  if (!selectedSubmission?._id) return;
 
-    const url =
-      actionType === "approve"
-        ? `${apiBaseUrl}/nda/approve`
-        : `${apiBaseUrl}/nda/reject`;
+  const url =
+    actionType === "approve"
+      ? `${apiBaseUrl}/nda/approve`
+      : `${apiBaseUrl}/nda/reject`;
 
-    setSubmitting(true);
-    try {
-      await axios.patch(
-        url,
-        { ndaId: selectedSubmission._id },
-        {
-          headers: { Authorization: `Bearer ${access_token}` },
-        }
-      );
+  setSubmitting(true);
+  try {
+    // Construct the payload to match the Postman screenshot
+    const payload = {
+      ndaId: selectedSubmission._id,
+      status: actionType === "approve" ? "approved" : "rejected",
+      // Include the base64 signature string if approving
+      sellerSignature: actionType === "approve" ? buyerSignature : null 
+    };
 
-      toast.current.show({
-        severity: "success",
-        summary: `NDA ${actionType === "approve" ? "Approved" : "Rejected"}`,
-        life: 3000,
-      });
+    await axios.patch(
+      url,
+      payload,
+      {
+        headers: { Authorization: `Bearer ${access_token}` },
+      }
+    );
 
-      setVisible(false);
-      fetchBuyerSubmissions();
-    } catch (err) {
-      toast.current.show({
-        severity: "error",
-        summary: "Action Failed",
-        detail: err?.response?.data?.message || "Please try again",
-        life: 3000,
-      });
-    } finally {
-      setSubmitting(false);
-    }
-  };
+    toast.current.show({
+      severity: "success",
+      summary: `NDA ${actionType === "approve" ? "Approved" : "Rejected"}`,
+      life: 3000,
+    });
+
+    setVisible(false);
+    fetchBuyerSubmissions();
+  } catch (err) {
+    toast.current.show({
+      severity: "error",
+      summary: "Action Failed",
+      detail: err?.response?.data?.message || "Please try again",
+      life: 3000,
+    });
+  } finally {
+    setSubmitting(false);
+  }
+};
 
   const ndaViewActionTemplate = (row) => (
     <Button
@@ -196,24 +228,64 @@ const DueDiligenceAction = (statusNDA, Id) => {
       <Dialog
         header="Buyer Submission Details"
         visible={visible}
-        style={{ width: "500px" }}
+        style={{ width: "992px" }}
         onHide={() => setVisible(false)}
         className="nda__buyer_submission_details_wrap"
       >
         {selectedSubmission && (
           <div className="nda__modal_content">
-            <div className="nda__content_modal_element">
-              <strong>Buyer Name:</strong> {selectedSubmission?.buyerName ? selectedSubmission.buyerName : "-"}
-            </div>
-            <div className="nda__content_modal_element">
-              <strong>Email:</strong> {selectedSubmission?.submittedByEmail ? selectedSubmission.submittedByEmail : "-"}
-            </div>
-            <div className="nda__content_modal_element">
-              <strong>Organization:</strong> {selectedSubmission?.organization ? selectedSubmission.organization : "-"}
-            </div>
-            <div className={selectedSubmission?.ndaStatus ? `nda__content_modal_element ${selectedSubmission.ndaStatus}` : "nda__content_modal_element" }>
-              <strong>Status:</strong> <span>{selectedSubmission?.ndaStatus ? selectedSubmission.ndaStatus : "-"}</span>
-            </div>
+             <div className="sign__sec_nda">
+              <div className="sign__sec_buyer">
+                  <img src={selectedSubmission.buyerSignature} alt="Buyer Sig" style={{ maxHeight: '100%' }} />
+                  <p>Name: {selectedSubmission.buyerName}</p>
+                  <p>Date: {formatDate(selectedSubmission.submittedOn)}</p>
+                  <p>Email: {selectedSubmission.submittedByEmail}</p>
+              </div>
+              <div className="sign__sec_seller">
+        <div className="nda__signature_wrap">
+          <label className="font-medium mb-2 block">Seller Signature</label>
+
+          <div className="signature__canvas">
+            <SignatureCanvas
+              ref={sigCanvasRef}
+              penColor="black"
+              canvasProps={{
+                width: 460,
+                height: 150,
+                className: "signature-canvas",
+                onMouseUp: handleSignatureSave,
+                onTouchEnd: handleSignatureSave,
+              }}
+            />
+          </div>
+
+          <div className="flex justify-content-end mt-2">
+            <Button
+              type="button"
+              label="Clear"
+              icon="pi pi-refresh"
+              className="p-button-text p-button-sm"
+              onClick={clearSignature}
+            />
+          </div>
+        </div>
+
+        {!buyerSignature && (
+          <Message
+            severity="warn"
+            text="Please provide your signature before submitting."
+          />
+        )}
+                  
+        <p><strong>Name:</strong> {user.first_name || ""} {user.last_name || ""}</p>
+        <p><strong>Date:</strong> {today}</p>
+        <p><strong>Email:</strong> {user.email || "Seller Email"}</p>
+       
+
+              </div>
+             </div>
+             
+          
 
             <div className="nda__modal_actions" >
               <Button
@@ -221,6 +293,7 @@ const DueDiligenceAction = (statusNDA, Id) => {
                 onClick={() => handleNDAAction("approve")}
                 loading={submitting}
                 className="btn__NDARequest_shareCIM"
+                disabled={ !buyerSignature}
               />
               <Button
                 label="Decline Access"
