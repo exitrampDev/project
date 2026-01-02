@@ -27,6 +27,12 @@ export class AuthController {
     return this.authService.login(user);
   }
 
+  @Get('server-datetime')
+  async getServerDateTime() {
+    const now = new Date();
+    return { serverDateTime: now };
+  }
+
    @Post('login-by-admin')
   async loginByAdmin(@Body() loginDto:{ userId: string }) {
     console.log('Login attempt with:', loginDto.userId);
