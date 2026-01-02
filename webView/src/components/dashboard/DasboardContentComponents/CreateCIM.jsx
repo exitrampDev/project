@@ -1,15 +1,14 @@
+import React, { useEffect, useRef, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import notifInfo from "../../../assets/notifInfo.png";
-import serachIcon from "../../../assets/serachIcon.png";
-import userImg from "../../../assets/userImg.png";
-import { useRecoilValue } from "recoil";
-import { apiBaseUrlState, authState } from "../../../recoil/ctaState";
-import { Toast } from "primereact/toast";
-import React, { useRef, useState, useEffect } from "react";
 import axios from "axios";
+import { useRecoilValue } from "recoil";
+import { Toast } from "primereact/toast";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
+import { FileUpload } from "primereact/fileupload";
+
 import DashboardHeader from "./DashboardHeaderBlock";
+import { apiBaseUrlState, authState } from "../../../recoil/ctaState";
 
 const CreateCIM = () => {
   const { id } = useParams();
@@ -17,36 +16,80 @@ const CreateCIM = () => {
   const { access_token } = useRecoilValue(authState) ?? {};
   const toast = useRef(null);
 
-  const [hasCIM, setHasCIM] = useState(false);
   const [cimFiles, setCimFiles] = useState([]);
+  const [supportingFiles, setSupportingFiles] = useState([]);
 
-  // 🔹 Upload CIM file
-  const handleFileUpload = async (e) => {
-    const file = e.target.files[0];
+  /* =======================
+     FETCH FILES
+  ======================= */
+  const fetchFiles = async () => {
+    try {
+      const res = await axios.get(`${API_BASE}/files/${id}`, {
+        headers: { Authorization: `Bearer ${access_token}` },
+      });
+
+      const files = res.data || [];
+
+      setCimFiles(files.filter((f) => f.typeName === "cim_file"));
+      setSupportingFiles(
+        files.filter((f) => f.typeName === "cim_supporting_file")
+      );
+    } catch (err) {
+      console.error("Fetch files error:", err);
+    }
+  };
+
+  useEffect(() => {
+    if (access_token) fetchFiles();
+  }, [access_token, id]);
+
+  /* =======================
+     UPLOAD HANDLER
+  ======================= */
+  const handleFileUpload = async (file, label, typeName) => {
     if (!file) return;
+
+    if (file.type !== "application/pdf") {
+      toast.current.show({
+        severity: "warn",
+        summary: "Invalid File",
+        detail: "Only PDF files are allowed",
+        life: 3000,
+      });
+      return;
+    }
+
+    // Prevent multiple CIM uploads
+    if (typeName === "cim_file" && cimFiles.length > 0) {
+      toast.current.show({
+        severity: "info",
+        summary: "CIM Exists",
+        detail: "Please delete the existing CIM before uploading a new one.",
+        life: 3000,
+      });
+      return;
+    }
 
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("displayName", file.name);
-    formData.append("typeName", "cim_file");
+    formData.append("displayName", label);
+    formData.append("typeName", typeName);
 
     try {
-      const res = await axios.post(`${API_BASE}/files/${id}/upload`, formData, {
-        headers: {
-          Authorization: `Bearer ${access_token}`,
-        },
+      await axios.post(`${API_BASE}/files/${id}/upload`, formData, {
+        headers: { Authorization: `Bearer ${access_token}` },
       });
 
       toast.current.show({
         severity: "success",
         summary: "Upload Successful",
-        detail: res?.data?.message || "File uploaded successfully",
+        detail: `${label} uploaded successfully`,
         life: 3000,
       });
 
-      fetchListings(); // refresh file list after upload
+      fetchFiles();
     } catch (err) {
-      console.error("Error uploading file:", err);
+      console.error("Upload error:", err);
       toast.current.show({
         severity: "error",
         summary: "Upload Failed",
@@ -56,161 +99,171 @@ const CreateCIM = () => {
     }
   };
 
-  // 🔹 Fetch all files for this listing
-  const fetchListings = async () => {
+  /* =======================
+     DELETE FILE
+  ======================= */
+  const handleDelete = async (fileId) => {
+    if (!window.confirm("Are you sure you want to delete this file?")) return;
+
     try {
-      const res = await axios.get(`${API_BASE}/files/${id}`, {
+      await axios.delete(`${API_BASE}/files/${fileId}`, {
         headers: { Authorization: `Bearer ${access_token}` },
       });
 
-      const files = res.data || [];
-      const cimOnly = files.filter((file) => file.typeName === "cim_file");
+      toast.current.show({
+        severity: "success",
+        summary: "Deleted",
+        detail: "File deleted successfully",
+        life: 3000,
+      });
 
-      if (cimOnly.length > 0) {
-        setHasCIM(true);
-        setCimFiles(cimOnly);
-      } else {
-        setHasCIM(false);
-        setCimFiles([]);
-      }
+      fetchFiles();
     } catch (err) {
-      console.error("Error fetching listings:", err);
+      console.error("Delete error:", err);
+      toast.current.show({
+        severity: "error",
+        summary: "Delete Failed",
+        detail: "Could not delete the file",
+        life: 3000,
+      });
     }
   };
-// 🔹 Delete CIM File
-const handleDelete = async (fileId) => {
-  if (!window.confirm("Are you sure you want to delete this file?")) return;
-
-  try {
-    await axios.delete(`${API_BASE}/files/${fileId}`, {
-      headers: { Authorization: `Bearer ${access_token}` },
-    });
-
-    toast.current.show({
-      severity: "success",
-      summary: "Deleted",
-      detail: "File deleted successfully",
-      life: 3000,
-    });
-
-    // Refresh the table after deletion
-    fetchListings();
-  } catch (err) {
-    console.error("Error deleting file:", err);
-    toast.current.show({
-      severity: "error",
-      summary: "Delete Failed",
-      detail: "Could not delete the file",
-      life: 3000,
-    });
-  }
+const isDocumentUploaded = (label) => {
+  return supportingFiles.some(
+    (file) => file.displayName === label
+  );
 };
-
-  useEffect(() => {
-    if (access_token) {
-      fetchListings();
-    }
-  }, [access_token, id]);
-
   return (
     <>
       <Toast ref={toast} />
 
-    
-<DashboardHeader headingData="Confidential Information Memorandum"/>
+      <DashboardHeader headingData="Confidential Information Memorandum" />
+
       <div className="brief__infor_content">
         <p>
-          This information is used to generate your Confidential Information
-          Memorandum (CIM) and prepare your business for buyer review.
+          Upload your CIM and supporting financial documents. These files will be securely stored and shared with qualified buyers.
+
         </p>
       </div>
 
       <div className="form__for_cim_wrap">
-        <div className="form__for_cim_intro_content">
-          Welcome to the Seller Central CIM Creation. As part of our Seller
-          Central upgrade, you can now manage your CIM directly in Exit Ramp.
-          Our current function allows you to upload a CIM that you've created via
-          a PDF file. In the future, you will have the ability to upload your CIM
-          via PDF and/or build an electronic CIM using the available fields that
-          we've made available to all Seller Central customers.
-        </div>
+        {/* <div className="form__for_cim_intro_content">
+          Upload your CIM and supporting financial documents. These files will
+          be securely stored and shared with qualified buyers.
+        </div> */}
 
-        {/* 🔹 Conditional Rendering */}
-        {!hasCIM ? (
-          // Show upload section
+        {/* =======================
+            MAIN CIM UPLOAD
+        ======================= */}
+        {cimFiles.length === 0 && (
           <div className="cim__file_exchange_wrap">
             <div className="cim__file_exchange_download_wrap">
-              <Link to={`/`} className="cim__file_exchange_ins_btn">
+              <Link to="/" className="cim__file_exchange_ins_btn">
                 Download Instructions
               </Link>
               <span>|</span>
-              <Link to={`/`} className="cim__file_exchange_temp_btn">
+              <Link to="/" className="cim__file_exchange_temp_btn">
                 Download Template
               </Link>
             </div>
 
-            <div className="cim__file_exchange_upload__cimbtn">
-              <label className="p-button p-component cursor-pointer cim__file_exchange_upload_btn">
-                <i className="pi pi-file mr-2"></i> Upload CIM{" "}
-                <span>(PDF only)</span>
-                <input
-                  type="file"
-                  hidden
-                  onChange={handleFileUpload}
-                  accept=".pdf"
-                />
-              </label>
-              <p>
-                <i className="pi pi-exclamation-triangle"></i> Carefully Upload
-                the files. Once uploaded, it will be saved to our CIM Module.
-              </p>
-            </div>
+            <label className="p-button p-component cursor-pointer cim__file_exchange_upload_btn">
+              <i className="pi pi-file mr-2"></i> Upload CIM (PDF only)
+              <input
+                type="file"
+                hidden
+                accept=".pdf"
+                onChange={(e) =>
+                  handleFileUpload(
+                    e.target.files[0],
+                    "Confidential Information Memorandum",
+                    "cim_file"
+                  )
+                }
+              />
+            </label>
           </div>
-        ) : (
-          // Show CIM data table
-          <div className="cim__data_table_wrap mt-4">
-             <div className="my__save_listing_wrap my__listing_table cim__file_data_tablw_view">
-            <DataTable
-              value={cimFiles}
-              tableStyle={{ minWidth: "40rem" }}
-              stripedRows
-            >
+        )}
 
-              
+        {/* =======================
+            SUPPORTING DOCUMENTS
+        ======================= */}
+        <div className="supporting__docs_wrap mt-4">
+          <h3>Supporting Documents</h3>
+
+          <div className="document__financials_files">
+            {[
+            "Profit & Loss Statement",
+            "Balance Sheet",
+            "Three Year Tax Return",
+            "Ownership or Cap Table",
+          ].map((label) =>
+            !isDocumentUploaded(label) ? (
+              <div key={label} className="listing__upload_files_uplosdFile">
+                <label>{label}</label>
+                <FileUpload
+                  mode="basic"
+                  auto
+                  accept=".pdf"
+                  maxFileSize={10000000}
+                  customUpload
+                  chooseLabel="File Upload"
+                  uploadHandler={(e) =>
+                    handleFileUpload(
+                      e.files[0],
+                      label,
+                      "cim_supporting_file"
+                    )
+                  }
+                />
+              </div>
+            ) : null
+          )}
+          </div>
+
+        </div>
+
+        {/* =======================
+            FILES TABLE
+        ======================= */}
+        {(cimFiles.length > 0 || supportingFiles.length > 0) && (
+          <div className="cim__data_table_wrap mt-4">
+            <DataTable
+              value={[...cimFiles, ...supportingFiles]}
+              stripedRows
+              tableStyle={{ minWidth: "45rem" }}
+            >
               <Column field="displayName" header="File Name" />
-              <Column field="typeName" header="CIM Type" />
+              <Column field="typeName" header="Document Type" />
               <Column
                 field="createdAt"
                 header="Uploaded On"
-                body={(rowData) =>
-                  new Date(rowData.createdAt).toLocaleString()
+                body={(row) =>
+                  new Date(row.createdAt).toLocaleString()
                 }
               />
               <Column
                 header="Action"
-                body={(rowData) => (
+                body={(row) => (
                   <div className="action__btn_file">
                     <a
-                      href={`${API_BASE}${rowData.url}`}
+                      href={`${API_BASE}${row.url}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="p-button p-component p-button-sm"
+                      className="p-button p-button-sm"
                     >
                       View
                     </a>
-
-                    <div
-                      onClick={() => handleDelete(rowData._id)}
-                      className="fiel_dlt_btn p-button p-component p-button-sm"
+                    <button
+                      onClick={() => handleDelete(row._id)}
+                      className="p-button p-button-sm p-button-danger"
                     >
                       Delete
-                    </div>
+                    </button>
                   </div>
                 )}
               />
-
             </DataTable>
-            </div>
           </div>
         )}
       </div>

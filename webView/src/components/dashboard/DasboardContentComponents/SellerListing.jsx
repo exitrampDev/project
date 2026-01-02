@@ -482,6 +482,24 @@ window.location.href = `/user/payment-process/${businessId}`;
 };
 
 
+const lisitngStatus = (row) => {
+const formattedStatus = row.status
+    .replace(/_/g, " ")
+    .replace(/\b\w/g, (c) => c.toUpperCase());
+    return(
+      <Tag
+      value={formattedStatus}
+      severity={
+        row.status === "live"
+          ? "success"
+          : row.status === "pending_for_payment"
+          ? "danger"
+          : "warning"
+      }
+    />
+    )
+}
+
   const locationTemplate = (row) =>
     row.businessCity && row.businessState ? `${row.businessCity}, ${row.businessState}` : "-";
 
@@ -555,16 +573,18 @@ const moneyTemplate = (row, { field }) => {
         onClick={(e) => handleDeleteListing(e,row._id)}
          data-pr-tooltip="Remove"
         ></i>
+        {row.status === "pending_for_payment" ? (<>
         
         <Tooltip target=".button__delete_action_lisitng_seller" position="top" />
          <Button
-                label="Pay Now"
+                label=""
                 icon="pi pi-credit-card"
                 className="p-button-text p-button-sm btn-pay"
                 onClick={() => navigate(`/user/payment-process/${row._id}`)}
                 tooltip="Complete Payment"
                 tooltipOptions={{ position: "top" }}
               />
+        </>):(<></>)}
     </div>
   );
 const handleImageSelect = (e) => {
@@ -651,14 +671,25 @@ useEffect(() => {
             <div className="listing__creation_block_main_wrap">
 
  {/* Listing Title */}
-      <div className="listing__creation_field_col md:col-4">
+      {/* <div className="listing__creation_field_col md:col-4">
         <label>Listing Title </label>
           <InputText
             value={newListing.listingTitle || ""}
             onChange={(e) => handleChange(e, "listingTitle", e.target.value)}
             placeholder="Enter Listing Title"
           />
+      </div> */}
+
+
+      {/* Business Name */}
+      <div className="listing__creation_field_col md:col-4">
+        <label>Reference Name <span className="required__star">*</span></label>
+        <InputText
+          value={newListing.businessName}
+          onChange={(e) => handleChange(e, "businessName")}
+        />
       </div>
+
 {/* Asking Price */}
       <div className="listing__creation_field_col md:col-4">
         <label>Asking Price </label>
@@ -790,14 +821,7 @@ useEffect(() => {
     placeholder="Enter Zip Code"
   />
 </div>
-{/* Business Name */}
-      <div className="listing__creation_field_col md:col-4">
-        <label>Business Name <span className="required__star">*</span></label>
-        <InputText
-          value={newListing.businessName}
-          onChange={(e) => handleChange(e, "businessName")}
-        />
-      </div>
+
  {/* Business City */}
 <div className="listing__creation_field_col md:col-4">
   <label>Business City </label>
@@ -1256,7 +1280,7 @@ useEffect(() => {
               <>
               <div className="dashboard__header_block">
               <h3 className="heading__Digital_CIM">
-                Upload Key Business Files
+                Upload Extra Images
               </h3>
 
               <div className="dashboard__header_search_notification_wrap">
@@ -1279,14 +1303,14 @@ useEffect(() => {
 
             <div className="brief__infor_content">
               <p>
-                Upload core documents that support your CIM and buyer evaluation process. These files remain private and can be selectively shared later.
+                Upload extra images with the listing for more images views.
               </p>
             </div>
   <div className="listing__upload_files_wrap">
 
       <div className="listing__upload_files_grid">
        <div className="listing__upload_files_grid_wrap">
-         <div className="listing__upload_files_uplosdFile">
+         {/* <div className="listing__upload_files_uplosdFile">
           <label>Profit &amp; Loss Statement </label>
           <FileUpload 
             mode="basic"
@@ -1336,7 +1360,7 @@ useEffect(() => {
             chooseLabel="File Upload"
             uploadHandler={(e) => handleFileUpload(e.files[0], "Ownership or Cap Table")}
           />
-        </div>
+        </div> */}
      <div className="extraImage_wrap">
          <div className="listing__upload_files_uploadFile">
   <label>Listing Extra Image 1</label>
@@ -1530,6 +1554,8 @@ useEffect(() => {
   <Column field="askingPrice" header="Asking Price" body={moneyTemplate} />
   <Column header="Last Edited" body={dateTemplate} />
   <Column field="cimStatus" header="CIM Status" body={cimTemplate} />
+<Column field="status" header="Listing Status"  body={lisitngStatus}/>
+
   <Column body={(row) => documentRoomLink(row._id)} header="Document Room" />
   <Column body={(row) => createCIMList(row._id, row.cimUrl)} header="CIM View" />
   <Column header="Action" body={actionTemplate} />

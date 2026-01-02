@@ -2066,7 +2066,7 @@ button.btn__crt_listing.p-button.p-component {
     cursor: pointer;
 }
 .my__save_listing_wrap.my__listing_table table.p-datatable-table {
-    width: 100vw;
+    width: 105vw;
 }
 .form__field_col_hardocded_email {
   font-family: var(--font-family);
@@ -3922,6 +3922,27 @@ section.PricingTable__wrapper .PricingTable__container>h2 {
     margin-top: 2px;
 }
 /*invoice end*/
+.signature__canvas {
+    border: 1px solid;
+    border-radius: 5px;
+    margin: 10px 0;
+    background: #f3f7ff;
+}
+.document__financials_files {
+    display: flex;
+    gap: 0;
+    background: #fff;
+    padding: 15px;
+    border-radius: 15px;
+    border: 1px solid #c9c9c9;
+    margin-top: 30px;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.document__financials_files .listing__upload_files_uplosdFile {
+    text-align: center;
+}
 @media screen and (min-width: 1024px) and (max-width: 2500px) {
   .header_container nav.nav_col a {
     font-size: 18px;
