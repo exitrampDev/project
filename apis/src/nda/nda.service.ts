@@ -312,6 +312,8 @@ export class NdaService {
           businessId:1,
           submittedBy:1,
           docRoomAccess:1,
+          buyerSignature:1,
+          sellerSignature:1,
           businessName: { $ifNull: ['$business.businessName', 'N/A'] },
           businessType: { $ifNull: ['$business.businessType', 'N/A'] },
           ndaStatus: '$status',
@@ -320,7 +322,7 @@ export class NdaService {
           sellerResponseOn: 1,
           message: 1,
           submittedByEmail: '$user.email',
-          // buyer: '$buyer', //for all buyers in array
+          // buyer_data: '$buyer', //for all buyers in array
           buyer: { $ifNull: [{ $arrayElemAt: ['$buyer', 0] }, {}] },
           buyerName: {
             $let: {
