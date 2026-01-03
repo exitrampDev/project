@@ -8,6 +8,8 @@ import { QueryNdaDto } from './dto/query-nda.dto';
 import { Business, BusinessDocument } from 'src/business-listing/schemas/business.schema';
 import { NotificationHelper } from 'src/common/helpers/notification.helper';
 import { ApproveNdaDto } from './dto/approve-nda.dto';
+import { MailService } from 'src/common/mail/mail.service';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class NdaService {
@@ -15,6 +17,8 @@ export class NdaService {
     @InjectModel(Nda.name) private readonly ndaModel: Model<NdaDocument>,
      @InjectModel(Business.name) private readonly businessModel: Model<BusinessDocument>,
      private readonly notificationHelper: NotificationHelper,
+       private readonly mailService: MailService,
+       private readonly userService: UsersService
   ) {}
 
   // User submits NDA
@@ -55,6 +59,18 @@ export class NdaService {
       title: 'NDA Submitted',
       message: `A new NDA has been submitted for on your business "${business.businessName}"`,
     });
+
+    // Send email to business owner
+    let businessOwner = await this.userService.findById(business.ownerId.toString());
+ if(businessOwner){   await this.mailService.sendMail(
+      businessOwner.email,
+      'New NDA Submission',
+      'plain-text-template',
+      {
+        message: `A new NDA has been submitted for your business "${business.businessName}". Please review it at your earliest convenience.`,
+      }
+    );
+  }
 
     return newNda.save();
   }

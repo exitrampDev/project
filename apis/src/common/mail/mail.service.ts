@@ -59,9 +59,10 @@ export class MailService {
     });
   }
 
-  async sendGeneric(to: string, subject: string, template: string, context: Record<string, any>) {
+  async sendMail(to: string | string[], subject: string, template: string, context: Record<string, any> = {}) {
     return this.mailerService.sendMail({
       to,
+      from: process.env.EMAIL_FROM,
       subject,
       template: `./${template}`,
       context,
