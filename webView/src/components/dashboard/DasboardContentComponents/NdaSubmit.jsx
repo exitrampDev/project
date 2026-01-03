@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState ,useEffect} from "react";
 import axios from "axios";
 import { useRecoilState, useRecoilValue } from "recoil";
 import {
@@ -15,7 +15,7 @@ import { Message } from "primereact/message";
 import SignatureCanvas from "react-signature-canvas";
 
 const SubmitNDAForm = ({ ndaListingIdAdd, businessData }) => {
-  console.log("businessData>>>>>>>>>>>>>>>>>>>>.",businessData);
+  const [agreementDate, setAgreementDate] = useState("");
   const [showNDA, setShowNDA] = useRecoilState(showNDAAtom);
   const { user, access_token } = useRecoilValue(authState) ?? {};
   const API_BASE = useRecoilValue(apiBaseUrlState);
@@ -53,7 +53,7 @@ const handleSignatureSave = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!agreed || !buyerSignature) return;
+    if (!buyerSignature) return;
 
     try {
       setLoading(true);
@@ -89,10 +89,45 @@ const handleSignatureSave = () => {
       setLoading(false);
     }
   };
+useEffect(() => {
+  if (!showNDA) return;
+
+  const fetchServerDate = async () => {
+    try {
+      const res = await axios.get(
+        `${API_BASE}/auth/server-datetime`,
+        {
+          headers: {
+            Authorization: `Bearer ${access_token}`,
+          },
+        }
+      );
+
+      // adjust key if your API response differs
+      const serverDate = res.data?.serverDateTime || res.data?.date;
+
+      if (serverDate) {
+        const formattedDate = new Date(serverDate).toLocaleDateString(
+          "en-US",
+          {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          }
+        );
+        setAgreementDate(formattedDate);
+      }
+    } catch (err) {
+      console.error("Failed to fetch server date", err);
+    }
+  };
+
+  fetchServerDate();
+}, [showNDA, API_BASE, access_token]);
 
   return (
     <Dialog
-      header="Submit NDA to Access CIM"
+      header="Mutual Non-Disclosure Agreement"
       visible={showNDA}
       modal
       onHide={() => setShowNDA(false)}
@@ -103,96 +138,188 @@ const handleSignatureSave = () => {
         onSubmit={handleSubmit}
         className="flex flex-column gap-3 nda__submit_form"
       >
-        <p className="text-center text-color-secondary line-height-3 m-0">
-          Complete the NDA below to request access to this business’s confidential
-          materials.
-        </p>
 
-        {/* =========================
-           User Info (Read-only)
-        ========================= */}
-        <div className="nda__submit_form_body">
-          <div className="nda__submit_form_body_elements">
-            <label>First Name</label>
-            <div className="fields__content">{user?.first_name || "-"}</div>
-          </div>
+<div className="nda__agreement_wrap">
+      <h3>I. THE PARTIES</h3>
 
-          <div className="nda__submit_form_body_elements">
-            <label>Last Name</label>
-            <div className="fields__content">{user?.last_name || "-"}</div>
-          </div>
+      <p>
+        This Non-Disclosure Agreement, hereinafter known as the
+        <strong> “Agreement”</strong>, created on this day{" "}
+        <strong>{agreementDate}</strong>, is between{" "}
+        <strong>{user.first_name} {user.last_name}</strong>, hereinafter known as{" "}
+        <strong>“Party A”</strong>, and the listing owner of{" "}
+        <strong>
+          {businessData.businessName} (Listing ID: #{businessData._id.toString().slice(-6)})
+        </strong>
+        , hereinafter known as <strong>“Party B”</strong>, and collectively
+        known as the <strong>“Parties”</strong>.
+      </p>
 
-          <div className="nda__submit_form_body_elements">
-            <label>Email</label>
-            <div className="fields__content">{user?.email || "-"}</div>
-          </div>
+      <p>
+        WHEREAS this Agreement is created for the purpose of preventing the
+        unauthorized disclosure of confidential and proprietary information.
+      </p>
 
-          <div className="nda__submit_form_body_elements">
-            <label>Phone Number</label>
-            <div className="fields__content">
-              {user?.phone_number || "-"}
-            </div>
-          </div>
-        </div>
+      <p className="nda__section_intro">
+        The Parties Agree to the Following:
+      </p>
 
+      <h3>II. TYPE OF AGREEMENT</h3>
+      <p>
+        This Agreement shall be <strong>Mutual</strong>, whereas the Parties
+        shall be prohibited from disclosing confidential and proprietary
+        information that is to be shared between one another.
+      </p>
+
+      <h3>III. RELATIONSHIP</h3>
+      <p>
+        Party A’s relationship to Party B can be described as{" "}
+        <strong>Recipient</strong>, and Party B’s relationship to Party A can
+        be described as <strong>Discloser</strong>.
+      </p>
+
+      <h3>IV. DEFINITION</h3>
+      <p>
+        For the purposes of this Agreement, the term{" "}
+        <strong>“Confidential Information”</strong> shall include, but not be
+        limited to, documents, records, information and data (whether verbal,
+        electronic or written), drawings, models, apparatus, sketches, designs,
+        schedules, product plans, marketing plans, technical procedures,
+        manufacturing processes, analyses, compilations, studies, software,
+        prototypes, samples, formulas, methodologies, formulations, product
+        developments, patent applications, know-how, experimental results,
+        specifications, and other business information relating to Party B’s
+        business, assets, operations, or contracts.
+      </p>
+
+      <p>
+        Confidential Information also includes any work products, studies, or
+        materials prepared by or in the possession or control of the other
+        Party that contain or reflect such Confidential Information.
+      </p>
+
+      <p>
+        Confidential Information does <strong>not</strong> include:
+      </p>
+
+      <ul>
+        <li>Information generally available to the public</li>
+        <li>Widely used programming practices or algorithms</li>
+        <li>
+          Information rightfully in the possession of the Parties prior to
+          signing this Agreement
+        </li>
+        <li>
+          Information independently developed without the use of provided
+          Confidential Information
+        </li>
+      </ul>
+
+      <h3>V. OBLIGATIONS</h3>
+      <p>
+        The Parties shall hold and maintain all Confidential Information in
+        strict confidence and disclose it only to individuals on a
+        “need-to-know” basis. Any unauthorized disclosure shall result in full
+        liability for the disclosing Party.
+      </p>
+
+      <p>
+        Neither Party shall, without written approval, publish, copy, or use
+        Confidential Information for personal benefit. Upon request, all
+        materials shall be returned within <strong>30 days</strong>.
+      </p>
+
+      <h3>VI. TIME PERIOD</h3>
+      <p>
+        The duty to maintain confidentiality shall remain in effect until such
+        information no longer qualifies as a trade secret or written release
+        is provided.
+      </p>
+
+      <h3>VII. INTEGRATION</h3>
+      <p>
+        This Agreement constitutes the complete understanding between the
+        Parties and supersedes all prior agreements. Amendments must be in
+        writing and acknowledged by both Parties.
+      </p>
+
+      <h3>VIII. SEVERABILITY</h3>
+      <p>
+        If any provision is found unenforceable, the remainder shall continue
+        in full force and effect.
+      </p>
+
+      <h3>IX. ENFORCEMENT</h3>
+      <p>
+        The Parties acknowledge that breach of this Agreement may cause
+        irreparable harm and that equitable and legal remedies may be pursued.
+      </p>
+
+      <h3>X. GOVERNING LAW</h3>
+      <p>
+        This Agreement shall be governed under the laws of the State of{" "}
+        <strong>{businessData.businessState}</strong>.
+      </p>
+
+      <p className="nda__signature_note">
+        By typing your name below, you acknowledge and agree to all terms and
+        conditions outlined in this Agreement and provide your electronic
+        signature.
+      </p>
+    </div>
+
+
+
+
+
+
+    
         {/* =========================
            Signature
         ========================= */}
         <div className="nda__signature_wrap">
           <label className="font-medium mb-2 block">Buyer Signature</label>
+          <div className="user__details_box_nda">
+  
+<p className="user__details_box_nda_content">
+  <strong>Buyer Name:</strong> {user?.first_name || "-"} {user?.last_name || "-"}
+</p>
+<p className="user__details_box_nda_content">
+  <strong>Date of Signature:</strong> {agreementDate}
+</p>
+<p className="user__details_box_nda_content">
+  <strong>Buyer Name:</strong> {user?.email || "-"}
+</p>
 
-          <div className="signature__canvas">
+</div>
+  <div className="signature__canvas">
             <SignatureCanvas
               ref={sigCanvasRef}
               penColor="black"
               canvasProps={{
-                width: 460,
-                height: 150,
                 className: "signature-canvas",
                 onMouseUp: handleSignatureSave,
                 onTouchEnd: handleSignatureSave,
               }}
             />
           </div>
-
-          <div className="flex justify-content-end mt-2">
+   <div className="flex justify-content-end mt-2">
             <Button
               type="button"
               label="Clear"
               icon="pi pi-refresh"
-              className="p-button-text p-button-sm"
+              className="p-button-text p-button-sm signature__clear"
               onClick={clearSignature}
             />
           </div>
+        
+
+       
         </div>
 
-        {!buyerSignature && (
-          <Message
-            severity="warn"
-            text="Please provide your signature before submitting."
-          />
-        )}
 
-        {/* =========================
-           NDA Agreement
-        ========================= */}
-        <div className="nda__agree_checkbox flex align-items-center gap-2">
-          <Checkbox
-            inputId="ndaAgree"
-            checked={agreed}
-            onChange={(e) => setAgreed(e.checked)}
-          />
-          <label htmlFor="ndaAgree" className="text-sm cursor-pointer">
-            I agree not to disclose any confidential information.
-          </label>
-        </div>
 
-        {!agreed && (
-          <Message
-            severity="warn"
-            text="Please agree to the NDA terms before submitting."
-          />
-        )}
+   
 
         {/* =========================
            Response Message
@@ -204,7 +331,8 @@ const handleSignatureSave = () => {
           />
         )}
 
-        {/* =========================
+       <div className="modal__buyer_nda">
+         {/* =========================
            Submit
         ========================= */}
         <Button
@@ -212,8 +340,9 @@ const handleSignatureSave = () => {
           label={loading ? "Submitting..." : "Submit NDA"}
           icon="pi pi-check"
           className="w-full mt-3"
-          disabled={!agreed || !buyerSignature || loading}
+          disabled={ !buyerSignature || loading}
         />
+       </div>
       </form>
     </Dialog>
   );

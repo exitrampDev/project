@@ -56,7 +56,7 @@ const FreeBuyerForm = () => {
     if (!access_token) return;
 
     axios
-      .get(`${API_BASE}/buyer-profile/public`, {
+      .get(`${API_BASE}/buyer-profile/me`, {
         headers: { Authorization: `Bearer ${access_token}` },
       })
       .then((res) => {
