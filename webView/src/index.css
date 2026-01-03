@@ -2969,13 +2969,7 @@ ul.list__card_cim_row_sub_list {
     cursor: pointer;
     z-index: 0;
 }
-form.nda__submit_form {
-    max-width: 700px;
-    margin: 0px auto;
-    background: rgb(255, 255, 255);
-    border-radius: 10px;
-        z-index: 2;
-}
+
 .nda__agree_cehckbox {
     display: flex;
     gap: 5px;
@@ -2983,9 +2977,6 @@ form.nda__submit_form {
     align-items: center;
     justify-content: center;
     margin: 14px 0;
-}
-.nda__submit_form_wrap {
-    text-align: center;
 }
 
 .nda__submit_form_wrap .p-inline-message.p-component.p-inline-message-warn * {
@@ -3071,17 +3062,27 @@ span.cimAccessNDAsubmit__fields_datatable.field__denied_NDA {
     color: #002F68;
 }
 
+.sign__sec_nda label.font-medium.mb-2.block {
+    color: #002f68;
+    font-size: 25px;
+}
 
-.nda__modal_content {
-    border-top: 1px solid #d4d4d4;
-    padding-top: 15px;
+.nda__buyer_submission_details_wrap .p-dialog-title{
+    color: #002f68;
+    font-size: 36px;
+}
+
+.nda__buyer_submission_details_wrap .p-dialog-header {
+    border-bottom: 1px solid #d4d4d4;
 }
 
 .nda__modal_actions {
-    display: flex;
-    margin-top: 30px;
+   display: flex;
+    margin-top: 10px;
     justify-content: space-between;
     gap: 15px;
+    padding: 21px 20px;
+    background: #002f68;
 }
 
 .nda__modal_actions button.btn__NDARequest_shareCIM.p-button.p-component {
@@ -3943,6 +3944,92 @@ section.PricingTable__wrapper .PricingTable__container>h2 {
 .document__financials_files .listing__upload_files_uplosdFile {
     text-align: center;
 }
+
+
+.nda__agreement_wrap {
+    text-align: left;
+}
+
+.user__details_box_nda {
+    text-align: left;
+}
+
+.nda__signature_wrap {
+    text-align: left;
+}
+
+label.font-medium.mb-2.block {
+    font-weight: 700;
+}
+
+.nda__signature_wrap canvas.signature-canvas {
+    width: 100%;
+}
+
+.sign__sec_nda {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    margin-top: 45px;
+}
+
+
+.p-inline-message.p-component.p-inline-message-warn .p-inline-message-text {
+    font-size: 10px;
+}
+
+.sign__sec_buyer {
+    width: calc(50% - 15px);
+}
+
+.sign__sec_seller {
+    width: calc(50% - 15px);
+}
+
+.nda__signature_wrap button.p-button-text.p-button-sm.p-button.p-component span {
+    color: #fff;
+}
+
+.nda__signature_wrap button.p-button-text.p-button-sm.p-button.p-component {
+    margin-bottom: 15px;
+}
+
+.nda__submit_form_wrap .p-dialog-header {
+    border-bottom: 1px solid #d4d4d4;
+}
+
+.nda__submit_form_wrap .p-dialog-header .p-dialog-title {
+    color: #002f68;
+    font-size: 36px;
+}
+.nda__submit_form_wrap  .nda__signature_wrap{
+    width: calc(50% - 15px);
+    margin-top: 40px;
+}
+
+.nda__submit_form_wrap  .nda__signature_wrap label.font-medium.mb-2.block {
+    color: #002f68;
+    font-size: 25px;
+}
+
+.modal__buyer_nda {
+    display: flex;
+    margin-top: 20px;
+    justify-content: space-between;
+    gap: 15px;
+    padding: 21px 20px;
+    background: #002f68;
+}
+form.p-fluid.space-y-4.register_form_col button.p-button.p-component {
+    margin: 0 auto;
+}
+img.buyerSig {max-width: 100%;}
+
+.buyerSig__wrap { max-width: 100%;
+    border: 1px solid;
+    border-radius: 5px;
+    background: #f3f7ff;
+    height: 150px;}
 @media screen and (min-width: 1024px) and (max-width: 2500px) {
   .header_container nav.nav_col a {
     font-size: 18px;
