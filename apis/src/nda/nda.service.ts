@@ -65,7 +65,7 @@ export class NdaService {
  if(businessOwner){   await this.mailService.sendMail(
       businessOwner.email,
       'New NDA Submission',
-      'plain-text-template',
+      'ndaSubmitted',
       {
         message: `A new NDA has been submitted for your business "${business.businessName}". Please review it at your earliest convenience.`,
       }
