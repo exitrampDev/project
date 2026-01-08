@@ -1434,7 +1434,7 @@ const usStates = [
      <div className="extraImage_wrap">
          <div className="listing__upload_files_uploadFile">
   <label>Listing Extra Image 1</label>
-  <FileUpload
+  {/* <FileUpload
     mode="basic"
     accept="image/*"
     auto
@@ -1442,12 +1442,19 @@ const usStates = [
     customUpload
     chooseLabel="Upload"
     uploadHandler={(e) => handleFileUpload(e.files[0], "listingImage1")}
-  />
+  /> */}
+
+<FileUploader
+  accept="image/png, image/jpeg"
+  maxSizeMB={5}
+  onFileSelect={(file) => handleFileUpload(file, "listingImage1")}
+/>
+
 </div>
 
 <div className="listing__upload_files_uploadFile">
    <label>Listing Extra Image 2</label>
-  <FileUpload
+  {/* <FileUpload
     mode="basic"
     accept="image/*"
     auto
@@ -1455,12 +1462,17 @@ const usStates = [
     customUpload
     chooseLabel="Upload"
     uploadHandler={(e) => handleFileUpload(e.files[0], "listingImage2")}
-  />
+  /> */}
+  <FileUploader
+  accept="image/png, image/jpeg"
+  maxSizeMB={5}
+  onFileSelect={(file) => handleFileUpload(file, "listingImage2")}
+/>
 </div>
 
 <div className="listing__upload_files_uploadFile">
    <label>Listing Extra Image 3</label>
-  <FileUpload
+  {/* <FileUpload
     mode="basic"
     accept="image/*"
     auto
@@ -1468,12 +1480,17 @@ const usStates = [
     customUpload
     chooseLabel="Upload"
     uploadHandler={(e) => handleFileUpload(e.files[0], "listingImage3")}
-  />
+  /> */}
+  <FileUploader
+  accept="image/png, image/jpeg"
+  maxSizeMB={5}
+  onFileSelect={(file) => handleFileUpload(file, "listingImage3")}
+/>
 </div>
 
 <div className="listing__upload_files_uploadFile">
    <label>Listing Extra Image 4</label>
-  <FileUpload
+  {/* <FileUpload
     mode="basic"
     accept="image/*"
     auto
@@ -1481,12 +1498,17 @@ const usStates = [
     customUpload
     chooseLabel="Upload"
     uploadHandler={(e) => handleFileUpload(e.files[0], "listingImage4")}
-  />
+  /> */}
+  <FileUploader
+  accept="image/png, image/jpeg"
+  maxSizeMB={5}
+  onFileSelect={(file) => handleFileUpload(file, "listingImage4")}
+/>
 </div>
 
 <div className="listing__upload_files_uploadFile">
    <label>Listing Extra Image 5</label>
-  <FileUpload
+  {/* <FileUpload
     mode="basic"
     accept="image/*"
     auto
@@ -1494,7 +1516,12 @@ const usStates = [
     customUpload
     chooseLabel="Upload"
     uploadHandler={(e) => handleFileUpload(e.files[0], "listingImage5")}
-  />
+  /> */}
+  <FileUploader
+  accept="image/png, image/jpeg"
+  maxSizeMB={5}
+  onFileSelect={(file) => handleFileUpload(file, "listingImage5")}
+/>
 </div>
 
      </div>
