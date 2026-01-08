@@ -17,6 +17,7 @@ import { InputSwitch } from "primereact/inputswitch";
 import { RadioButton } from "primereact/radiobutton";
 import { FileUpload } from "primereact/fileupload";
 import { Button } from "primereact/button";
+import FileUploader from "../../customcomponent/FileUploader";
 
 export default function EditBusinessListing() {
   const { id } = useParams();
@@ -155,10 +156,65 @@ export default function EditBusinessListing() {
     }
   };
 
+
+const usStates = [
+  { label: "Alabama", value: "AL" },
+  { label: "Alaska", value: "AK" },
+  { label: "Arizona", value: "AZ" },
+  { label: "Arkansas", value: "AR" },
+  { label: "California", value: "CA" },
+  { label: "Colorado", value: "CO" },
+  { label: "Connecticut", value: "CT" },
+  { label: "Delaware", value: "DE" },
+  { label: "Florida", value: "FL" },
+  { label: "Georgia", value: "GA" },
+  { label: "Hawaii", value: "HI" },
+  { label: "Idaho", value: "ID" },
+  { label: "Illinois", value: "IL" },
+  { label: "Indiana", value: "IN" },
+  { label: "Iowa", value: "IA" },
+  { label: "Kansas", value: "KS" },
+  { label: "Kentucky", value: "KY" },
+  { label: "Louisiana", value: "LA" },
+  { label: "Maine", value: "ME" },
+  { label: "Maryland", value: "MD" },
+  { label: "Massachusetts", value: "MA" },
+  { label: "Michigan", value: "MI" },
+  { label: "Minnesota", value: "MN" },
+  { label: "Mississippi", value: "MS" },
+  { label: "Missouri", value: "MO" },
+  { label: "Montana", value: "MT" },
+  { label: "Nebraska", value: "NE" },
+  { label: "Nevada", value: "NV" },
+  { label: "New Hampshire", value: "NH" },
+  { label: "New Jersey", value: "NJ" },
+  { label: "New Mexico", value: "NM" },
+  { label: "New York", value: "NY" },
+  { label: "North Carolina", value: "NC" },
+  { label: "North Dakota", value: "ND" },
+  { label: "Ohio", value: "OH" },
+  { label: "Oklahoma", value: "OK" },
+  { label: "Oregon", value: "OR" },
+  { label: "Pennsylvania", value: "PA" },
+  { label: "Rhode Island", value: "RI" },
+  { label: "South Carolina", value: "SC" },
+  { label: "South Dakota", value: "SD" },
+  { label: "Tennessee", value: "TN" },
+  { label: "Texas", value: "TX" },
+  { label: "Utah", value: "UT" },
+  { label: "Vermont", value: "VT" },
+  { label: "Virginia", value: "VA" },
+  { label: "Washington", value: "WA" },
+  { label: "West Virginia", value: "WV" },
+  { label: "Wisconsin", value: "WI" },
+  { label: "Wyoming", value: "WY" }
+];
+
+
   /* ---------------------- image ---------------------- */
 
   const handleImageSelect = (e) => {
-    const file = e.files[0];
+    const file = e;
     const reader = new FileReader();
     reader.onloadend = () =>
       setNewListing((p) => ({ ...p, image: reader.result }));
@@ -182,13 +238,21 @@ export default function EditBusinessListing() {
             <div className="listing__creation_block_main_wrap">
 
  {/* Listing Title */}
-      <div className="listing__creation_field_col md:col-4">
+      {/* <div className="listing__creation_field_col md:col-4">
         <label>Listing Title </label>
           <InputText
             value={newListing.listingTitle || ""}
             onChange={(e) => handleChange(e, "listingTitle", e.target.value)}
             placeholder="Enter Listing Title"
           />
+      </div> */}
+      {/* Business Name */}
+      <div className="listing__creation_field_col md:col-4">
+        <label>Listing Title <span className="required__star">*</span></label>
+        <InputText
+          value={newListing.businessName}
+          onChange={(e) => handleChange(e, "businessName")}
+        />
       </div>
 {/* Asking Price */}
       <div className="listing__creation_field_col md:col-4">
@@ -205,7 +269,7 @@ export default function EditBusinessListing() {
 {/* File Uploads */}
       <div className="listing__creation_field_col file_business_logo md:col-6">
         <label>Main Listing Image <span className="required__star">*</span></label>
-        <FileUpload
+        {/* <FileUpload
           accept="image/*"
           maxFileSize={1000000}
           customUpload
@@ -215,7 +279,14 @@ export default function EditBusinessListing() {
             handleImageSelect(e);
             e.options.clear(); 
           }}
-        />
+        /> */}
+         <FileUploader
+  accept="image/png, image/jpeg,.pdf"
+  maxSizeMB={5}
+  existingFileUrl={newListing.image || "dss"} // existing file from backend
+  onFileSelect={(file) => handleImageSelect(file)}
+/>
+
       </div>
 {/* Listing Description */}
       <div className="listing__creation_field_col md:col-6">
@@ -321,14 +392,7 @@ export default function EditBusinessListing() {
     placeholder="Enter Zip Code"
   />
 </div>
-{/* Business Name */}
-      <div className="listing__creation_field_col md:col-4">
-        <label>Business Name <span className="required__star">*</span></label>
-        <InputText
-          value={newListing.businessName}
-          onChange={(e) => handleChange(e, "businessName")}
-        />
-      </div>
+
  {/* Business City */}
 <div className="listing__creation_field_col md:col-4">
   <label>Business City </label>
@@ -343,11 +407,17 @@ export default function EditBusinessListing() {
 {/* State */}
 <div className="listing__creation_field_col md:col-4">
   <label> Business State </label>
-  <InputText
-    value={newListing.businessState || ""}
-    onChange={(e) => handleChange(e, "businessState", e.target.value)}
-    placeholder="Enter Business State"
-  />
+ <Dropdown
+     value={newListing.businessState || null}
+     options={usStates}
+     optionLabel="label"
+     optionValue="value"
+     placeholder="Select Business State"
+     onChange={(e) =>
+       handleChange(e, "businessState", e.value)
+     }
+     className="w-full"
+   />
 </div>
 
 {/* Country */}

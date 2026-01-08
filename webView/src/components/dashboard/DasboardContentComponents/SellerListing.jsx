@@ -28,6 +28,7 @@ import { Link } from "react-router-dom";
 import { InputSwitch } from "primereact/inputswitch";
 import DashboardHeader from "./DashboardHeaderBlock";
 import { useNavigate } from "react-router-dom";
+import FileUploader from "../../customcomponent/FileUploader";
 
 export default function SellerListing() {
   const toast = useRef(null);
@@ -592,7 +593,7 @@ const moneyTemplate = (row, { field }) => {
     </div>
   );
 const handleImageSelect = (e) => {
-  const file = e.files[0];
+  const file = e;
   const reader = new FileReader();
 
   reader.onloadend = () => {
@@ -761,7 +762,7 @@ const usStates = [
 {/* File Uploads */}
       <div className="listing__creation_field_col file_business_logo md:col-6">
         <label>Main Listing Image <span className="required__star">*</span></label>
-        <FileUpload
+        {/* <FileUpload
           accept="image/*"
           maxFileSize={1000000}
           customUpload
@@ -771,7 +772,13 @@ const usStates = [
             handleImageSelect(e);
             e.options.clear(); 
           }}
-        />
+        /> */}
+        <FileUploader
+  accept="image/png, image/jpeg,.pdf"
+  maxSizeMB={0.5}
+  onFileSelect={(file) =>  handleImageSelect(file)}
+/>
+
       </div>
 {/* Listing Description */}
       <div className="listing__creation_field_col md:col-6">
