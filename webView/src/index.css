@@ -2066,7 +2066,7 @@ button.btn__crt_listing.p-button.p-component {
     cursor: pointer;
 }
 .my__save_listing_wrap.my__listing_table table.p-datatable-table {
-    width: 105vw;
+    width: 110vw;
 }
 .form__field_col_hardocded_email {
   font-family: var(--font-family);
@@ -4030,6 +4030,23 @@ img.buyerSig {max-width: 100%;}
     border-radius: 5px;
     background: #f3f7ff;
     height: 150px;}
+    .buyer__info_modal {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+        margin-top: 20px;
+}
+
+.buyer__modal_fields {
+    width: calc(50% - 7px);
+}
+.buyer__info_pop .p-dialog-header {border-bottom: 1px solid #d4d4d4;
+}
+
+.buyer__info_pop .p-dialog-header .p-dialog-title {    color: #002f68;
+    font-size: 36px;}
+
+.buyer__info_pop  .buyer__modal_fields strong {color: #002f68;}
 @media screen and (min-width: 1024px) and (max-width: 2500px) {
   .header_container nav.nav_col a {
     font-size: 18px;

@@ -54,7 +54,13 @@ const plans = [
     cta: "Sign Up",
   },
 ];
-
+  const handleSignupClick = () => {
+    const signupBtn = document.querySelector(".signup-btn");
+    if (signupBtn) {
+      signupBtn.click();
+    }
+  };
+  
 export default function PricingCards() {
   return (
     <section className="PricingCards__wrapper">
@@ -73,7 +79,12 @@ export default function PricingCards() {
                 <li key={i}><span>✔</span> {feature}</li>
               ))}
             </ul>
-            <button className="PricingCard__cta">{plan.cta}</button>
+              <button
+              className="PricingCard__cta"
+              onClick={handleSignupClick}
+            >
+              {plan.cta}
+            </button>
           </div>
         ))}
       </div>

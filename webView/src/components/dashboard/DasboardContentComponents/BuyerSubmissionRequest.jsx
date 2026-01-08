@@ -473,31 +473,105 @@ const openBuyerInfoModal = (row) => {
           </div>
         )}
       </Dialog>
-      <Dialog
+     <Dialog
   header="Buyer Information"
+  className="buyer__info_pop"
   visible={buyerInfoVisible}
-  style={{ width: "500px" }}
+  style={{ width: "992px" }}
   onHide={() => setBuyerInfoVisible(false)}
 >
-  {selectedBuyer && (
+  {selectedBuyer?.buyer && (
     <div className="buyer__info_modal">
-      <p><strong>Name:</strong> {selectedBuyer.buyerName}</p>
-      <p><strong>Email:</strong> {selectedBuyer.submittedByEmail}</p>
-      <p><strong>Business:</strong> {selectedBuyer.businessName}</p>
-      <p><strong>Submitted On:</strong> {formatDate(selectedBuyer.submittedOn)}</p>
-      <p>
+      <div className="buyer__modal_fields">
+        <strong>Name:</strong>{" "}
+        {selectedBuyer.buyer.firstName} {selectedBuyer.buyer.lastName}
+      </div>
+
+
+
+      <div className="buyer__modal_fields">
+        <strong>Email:</strong> {selectedBuyer.buyer.email}
+      </div>
+
+      <div className="buyer__modal_fields">
+        <strong>Phone:</strong> {selectedBuyer.buyer.phone}
+      </div>
+
+      <div className="buyer__modal_fields">
+        <strong>Industry of Interest:</strong>{" "}
+        {selectedBuyer.buyer.industryOfInterest}
+      </div>
+
+      <div className="buyer__modal_fields">
+        <strong>Region of Interest:</strong>{" "}
+        {selectedBuyer.buyer.regionOfInterest}
+      </div>
+
+      <div className="buyer__modal_fields">
+        <strong>Investment Budget:</strong>{" "}
+        {selectedBuyer.buyer.investmentBudget}
+      </div>
+
+      <div className="buyer__modal_fields">
+        <strong>Liquid Assets:</strong>{" "}
+        {selectedBuyer.buyer.liquidAssetToSupporPurchase}
+      </div>
+
+      <div className="buyer__modal_fields">
+        <strong>Financing Placed:</strong>{" "}
+        {selectedBuyer.buyer.financingIsPlaced}
+      </div>
+
+      <div className="buyer__modal_fields">
+        <strong>Previous Acquisition Experience:</strong>{" "}
+        {selectedBuyer.buyer.previousAcquisitionExperience}
+      </div>
+
+      <div className="buyer__modal_fields">
+        <strong>Background:</strong>{" "}
+        {selectedBuyer.buyer.briefBackground}
+      </div>
+
+      <div className="buyer__modal_fields">
+        <strong>Business Type Preferrd:</strong>{" "}
+        {selectedBuyer.buyer.businessTypePreferrd}
+      </div>
+
+
+        <div className="buyer__modal_fields">
+        <strong>How Do You Plan To Fund Your Purchase:</strong>{" "}
+        {selectedBuyer.buyer.howDoYouPlanToFundYourPurchase}
+      </div>
+
+
+ <div className="buyer__modal_fields">
+        <strong>How Soon Look in To Acquire:</strong>{" "}
+        {selectedBuyer.buyer.howSoonLookinToAcquire}
+      </div>
+      
+
+      <div className="buyer__modal_fields">
+        <strong>Submitted On:</strong>{" "}
+        {formatDate(selectedBuyer.submittedOn)}
+      </div>
+
+      <div className="buyer__modal_fields">
         <strong>NDA Status:</strong>{" "}
-        <Tag value={selectedBuyer.ndaStatus} severity={
-          selectedBuyer.ndaStatus === "approved"
-            ? "success"
-            : selectedBuyer.ndaStatus === "pending"
-            ? "warning"
-            : "danger"
-        } />
-      </p>
+        <Tag
+          value={selectedBuyer.ndaStatus}
+          severity={
+            selectedBuyer.ndaStatus === "approved"
+              ? "success"
+              : selectedBuyer.ndaStatus === "pending"
+              ? "warning"
+              : "danger"
+          }
+        />
+      </div>
     </div>
   )}
 </Dialog>
+
 
     </>
   );
