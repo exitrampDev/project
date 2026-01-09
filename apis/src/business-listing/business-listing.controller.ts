@@ -13,6 +13,7 @@ import { extname } from 'path';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { RolesGuard } from 'src/auth/roles.guards';
 import { StatusBusinessDto } from './dto/status-business.dto';
+import { BusinessOwnerGuard } from 'src/auth/businessOwner.guards';
 
 @Controller('business-listing')
 export class BusinessListingController {
@@ -64,6 +65,13 @@ export class BusinessListingController {
     async blockBusiness(@Param('id') id: string) {
       return this.businessService.blockBusiness(id);
     }
+
+    @UseGuards(JwtAuthGuard, BusinessOwnerGuard)
+    @Patch(':id/unsubscribe-block')
+    async UnsubscribeBusiness(@Param('id') id: string) {
+      return this.businessService.unsubscribeBusiness(id);
+    }
+    
     
 
     @UseGuards(JwtAuthGuard, RolesGuard)
