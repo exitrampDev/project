@@ -931,6 +931,39 @@ input {
   font-weight: 400;
   margin: 40px 0 0 0;
 }
+
+.PricingpageHero__main_wrapper {
+  background: #002f68;
+}
+
+.PricingpageHero__container {
+  max-width: 1500px;
+  margin: 0 auto;
+  text-align: center;
+  padding: 120px 0;
+}
+
+.PricingpageHero__container h4 {
+  margin: 0;
+  font-size: 80px;
+  line-height: 1.3;
+  color: #fff;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.PricingpageHero__container p {
+  color: #fff;
+  font-size: 24px;
+  font-weight: 400;
+  margin: 40px 0 0 0;
+}
+form.p-fluid.login__form_wrap button.mb-3.p-button.p-component {
+    margin: 0 auto;
+    min-width: 170px;
+    min-height: 45px;
+    font-size: 15px;
+}
 .OurMission__main_wrap {
   padding: 140px 0;
 }
@@ -1533,18 +1566,18 @@ form.p-fluid.space-y-4.register_form_col {
   align-items: center;
 }
 button.p-button.p-component {
-  display: flex;
-  max-width: fit-content;
-  margin: 0 auto;
-  background: #4f93ff;
-  font-size: 14px;
-  border: none;
+     display: flex;
+    max-width: fit-content;
+    margin: 0;
+    background: #4f93ff;
+    font-size: 13px;
+    border: none;
+    padding: 8px 12px;
   
 }
-
 button.p-button.p-component span.p-button-label.p-c {
   font-weight: 500;
-  text-transform: uppercase;
+  text-transform: capitalize;
 }
 
 .login_block_col {
@@ -2033,7 +2066,7 @@ button.btn__crt_listing.p-button.p-component {
     cursor: pointer;
 }
 .my__save_listing_wrap.my__listing_table table.p-datatable-table {
-    width: 100vw;
+    width: 110vw;
 }
 .form__field_col_hardocded_email {
   font-family: var(--font-family);
@@ -2936,13 +2969,7 @@ ul.list__card_cim_row_sub_list {
     cursor: pointer;
     z-index: 0;
 }
-form.nda__submit_form {
-    max-width: 700px;
-    margin: 0px auto;
-    background: rgb(255, 255, 255);
-    border-radius: 10px;
-        z-index: 2;
-}
+
 .nda__agree_cehckbox {
     display: flex;
     gap: 5px;
@@ -2950,9 +2977,6 @@ form.nda__submit_form {
     align-items: center;
     justify-content: center;
     margin: 14px 0;
-}
-.nda__submit_form_wrap {
-    text-align: center;
 }
 
 .nda__submit_form_wrap .p-inline-message.p-component.p-inline-message-warn * {
@@ -3038,17 +3062,27 @@ span.cimAccessNDAsubmit__fields_datatable.field__denied_NDA {
     color: #002F68;
 }
 
+.sign__sec_nda label.font-medium.mb-2.block {
+    color: #002f68;
+    font-size: 25px;
+}
 
-.nda__modal_content {
-    border-top: 1px solid #d4d4d4;
-    padding-top: 15px;
+.nda__buyer_submission_details_wrap .p-dialog-title{
+    color: #002f68;
+    font-size: 36px;
+}
+
+.nda__buyer_submission_details_wrap .p-dialog-header {
+    border-bottom: 1px solid #d4d4d4;
 }
 
 .nda__modal_actions {
-    display: flex;
-    margin-top: 30px;
+   display: flex;
+    margin-top: 10px;
     justify-content: space-between;
     gap: 15px;
+    padding: 21px 20px;
+    background: #002f68;
 }
 
 .nda__modal_actions button.btn__NDARequest_shareCIM.p-button.p-component {
@@ -3654,6 +3688,365 @@ button.login-btn a img {    filter: invert(68%) sepia(94%) saturate(1094%) hue-r
 .payment__box_wrap .StripeElement {
     margin-bottom: 25px;
 }
+button.logout-btn.header-logout-btn {
+    text-decoration: none;
+    color: #ee6a3a;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 15px 40px;
+    background: #fff;
+}
+
+button.logout-btn.header-logout-btn img {    filter: invert(68%) sepia(94%) saturate(1094%) hue-rotate(-12deg) brightness(101%) contrast(101%);
+}
+/*pricing page*/
+section.PricingCards__wrapper {
+    max-width: 1170px;
+    margin: 0 auto;
+}
+
+section.PricingCards__wrapper .PricingCards__container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 37px;
+    margin-top: 65px;
+}
+
+section.PricingCards__wrapper .PricingCards__container .PricingCard {
+    width: 100%;
+    max-width: 365px;
+    border: 1px solid #eaeaea;
+    padding: 35px 15px 110px 15px;
+    border-radius: 5px;
+    box-shadow: 0 0 4px 0px #00000024;
+    position: relative;
+}
+
+section.PricingCards__wrapper .PricingCards__container .PricingCard h3 {
+    margin: 0;
+    text-transform: uppercase;
+    margin-bottom: 0px;
+    color: #002f68;
+    font-size: 25px;
+}
+
+section.PricingCards__wrapper .PricingCards__container .PricingCard p.PricingCard__description {
+    margin: 6px 0 30px 0;
+    font-size: 14px;
+    color: #71717a;
+}
+
+section.PricingCards__wrapper .PricingCards__container .PricingCard .PricingCard__price {
+    font-size: 14px;
+}
+
+section.PricingCards__wrapper .PricingCards__container .PricingCard ul.PricingCard__features {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+section.PricingCards__wrapper .PricingCards__container .PricingCard  button.PricingCard__cta {
+    position: absolute;
+    bottom: 25px;
+    left: 5%;
+    width: 90%;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    border: none;
+    background: #002f68;
+    color: #fff;
+    font-size: 17px;
+    gap: 10px;
+    border-radius: 100px;
+    cursor: pointer;
+    text-decoration: none;
+    justify-content: center;
+}
+
+section.PricingCards__wrapper .PricingCards__container .PricingCard span.PricingCard__badge {
+    background: #ffb100;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 12px;
+    color: #fff;
+    position: absolute;
+    top: -15px;
+}
+
+section.PricingCards__wrapper .PricingCards__container .PricingCard ul.PricingCard__features li {
+    font-size: 14px;
+    margin-bottom: 7px;
+    display: flex;
+    gap: 11px;
+}
+
+section.PricingTable__wrapper {
+     max-width: 1170px;
+     margin: 60px auto 0 auto;
+}
+
+section.PricingTable__wrapper table.PricingTable {
+    width: 100%;
+}
+
+section.PricingTable__wrapper table.PricingTable th:nth-child(1) {
+    text-align: left;
+    padding: 10px;
+}
+
+section.PricingTable__wrapper table.PricingTable td:not(:first-child) {
+    text-align: center;
+}
+
+
+section.PricingTable__wrapper table.PricingTable tbody tr:nth-child(even) {
+    background: #4f93ff33;
+}
+
+section.PricingTable__wrapper table.PricingTable tr th {
+    font-size: 21px;
+    font-weight: 400;
+    color: #fff;
+}
+
+section.PricingTable__wrapper table.PricingTable thead tr {
+    background: #002f68;
+}
+
+section.PricingTable__wrapper table.PricingTable tbody tr td {
+    padding: 4px 10px;
+}
+
+
+section.PricingTable__wrapper table.PricingTable tbody tr td  span {color: #002f68;}
+
+p.PricingTable__notes {
+    font-size: 11px;
+    color: #002f68;
+}
+
+section.PricingTable__wrapper .PricingTable__container>h2 {
+    font-size: 40px;
+    text-align: center;
+    color: #002f68;
+}
+/**/
+
+/*invoice start*/
+.invoice__wrapper .invoice__row {
+    display: flex;
+    gap: 20px;
+    border-bottom: 2px dashed #bababa;
+    width: 100%;
+    padding: 6px 0 20px 0;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.invoice__row {
+  display: flex;
+  justify-content: space-between;
+  gap: 40px;
+}
+
+.invoice__row h4 {
+  margin-bottom: 6px;
+  font-size: 14px;
+  color: #002f68;
+  margin: 0;
+}
+
+.invoice__row p {
+  font-size: 16px;
+  font-weight: 500;
+  margin: 0;
+}
+
+.invoice__actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+ .invoice__wrapper .invoice__row>div {
+    width: 33.3%;
+}
+.invoice__model_wrap .p-dialog-header {
+    padding: 0;
+    position: absolute;
+    right: 20px;
+    top: 20px;
+}
+
+.invoice__model_wrap .invoice__wrapper h2 {
+    font-size: 65px;
+    margin: 20px 0 50px 0;
+    color: #002f68;
+}
+
+
+.invoice__wrapper  .invoice__actions{
+    position: absolute;
+    right: 70px;
+    top: 0px;
+}
+.invoice__wrapper .wrapper_for_print{
+    padding: 20px 40px;
+}
+.inv__footer {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    padding: 30px 0;
+    background: #002f68;
+}
+
+.inv__footer .copyright__content_footer_inv {
+    color: #fff;
+}
+
+.invoice__wrapper .invoice__row:last-child {
+    border: none;
+    margin: 0;
+}
+.payment-status-success {
+    background: #22c55e;
+    display: inline-block;
+    color: #fff;
+    padding: 5px;
+    font-size: 13px;
+    border-radius: 5px;
+    margin-top: 2px;
+}
+/*invoice end*/
+.signature__canvas {
+    border: 1px solid;
+    border-radius: 5px;
+    margin: 10px 0;
+    background: #f3f7ff;
+}
+.document__financials_files {
+    display: flex;
+    gap: 0;
+    background: #fff;
+    padding: 15px;
+    border-radius: 15px;
+    border: 1px solid #c9c9c9;
+    margin-top: 30px;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.document__financials_files .listing__upload_files_uplosdFile {
+    text-align: center;
+}
+
+
+.nda__agreement_wrap {
+    text-align: left;
+}
+
+.user__details_box_nda {
+    text-align: left;
+}
+
+.nda__signature_wrap {
+    text-align: left;
+}
+
+label.font-medium.mb-2.block {
+    font-weight: 700;
+}
+
+.nda__signature_wrap canvas.signature-canvas {
+    width: 100%;
+}
+
+.sign__sec_nda {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    margin-top: 45px;
+}
+
+
+.p-inline-message.p-component.p-inline-message-warn .p-inline-message-text {
+    font-size: 10px;
+}
+
+.sign__sec_buyer {
+    width: calc(50% - 15px);
+}
+
+.sign__sec_seller {
+    width: calc(50% - 15px);
+}
+
+.nda__signature_wrap button.p-button-text.p-button-sm.p-button.p-component span {
+    color: #fff;
+}
+
+.nda__signature_wrap button.p-button-text.p-button-sm.p-button.p-component {
+    margin-bottom: 15px;
+}
+
+.nda__submit_form_wrap .p-dialog-header {
+    border-bottom: 1px solid #d4d4d4;
+}
+
+.nda__submit_form_wrap .p-dialog-header .p-dialog-title {
+    color: #002f68;
+    font-size: 36px;
+}
+.nda__submit_form_wrap  .nda__signature_wrap{
+    width: calc(50% - 15px);
+    margin-top: 40px;
+}
+
+.nda__submit_form_wrap  .nda__signature_wrap label.font-medium.mb-2.block {
+    color: #002f68;
+    font-size: 25px;
+}
+
+.modal__buyer_nda {
+    display: flex;
+    margin-top: 20px;
+    justify-content: space-between;
+    gap: 15px;
+    padding: 21px 20px;
+    background: #002f68;
+}
+form.p-fluid.space-y-4.register_form_col button.p-button.p-component {
+    margin: 0 auto;
+}
+img.buyerSig {max-width: 100%;}
+
+.buyerSig__wrap { max-width: 100%;
+    border: 1px solid;
+    border-radius: 5px;
+    background: #f3f7ff;
+    height: 150px;}
+    .buyer__info_modal {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+        margin-top: 20px;
+}
+
+.buyer__modal_fields {
+    width: calc(50% - 7px);
+}
+.buyer__info_pop .p-dialog-header {border-bottom: 1px solid #d4d4d4;
+}
+
+.buyer__info_pop .p-dialog-header .p-dialog-title {    color: #002f68;
+    font-size: 36px;}
+
+.buyer__info_pop  .buyer__modal_fields strong {color: #002f68;}
 @media screen and (min-width: 1024px) and (max-width: 2500px) {
   .header_container nav.nav_col a {
     font-size: 18px;

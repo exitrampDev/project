@@ -220,6 +220,24 @@ async attachFile(businessId: string, fileUrl: string, fileType: string = 'profit
     };
   }
 
+  async unsubscribeBusiness(businessId: string) {
+    // Find the business
+    const business = await this.businessModel.findById(businessId) as BusinessDocument;
+    if (!business) {
+      throw new NotFoundException('Business not found');
+    }
+
+    // Update status
+    business.status = 'blocked';
+    await business.save();
+
+  
+    return {
+      message: 'Business unsubscribed successfully',
+      business,
+    };
+  }
+
   //  -----------------------------
     async updateBusinessStatus(businessId: string, status: string) {
     // Find the business
@@ -264,4 +282,13 @@ async attachFile(businessId: string, fileUrl: string, fileType: string = 'profit
       pendingNdaSubmiaaions
   }
 }
+
+  async isOwner(userId: string, businessId: string): Promise<boolean> {
+    const count = await this.businessModel.countDocuments({
+      _id: new Types.ObjectId(businessId),
+      ownerId: userId,
+    });
+    return count > 0;
+  }
+
 }

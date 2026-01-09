@@ -120,7 +120,7 @@ export default function SingleBusinessListing() {
                 </div>
 
                 {/* Conditionally render NDAComponent */}
-                {showNDA && <NDASubmit ndaListingIdAdd={ndaListingIdAdd} />}
+                {showNDA && <NDASubmit ndaListingIdAdd={ndaListingIdAdd} businessData={business}/>}
             </div>
           </> )}
 

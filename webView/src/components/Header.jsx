@@ -5,7 +5,6 @@ import { Button } from "primereact/button";
 import logo from "../assets/logo.png";
 import signIcon from "../assets/signIcon.png";
 import SignupPopup from "./SignupPopup";
-import { useRecoilValue } from "recoil";
 import { authState } from "../recoil/ctaState";
 
 // Icons
@@ -17,6 +16,8 @@ import icon5 from "../assets/freeBuyerAcc.png";
 import icon6 from "../assets/paidBuyerAcc.png";
 import icon7 from "../assets/freeSellerAcc.png";
 import icon8 from "../assets/paidSellerAcc.png";
+import { useRecoilValue, useSetRecoilState } from "recoil";
+
 
 const accountTypes = [
   {
@@ -166,6 +167,14 @@ const Header = () => {
   const location = useLocation();
   const auth = useRecoilValue(authState);
   const currentPath = location.pathname;
+    const setAuth = useSetRecoilState(authState);
+    const handleLogout = () => {
+      setAuth(null);
+      localStorage.removeItem("auth");
+      localStorage.removeItem("user");
+      localStorage.removeItem("tokenLocalStorage");
+      navigate("/");
+    };
 
   const openPopup = () => {
     setPopupStep(1);
@@ -221,9 +230,9 @@ const Header = () => {
       className: currentPath.startsWith("/listings") ? "p-menuitem-active" : "",
     },
     {
-      label: "About Us",
-      command: () => navigate("/aboutus"),
-      className: currentPath === "/aboutus" ? "p-menuitem-active" : "",
+      label: "Pricing",
+      command: () => navigate("/pricing"),
+      className: currentPath === "/pricing" ? "p-menuitem-active" : "",
     },
     {
       label: "Contact Us",
@@ -239,10 +248,15 @@ const Header = () => {
     </div>
   );
 
-  const end = auth?.access_token ? (
+  const end = auth?.access_token ? (<>
+  <button onClick={handleLogout} className="logout-btn header-logout-btn">
+        Logout <img src={signIcon} alt="signIcon" />
+      </button>
     <NavLink to="/user/dashboard" className="signup-btn">
       Dashboard <img src={signIcon} alt="signIcon" />
     </NavLink>
+    
+      </>
   ) : (
     <>
     <button  className="login-btn">

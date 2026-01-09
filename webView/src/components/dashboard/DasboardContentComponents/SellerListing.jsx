@@ -28,6 +28,7 @@ import { Link } from "react-router-dom";
 import { InputSwitch } from "primereact/inputswitch";
 import DashboardHeader from "./DashboardHeaderBlock";
 import { useNavigate } from "react-router-dom";
+import FileUploader from "../../customcomponent/FileUploader";
 
 export default function SellerListing() {
   const toast = useRef(null);
@@ -482,6 +483,24 @@ window.location.href = `/user/payment-process/${businessId}`;
 };
 
 
+const lisitngStatus = (row) => {
+const formattedStatus = row.status
+    .replace(/_/g, " ")
+    .replace(/\b\w/g, (c) => c.toUpperCase());
+    return(
+      <Tag
+      value={formattedStatus}
+      severity={
+        row.status === "live"
+          ? "success"
+          : row.status === "pending_for_payment"
+          ? "danger"
+          : "warning"
+      }
+    />
+    )
+}
+
   const locationTemplate = (row) =>
     row.businessCity && row.businessState ? `${row.businessCity}, ${row.businessState}` : "-";
 
@@ -523,6 +542,21 @@ const moneyTemplate = (row, { field }) => {
   };
   const actionTemplate = (row) => (
     <div className="action__listing_btns">
+        {row.status === "pending_for_payment" ? (<>
+        
+        <Tooltip target=".button__delete_action_lisitng_seller" position="top" />
+         <Button
+                label=""
+                icon="pi pi-credit-card"
+                className="p-button-text p-button-sm btn-pay"
+                onClick={() => navigate(`/user/payment-process/${row._id}`)}
+                tooltip="Complete Payment"
+                tooltipOptions={{ position: "top" }}
+              />
+        </>):(<><Button
+                label="Cancel Subscription"
+                className="p-button-text p-button-sm btn-pay"
+              /></>)}
       <Link to={`/user/single-listing/${row._id}`} className="flex gap-4">
       <i
         className="pi pi-eye cursor-pointer text-blue-500 hover:text-blue-700"
@@ -555,12 +589,11 @@ const moneyTemplate = (row, { field }) => {
         onClick={(e) => handleDeleteListing(e,row._id)}
          data-pr-tooltip="Remove"
         ></i>
-        
-        <Tooltip target=".button__delete_action_lisitng_seller" position="top" />
+      
     </div>
   );
 const handleImageSelect = (e) => {
-  const file = e.files[0];
+  const file = e;
   const reader = new FileReader();
 
   reader.onloadend = () => {
@@ -622,6 +655,58 @@ useEffect(() => {
 
   setFilteredListings(filtered);
 }, [filters, listings]);
+const usStates = [
+  { label: "Alabama", value: "AL" },
+  { label: "Alaska", value: "AK" },
+  { label: "Arizona", value: "AZ" },
+  { label: "Arkansas", value: "AR" },
+  { label: "California", value: "CA" },
+  { label: "Colorado", value: "CO" },
+  { label: "Connecticut", value: "CT" },
+  { label: "Delaware", value: "DE" },
+  { label: "Florida", value: "FL" },
+  { label: "Georgia", value: "GA" },
+  { label: "Hawaii", value: "HI" },
+  { label: "Idaho", value: "ID" },
+  { label: "Illinois", value: "IL" },
+  { label: "Indiana", value: "IN" },
+  { label: "Iowa", value: "IA" },
+  { label: "Kansas", value: "KS" },
+  { label: "Kentucky", value: "KY" },
+  { label: "Louisiana", value: "LA" },
+  { label: "Maine", value: "ME" },
+  { label: "Maryland", value: "MD" },
+  { label: "Massachusetts", value: "MA" },
+  { label: "Michigan", value: "MI" },
+  { label: "Minnesota", value: "MN" },
+  { label: "Mississippi", value: "MS" },
+  { label: "Missouri", value: "MO" },
+  { label: "Montana", value: "MT" },
+  { label: "Nebraska", value: "NE" },
+  { label: "Nevada", value: "NV" },
+  { label: "New Hampshire", value: "NH" },
+  { label: "New Jersey", value: "NJ" },
+  { label: "New Mexico", value: "NM" },
+  { label: "New York", value: "NY" },
+  { label: "North Carolina", value: "NC" },
+  { label: "North Dakota", value: "ND" },
+  { label: "Ohio", value: "OH" },
+  { label: "Oklahoma", value: "OK" },
+  { label: "Oregon", value: "OR" },
+  { label: "Pennsylvania", value: "PA" },
+  { label: "Rhode Island", value: "RI" },
+  { label: "South Carolina", value: "SC" },
+  { label: "South Dakota", value: "SD" },
+  { label: "Tennessee", value: "TN" },
+  { label: "Texas", value: "TX" },
+  { label: "Utah", value: "UT" },
+  { label: "Vermont", value: "VT" },
+  { label: "Virginia", value: "VA" },
+  { label: "Washington", value: "WA" },
+  { label: "West Virginia", value: "WV" },
+  { label: "Wisconsin", value: "WI" },
+  { label: "Wyoming", value: "WY" }
+];
 
   // ==== UI ====
   return (
@@ -643,14 +728,25 @@ useEffect(() => {
             <div className="listing__creation_block_main_wrap">
 
  {/* Listing Title */}
-      <div className="listing__creation_field_col md:col-4">
+      {/* <div className="listing__creation_field_col md:col-4">
         <label>Listing Title </label>
           <InputText
             value={newListing.listingTitle || ""}
             onChange={(e) => handleChange(e, "listingTitle", e.target.value)}
             placeholder="Enter Listing Title"
           />
+      </div> */}
+
+
+      {/* Business Name */}
+      <div className="listing__creation_field_col md:col-4">
+        <label>Listing Title <span className="required__star">*</span></label>
+        <InputText
+          value={newListing.businessName}
+          onChange={(e) => handleChange(e, "businessName")}
+        />
       </div>
+
 {/* Asking Price */}
       <div className="listing__creation_field_col md:col-4">
         <label>Asking Price </label>
@@ -666,7 +762,7 @@ useEffect(() => {
 {/* File Uploads */}
       <div className="listing__creation_field_col file_business_logo md:col-6">
         <label>Main Listing Image <span className="required__star">*</span></label>
-        <FileUpload
+        {/* <FileUpload
           accept="image/*"
           maxFileSize={1000000}
           customUpload
@@ -676,7 +772,13 @@ useEffect(() => {
             handleImageSelect(e);
             e.options.clear(); 
           }}
-        />
+        /> */}
+        <FileUploader
+  accept="image/png, image/jpeg,.pdf"
+  maxSizeMB={0.5}
+  onFileSelect={(file) =>  handleImageSelect(file)}
+/>
+
       </div>
 {/* Listing Description */}
       <div className="listing__creation_field_col md:col-6">
@@ -782,14 +884,7 @@ useEffect(() => {
     placeholder="Enter Zip Code"
   />
 </div>
-{/* Business Name */}
-      <div className="listing__creation_field_col md:col-4">
-        <label>Business Name <span className="required__star">*</span></label>
-        <InputText
-          value={newListing.businessName}
-          onChange={(e) => handleChange(e, "businessName")}
-        />
-      </div>
+
  {/* Business City */}
 <div className="listing__creation_field_col md:col-4">
   <label>Business City </label>
@@ -803,11 +898,18 @@ useEffect(() => {
 
 {/* State */}
 <div className="listing__creation_field_col md:col-4">
-  <label> Business State </label>
-  <InputText
-    value={newListing.businessState || ""}
-    onChange={(e) => handleChange(e, "businessState", e.target.value)}
-    placeholder="Enter Business State"
+  <label>Business State</label>
+
+  <Dropdown
+    value={newListing.businessState || null}
+    options={usStates}
+    optionLabel="label"
+    optionValue="value"
+    placeholder="Select Business State"
+    onChange={(e) =>
+      handleChange(e, "businessState", e.value)
+    }
+    className="w-full"
   />
 </div>
 
@@ -1248,7 +1350,7 @@ useEffect(() => {
               <>
               <div className="dashboard__header_block">
               <h3 className="heading__Digital_CIM">
-                Upload Key Business Files
+                Upload Extra Images
               </h3>
 
               <div className="dashboard__header_search_notification_wrap">
@@ -1271,14 +1373,14 @@ useEffect(() => {
 
             <div className="brief__infor_content">
               <p>
-                Upload core documents that support your CIM and buyer evaluation process. These files remain private and can be selectively shared later.
+                Upload extra images with the listing for more images views.
               </p>
             </div>
   <div className="listing__upload_files_wrap">
 
       <div className="listing__upload_files_grid">
        <div className="listing__upload_files_grid_wrap">
-         <div className="listing__upload_files_uplosdFile">
+         {/* <div className="listing__upload_files_uplosdFile">
           <label>Profit &amp; Loss Statement </label>
           <FileUpload 
             mode="basic"
@@ -1328,11 +1430,11 @@ useEffect(() => {
             chooseLabel="File Upload"
             uploadHandler={(e) => handleFileUpload(e.files[0], "Ownership or Cap Table")}
           />
-        </div>
+        </div> */}
      <div className="extraImage_wrap">
          <div className="listing__upload_files_uploadFile">
   <label>Listing Extra Image 1</label>
-  <FileUpload
+  {/* <FileUpload
     mode="basic"
     accept="image/*"
     auto
@@ -1340,12 +1442,19 @@ useEffect(() => {
     customUpload
     chooseLabel="Upload"
     uploadHandler={(e) => handleFileUpload(e.files[0], "listingImage1")}
-  />
+  /> */}
+
+<FileUploader
+  accept="image/png, image/jpeg"
+  maxSizeMB={5}
+  onFileSelect={(file) => handleFileUpload(file, "listingImage1")}
+/>
+
 </div>
 
 <div className="listing__upload_files_uploadFile">
    <label>Listing Extra Image 2</label>
-  <FileUpload
+  {/* <FileUpload
     mode="basic"
     accept="image/*"
     auto
@@ -1353,12 +1462,17 @@ useEffect(() => {
     customUpload
     chooseLabel="Upload"
     uploadHandler={(e) => handleFileUpload(e.files[0], "listingImage2")}
-  />
+  /> */}
+  <FileUploader
+  accept="image/png, image/jpeg"
+  maxSizeMB={5}
+  onFileSelect={(file) => handleFileUpload(file, "listingImage2")}
+/>
 </div>
 
 <div className="listing__upload_files_uploadFile">
    <label>Listing Extra Image 3</label>
-  <FileUpload
+  {/* <FileUpload
     mode="basic"
     accept="image/*"
     auto
@@ -1366,12 +1480,17 @@ useEffect(() => {
     customUpload
     chooseLabel="Upload"
     uploadHandler={(e) => handleFileUpload(e.files[0], "listingImage3")}
-  />
+  /> */}
+  <FileUploader
+  accept="image/png, image/jpeg"
+  maxSizeMB={5}
+  onFileSelect={(file) => handleFileUpload(file, "listingImage3")}
+/>
 </div>
 
 <div className="listing__upload_files_uploadFile">
    <label>Listing Extra Image 4</label>
-  <FileUpload
+  {/* <FileUpload
     mode="basic"
     accept="image/*"
     auto
@@ -1379,12 +1498,17 @@ useEffect(() => {
     customUpload
     chooseLabel="Upload"
     uploadHandler={(e) => handleFileUpload(e.files[0], "listingImage4")}
-  />
+  /> */}
+  <FileUploader
+  accept="image/png, image/jpeg"
+  maxSizeMB={5}
+  onFileSelect={(file) => handleFileUpload(file, "listingImage4")}
+/>
 </div>
 
 <div className="listing__upload_files_uploadFile">
    <label>Listing Extra Image 5</label>
-  <FileUpload
+  {/* <FileUpload
     mode="basic"
     accept="image/*"
     auto
@@ -1392,7 +1516,12 @@ useEffect(() => {
     customUpload
     chooseLabel="Upload"
     uploadHandler={(e) => handleFileUpload(e.files[0], "listingImage5")}
-  />
+  /> */}
+  <FileUploader
+  accept="image/png, image/jpeg"
+  maxSizeMB={5}
+  onFileSelect={(file) => handleFileUpload(file, "listingImage5")}
+/>
 </div>
 
      </div>
@@ -1522,6 +1651,8 @@ useEffect(() => {
   <Column field="askingPrice" header="Asking Price" body={moneyTemplate} />
   <Column header="Last Edited" body={dateTemplate} />
   <Column field="cimStatus" header="CIM Status" body={cimTemplate} />
+<Column field="status" header="Listing Status"  body={lisitngStatus}/>
+
   <Column body={(row) => documentRoomLink(row._id)} header="Document Room" />
   <Column body={(row) => createCIMList(row._id, row.cimUrl)} header="CIM View" />
   <Column header="Action" body={actionTemplate} />

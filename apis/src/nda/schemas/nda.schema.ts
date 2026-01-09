@@ -31,6 +31,25 @@ export class Nda {
 
   @Prop({ type: String, default: '' })
   message: string;
+
+    /**
+   * Base64 encoded buyer signature image
+   * Example: data:image/png;base64,iVBORw0KGgoAAAANS...
+   */
+  @Prop({ type: String, required: false })
+  buyerSignature?: string;
+
+  /**
+   * Base64 encoded seller signature image
+   */
+  @Prop({ type: String, required: false })
+  sellerSignature?: string;
+
+  /**
+   * Base64 encoded agreed NDA document (signed document image)
+   */
+  @Prop({ type: String, required: false })
+  agreedDocument?: string;
 }
 
 export const NdaSchema = SchemaFactory.createForClass(Nda);

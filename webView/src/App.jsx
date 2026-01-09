@@ -2,6 +2,7 @@ import React from "react";
 import { Routes, Route, Link } from "react-router-dom";
 import Home from "./pages/Home";
 import Listings from "./pages/Listings";
+import Pricing from "./pages/Pricing";
 import Register from "./components/register";
 import Login from "./components/login";
 import BusinessListingDetail from "./components/BusinessListingDetail";
@@ -47,6 +48,7 @@ const App = () => {
         <Route path="/" element={<Home />} />
         <Route path="/listings" element={<Listings />} />
         <Route path="/aboutus" element={<AboutUS />} />
+        <Route path="/pricing" element={<Pricing/>} />
         <Route path="/contactus" element={<ContactUs />} />
         <Route path="/termscondition" element={<TermsCondition />} />
         <Route path="/privacypolicy" element={<PrivacyPolicy />} />

@@ -1,44 +1,53 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 
-export type PaymentDocument = Payment & Document & {
-  createdAt: Date;
-  updatedAt: Date;
-};
+export type PaymentDocument = Payment & Document;
+
+export enum PaymentStatus {
+  PENDING = 'PENDING',
+  SUCCEEDED = 'SUCCEEDED',
+  FAILED = 'FAILED',
+  REFUNDED = 'REFUNDED',
+}
+
+export enum PaymentPurpose {
+  BUSINESS_CREATION = 'BUSINESS_CREATION',
+  BUSINESS_RENEWAL = 'BUSINESS_RENEWAL',
+}
 
 @Schema({ timestamps: true, collection: 'payments' })
 export class Payment {
   @Prop({ type: Types.ObjectId, ref: 'User', required: true })
-  userId: Types.ObjectId; 
+  userId: Types.ObjectId;
 
-  @Prop({ type: String, required: false })
-  sessionId: string;
+  /** Business ID or other entity */
+  @Prop({ type: Types.ObjectId, required: true, index: true })
+  referenceId: Types.ObjectId;
 
-  @Prop({ type: String, required: false })
-  processToExecute: string;
+  /** BUSINESS_CREATION | BUSINESS_RENEWAL */
+  @Prop({ type: String, enum: PaymentPurpose, required: true })
+  paymentFor: PaymentPurpose;
 
-  @Prop({ type: String, default: '' })
-  message: string;
-
-  @Prop({ type: Types.ObjectId, default: 'pending' })
-  objectId: string;
-
-  //business_posting, business
-  @Prop({ type: String, default: 'pending' })
-  paymentFor: string;
-
+  /** Amount in dollars */
   @Prop({ type: Number, required: true })
   amount: number;
- 
-  @Prop({ type: String, required: false })
-  transactionId: string;
 
-  @Prop({ type: Date, default: Date.now })
-  transactionDateTime: Date;
+  /** Stripe PaymentIntent ID */
+  @Prop({ type: String, index: true })
+  paymentIntentId?: string;
 
-  @Prop({ type: String, default: 'pending' })
-  paymentStatus: string;
+  /** Stripe Charge ID */
+  @Prop({ type: String })
+  chargeId?: string;
 
+  @Prop({ type: String, enum: PaymentStatus, default: PaymentStatus.PENDING })
+  paymentStatus: PaymentStatus;
+
+  @Prop({ type: String })
+  failureReason?: string;
+
+  @Prop({ type: Date })
+  paidAt?: Date;
 }
 
 export const PaymentSchema = SchemaFactory.createForClass(Payment);

@@ -29,7 +29,7 @@ export class FreeBuyerController {
     }
 
     @UseGuards(JwtAuthGuard)
-    @Get('')
+    @Get('me')
     async getMyProfile(@Req() req) {
         const userId = req.user.userId || req.user.sub; // JWT se user ka ID
         return this.freeBuyerService.findOneByUser(userId);

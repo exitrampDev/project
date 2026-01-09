@@ -7,6 +7,9 @@ import { CreateNdaDto } from './dto/create-nda.dto';
 import { QueryNdaDto } from './dto/query-nda.dto';
 import { Business, BusinessDocument } from 'src/business-listing/schemas/business.schema';
 import { NotificationHelper } from 'src/common/helpers/notification.helper';
+import { ApproveNdaDto } from './dto/approve-nda.dto';
+import { MailService } from 'src/common/mail/mail.service';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class NdaService {
@@ -14,10 +17,12 @@ export class NdaService {
     @InjectModel(Nda.name) private readonly ndaModel: Model<NdaDocument>,
      @InjectModel(Business.name) private readonly businessModel: Model<BusinessDocument>,
      private readonly notificationHelper: NotificationHelper,
+       private readonly mailService: MailService,
+       private readonly userService: UsersService
   ) {}
 
   // User submits NDA
-  async create(dto: { businessId: string }, userId: string | Types.ObjectId) {
+  async create(dto: CreateNdaDto, userId: string | Types.ObjectId) {
     const userObjectId = typeof userId === 'string' ? new Types.ObjectId(userId) : userId;
 
     // Check if NDA already exists
@@ -42,6 +47,10 @@ export class NdaService {
       businessOwnerId: business.ownerId,
       submittedBy: userObjectId,
       status: 'pending',
+       // Base64 fields (only set if provided)
+      buyerSignature: dto.buyerSignature,
+      sellerSignature: dto.sellerSignature,
+      agreedDocument: dto.agreedDocument,
     });
 
     // Create notification for business owner
@@ -50,6 +59,18 @@ export class NdaService {
       title: 'NDA Submitted',
       message: `A new NDA has been submitted for on your business "${business.businessName}"`,
     });
+
+    // Send email to business owner
+    let businessOwner = await this.userService.findById(business.ownerId.toString());
+ if(businessOwner){   await this.mailService.sendMail(
+      businessOwner.email,
+      'New NDA Submission',
+      'ndaSubmitted',
+      {
+        message: `A new NDA has been submitted for your business "${business.businessName}". Please review it at your earliest convenience.`,
+      }
+    );
+  }
 
     return newNda.save();
   }
@@ -307,6 +328,8 @@ export class NdaService {
           businessId:1,
           submittedBy:1,
           docRoomAccess:1,
+          buyerSignature:1,
+          sellerSignature:1,
           businessName: { $ifNull: ['$business.businessName', 'N/A'] },
           businessType: { $ifNull: ['$business.businessType', 'N/A'] },
           ndaStatus: '$status',
@@ -315,7 +338,7 @@ export class NdaService {
           sellerResponseOn: 1,
           message: 1,
           submittedByEmail: '$user.email',
-          // buyer: '$buyer', //for all buyers in array
+          // buyer_data: '$buyer', //for all buyers in array
           buyer: { $ifNull: [{ $arrayElemAt: ['$buyer', 0] }, {}] },
           buyerName: {
             $let: {
@@ -413,7 +436,7 @@ export class NdaService {
   }
 
   //approve ka kaam hai ye 
-  async approveNda(ndaId: string, userId: string): Promise<Nda>{
+  async approveNda(ndaId: string, userId: string, data: ApproveNdaDto): Promise<Nda>{
      const nda = await this.ndaModel.findById(ndaId);
      if(!nda) throw new NotFoundException("Nda Not Found");
 
@@ -427,6 +450,7 @@ export class NdaService {
      
      nda.sellerResponseOn = new Date();
      nda.status = 'approved';
+     nda.sellerSignature = data.sellerSignature;
      await nda.save();
 
      await this.notificationHelper.createNotification({
