@@ -6,11 +6,12 @@ import { Column } from "primereact/column";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { useRecoilValue } from "recoil";
 import { authState, apiBaseUrlState } from "../../../recoil/ctaState";
+import axios from "axios";
 
 const SellerCentralDashboard = () => {
   const { user, access_token } = useRecoilValue(authState) ?? {};
   const API_BASE = useRecoilValue(apiBaseUrlState);
-
+const [pendingNdaCount, setPendingNdaCount] = useState(0);
   const [counts, setCounts] = useState(null);
   const [listings, setListings] = useState([]);
    const [saveListing, setSaveListing] = useState([]);
@@ -79,6 +80,29 @@ const SellerCentralDashboard = () => {
     };
     if (access_token) fetchFavorites();
 
+ const fetchNdaList = async () => {
+      try {
+        const { data } = await axios.get(`${API_BASE}/nda/owner-submissions`, {
+          headers: {
+            Authorization: `Bearer ${access_token}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (Array.isArray(data?.data)) {
+      const pendingCount = data.data.filter(
+        (nda) => nda.ndaStatus === "pending"
+      ).length;
+
+      setPendingNdaCount(pendingCount);
+    }
+
+      } catch (error) {
+        console.error("Error fetching NDA list:", error);
+      } finally {
+        setLoading(false);
+      }
+    };fetchNdaList();
     
   }, [API_BASE, access_token]);
  const listingNameTemplate = (rowData) => (
@@ -94,6 +118,7 @@ const SellerCentralDashboard = () => {
   const industryTemplate = (indusValue) => (JSON.parse(Object(indusValue?.industry)))
   const ndaStatusTemplate = () => "Pending";
   const moneyTemplate = (value) => value ? `$${Number(value).toLocaleString()}` : "—";
+const saveIndustryTemplate = (indusValue) => (JSON.parse(Object(indusValue?.industry)));
 
   /* ---------------- Fetch Dashboard Counts ---------------- */
   useEffect(() => {
@@ -158,7 +183,7 @@ const SellerCentralDashboard = () => {
 
           <div className="dashboard__free_buyer_count_block_nda_submit">
             <h3>Pending NDAs</h3>
-            <p>{counts?.pendingNdaSubmissions ?? 0}</p>
+            <p>{pendingNdaCount}</p>
           </div>
 
           <div className="dashboard__free_buyer_count_block_profile_completion">
@@ -196,31 +221,27 @@ const SellerCentralDashboard = () => {
             </div>
 
             <DataTable value={listings} emptyMessage="No listings found" className="lisiting_recent_view_table">
-              <Column header="Listing Name" body={listingNameTemplate} />
-                        <Column header="Industry" body={industryTemplate} />
-                        <Column header="NDA Status" body={ndaStatusTemplate} />
-                        <Column field="entityType" header="Type" />
-                        <Column
-                          field="revenue"
-                          header="Revenue"
-                        />
-                        <Column
-                          field="askingPrice"
-                          header="Asking Price"
-                          body={(rowData) => moneyTemplate(rowData.askingPrice)}
-                        />
+                        <Column header="Listing Name" body={listingNameTemplate} />
+                       <Column  header="Business State" body={(listingData) => { return listingData.businessState;}}/>
+                        <Column header="Cash Flow" body={(listingData) => { return listingData.cashFlow}} />
+                        <Column header="Asking Price"  body={(rowData) => moneyTemplate(rowData.askingPrice)} />
+                        <Column body={(listingData)=>{return new Date(listingData.createdAt).toLocaleDateString()}} header="Created Date" />
             </DataTable>
           </div>
         </div>
 
         {/* ---------- Saved Listings Table ---------- */}
-        <div className="listing__dashboard_weakly_activity">
+        <div className="listing__dashboard_weakly_activity listing__dashboard_save_listing">
           <div className="listing__dashboard_nda_request_data_tables width__full">
             <h3>Saved Listings</h3>
 
-            <DataTable value={saveListing}>
-              <Column field="askingPrice" header="Type" />
-                      <Column header="businessCity" field="businessCity" />
+          <DataTable value={saveListing}>
+                        <Column header="Listing Name" body={listingNameTemplate} />
+                        <Column header="Industry" body={industryTemplate} />
+                       <Column  header="Business State" body={(listingData) => { return listingData.businessState;}}/>
+                        <Column header="Cash Flow" body={(listingData) => { return listingData.cashFlow}} />
+                        <Column header="Asking Price"  body={(rowData) => moneyTemplate(rowData.askingPrice)} />
+                        <Column body={(listingData)=>{return new Date(listingData.createdAt).toLocaleDateString()}} header="Created Date" />
             </DataTable>
           </div>
         </div>

@@ -4075,6 +4075,19 @@ img.buyerSig {max-width: 100%;}
     color: #4f93ff;
 }
 
+.listing__dashboard_weakly_activity.listing__dashboard_save_listing .flex.items-center.gap-2.img_my_save_lisiting img {
+    width: 36px;
+}
+
+.listing__dashboard_weakly_activity.listing__dashboard_save_listing .flex.items-center.gap-2.img_my_save_lisiting {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.listing__dashboard_weakly_activity.listing__dashboard_save_listing td ,.listing__dashboard_weakly_activity.listing__dashboard_save_listing th {
+    font-size: 13px;
+}
 @media screen and (min-width: 1024px) and (max-width: 2500px) {
   .header_container nav.nav_col a {
     font-size: 18px;
