@@ -6,7 +6,7 @@ import { Business, BusinessDocument } from './schemas/business.schema';
 import { ApiFeatures } from 'src/common/utils/api-features';
 import { QueryBusinessDto } from './dto/query-business.dto';
 import { NotificationHelper } from 'src/common/helpers/notification.helper';
-import { CreateBusinessDto } from './dto/create-business.dto';
+import { BusinessStatus, CreateBusinessDto } from './dto/create-business.dto';
 import { UpdateBusinessDto } from './dto/update-business.dto';
 import { Nda, NdaDocument } from 'src/nda/schemas/nda.schema';
 
@@ -228,7 +228,7 @@ async attachFile(businessId: string, fileUrl: string, fileType: string = 'profit
     }
 
     // Update status
-    business.status = 'blocked';
+    business.status = BusinessStatus.PENDING_FOR_PAYMENT;
     await business.save();
 
   
