@@ -3,58 +3,117 @@ import { NavLink } from "react-router-dom";
 import { Chart } from "primereact/chart";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
+import { ProgressSpinner } from "primereact/progressspinner";
 import { useRecoilValue } from "recoil";
 import { authState, apiBaseUrlState } from "../../../recoil/ctaState";
-import { ProgressSpinner } from "primereact/progressspinner";
 
-const SellerCentralDasboard = () => {
+const SellerCentralDashboard = () => {
   const { user, access_token } = useRecoilValue(authState) ?? {};
   const API_BASE = useRecoilValue(apiBaseUrlState);
 
   const [counts, setCounts] = useState(null);
+  const [listings, setListings] = useState([]);
+   const [saveListing, setSaveListing] = useState([]);
+  
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const [savedListings] = useState([
-    { name: "Cafe Cz, FL", nda: "Submitted", access: "Locked" },
-    { name: "Tech Biz CA", nda: "Approved", access: "Locked" },
-    { name: "Logistics NY", nda: "Not Started", access: "Locked" },
-  ]);
-
-  const [ndaRequests] = useState([
-    {
-      name: "Cafe Cz, FL",
-      status: "Pending",
-      submitted: "May 28, 2025",
-      action: "CM Locked",
-    },
-    {
-      name: "Tech Biz CA",
-      status: "Approved",
-      submitted: "May 28, 2025",
-      action: "Awaiting Review",
-    },
-    {
-      name: "Logistics NY",
-      status: "Rejected",
-      submitted: "May 28, 2025",
-      action: "Feedback",
-    },
-  ]);
-
-  // Fetch dashboard counts
+  /* ---------------- Fetch Recently Viewed ---------------- */
   useEffect(() => {
-    const fetchCounts = async () => {
+    if (!access_token) return;
+
+    const fetchRecentlyViewed = async () => {
       try {
-        const response = await fetch(`${API_BASE}/business-listing/user-dashboard-counts`, {
+        const response = await fetch(`${API_BASE}/recently`, {
           headers: {
             Authorization: `Bearer ${access_token}`,
+            "Content-Type": "application/json",
           },
         });
 
+        if (!response.ok) {
+          throw new Error("Failed to fetch recently viewed listings");
+        }
+
+        const result = await response.json();
+
+        const mappedListings = Array.isArray(result?.data)
+          ? result.data.map((item) => ({
+              ...item.businessId,
+              _favId: item._id,
+            }))
+          : [];
+
+        setListings(mappedListings);
+      } catch (err) {
+        setError(err.message);
+      }
+    };
+
+    fetchRecentlyViewed();
+
+
+  const fetchFavorites = async () => {
+      try {
+        const response = await fetch(`${API_BASE}/favorite`, {
+          headers: {
+            Authorization: `Bearer ${access_token}`,
+            "Content-Type": "application/json",
+          },
+        });
+        if (!response.ok) throw new Error("Failed to fetch favorites");
+        const result = await response.json();
+        if (result && Array.isArray(result.data)) {
+          const mapped = result.data.map((fav) => ({
+            ...fav.businessId,
+            _favId: fav._id,
+          }));
+       setSaveListing(mapped);
+       console.log("saveListing>>>>>>",saveListing);
+      }else{
+        setSaveListing([])
+      }
+
+      } catch (err) {
+      }
+    };
+    if (access_token) fetchFavorites();
+
+    
+  }, [API_BASE, access_token]);
+ const listingNameTemplate = (rowData) => (
+    <div className="flex items-center gap-2 img_my_save_lisiting">
+      <img
+        src={rowData.image || "https://via.placeholder.com/40"}
+        alt={rowData.businessName}
+        className="w-10 h-10 rounded"
+      />
+      <span>{rowData.businessName}</span>
+    </div>
+  );
+  const industryTemplate = (indusValue) => (JSON.parse(Object(indusValue?.industry)))
+  const ndaStatusTemplate = () => "Pending";
+  const moneyTemplate = (value) => value ? `$${Number(value).toLocaleString()}` : "—";
+
+  /* ---------------- Fetch Dashboard Counts ---------------- */
+  useEffect(() => {
+    if (!access_token) return;
+
+    const fetchCounts = async () => {
+      try {
+        const response = await fetch(
+          `${API_BASE}/business-listing/user-dashboard-counts`,
+          {
+            headers: {
+              Authorization: `Bearer ${access_token}`,
+            },
+          }
+        );
+
         const data = await response.json();
         setCounts(data);
-      } catch (error) {
-        console.error("Error fetching dashboard counts:", error);
+      } catch (err) {
+        console.error("Error fetching dashboard counts:", err);
       } finally {
         setLoading(false);
       }
@@ -63,6 +122,9 @@ const SellerCentralDasboard = () => {
     fetchCounts();
   }, [API_BASE, access_token]);
 
+
+
+  /* ---------------- Loader ---------------- */
   if (loading) {
     return (
       <div className="center_loader">
@@ -71,6 +133,7 @@ const SellerCentralDasboard = () => {
     );
   }
 
+  /* ---------------- UI ---------------- */
   return (
     <>
       <div className="dasboard__buyer_header_content">
@@ -78,39 +141,33 @@ const SellerCentralDasboard = () => {
           👋 Welcome, {user?.first_name} {user?.last_name}
         </h4>
         <p>
-          You're browsing as a Free Buyer. Save listings, submit NDAs, and explore Exit Ramp deals.
+          You're browsing as a Free Buyer. Save listings, submit NDAs, and explore
+          Exit Ramp deals.
         </p>
       </div>
 
       <br />
 
       <div className="dashboard__container_main_buyer_free">
-
-        {/* Count Boxes */}
+        {/* ---------- Count Boxes ---------- */}
         <div className="dashboard__free_buyer_count_block">
           <div className="dashboard__free_buyer_count_block_sav_listing">
-            <div>
-              <h3>Total Listings</h3>
-              <p>{counts?.totalBusinesses}</p>
-            </div>
+            <h3>Total Listings</h3>
+            <p>{counts?.totalBusinesses ?? 0}</p>
           </div>
 
           <div className="dashboard__free_buyer_count_block_nda_submit">
-            <div>
-              <h3>Pending NDAs</h3>
-              <p>{counts?.pendingNdaSubmiaaions}</p>
-            </div>
+            <h3>Pending NDAs</h3>
+            <p>{counts?.pendingNdaSubmissions ?? 0}</p>
           </div>
 
           <div className="dashboard__free_buyer_count_block_profile_completion">
-            <div>
-              <h3>Live Businesses</h3>
-              <p>{counts?.liveBusinesses}</p>
-            </div>
+            <h3>Live Businesses</h3>
+            <p>{counts?.liveBusinesses ?? 0}</p>
           </div>
         </div>
 
-        {/* Doughnut Chart */}
+        {/* ---------- Chart + Table ---------- */}
         <div className="listing__dashboard_data_table_widget_wrap">
           <div className="listing__dashboard_nda_chart_widget">
             <h3>Listings by Status</h3>
@@ -121,9 +178,9 @@ const SellerCentralDasboard = () => {
                 datasets: [
                   {
                     data: [
-                      counts?.liveBusinesses,
-                      counts?.pendingBusinesses,
-                      counts?.blockedBusinesses,
+                      counts?.liveBusinesses ?? 0,
+                      counts?.pendingBusinesses ?? 0,
+                      counts?.blockedBusinesses ?? 0,
                     ],
                     backgroundColor: ["#42A5F5", "#FFA726", "#EF5350"],
                   },
@@ -132,41 +189,46 @@ const SellerCentralDasboard = () => {
             />
           </div>
 
-          {/* Saved List Table */}
-          <div className="listing__dashboard_listing_widget">
+          <div className="listing__dashboard_listing_widget lisiting_recent_view_widget">
             <div className="listing__dashboard_listing_widget_header">
               <h3>Recently Viewed</h3>
-              <NavLink to="/user/my-save-listing">View All</NavLink>
+              <NavLink to="/user/recent-view-listing" className="view_all">View All</NavLink>
             </div>
 
-            <DataTable value={savedListings}>
-              <Column field="name" header="Listing Name" />
-              <Column field="nda" header="NDA Status" />
-              <Column field="access" header="CIM Access" />
+            <DataTable value={listings} emptyMessage="No listings found" className="lisiting_recent_view_table">
+              <Column header="Listing Name" body={listingNameTemplate} />
+                        <Column header="Industry" body={industryTemplate} />
+                        <Column header="NDA Status" body={ndaStatusTemplate} />
+                        <Column field="entityType" header="Type" />
+                        <Column
+                          field="revenue"
+                          header="Revenue"
+                        />
+                        <Column
+                          field="askingPrice"
+                          header="Asking Price"
+                          body={(rowData) => moneyTemplate(rowData.askingPrice)}
+                        />
             </DataTable>
           </div>
         </div>
 
-        {/* NDA Requests Table */}
+        {/* ---------- Saved Listings Table ---------- */}
         <div className="listing__dashboard_weakly_activity">
           <div className="listing__dashboard_nda_request_data_tables width__full">
-            <h3>Save Listing</h3>
-            <DataTable value={ndaRequests}>
-              <Column field="name" header="Listing Name" />
-              <Column field="status" header="Type" />
-              <Column field="submitted" header="Region" />
-              <Column field="submitted" header="Industry" />
-              <Column field="submitted" header="NDA Status" />
-              <Column field="submitted" header="Saved On" />
-              <Column field="submitted" header="Last Edited" />
-              <Column field="action" header="Actions" />
+            <h3>Saved Listings</h3>
+
+            <DataTable value={saveListing}>
+              <Column field="askingPrice" header="Type" />
+                      <Column header="businessCity" field="businessCity" />
             </DataTable>
           </div>
         </div>
 
+        {error && <p className="error_text">{error}</p>}
       </div>
     </>
   );
 };
 
-export default SellerCentralDasboard;
+export default SellerCentralDashboard;

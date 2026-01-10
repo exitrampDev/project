@@ -2029,9 +2029,7 @@ button.btn__crt_listing.p-button.p-component {
     background: #ccc;
     font-size:12px;
 }
-.confirm__dlt_listing {
-    margin: 0;
-}
+
 .confirm__dlt_listing:before{
     border-bottom-color: #0046b6;
     left: 96.7% !important;
@@ -4047,6 +4045,36 @@ img.buyerSig {max-width: 100%;}
     font-size: 36px;}
 
 .buyer__info_pop  .buyer__modal_fields strong {color: #002f68;}
+.listing__dashboard_listing_widget.lisiting_recent_view_widget {
+    width: calc(66% - 30px);
+}
+
+.listing__dashboard_listing_widget.lisiting_recent_view_widget img.w-10.h-10.rounded {
+    width: 35px;
+}
+
+.listing__dashboard_listing_widget.lisiting_recent_view_widget .flex.items-center.gap-2.img_my_save_lisiting {
+    display: inline-flex;
+    align-items: center;
+    gap: 21px;
+}
+
+.listing__dashboard_listing_widget.lisiting_recent_view_widget  span ,
+.listing__dashboard_listing_widget.lisiting_recent_view_widget  td {
+    font-size: 14px;
+}
+
+.listing__dashboard_listing_widget.lisiting_recent_view_widget .listing__dashboard_listing_widget_header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.listing__dashboard_listing_widget.lisiting_recent_view_widget .listing__dashboard_listing_widget_header a.view_all {
+    font-size: 14px;
+    color: #4f93ff;
+}
+
 @media screen and (min-width: 1024px) and (max-width: 2500px) {
   .header_container nav.nav_col a {
     font-size: 18px;
