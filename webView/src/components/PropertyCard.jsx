@@ -460,7 +460,7 @@ useEffect(() => {
                         <b>Asking Price</b>: ${listing.askingPrice}
                       </span>
                       <span>
-                        <b>Revenue</b>: ${listing.revenue}
+                        {/* <b>Revenue</b>: ${listing.revenue} */}
                       </span>
                       <span>
                         <b>Cash Flow</b>: ${listing.cashFlow}

@@ -192,9 +192,9 @@ export default function BusinessListingDetail() {
                  <div className="busines_lisiting_highLevelSummary_list">
                    <strong>Cash Flow:</strong> ${business?.cashFlow.toLocaleString()}
                  </div>
-                 <div className="busines_lisiting_highLevelSummary_list">
+                 {/* <div className="busines_lisiting_highLevelSummary_list">
                    <strong>Revenue:</strong> ${business?.revenue.toLocaleString()}
-                 </div>
+                 </div> */}
                  <div className="busines_lisiting_highLevelSummary_list">
                    <strong>SDE:</strong> {business?.latestSDE ? (<>{business.latestSDE}</>) : "-"}
                  </div>
