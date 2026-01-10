@@ -4088,6 +4088,15 @@ img.buyerSig {max-width: 100%;}
 .listing__dashboard_weakly_activity.listing__dashboard_save_listing td ,.listing__dashboard_weakly_activity.listing__dashboard_save_listing th {
     font-size: 13px;
 }
+.ExitRampPricing__pricing_table_wrap .ExitRampPricing__pricing_table_body .ExitRampPricing__pricing_table_list .ExitRampPricing__pricing_table_body_freature ul li span {
+    display: block;
+    font-size: 15px;
+    font-weight: 400;
+}
+
+.ExitRampPricing__pricing_table_wrap .ExitRampPricing__pricing_table_body .ExitRampPricing__pricing_table_list .ExitRampPricing__pricing_table_body_freature ul li {
+    font-weight: 700;
+}
 @media screen and (min-width: 1024px) and (max-width: 2500px) {
   .header_container nav.nav_col a {
     font-size: 18px;

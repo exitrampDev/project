@@ -23,8 +23,8 @@ export default function HowItWorks() {
               Create a Free Account
             </div>
             <div className="HowItWorks__section_body_card_para">
-              Buyers, Seller Data Protected And Confidential. <br></br>M&A
-              Experts Profiles Are Always Public
+              Start with the basics and create a free confidential profile.<br></br> 			
+Buyers and Sellers keep your data Protected and Confidential. 			
             </div>
           </div>
           <div className="HowItWorks__section_body_card step2">
@@ -38,12 +38,11 @@ export default function HowItWorks() {
               Browse & Inquire
             </div>
             <div className="HowItWorks__section_body_card_para">
-              Access live business listings. Submit NDAs to learn more.
-            </div>
+Find your connection or create a confidential listing so everyone knows about your sale or intent to aquira.              </div>
           </div>
           <div className="HowItWorks__section_body_card step3">
             <div className="HowItWorks__section_body_card_step_tag">
-              Step 02
+              Step 03
             </div>
             <div className="HowItWorks__section_body_card_img">
               <img src={IconYelow} alt="-" />
@@ -52,8 +51,7 @@ export default function HowItWorks() {
               Connect & Close
             </div>
             <div className="HowItWorks__section_body_card_para">
-              Message sellers, review CIMs, and manage your deal process.
-            </div>
+After finding your connection, use our market leading tools to achieve your M&A goals.             </div>
           </div>
         </div>
       </div>
