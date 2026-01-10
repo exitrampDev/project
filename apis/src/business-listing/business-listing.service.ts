@@ -23,6 +23,8 @@ export class BusinessListingService {
       page = 1,
       limit = 10,
       search,
+      askingPrice,
+      cashFlow,
       sortBy = 'createdAt',
       order = 'desc',
     } = query;
@@ -36,18 +38,46 @@ export class BusinessListingService {
       filter.ownerId = user.userId;
     }
 
-    // ✅ search fields
-    if (search) {
-      const regex = new RegExp(search, 'i');
-      filter.$or = [
-        { businessName: regex },
-        { businessType: regex },
-        { entityType: regex },
-        { city: regex },
-        { state: regex },
-        { country: regex },
-      ];
+   if (search || askingPrice || cashFlow) {
+     const orConditions: any[] = [];
+     if (search){
+          const regex = new RegExp(search, 'i');
+           orConditions.push(
+            { businessType: regex },
+            { entityType: regex },
+            { city: regex },
+            { state: regex },
+            { country: regex },
+          );
     }
+  
+    // If search is a number, include askingPrice
+    if (!isNaN(Number(askingPrice))) {
+      const priceValue = Number(askingPrice);
+      orConditions.push({
+        askingPrice: {
+          $gte: priceValue - 100,
+          $lte: priceValue + 100,
+        },
+      });
+    }
+
+     if (!isNaN(Number(cashFlow))) {
+      const cashFlowValue = Number(cashFlow);
+      orConditions.push({
+        cashFlow: {
+          $gte: cashFlowValue - 100,
+          $lte: cashFlowValue + 100,
+        },
+      });
+    }
+
+
+    filter.$or = orConditions;
+    console.log('filter:', JSON.stringify(filter, null, 2));
+  }
+
+
 
     // ✅ data fetch with
     const data = await this.businessModel

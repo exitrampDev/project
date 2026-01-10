@@ -26,4 +26,13 @@ export class QueryBusinessDto {
   @IsOptional()
   @IsString()
   search?: string;
+
+  @IsOptional()
+  @IsString()
+  askingPrice?: string;
+
+  @IsOptional()
+  @IsString()
+  cashFlow?: string;
+
 }
