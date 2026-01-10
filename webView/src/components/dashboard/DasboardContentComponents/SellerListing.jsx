@@ -365,6 +365,47 @@ listingReferenceNumber: Math.random().toString(16).substring(2, 10),
     });
   }
 };
+const handleCancelSubscription = async (event,listingId) => {
+
+ confirmPopup({
+    target: event.currentTarget,
+    message: "Are you sure you want to cancel this subscription?",
+    icon: "pi pi-exclamation-triangle",
+    className: "confirm__dlt_listing",
+    acceptLabel: "Yes",
+    rejectLabel: "No",
+    accept: async ()  => {
+try {
+    await axios.patch(
+      `${API_BASE}/business-listing/${listingId}/unsubscribe-block`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+        },
+      }
+    );
+
+    toast.current.show({
+      severity: "success",
+      detail: "Subscription cancelled successfully",
+      life: 4000,
+    });
+
+    fetchListings(); // refresh table
+  } catch (error) {
+    toast.current.show({
+      severity: "error",
+      detail: error.response?.data?.message || "Failed to cancel subscription",
+      life: 4000,
+    });
+  }
+    }
+  });
+
+
+  
+};
 
 
 const handleFileUpload = async (file, type) => {
@@ -553,10 +594,14 @@ const moneyTemplate = (row, { field }) => {
                 tooltip="Complete Payment"
                 tooltipOptions={{ position: "top" }}
               />
-        </>):(<><Button
-                label="Cancel Subscription"
-                className="p-button-text p-button-sm btn-pay"
-              /></>)}
+        </>):(<> <div className="cancel__subscription">
+          <ConfirmPopup /><Button
+  label="Cancel Subscription"
+  className="p-button-text p-button-sm btn-pay"
+  onClick={(e) => handleCancelSubscription(e,row._id)}
+/>
+        </div>
+</>)}
       <Link to={`/user/single-listing/${row._id}`} className="flex gap-4">
       <i
         className="pi pi-eye cursor-pointer text-blue-500 hover:text-blue-700"
