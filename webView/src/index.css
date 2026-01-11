@@ -4097,6 +4097,9 @@ img.buyerSig {max-width: 100%;}
 .ExitRampPricing__pricing_table_wrap .ExitRampPricing__pricing_table_body .ExitRampPricing__pricing_table_list .ExitRampPricing__pricing_table_body_freature ul li {
     font-weight: 700;
 }
+.drag__filter_listing {
+    display: none;
+}
 @media screen and (min-width: 1024px) and (max-width: 2500px) {
   .header_container nav.nav_col a {
     font-size: 18px;
@@ -4579,6 +4582,21 @@ img.buyerSig {max-width: 100%;}
 }
 
 @media screen and (max-width: 767px) {
+  .p-menubar.p-component,button.logout-btn.header-logout-btn {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+}
+
+.p-menubar-end a.signup-btn,button.logout-btn.header-logout-btn {
+    font-size: 11px;
+    justify-content: center;
+    padding: 6px 11px;
+}
+
+.p-menubar-end a.signup-btn img,button.logout-btn.header-logout-btn img {
+    width: 15px;
+}
   .bannerSecContent {
     flex-wrap: wrap;
   }
@@ -4660,12 +4678,12 @@ img.buyerSig {max-width: 100%;}
     margin: 0;
   }
 
-  .p-menubar.p-component {
-    justify-content: space-between;
-  }
 
   header a.p-menubar-button {
     color: #fff;
+    background: transparent;
+    border: none;
+    outline: none;
   }
   .contentSecLeft h3 {
     font-size: 35px;
@@ -5056,4 +5074,193 @@ img.buyerSig {max-width: 100%;}
   .TermsCondition__contact_details .TermsCondition__contact_details_content {
     font-size: 20px;
   }
+
+  /*listing page mobile view*/
+  .listing__filter_col {
+    position: fixed;
+    left: -100%;
+    top: 0;
+    z-index: 999;
+    background: #dce9ff;
+    border-radius: 0;
+    height: 100vh;
+    overflow: auto;
+    transition: ease all 0.8s;
+}
+.content__listing_col {
+    width: 100%;
+}
+.drag__filter_listing {
+    position: absolute;
+    right: 0;
+    display: block;
+}
+.business__list_single_intro_block {
+    flex-wrap: wrap;
+}
+.business__list_single_highLevelSummary .busines_lisiting_highLevelSummary_list {
+    width: 100%;
+}
+
+.business_list_single_overview_list {
+    width: 100%;
+}
+
+.business__list_single_business_overview {
+    width: 100%;
+}
+
+.about_listing_toggle {
+    width: 100%;
+}
+button.button__save_listing_global_single_listing.p-button.p-component.p-button-icon-only {
+    top: 10px;
+    right: 10px;
+}
+.content__listing_col {
+    position: relative;
+}
+
+.listing__filter_col.active {
+    left: 0;
+}
+
+.listing__filter_col_overlay {position: fixed;width: 100%;height: 100%;background: #000000c7;top: 0;left: 0;z-index: -1;opacity: 0;}
+
+
+.listing__filter_col_overlay.open {
+    opacity: 1;
+    z-index: 1;
+}
+.content__listing_col h3 {
+    font-size: 25px;
+}
+
+.list__count {
+    font-size: 12px;
+}
+
+li.list__row_item span.list__image_col {
+    width: 80px;
+}
+
+li.list__row_item span.list__image_col img {
+    height: auto !important;
+}
+
+li.list__row_item span.list_content_col {
+    width: 100%;
+}
+
+li.list__row_item span.list_content_col p.list__item_industry span {
+    padding: 4px;
+    font-size: 12px;
+    margin: 0;
+}
+
+p.list__item_industry {
+    margin: 4px 0 0 0;
+}
+
+li.list__row_item span.list_content_col p.location__item_list {
+    font-size: 14px;
+}
+
+.list__content_prices {
+    font-size: 14px;
+    gap: 5px;
+    margin-top: 5px;
+}
+
+.main__listing_grid ul.list__ul_container li.list__row_item a.flex.gap-4 {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+li.list__row_item span.list_content_col h4 {
+    font-size: 20px;
+}
+.AboutHero__container h4 {
+    font-size: 25px;
+}
+
+.AboutHero__container p {
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+.UpgradeFree_when_ready_container h3 {
+    font-size: 25px;
+}
+
+.UpgradeFree_when_ready_container p {
+    font-size: 19px;
+    margin: 0 0 40px 0;
+}
+
+.UpgradeFree_when_ready_container button.UpgradeFree_when_ready_btn {
+    font-size: 18px;
+    padding: 10px 20px 10px 20px;
+}
+/*footer css*/
+.AboutHero__container h4 {
+    font-size: 25px;
+}
+
+.AboutHero__container p {
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+.UpgradeFree_when_ready_container h3 {
+    font-size: 25px;
+}
+
+.UpgradeFree_when_ready_container p {
+    font-size: 19px;
+    margin: 0 0 40px 0;
+}
+
+.UpgradeFree_when_ready_container button.UpgradeFree_when_ready_btn {
+    font-size: 18px;
+    padding: 10px 20px 10px 20px;
+}
+
+.footer__content_container .logo_block h3 {
+    font-size: 20px;
+    margin: 0 0 0 0;
+}
+
+.footer__content_container .logo_block p {
+    font-size: 15px;
+}
+
+.footer__content_container .logo_block form.subscription-form button {
+    font-size: 18px;
+    padding: 10px 20px;
+}
+
+.footer__content_container .logo_block form.subscription-form input[type="email"] {
+    font-size: 18px;
+}
+
+.footer__content_container .useful_link_block h3,.footer__content_container .content_block h3 {
+    font-size: 18px;
+}
+
+.footer__content_container .useful_link_block ul a {
+    font-size: 16px;
+}
+
+.footer__content_container .content_block ul li a.email_contact {
+    font-size: 16px;
+}
+
+.footer__content_container .content_block ul li a {
+    font-size: 16px;
+}
+
+.footer__content_copyright p {
+    font-size: 16px;
+}
 }

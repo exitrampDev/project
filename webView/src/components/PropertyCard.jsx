@@ -12,6 +12,8 @@ import { Link } from "react-router-dom";
 import { Toast } from "primereact/toast";
 
 const PropertyCard = () => {
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+
   const [favoriteIds, setFavoriteIds] = useState([]);
   const { access_token } = useRecoilValue(authState) ?? {};
   const [allListings, setAllListings] = useState([]);
@@ -281,7 +283,10 @@ useEffect(() => {
   return (
     <div className="main__listing_grid">
       {/* Left Sidebar Filters */}
-      <div className="listing__filter_col">
+        <div className={`listing__filter_col_overlay ${isFilterOpen ? "open" : ""}`}
+        onClick={() => setIsFilterOpen(prev => !prev)}
+        ></div>
+      <div className={`listing__filter_col ${isFilterOpen ? "active" : ""}`}>
         {/* Type */}
         <div className="p-field">
           <label>Type</label>
@@ -392,6 +397,13 @@ useEffect(() => {
 
       {/* Right Listings */}
       <div className="content__listing_col">
+        <div
+            className="drag__filter_listing"
+            onClick={() => setIsFilterOpen(prev => !prev)}
+          >
+          <i className="pi pi-filter" />
+
+          </div>
         <h3>Sellers Listing</h3>
 
         {/* Showing text */}
