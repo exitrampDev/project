@@ -5,18 +5,21 @@ import { Button } from "primereact/button";
 import { Tag } from "primereact/tag";
 import { Divider } from "primereact/divider";
 import { Dropdown } from "primereact/dropdown";
-import { useRecoilValue } from "recoil";
-import { authState,apiBaseUrlState } from "../recoil/ctaState";
+import { useRecoilValue,useRecoilState } from "recoil";
+import { authState,apiBaseUrlState, usStatesState,
+  usCountiesByState,
+  selectedStateAtom,
+  countiesState } from "../recoil/ctaState";
 import { Column } from "primereact/column";
 import { Link } from "react-router-dom";
 import { Toast } from "primereact/toast";
-import { useSearchParams } from "react-router-dom";
 
 const PropertyCard = () => {
-   const [searchParams, setSearchParams] = useSearchParams();
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [refreshKey, setRefreshKey] = useState(0);
-
+const states = useRecoilValue(usStatesState);
+const [selectedState, setSelectedState] = useRecoilState(selectedStateAtom);
+const [, setCounties] = useRecoilState(countiesState);
+const counties = useRecoilValue(countiesState);
   const [favoriteIds, setFavoriteIds] = useState([]);
   const { access_token } = useRecoilValue(authState) ?? {};
   const [allListings, setAllListings] = useState([]);
@@ -28,38 +31,19 @@ const PropertyCard = () => {
   const limit = 10;
   const [filters, setFilters] = useState({
     type: "",
-    industry: searchParams.get("industry") || "",
-    state: searchParams.get("state") || "",
-    county: searchParams.get("county") || "",
+    industry: "",
+    state: "",
+    county: "",
     askingPrice: [0, 5000000],
     annualRevenue: [0, 5000000],
     cashFlow: [0, 5000000],
     businessType: [],
   });
 
-    // Update URL when filters change
-  useEffect(() => {
-    setSearchParams(serializeFiltersToParams(filters), { replace: true });
-  }, [filters, setSearchParams]);
-
-  const serializeFiltersToParams = (filters) => {
-    const params = {};
-
-    Object.entries(filters).forEach(([key, value]) => {
-      if (Array.isArray(value)) {
-        if (value.length) params[key] = value.join(",");
-      } else if (value) {
-        params[key] = value;
-      }
-    });
-
-    return params;
-  };
-
   // Fetch Data
  useEffect(() => {    
   fetchListing();
-  }, [page, refreshKey]);
+  }, [page]);
 
   const fetchListing = () => {
     console.log("Fetching listings with filters:", filters);
@@ -261,7 +245,8 @@ const saveListingBtn = (businessId) => {
       cashFlow: [0, 5000000],
       businessType: [],
     });
-    setRefreshKey(prev => prev + 1);
+    setListings(allListings);
+    setPage(1);
   };
 
   // Pagination calculations
@@ -332,12 +317,21 @@ useEffect(() => {
         {/* State */}
         <div className="p-field">
           <label>State</label>
-          <InputText
+          <Dropdown
             value={filters.state}
-            onChange={(e) =>
-              setFilters({ ...filters, state: e.target.value })
-            }
-            placeholder="State"
+            options={states}
+            placeholder="Select State"
+            filter
+            showClear
+            onChange={(e) => {
+              setSelectedState(e.value);
+              setCounties(usCountiesByState[e.value] || []);
+              setFilters({
+                ...filters,
+                state: e.value,
+                county: ""
+              });
+            }}
             style={{ width: "100%" }}
           />
         </div>
@@ -345,12 +339,18 @@ useEffect(() => {
         {/* County */}
         <div className="p-field">
           <label>County</label>
-          <InputText
-            value={filters.county}
-            onChange={(e) => setFilters({ ...filters, county: e.target.value })}
-            placeholder="County"
-            style={{ width: "100%" }}
-          />
+          <Dropdown
+                value={filters.county}
+                options={counties}
+                placeholder="Select County"
+                disabled={!filters.state}
+                filter
+                showClear
+                onChange={(e) =>
+                  setFilters({ ...filters, county: e.value })
+                }
+                style={{ width: "100%" }}
+              />
         </div>
 
         {/* Asking Price */}
@@ -446,7 +446,7 @@ useEffect(() => {
                   <span className="list_content_col">
                     <h4>{listing.businessName}</h4>
                     <p className="location__item_list">
-                      {listing.businessCity}, {listing.businessState}
+                      {listing.businessCountry}, {listing.businessState}
                     </p>
 {/* 
                     <p>

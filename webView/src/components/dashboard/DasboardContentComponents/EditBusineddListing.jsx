@@ -1,9 +1,12 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useRecoilValue } from "recoil";
+import { useRecoilValue, useSetRecoilState,useRecoilState } from "recoil";
 import axios from "axios";
 
-import { authState, apiBaseUrlState } from "../../../recoil/ctaState";
+import { authState,apiBaseUrlState, usStatesState,
+  usCountiesByState,
+  selectedStateAtom,
+  countiesState  } from "../../../recoil/ctaState";
 import DashboardHeader from "./DashboardHeaderBlock";
 
 import { Toast } from "primereact/toast";
@@ -29,6 +32,10 @@ export default function EditBusinessListing() {
 
   const [loading, setLoading] = useState(false);
   const [newListing, setNewListing] = useState(null);
+  const states = useRecoilValue(usStatesState);
+  const [selectedState, setSelectedState] = useRecoilState(selectedStateAtom);
+  const [, setCounties] = useRecoilState(countiesState);
+  const counties = useRecoilValue(countiesState);
 
   /* ---------------------- helpers ---------------------- */
   const industryOptions = [
@@ -157,58 +164,7 @@ export default function EditBusinessListing() {
   };
 
 
-const usStates = [
-  { label: "Alabama", value: "AL" },
-  { label: "Alaska", value: "AK" },
-  { label: "Arizona", value: "AZ" },
-  { label: "Arkansas", value: "AR" },
-  { label: "California", value: "CA" },
-  { label: "Colorado", value: "CO" },
-  { label: "Connecticut", value: "CT" },
-  { label: "Delaware", value: "DE" },
-  { label: "Florida", value: "FL" },
-  { label: "Georgia", value: "GA" },
-  { label: "Hawaii", value: "HI" },
-  { label: "Idaho", value: "ID" },
-  { label: "Illinois", value: "IL" },
-  { label: "Indiana", value: "IN" },
-  { label: "Iowa", value: "IA" },
-  { label: "Kansas", value: "KS" },
-  { label: "Kentucky", value: "KY" },
-  { label: "Louisiana", value: "LA" },
-  { label: "Maine", value: "ME" },
-  { label: "Maryland", value: "MD" },
-  { label: "Massachusetts", value: "MA" },
-  { label: "Michigan", value: "MI" },
-  { label: "Minnesota", value: "MN" },
-  { label: "Mississippi", value: "MS" },
-  { label: "Missouri", value: "MO" },
-  { label: "Montana", value: "MT" },
-  { label: "Nebraska", value: "NE" },
-  { label: "Nevada", value: "NV" },
-  { label: "New Hampshire", value: "NH" },
-  { label: "New Jersey", value: "NJ" },
-  { label: "New Mexico", value: "NM" },
-  { label: "New York", value: "NY" },
-  { label: "North Carolina", value: "NC" },
-  { label: "North Dakota", value: "ND" },
-  { label: "Ohio", value: "OH" },
-  { label: "Oklahoma", value: "OK" },
-  { label: "Oregon", value: "OR" },
-  { label: "Pennsylvania", value: "PA" },
-  { label: "Rhode Island", value: "RI" },
-  { label: "South Carolina", value: "SC" },
-  { label: "South Dakota", value: "SD" },
-  { label: "Tennessee", value: "TN" },
-  { label: "Texas", value: "TX" },
-  { label: "Utah", value: "UT" },
-  { label: "Vermont", value: "VT" },
-  { label: "Virginia", value: "VA" },
-  { label: "Washington", value: "WA" },
-  { label: "West Virginia", value: "WV" },
-  { label: "Wisconsin", value: "WI" },
-  { label: "Wyoming", value: "WY" }
-];
+const usStates = useRecoilValue(usStatesState);
 
 
   /* ---------------------- image ---------------------- */
@@ -397,8 +353,8 @@ const usStates = [
 <div className="listing__creation_field_col md:col-4">
   <label>Business City </label>
   <InputText
-    value={newListing.businessCity || ""}
-    onChange={(e) => handleChange(e, "businessCity", e.target.value)}
+    value={newListing.businessCountry || ""}
+    onChange={(e) => handleChange(e, "businessCountry", e.target.value)}
     placeholder="Enter Business City"
   />
 </div>
@@ -413,9 +369,12 @@ const usStates = [
      optionLabel="label"
      optionValue="value"
      placeholder="Select Business State"
-     onChange={(e) =>
+     onChange={(e) =>{
+       setSelectedState(e.value);
+            setCounties(usCountiesByState[e.value] || []);
        handleChange(e, "businessState", e.value)
      }
+    }
      className="w-full"
    />
 </div>
@@ -423,11 +382,17 @@ const usStates = [
 {/* Country */}
 <div className="listing__creation_field_col md:col-4">
   <label> Business County </label>
-  <InputText
-    value={newListing.businessCountry || ""}
+
+ <Dropdown
+    value={newListing.businessState || null}
+    options={counties}
+    optionLabel="label"
+    optionValue="value"
+    placeholder="Select Business County"
     onChange={(e) => handleChange(e, "businessCountry", e.target.value)}
-    placeholder="Enter Business County"
   />
+
+
 </div> 
 
 {/* Business Zip Code */}

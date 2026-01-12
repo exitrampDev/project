@@ -137,7 +137,7 @@ export default function SingleBusinessListing() {
             <h2 className="listing__single_title">{business?.businessName ? (<>{business.businessName}</>) : "-"}</h2>
             <div className="listing__single_location">
               <img src={SingleListingLocation} alt="SingleListingLocation" />
-              {business?.businessCity && business.businessState ? (<>{business.businessCity}, {business.businessState} </>) : "-" }
+              {business?.businessCountry && business.businessState ? (<>{business.businessCountry}, {business.businessState} </>) : "-" }
             </div>
             <div className="listing__single_listingId">
               <span>Listing ID :</span> {business?._id ? (<>#{business._id.toString().slice(-6)}</>) : "-"}
