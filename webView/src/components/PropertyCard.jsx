@@ -10,8 +10,10 @@ import { authState,apiBaseUrlState } from "../recoil/ctaState";
 import { Column } from "primereact/column";
 import { Link } from "react-router-dom";
 import { Toast } from "primereact/toast";
+import { useSearchParams } from "react-router-dom";
 
 const PropertyCard = () => {
+   const [searchParams, setSearchParams] = useSearchParams();
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   const [favoriteIds, setFavoriteIds] = useState([]);
@@ -25,14 +27,33 @@ const PropertyCard = () => {
   const limit = 10;
   const [filters, setFilters] = useState({
     type: "",
-    industry: "",
-    state: "",
-    county: "",
+    industry: searchParams.get("industry") || "",
+    state: searchParams.get("state") || "",
+    county: searchParams.get("county") || "",
     askingPrice: [0, 5000000],
     annualRevenue: [0, 5000000],
     cashFlow: [0, 5000000],
     businessType: [],
   });
+
+    // Update URL when filters change
+  useEffect(() => {
+    setSearchParams(serializeFiltersToParams(filters), { replace: true });
+  }, [filters, setSearchParams]);
+
+  const serializeFiltersToParams = (filters) => {
+    const params = {};
+
+    Object.entries(filters).forEach(([key, value]) => {
+      if (Array.isArray(value)) {
+        if (value.length) params[key] = value.join(",");
+      } else if (value) {
+        params[key] = value;
+      }
+    });
+
+    return params;
+  };
 
   // Fetch Data
  useEffect(() => {    
