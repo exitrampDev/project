@@ -15,6 +15,7 @@ import { useSearchParams } from "react-router-dom";
 const PropertyCard = () => {
    const [searchParams, setSearchParams] = useSearchParams();
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   const [favoriteIds, setFavoriteIds] = useState([]);
   const { access_token } = useRecoilValue(authState) ?? {};
@@ -58,7 +59,7 @@ const PropertyCard = () => {
   // Fetch Data
  useEffect(() => {    
   fetchListing();
-  }, [page]);
+  }, [page, refreshKey]);
 
   const fetchListing = () => {
     console.log("Fetching listings with filters:", filters);
@@ -260,8 +261,7 @@ const saveListingBtn = (businessId) => {
       cashFlow: [0, 5000000],
       businessType: [],
     });
-    setListings(allListings);
-    setPage(1);
+    setRefreshKey(prev => prev + 1);
   };
 
   // Pagination calculations
