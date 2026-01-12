@@ -16,15 +16,15 @@ const PropertyCard = () => {
   const { access_token } = useRecoilValue(authState) ?? {};
   const [allListings, setAllListings] = useState([]);
   const [listings, setListings] = useState([]);
-   const API_BASE = useRecoilValue(apiBaseUrlState);
- const toast = useRef(null);
+  const API_BASE = useRecoilValue(apiBaseUrlState);
+  const toast = useRef(null);
   const [page, setPage] = useState(1);
-  const limit = 25;
+  const limit = 10;
   const [filters, setFilters] = useState({
     type: "",
     industry: "",
+    state: "",
     county: "",
-    city: "",
     askingPrice: [0, 5000000],
     annualRevenue: [0, 5000000],
     cashFlow: [0, 5000000],
@@ -32,8 +32,24 @@ const PropertyCard = () => {
   });
 
   // Fetch Data
-  useEffect(() => {
-    fetch(`${API_BASE}/business-listing/public`)
+ useEffect(() => {    
+  fetchListing();
+  }, []);
+
+  const fetchListing = () => {
+    console.log("Fetching listings with filters:", filters);
+    const params = new URLSearchParams({
+      page: page,
+      limit: limit,
+      industry: filters.industry,
+      state: filters.state,
+      county: filters.county,
+      askingPriceMin: filters.askingPrice[0],
+      askingPriceMax: filters.askingPrice[1],
+      annualRevenueMin: filters.annualRevenue[0],
+    });
+    
+    fetch(`${API_BASE}/business-listing/public?${params}`)
       .then((res) => res.json())
       .then((result) => {
         const data = Array.isArray(result.data) ? result.data : [];
@@ -41,7 +57,7 @@ const PropertyCard = () => {
         setListings(data);
       })
       .catch((err) => console.error(err));
-  }, []);
+  };
 
 const saveListingBtn = (businessId) => {
  
@@ -168,69 +184,43 @@ const saveListingBtn = (businessId) => {
 
   // Apply Filters
  const applyFilters = () => {
-  let filtered = [...allListings];
+  fetchListing();
+  // let filtered = [...allListings];
 
-  // Type
-  if (filters.type) {
-    filtered = filtered.filter((item) => {
-      const type = item.businessType ?? "";
-      return type.toLowerCase().includes(filters.type.toLowerCase());
-    });
-  }
 
-  // Industry
-  if (filters.industry) {
-    filtered = filtered.filter((item) => {
-      let industries = [];
-      try {
-        industries = JSON.parse(item.industry || "[]");
-      } catch {}
+  // // Industry
+  // if (filters.industry) {
+  //   filtered = filtered.filter((item) => {
+  //     let industries = [];
+  //     try {
+  //       industries = JSON.parse(item.industry || "[]");
+  //     } catch {}
 
-      return industries.some((i) =>
-        i.toLowerCase().includes(filters.industry.toLowerCase())
-      );
-    });
-  }
+  //     return industries.some((i) =>
+  //       i.toLowerCase().includes(filters.industry.toLowerCase())
+  //     );
+  //   });
+  // }
 
-  // City
-  if (filters.city) {
-    filtered = filtered.filter(
-      (item) =>
-        item.businessCity?.toLowerCase() === filters.city.toLowerCase()
-    );
-  }
+  // // State
+  // if (filters.state) {
+  //   filtered = filtered.filter(
+  //     (item) =>
+  //       item.businessState?.toLowerCase() === filters.state.toLowerCase()
+  //   );
+  // }
 
-  // Country
-  if (filters.county) {
-    filtered = filtered.filter(
-      (item) =>
-        item.businessCountry?.toLowerCase() === filters.county.toLowerCase()
-    );
-  }
+  // // County
+  // if (filters.county) {
+  //   filtered = filtered.filter(
+  //     (item) =>
+  //       item.businessCountry?.toLowerCase() === filters.county.toLowerCase()
+  //   );
+  // }
 
-  // Asking Price
-  filtered = filtered.filter(
-    (item) =>
-      item.askingPrice >= filters.askingPrice[0] &&
-      item.askingPrice <= filters.askingPrice[1]
-  );
-
-  // Revenue
-  filtered = filtered.filter(
-    (item) =>
-      item.revenue >= filters.annualRevenue[0] &&
-      item.revenue <= filters.annualRevenue[1]
-  );
-
-  // Cash Flow
-  filtered = filtered.filter(
-    (item) =>
-      item.cashFlow >= filters.cashFlow[0] &&
-      item.cashFlow <= filters.cashFlow[1]
-  );
-
-  setListings(filtered);
-  setPage(1);
+  
+  // setListings(filtered);
+  // setPage(1);
 };
 
   // Reset Filters
@@ -238,8 +228,8 @@ const saveListingBtn = (businessId) => {
     setFilters({
       type: "",
       industry: "",
+      state: "",
       county: "",
-      city: "",
       askingPrice: [0, 5000000],
       annualRevenue: [0, 5000000],
       cashFlow: [0, 5000000],
@@ -283,7 +273,7 @@ useEffect(() => {
       {/* Left Sidebar Filters */}
       <div className="listing__filter_col">
         {/* Type */}
-        <div className="p-field">
+        {/* <div className="p-field">
           <label>Type</label>
           <Dropdown
             value={filters.type}
@@ -296,7 +286,7 @@ useEffect(() => {
             placeholder="Select Type"
             style={{ width: "100%" }}
           />
-        </div>
+        </div> */}
 
         {/* Industry */}
         <div className="p-field">
@@ -311,26 +301,26 @@ useEffect(() => {
           />
         </div>
 
+        {/* State */}
+        <div className="p-field">
+          <label>State</label>
+          <InputText
+            value={filters.state}
+            onChange={(e) =>
+              setFilters({ ...filters, state: e.target.value })
+            }
+            placeholder="State"
+            style={{ width: "100%" }}
+          />
+        </div>
+
         {/* County */}
         <div className="p-field">
           <label>County</label>
           <InputText
             value={filters.county}
-            onChange={(e) =>
-              setFilters({ ...filters, county: e.target.value })
-            }
+            onChange={(e) => setFilters({ ...filters, county: e.target.value })}
             placeholder="County"
-            style={{ width: "100%" }}
-          />
-        </div>
-
-        {/* City */}
-        <div className="p-field">
-          <label>City</label>
-          <InputText
-            value={filters.city}
-            onChange={(e) => setFilters({ ...filters, city: e.target.value })}
-            placeholder="City"
             style={{ width: "100%" }}
           />
         </div>
@@ -350,7 +340,7 @@ useEffect(() => {
         </div>
 
         {/* Annual Revenue */}
-        <div className="p-field">
+        {/* <div className="p-field">
           <label>Annual Revenue</label>
           <Slider
             value={filters.annualRevenue}
@@ -361,7 +351,7 @@ useEffect(() => {
           <div>
             ${filters.annualRevenue[0]} - ${filters.annualRevenue[1]}
           </div>
-        </div>
+        </div> */}
 
         {/* Cash Flow */}
         <div className="p-field">
