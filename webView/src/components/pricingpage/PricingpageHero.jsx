@@ -3,7 +3,7 @@ import React from "react";
 export default function PricingpageHero() {
   return (
     <section className="PricingpageHero__main_wrapper">
-      <div className="PricingpageHero__container">
+      <div className="PricingpageHero__container" id="PricingpageHero">
         <h4>Simple, Transparent Pricing</h4>
         <p>
           ExitRamp offers flexible pricing for business sellers and buyers.

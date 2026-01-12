@@ -1,4 +1,5 @@
 import { useSearchParams, useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 import DashboardHeader from "./DashboardHeaderBlock";
 
 const SuccessPayment = () => {
@@ -6,13 +7,19 @@ const SuccessPayment = () => {
   const sessionId = searchParams.get("session_id");
   const navigate = useNavigate();
 
+  useEffect(() => {
+    // Remove Stripe query params from URL
+    if (window.location.search) {
+      navigate("/payment/success", { replace: true });
+    }
+  }, []);
+
   return (
     <>
       <DashboardHeader headingData="Payment Successful" />
 
       <div style={styles.container}>
         <div style={styles.invoiceBox}>
-
           <p style={styles.successText}>
             Your payment has been completed successfully.
           </p>
@@ -48,6 +55,7 @@ const SuccessPayment = () => {
 };
 
 export default SuccessPayment;
+
 
 const styles = {
   container: {
