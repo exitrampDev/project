@@ -26,4 +26,43 @@ export class QueryBusinessDto {
   @IsOptional()
   @IsString()
   search?: string;
+
+  @IsOptional()
+  @IsString()
+  industry?: string;
+
+  @IsOptional()
+  @IsString()
+  state?: string;
+
+  @IsOptional()
+  @IsString()
+  county?: string;
+
+  @IsOptional()
+  @IsString()
+  askingPrice?: string;
+
+  // ----------------------
+  @IsOptional()
+  @IsString()
+  askingPriceMin?: string;
+
+  @IsOptional()
+  @IsString()
+  askingPriceMax?: string;
+
+    @IsOptional()
+  @IsString()
+  cashFlowMin?: string;
+
+  @IsOptional()
+  @IsString()
+  cashFlowMax?: string;
+  // -----------------------
+
+  @IsOptional()
+  @IsString()
+  cashFlow?: string;
+
 }

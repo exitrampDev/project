@@ -6,7 +6,7 @@ import { Business, BusinessDocument } from './schemas/business.schema';
 import { ApiFeatures } from 'src/common/utils/api-features';
 import { QueryBusinessDto } from './dto/query-business.dto';
 import { NotificationHelper } from 'src/common/helpers/notification.helper';
-import { CreateBusinessDto } from './dto/create-business.dto';
+import { BusinessStatus, CreateBusinessDto } from './dto/create-business.dto';
 import { UpdateBusinessDto } from './dto/update-business.dto';
 import { Nda, NdaDocument } from 'src/nda/schemas/nda.schema';
 
@@ -23,6 +23,15 @@ export class BusinessListingService {
       page = 1,
       limit = 10,
       search,
+      industry,
+      state,
+      county,
+      askingPrice,
+      askingPriceMin,
+      askingPriceMax,
+      cashFlowMin,
+      cashFlowMax,
+      cashFlow,
       sortBy = 'createdAt',
       order = 'desc',
     } = query;
@@ -35,19 +44,148 @@ export class BusinessListingService {
     if (user?.userId) {
       filter.ownerId = user.userId;
     }
+    // -------------------------------------------------------------------------------------
+const andConditions: any[] = [];
 
-    // ✅ search fields
-    if (search) {
-      const regex = new RegExp(search, 'i');
-      filter.$or = [
-        { businessName: regex },
-        { businessType: regex },
-        { entityType: regex },
-        { city: regex },
-        { state: regex },
-        { country: regex },
-      ];
-    }
+  const escapeRegex = (value: string) =>
+    value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+/**
+ * Global text search (OR across multiple fields)
+ */
+if (search) {
+  const regex = new RegExp(escapeRegex(search), 'i');
+
+  andConditions.push({
+    $or: [
+      { industry: regex },
+      { businessState: regex },
+      { businessCountry: regex },
+    ],
+  });
+}
+
+if (industry) {
+    andConditions.push({
+      industry: new RegExp(escapeRegex(industry), 'i'),
+    });
+  }
+
+  if (state) {
+    andConditions.push({
+      businessState: new RegExp(escapeRegex(state), 'i'),
+    });
+  }
+
+  if (county) {
+    andConditions.push({
+      businessCountry: new RegExp(escapeRegex(county), 'i'),
+    });
+  }
+
+  /**
+   * Numeric filters
+   */
+
+   if (askingPrice !== undefined && !isNaN(Number(askingPrice))) {
+    andConditions.push({
+      askingPrice: Number(askingPrice),
+    });
+  }
+
+  if (askingPriceMin !== undefined && !isNaN(Number(askingPriceMin))) {
+    andConditions.push({
+      askingPrice: { $gte: Number(askingPriceMin) },
+    });
+  }
+
+  if (askingPriceMax !== undefined && !isNaN(Number(askingPriceMax))) {
+    andConditions.push({
+      askingPrice: { $lte: Number(askingPriceMax) },
+    });
+  }
+
+  if (cashFlow !== undefined && !isNaN(Number(cashFlow))) {
+    andConditions.push({
+      cashFlow: Number(cashFlow),
+    });
+  }
+
+  if (cashFlowMin !== undefined && !isNaN(Number(cashFlowMin))) {
+    andConditions.push({
+      cashFlow: { $gte: Number(cashFlowMin) },
+    });
+  }
+  if (cashFlowMax !== undefined && !isNaN(Number(cashFlowMax))) {
+    andConditions.push({
+      cashFlow: { $lte: Number(cashFlowMax) },
+    });
+  }
+
+  if (andConditions.length > 0) {
+    filter.$and = andConditions;
+  }
+
+
+    // -------------------------------------------------------------------------------------
+
+  //  if (search || industry || state || county || askingPrice || cashFlow) {
+  //    const orConditions: any[] = [];
+  //    if (search){
+  //         const regex = new RegExp(search, 'i');
+  //          orConditions.push(           
+  //           { industry: regex },           
+  //           { state: regex },
+  //           { country: regex },
+  //         );
+  //   }
+
+  //   if(industry){
+  //        const industryRegex = new RegExp(industry, 'i');
+  //        orConditions.push(           
+  //           { industry: industryRegex },  );    
+  //   }
+
+  //   if(state){
+  //        const stateRegex = new RegExp(state, 'i');
+  //        orConditions.push(           
+  //           { businessState: stateRegex },  );    
+  //   }
+
+  //    if(county){
+  //        const countyRegex = new RegExp(county, 'i');
+  //        orConditions.push(           
+  //           { businessCountry: countyRegex },  );    
+  //   }
+  
+  
+  //   // If search is a number, include askingPrice
+  //   if (!isNaN(Number(askingPrice))) {
+  //     const priceValue = Number(askingPrice);
+  //     orConditions.push({
+  //       askingPrice: {
+  //         $gte: priceValue - 100,
+  //         $lte: priceValue + 100,
+  //       },
+  //     });
+  //   }
+
+  //    if (!isNaN(Number(cashFlow))) {
+  //     const cashFlowValue = Number(cashFlow);
+  //     orConditions.push({
+  //       cashFlow: {
+  //         $gte: cashFlowValue - 100,
+  //         $lte: cashFlowValue + 100,
+  //       },
+  //     });
+  //   }
+
+
+  //   filter.$or = orConditions;
+  //   console.log('filter:', JSON.stringify(filter, null, 2));
+  // }
+
+
 
     // ✅ data fetch with
     const data = await this.businessModel
@@ -228,7 +366,7 @@ async attachFile(businessId: string, fileUrl: string, fileType: string = 'profit
     }
 
     // Update status
-    business.status = 'blocked';
+    business.status = BusinessStatus.PENDING_FOR_PAYMENT;
     await business.save();
 
   

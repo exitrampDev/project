@@ -4,6 +4,14 @@ import { NavLink } from "react-router-dom";
 import icon1 from "../../../assets/d-icon.png";
 import icon2 from "../../../assets/d-icon1.png";
 import icon3 from "../../../assets/d-icon2.png";
+import icon21 from "../../../assets/icon21.png";
+import icon22 from "../../../assets/icon22.png";
+import icon23 from "../../../assets/icon23.png";
+import icon24 from "../../../assets/icon24.png";
+import icon25 from "../../../assets/icon25.png";
+import icon26 from "../../../assets/icon26.png";
+import icon27 from "../../../assets/icon27.png";
+import icon28 from "../../../assets/icon28.png";
 
 export default function SellerFreeNav() {
   return (
@@ -24,7 +32,7 @@ export default function SellerFreeNav() {
         </li>
         <li>
           <Link to="/listings">
-            <img src={icon3} alt="-" />
+            <img src={icon28} alt="-" />
             My Listing
           </Link>
         </li>

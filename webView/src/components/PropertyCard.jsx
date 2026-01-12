@@ -5,26 +5,35 @@ import { Button } from "primereact/button";
 import { Tag } from "primereact/tag";
 import { Divider } from "primereact/divider";
 import { Dropdown } from "primereact/dropdown";
-import { useRecoilValue } from "recoil";
-import { authState,apiBaseUrlState } from "../recoil/ctaState";
+import { useRecoilValue,useRecoilState } from "recoil";
+import { authState,apiBaseUrlState, usStatesState,
+  usCountiesByState,
+  selectedStateAtom,
+  countiesState } from "../recoil/ctaState";
 import { Column } from "primereact/column";
 import { Link } from "react-router-dom";
 import { Toast } from "primereact/toast";
 
 const PropertyCard = () => {
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+const states = useRecoilValue(usStatesState);
+const [selectedState, setSelectedState] = useRecoilState(selectedStateAtom);
+const [, setCounties] = useRecoilState(countiesState);
+const counties = useRecoilValue(countiesState);
   const [favoriteIds, setFavoriteIds] = useState([]);
   const { access_token } = useRecoilValue(authState) ?? {};
   const [allListings, setAllListings] = useState([]);
   const [listings, setListings] = useState([]);
-   const API_BASE = useRecoilValue(apiBaseUrlState);
- const toast = useRef(null);
+  const API_BASE = useRecoilValue(apiBaseUrlState);
+  const toast = useRef(null);
   const [page, setPage] = useState(1);
-  const limit = 25;
+  const [total, setTotal] = useState(1);
+  const limit = 10;
   const [filters, setFilters] = useState({
     type: "",
     industry: "",
+    state: "",
     county: "",
-    city: "",
     askingPrice: [0, 5000000],
     annualRevenue: [0, 5000000],
     cashFlow: [0, 5000000],
@@ -32,16 +41,33 @@ const PropertyCard = () => {
   });
 
   // Fetch Data
-  useEffect(() => {
-    fetch(`${API_BASE}/business-listing/public`)
+ useEffect(() => {    
+  fetchListing();
+  }, [page]);
+
+  const fetchListing = () => {
+    console.log("Fetching listings with filters:", filters);
+    const params = new URLSearchParams({
+      page: page,
+      limit: limit,
+      industry: filters.industry,
+      state: filters.state,
+      county: filters.county,
+      askingPriceMin: filters.askingPrice[0],
+      askingPriceMax: filters.askingPrice[1],
+      annualRevenueMin: filters.annualRevenue[0],
+    });
+    
+    fetch(`${API_BASE}/business-listing/public?${params}`)
       .then((res) => res.json())
       .then((result) => {
         const data = Array.isArray(result.data) ? result.data : [];
         setAllListings(data);
         setListings(data);
+        setTotal(result.total);
       })
       .catch((err) => console.error(err));
-  }, []);
+  };
 
 const saveListingBtn = (businessId) => {
  
@@ -168,69 +194,43 @@ const saveListingBtn = (businessId) => {
 
   // Apply Filters
  const applyFilters = () => {
-  let filtered = [...allListings];
+  fetchListing();
+  // let filtered = [...allListings];
 
-  // Type
-  if (filters.type) {
-    filtered = filtered.filter((item) => {
-      const type = item.businessType ?? "";
-      return type.toLowerCase().includes(filters.type.toLowerCase());
-    });
-  }
 
-  // Industry
-  if (filters.industry) {
-    filtered = filtered.filter((item) => {
-      let industries = [];
-      try {
-        industries = JSON.parse(item.industry || "[]");
-      } catch {}
+  // // Industry
+  // if (filters.industry) {
+  //   filtered = filtered.filter((item) => {
+  //     let industries = [];
+  //     try {
+  //       industries = JSON.parse(item.industry || "[]");
+  //     } catch {}
 
-      return industries.some((i) =>
-        i.toLowerCase().includes(filters.industry.toLowerCase())
-      );
-    });
-  }
+  //     return industries.some((i) =>
+  //       i.toLowerCase().includes(filters.industry.toLowerCase())
+  //     );
+  //   });
+  // }
 
-  // City
-  if (filters.city) {
-    filtered = filtered.filter(
-      (item) =>
-        item.businessCity?.toLowerCase() === filters.city.toLowerCase()
-    );
-  }
+  // // State
+  // if (filters.state) {
+  //   filtered = filtered.filter(
+  //     (item) =>
+  //       item.businessState?.toLowerCase() === filters.state.toLowerCase()
+  //   );
+  // }
 
-  // Country
-  if (filters.county) {
-    filtered = filtered.filter(
-      (item) =>
-        item.businessCountry?.toLowerCase() === filters.county.toLowerCase()
-    );
-  }
+  // // County
+  // if (filters.county) {
+  //   filtered = filtered.filter(
+  //     (item) =>
+  //       item.businessCountry?.toLowerCase() === filters.county.toLowerCase()
+  //   );
+  // }
 
-  // Asking Price
-  filtered = filtered.filter(
-    (item) =>
-      item.askingPrice >= filters.askingPrice[0] &&
-      item.askingPrice <= filters.askingPrice[1]
-  );
-
-  // Revenue
-  filtered = filtered.filter(
-    (item) =>
-      item.revenue >= filters.annualRevenue[0] &&
-      item.revenue <= filters.annualRevenue[1]
-  );
-
-  // Cash Flow
-  filtered = filtered.filter(
-    (item) =>
-      item.cashFlow >= filters.cashFlow[0] &&
-      item.cashFlow <= filters.cashFlow[1]
-  );
-
-  setListings(filtered);
-  setPage(1);
+  
+  // setListings(filtered);
+  // setPage(1);
 };
 
   // Reset Filters
@@ -238,8 +238,8 @@ const saveListingBtn = (businessId) => {
     setFilters({
       type: "",
       industry: "",
+      state: "",
       county: "",
-      city: "",
       askingPrice: [0, 5000000],
       annualRevenue: [0, 5000000],
       cashFlow: [0, 5000000],
@@ -250,10 +250,10 @@ const saveListingBtn = (businessId) => {
   };
 
   // Pagination calculations
-  const total = listings.length;
+  // const total = listings.length;
   const start = (page - 1) * limit + 1;
   const end = Math.min(page * limit, total);
-  const currentPageData = listings.slice(start - 1, end);
+  const currentPageData = listings;
 useEffect(() => {
   if (!access_token) return;
 
@@ -281,9 +281,12 @@ useEffect(() => {
   return (
     <div className="main__listing_grid">
       {/* Left Sidebar Filters */}
-      <div className="listing__filter_col">
+        <div className={`listing__filter_col_overlay ${isFilterOpen ? "open" : ""}`}
+        onClick={() => setIsFilterOpen(prev => !prev)}
+        ></div>
+      <div className={`listing__filter_col ${isFilterOpen ? "active" : ""}`}>
         {/* Type */}
-        <div className="p-field">
+        {/* <div className="p-field">
           <label>Type</label>
           <Dropdown
             value={filters.type}
@@ -296,7 +299,7 @@ useEffect(() => {
             placeholder="Select Type"
             style={{ width: "100%" }}
           />
-        </div>
+        </div> */}
 
         {/* Industry */}
         <div className="p-field">
@@ -311,28 +314,43 @@ useEffect(() => {
           />
         </div>
 
-        {/* County */}
+        {/* State */}
         <div className="p-field">
-          <label>County</label>
-          <InputText
-            value={filters.county}
-            onChange={(e) =>
-              setFilters({ ...filters, county: e.target.value })
-            }
-            placeholder="County"
+          <label>State</label>
+          <Dropdown
+            value={filters.state}
+            options={states}
+            placeholder="Select State"
+            filter
+            showClear
+            onChange={(e) => {
+              setSelectedState(e.value);
+              setCounties(usCountiesByState[e.value] || []);
+              setFilters({
+                ...filters,
+                state: e.value,
+                county: ""
+              });
+            }}
             style={{ width: "100%" }}
           />
         </div>
 
-        {/* City */}
+        {/* County */}
         <div className="p-field">
-          <label>City</label>
-          <InputText
-            value={filters.city}
-            onChange={(e) => setFilters({ ...filters, city: e.target.value })}
-            placeholder="City"
-            style={{ width: "100%" }}
-          />
+          <label>County</label>
+          <Dropdown
+                value={filters.county}
+                options={counties}
+                placeholder="Select County"
+                disabled={!filters.state}
+                filter
+                showClear
+                onChange={(e) =>
+                  setFilters({ ...filters, county: e.value })
+                }
+                style={{ width: "100%" }}
+              />
         </div>
 
         {/* Asking Price */}
@@ -350,7 +368,7 @@ useEffect(() => {
         </div>
 
         {/* Annual Revenue */}
-        <div className="p-field">
+        {/* <div className="p-field">
           <label>Annual Revenue</label>
           <Slider
             value={filters.annualRevenue}
@@ -361,7 +379,7 @@ useEffect(() => {
           <div>
             ${filters.annualRevenue[0]} - ${filters.annualRevenue[1]}
           </div>
-        </div>
+        </div> */}
 
         {/* Cash Flow */}
         <div className="p-field">
@@ -392,11 +410,18 @@ useEffect(() => {
 
       {/* Right Listings */}
       <div className="content__listing_col">
+        <div
+            className="drag__filter_listing"
+            onClick={() => setIsFilterOpen(prev => !prev)}
+          >
+          <i className="pi pi-filter" />
+
+          </div>
         <h3>Sellers Listing</h3>
 
         {/* Showing text */}
         <div className="list__count">
-          Showing {total === 0 ? 0 : start} - {end} of {total}
+          Showing { currentPageData.length} of {total}
         </div>
 
         <ul className="list__ul_container">
@@ -421,7 +446,7 @@ useEffect(() => {
                   <span className="list_content_col">
                     <h4>{listing.businessName}</h4>
                     <p className="location__item_list">
-                      {listing.businessCity}, {listing.businessState}
+                      {listing.businessCountry}, {listing.businessState}
                     </p>
 {/* 
                     <p>
@@ -460,7 +485,7 @@ useEffect(() => {
                         <b>Asking Price</b>: ${listing.askingPrice}
                       </span>
                       <span>
-                        <b>Revenue</b>: ${listing.revenue}
+                        {/* <b>Revenue</b>: ${listing.revenue} */}
                       </span>
                       <span>
                         <b>Cash Flow</b>: ${listing.cashFlow}
@@ -480,13 +505,14 @@ useEffect(() => {
           <Button
             label="Prev"
             disabled={page === 1}
-            onClick={() => setPage((p) => Math.max(p - 1, 1))}
+            // onClick={() => setPage((p) => Math.max(p - 1, 1))}
+            onClick={() => {setPage(page-1); }}
             className="p-button-secondary"
           />
           <Button
             label="Next"
-            disabled={page * limit >= total}
-            onClick={() => setPage((p) => (p * limit < total ? p + 1 : p))}
+            disabled={total < limit }
+            onClick={() => {setPage(page+1); }}
             className="p-button-secondary"
           />
         </div>

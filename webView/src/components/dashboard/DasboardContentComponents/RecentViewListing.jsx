@@ -86,7 +86,6 @@ const RecentViewListing = () => {
     </div>
   );
   const industryTemplate = (indusValue) => (JSON.parse(Object(indusValue?.industry)))
-  const ndaStatusTemplate = () => "Pending"; // placeholder, adjust if API returns NDA info
   const cimTemplate = () => <button className="cim-btn">View CIM</button>;
   const actionTemplate = (rowData) => (
     <>
@@ -118,17 +117,10 @@ const RecentViewListing = () => {
         >
           <Column header="Listing Name" body={listingNameTemplate} />
           <Column header="Industry" body={industryTemplate} />
-          <Column header="NDA Status" body={ndaStatusTemplate} />
-          <Column field="entityType" header="Type" />
-          <Column
-            field="revenue"
-            header="Revenue"
-          />
-          <Column
-            field="askingPrice"
-            header="Asking Price"
-            body={(rowData) => moneyTemplate(rowData.askingPrice)}
-          />
+         <Column  header="Business State" body={(listingData) => { return listingData.businessState;}}/>
+          <Column header="Cash Flow" body={(listingData) => { return listingData.cashFlow}} />
+          <Column header="Asking Price"  body={(rowData) => moneyTemplate(rowData.askingPrice)} />
+          <Column body={(listingData)=>{return new Date(listingData.createdAt).toLocaleDateString()}} header="Created Date" />
           <Column header="Action" body={actionTemplate} />
         </DataTable>
       </div>

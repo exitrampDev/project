@@ -104,7 +104,7 @@ export class PaymentService {
     ];
   }
 
-  const payments = await this.paymentModel.find(baseFilter)
+  let payments = await this.paymentModel.find(baseFilter)
     .populate('userId')       
     .populate({ 
       path: 'referenceId',       
@@ -116,6 +116,10 @@ export class PaymentService {
     .sort({ createdAt: -1 });
 
   const total = await this.paymentModel.countDocuments(baseFilter);
+  payments = payments.map(payment=>{
+    payment.amount = payment.amount / 100;
+    return payment;
+  });
 
   return {
     total,

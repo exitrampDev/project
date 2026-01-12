@@ -9,8 +9,8 @@ body {
 }
 
 .bannerSecContent {
-  max-width: 1720px;
-  margin: 0 0 0 auto;
+     max-width: 1200px;
+    margin: 0 auto;
   display: flex;
   align-items: center;
   padding: 80px 0;
@@ -37,7 +37,7 @@ header {
 }
 
 .header_container {
-  max-width: 1500px;
+  max-width: 1200px;
   margin: 0 auto;
   display: flex;
   justify-content: space-between;
@@ -80,7 +80,7 @@ header {
   margin-left: auto;
 }
 .whouse_sec_wrap_container .whouse_sec_content_wrap {
-  max-width: 1500px;
+  max-width: 1200px;
   margin: 0 auto 140px auto;
   display: flex;
   flex-wrap: wrap;
@@ -218,7 +218,7 @@ header {
 }
 
 .platformFeature__container {
-  max-width: 1500px;
+  max-width: 1200px;
   margin: 0 auto;
   display: flex;
 }
@@ -284,7 +284,7 @@ header {
 }
 
 .ExitRampPricing__container {
-  max-width: 1500px;
+  max-width: 1200px;
   margin: 0 auto;
 }
 
@@ -377,7 +377,7 @@ header {
   display: inline-flex;
   align-items: center;
   color: #002f68;
-  font-size: 20px;
+  font-size: 15px;
   flex-wrap: wrap;
 }
 
@@ -427,9 +427,9 @@ header {
   .ExitRampPricing__pricing_table_body_price_free {
   color: #28c76f;
   background: #28c76f33;
-  padding: 8px 40px;
+  padding: 6px 25px;
   border-radius: 24px;
-  font-size: 20px;
+  font-size: 15px;
   font-weight: 500;
 }
 
@@ -461,7 +461,7 @@ header {
 }
 
 .HowItWorks__section_container {
-  max-width: 1500px;
+  max-width: 1200px;
   margin: 0 auto;
 }
 
@@ -520,6 +520,7 @@ header {
 
 .HowItWorks__section_body_card.step1 {
   background: #4f93ff33;
+  width: 33%;
 }
 
 .HowItWorks__section_body_card.step1 .HowItWorks__section_body_card_step_tag {
@@ -536,10 +537,12 @@ header {
 
 .HowItWorks__section_body_card.step2 {
   background: #28c76f33;
+  width: 33%;
 }
 
 .HowItWorks__section_body_card.step3 {
   background: #ffb10033;
+      width: 33%;
 }
 .ComplienceStatement_wrapper {
   background: #f3f7ff;
@@ -547,7 +550,7 @@ header {
 }
 
 .ComplienceStatement_container {
-  max-width: 1500px;
+  max-width: 1200px;
   margin: 0 auto;
   display: flex;
   align-items: center;
@@ -589,7 +592,7 @@ header {
 }
 
 .ComplienceStatement_container {
-  max-width: 1500px;
+  max-width: 1200px;
   margin: 0 auto;
   display: flex;
   align-items: center;
@@ -630,7 +633,7 @@ header {
 }
 
 .UpgradeFree_when_ready_container {
-  max-width: 1500px;
+  max-width: 1200px;
   margin: 0 auto;
   text-align: center;
 }
@@ -670,7 +673,7 @@ header {
 }
 
 .footer__content_container {
-  max-width: 1500px;
+  max-width: 1200px;
   margin: 0 auto;
   display: flex;
   gap: 80px;
@@ -716,11 +719,11 @@ header {
   .logo_block
   form.subscription-form
   input[type="email"] {
-  background: #f3f7ff;
-  padding: 10px 10px 10px 33px;
-  border: none;
-  font-size: 20px;
-  border-radius: 100px;
+    background: #f3f7ff;
+    padding: 7px 10px 7px 28px;
+    border: none;
+    font-size: 17px;
+    border-radius: 100px;
 }
 form.p-fluid.login__form_wrap {
   display: flex;
@@ -776,7 +779,7 @@ form.p-fluid.login__form_wrap
   background: #ffb100;
   color: #fff;
   font-size: 24px;
-  padding: 18px 35px;
+  padding: 13px 30px;
   gap: 10px;
   border-radius: 100px;
   cursor: pointer;
@@ -910,7 +913,7 @@ input {
 }
 
 .AboutHero__container {
-  max-width: 1500px;
+  max-width: 1200px;
   margin: 0 auto;
   text-align: center;
   padding: 120px 0;
@@ -937,7 +940,7 @@ input {
 }
 
 .PricingpageHero__container {
-  max-width: 1500px;
+  max-width: 1200px;
   margin: 0 auto;
   text-align: center;
   padding: 120px 0;
@@ -945,7 +948,7 @@ input {
 
 .PricingpageHero__container h4 {
   margin: 0;
-  font-size: 80px;
+  font-size: 40px;
   line-height: 1.3;
   color: #fff;
   font-weight: 600;
@@ -954,7 +957,7 @@ input {
 
 .PricingpageHero__container p {
   color: #fff;
-  font-size: 24px;
+  font-size: 20px;
   font-weight: 400;
   margin: 40px 0 0 0;
 }
@@ -978,7 +981,7 @@ form.p-fluid.login__form_wrap button.mb-3.p-button.p-component {
 
 .OurMission__container {
   display: flex;
-  max-width: 1500px;
+  max-width: 1200px;
   margin: 0 auto;
   gap: 40px;
 }
@@ -1069,7 +1072,7 @@ form.p-fluid.login__form_wrap button.mb-3.p-button.p-component {
 }
 
 .NeedFingerTips__wrap_main .NeedFingerTips__container {
-  max-width: 1500px;
+  max-width: 1200px;
   margin: 0 auto;
   display: flex;
   align-items: center;
@@ -1102,7 +1105,7 @@ form.p-fluid.login__form_wrap button.mb-3.p-button.p-component {
 }
 
 .YoucanSee__container {
-  max-width: 1500px;
+  max-width: 1200px;
   margin: 0 auto;
   justify-content: center;
   display: flex;
@@ -1141,7 +1144,7 @@ form.p-fluid.login__form_wrap button.mb-3.p-button.p-component {
 }
 
 .GreatThing__container {
-  max-width: 1500px;
+  max-width: 1200px;
   margin: 0 auto;
   display: flex;
   gap: 90px;
@@ -1177,7 +1180,7 @@ form.p-fluid.login__form_wrap button.mb-3.p-button.p-component {
 }
 
 .ctaBox__container {
-  max-width: 1500px;
+  max-width: 1200px;
   margin: 0 auto;
   text-align: center;
 }
@@ -1207,7 +1210,7 @@ form.p-fluid.login__form_wrap button.mb-3.p-button.p-component {
   background: #ffb100;
   color: #fff;
   font-size: 24px;
-  padding: 18px 35px;
+  padding: 12px 30px;
   gap: 10px;
   border-radius: 100px;
   cursor: pointer;
@@ -1222,7 +1225,7 @@ form.p-fluid.login__form_wrap button.mb-3.p-button.p-component {
 }
 
 .ContactUs__container {
-  max-width: 980px;
+  max-width: 1200px;
   text-align: center;
   margin: 0 auto;
 }
@@ -1280,7 +1283,7 @@ form.contact__form input {
   box-sizing: border-box;
   border-radius: 16px;
   border: none;
-  font-size: 20px;
+  font-size: 17px;
 }
 
 .contact__form_message textarea {
@@ -1289,7 +1292,7 @@ form.contact__form input {
   box-sizing: border-box;
   border-radius: 16px;
   border: none;
-  font-size: 20px;
+  font-size: 17px;
   min-height: 180px;
   font-family: "Poppins";
 }
@@ -1300,8 +1303,8 @@ form.contact__form input {
   border: none;
   background: #ffb100;
   color: #fff;
-  font-size: 24px;
-  padding: 18px 60px;
+  font-size: 17px;
+  padding: 12px 30px;
   gap: 10px;
   border-radius: 100px;
   cursor: pointer;
@@ -1324,7 +1327,7 @@ form.contact__form input:focus-visible {
 }
 
 .TermsCondition__container {
-  max-width: 1500px;
+  max-width: 1200px;
   margin: 0 auto;
 }
 
@@ -1653,8 +1656,8 @@ form.p-fluid.space-y-4.register_form_col .login_block_col a {
   border: none;
   background: #ffb100;
   color: #fff;
-  font-size: 20px;
-  padding: 15px 40px;
+  font-size: 17px;
+  padding: 12px 30px;
   gap: 10px;
   border-radius: 100px;
   cursor: pointer;
@@ -1789,7 +1792,7 @@ button.logout-btn {
 
 .content__listing_col h3 {
   margin: 0;
-  font-size: 40px;
+  font-size: 35px;
   color: #4f93ff;
   font-weight: 500;
   line-height: 1;
@@ -2029,9 +2032,7 @@ button.btn__crt_listing.p-button.p-component {
     background: #ccc;
     font-size:12px;
 }
-.confirm__dlt_listing {
-    margin: 0;
-}
+
 .confirm__dlt_listing:before{
     border-bottom-color: #0046b6;
     left: 96.7% !important;
@@ -2739,10 +2740,10 @@ button.p-button-secondary.p-button.p-component {
         background: #fff;
 }
 
-.business__list_single_main_wrap {max-width: 1500px;margin: 0 auto;}
+.business__list_single_main_wrap {max-width: 1200px;margin: 0 auto;}
 
 .breadcrubs__main_container {
-    max-width: 1500px;
+    max-width: 1200px;
     margin: 50px auto 0 auto;
     color: #002F68;
 }
@@ -3694,7 +3695,7 @@ button.logout-btn.header-logout-btn {
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 15px 40px;
+    padding: 12px 30px;
     background: #fff;
 }
 
@@ -3807,7 +3808,7 @@ section.PricingTable__wrapper table.PricingTable tbody tr:nth-child(even) {
 }
 
 section.PricingTable__wrapper table.PricingTable tr th {
-    font-size: 21px;
+    font-size: 20px;
     font-weight: 400;
     color: #fff;
 }
@@ -3818,6 +3819,7 @@ section.PricingTable__wrapper table.PricingTable thead tr {
 
 section.PricingTable__wrapper table.PricingTable tbody tr td {
     padding: 4px 10px;
+    font-size: 17px;
 }
 
 
@@ -3829,7 +3831,7 @@ p.PricingTable__notes {
 }
 
 section.PricingTable__wrapper .PricingTable__container>h2 {
-    font-size: 40px;
+    font-size: 35px;
     text-align: center;
     color: #002f68;
 }
@@ -4047,13 +4049,68 @@ img.buyerSig {max-width: 100%;}
     font-size: 36px;}
 
 .buyer__info_pop  .buyer__modal_fields strong {color: #002f68;}
+.listing__dashboard_listing_widget.lisiting_recent_view_widget {
+    width: calc(66% - 30px);
+}
+
+.listing__dashboard_listing_widget.lisiting_recent_view_widget img.w-10.h-10.rounded {
+    width: 35px;
+}
+
+.listing__dashboard_listing_widget.lisiting_recent_view_widget .flex.items-center.gap-2.img_my_save_lisiting {
+    display: inline-flex;
+    align-items: center;
+    gap: 21px;
+}
+
+.listing__dashboard_listing_widget.lisiting_recent_view_widget  span ,
+.listing__dashboard_listing_widget.lisiting_recent_view_widget  td {
+    font-size: 14px;
+}
+
+.listing__dashboard_listing_widget.lisiting_recent_view_widget .listing__dashboard_listing_widget_header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.listing__dashboard_listing_widget.lisiting_recent_view_widget .listing__dashboard_listing_widget_header a.view_all {
+    font-size: 14px;
+    color: #4f93ff;
+}
+
+.listing__dashboard_weakly_activity.listing__dashboard_save_listing .flex.items-center.gap-2.img_my_save_lisiting img {
+    width: 36px;
+}
+
+.listing__dashboard_weakly_activity.listing__dashboard_save_listing .flex.items-center.gap-2.img_my_save_lisiting {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.listing__dashboard_weakly_activity.listing__dashboard_save_listing td ,.listing__dashboard_weakly_activity.listing__dashboard_save_listing th {
+    font-size: 13px;
+}
+.ExitRampPricing__pricing_table_wrap .ExitRampPricing__pricing_table_body .ExitRampPricing__pricing_table_list .ExitRampPricing__pricing_table_body_freature ul li span {
+    display: block;
+    font-size: 15px;
+    font-weight: 400;
+}
+
+.ExitRampPricing__pricing_table_wrap .ExitRampPricing__pricing_table_body .ExitRampPricing__pricing_table_list .ExitRampPricing__pricing_table_body_freature ul li {
+    font-weight: 700;
+}
+.drag__filter_listing {
+    display: none;
+}
 @media screen and (min-width: 1024px) and (max-width: 2500px) {
   .header_container nav.nav_col a {
     font-size: 18px;
   }
 
   .signup_content button {
-    font-size: 20px;
+    font-size: 17px;
     padding: 15px 40px;
   }
 
@@ -4074,29 +4131,32 @@ img.buyerSig {max-width: 100%;}
   }
 
   .contentSecLeft h3 {
-    font-size: 60px;
+    font-size: 45px;
+    line-height: 1.3;
+    max-width: 660px;
   }
 
   .contentSecLeft p {
-    font-size: 22px;
+            font-size: 20px;
+        max-width: 730px;
   }
 
   .whouse_sec_wrap_container h2.whouse_sec_wrap_heading {
-    font-size: 40px;
+    font-size: 35px;
   }
 
   .whouse_sec_wrap_container
     .whouse_sec_content_wrap
     .whouse_sec_content_first
     h3 {
-    font-size: 30px;
+    font-size: 25px;
   }
 
   .whouse_sec_wrap_container
     .whouse_sec_content_wrap
     .whouse_sec_content_first
     p {
-    font-size: 20px;
+    font-size: 17px;
   }
 
   .whouse_sec_wrap_container
@@ -4104,7 +4164,7 @@ img.buyerSig {max-width: 100%;}
     .whouse_sec_content_second
     .whouse_sec_content_text_box
     h3 {
-    font-size: 30px;
+    font-size: 25px;
   }
 
   .whouse_sec_wrap_container
@@ -4112,7 +4172,7 @@ img.buyerSig {max-width: 100%;}
     .whouse_sec_content_second
     .whouse_sec_content_text_box
     p {
-    font-size: 20px;
+    font-size: 17px;
   }
 
   .whouse_sec_wrap_container
@@ -4120,7 +4180,7 @@ img.buyerSig {max-width: 100%;}
     .whouse_sec_content_third
     .whouse_sec_content_text_box
     h3 {
-    font-size: 30px;
+    font-size: 25px;
   }
 
   .whouse_sec_wrap_container
@@ -4128,7 +4188,7 @@ img.buyerSig {max-width: 100%;}
     .whouse_sec_content_third
     .whouse_sec_content_text_box
     p {
-    font-size: 20px;
+    font-size: 17px;
   }
 
   .whouse_sec_wrap_container .whouse_sec_content_wrap {
@@ -4144,21 +4204,21 @@ img.buyerSig {max-width: 100%;}
   }
 
   .platformFeature__container .platformFeature__content_box > h3 {
-    font-size: 40px;
+    font-size: 35px;
   }
 
   .platformFeature__content_box_area
     .platformFeature__content_box_area_list
     .platformFeature__content_box_area_text
     h3 {
-    font-size: 25px;
+    font-size: 20px;
   }
 
   .platformFeature__content_box_area
     .platformFeature__content_box_area_list
     .platformFeature__content_box_area_text
     p {
-    font-size: 20px;
+    font-size: 17px;
   }
 
   .ExitRampPricing__container .ExitRampPricing__header_wrap h3 {
@@ -4182,7 +4242,7 @@ img.buyerSig {max-width: 100%;}
     .ExitRampPricing__pricing_table_list
     .ExitRampPricing__pricing_table_body_type
     h4 {
-    font-size: 18px;
+    font-size: 17px;
   }
 
   .ExitRampPricing__pricing_table_wrap
@@ -4190,7 +4250,7 @@ img.buyerSig {max-width: 100%;}
     .ExitRampPricing__pricing_table_list
     .ExitRampPricing__pricing_table_body_type
     p {
-    font-size: 18px;
+    font-size: 15px;
   }
 
   .ExitRampPricing__pricing_table_wrap
@@ -4199,7 +4259,7 @@ img.buyerSig {max-width: 100%;}
     .ExitRampPricing__pricing_table_body_freature
     ul
     li {
-    font-size: 18px;
+    font-size: 17px;
   }
 
   .HowItWorks__section_container {
@@ -4207,24 +4267,24 @@ img.buyerSig {max-width: 100%;}
   }
 
   .HowItWorks__section_container .HowItWorks__section_header_content h3 {
-    font-size: 40px;
+    font-size: 35px;
   }
 
   .HowItWorks__section_container .HowItWorks__section_header_content p {
-    font-size: 20px;
+    font-size: 17px;
   }
 
   .HowItWorks__section_body_card_step_tag {
-    font-size: 20px;
-    padding: 10px 20px;
+    font-size: 17px;
+    padding: 7px 15px;
   }
 
   .HowItWorks__section_body_card_heading {
-    font-size: 25px;
+    font-size: 20px;
   }
 
   .HowItWorks__section_body_card_para {
-    font-size: 20px;
+    font-size: 17px;
   }
 
   .ComplienceStatement_wrapper {
@@ -4232,31 +4292,31 @@ img.buyerSig {max-width: 100%;}
   }
 
   .ComplienceStatement_container .ComplienceStatement_content_box h4 {
-    font-size: 40px;
+    font-size: 35px;
   }
 
   .ComplienceStatement_container .ComplienceStatement_content_box p {
-    font-size: 20px;
+    font-size: 17px;
   }
 
   .ComplienceStatement_container
     .ComplienceStatement_content_box
     button.arrowIcon {
-    font-size: 20px;
-    padding: 15px 40px;
+    font-size: 17px;
+    padding: 12px 30px;
   }
 
   .UpgradeFree_when_ready_container h3 {
-    font-size: 40px;
+    font-size: 35px;
   }
 
   .UpgradeFree_when_ready_container p {
-    font-size: 20px;
+    font-size: 17px;
   }
 
   .UpgradeFree_when_ready_container button.UpgradeFree_when_ready_btn {
-    font-size: 20px;
-    padding: 15px 40px;
+    font-size: 17px;
+    padding: 12px 30px;
   }
 
   .footer__content_wrap {
@@ -4268,11 +4328,11 @@ img.buyerSig {max-width: 100%;}
   }
 
   .footer__content_container .logo_block p {
-    font-size: 18px;
+    font-size: 17px;
   }
 
   .footer__content_container .logo_block form.subscription-form button {
-    font-size: 20px;
+    font-size: 17px;
   }
 
   .footer__content_container .useful_link_block h3 {
@@ -4284,27 +4344,27 @@ img.buyerSig {max-width: 100%;}
   }
 
   .footer__content_container .useful_link_block ul a {
-    font-size: 18px;
+    font-size: 17px;
   }
 
   .footer__content_container .content_block ul li a.email_contact {
-    font-size: 18px;
+    font-size: 17px;
   }
 
   .footer__content_container .content_block ul li a {
-    font-size: 18px;
+    font-size: 17px;
   }
 
   .footer__content_copyright p {
-    font-size: 18px;
+    font-size: 17px;
   }
   /*about us*/
   .AboutHero__container h4 {
-    font-size: 60px;
+    font-size: 40px;
   }
 
   .AboutHero__container p {
-    font-size: 20px;
+    font-size: 17px;
   }
 
   .OurMission__main_wrap {
@@ -4316,39 +4376,39 @@ img.buyerSig {max-width: 100%;}
   }
 
   .OurMission__container .OurMission__left_col h4 {
-    font-size: 30px;
+    font-size: 25px;
   }
 
   .OurMission__container .OurMission__left_col p {
-    font-size: 20px;
+    font-size: 17px;
   }
 
   .OurMission__container
     .OurMission__right_col
     .OurMission__right_col_top_row
     h4 {
-    font-size: 30px;
+    font-size: 25px;
   }
 
   .OurMission__container
     .OurMission__right_col
     .OurMission__right_col_top_row
     p {
-    font-size: 20px;
+    font-size: 17px;
   }
 
   .OurMission__container
     .OurMission__right_col
     .OurMission__right_col_bottom_row
     h4 {
-    font-size: 30px;
+    font-size: 25px;
   }
 
   .OurMission__container
     .OurMission__right_col
     .OurMission__right_col_bottom_row
     p {
-    font-size: 20px;
+    font-size: 17px;
   }
 
   .NeedFingerTips__wrap_main .NeedFingerTips__container {
@@ -4359,14 +4419,14 @@ img.buyerSig {max-width: 100%;}
     .NeedFingerTips__container
     .NeedFingerTips__content_box
     h3 {
-    font-size: 40px;
+    font-size: 35px;
   }
 
   .NeedFingerTips__wrap_main
     .NeedFingerTips__container
     .NeedFingerTips__content_box
     p {
-    font-size: 20px;
+    font-size: 17px;
   }
 
   .YoucanSee__main_wrapper {
@@ -4374,11 +4434,11 @@ img.buyerSig {max-width: 100%;}
   }
 
   .YoucanSee__container h3 {
-    font-size: 40px;
+    font-size: 35px;
   }
 
   .YoucanSee__container p {
-    font-size: 20px;
+    font-size: 17px;
   }
 
   .GreatThing__main_wrap {
@@ -4386,11 +4446,11 @@ img.buyerSig {max-width: 100%;}
   }
 
   .GreatThing__container .GreatThing__content_block h3 {
-    font-size: 40px;
+    font-size: 35px;
   }
 
   .GreatThing__container .GreatThing__content_block p {
-    font-size: 20px;
+    font-size: 17px;
   }
 
   .ctaBox__main_wrap {
@@ -4398,15 +4458,15 @@ img.buyerSig {max-width: 100%;}
   }
 
   .ctaBox__container h2 {
-    font-size: 40px;
+    font-size: 35px;
   }
 
   .ctaBox__container p {
-    font-size: 20px;
+    font-size: 17px;
   }
 
   .ctaBox__container button {
-    font-size: 20px;
+    font-size: 17px;
   }
   /*terms pages*/
   .TermsCondition__container {
@@ -4439,16 +4499,19 @@ img.buyerSig {max-width: 100%;}
   }
   /*contact us*/
   .ContactUs__container .ContactUs__heading_row h3 {
-    font-size: 60px;
+    font-size: 35px;
   }
 
   .ContactUs__container .ContactUs__heading_row p {
-    font-size: 24px;
+    font-size: 20px;
   }
   header {
     padding: 45px 15px 5px 15px;
   }
-
+header.signup_content .p-menubar.p-component {
+    max-width: 1200px;
+    margin: 0 auto;
+}
   header.signup_content .p-menubar.p-component,
   header
     .p-menubar
@@ -4487,6 +4550,7 @@ img.buyerSig {max-width: 100%;}
   }
   header ul.p-menubar-root-list a.p-menuitem-link span.p-menuitem-text {
     color: #fff;
+    font-size: 17px;
   }
   header li.p-menuitem-active.p-menuitem a span.p-menuitem-text {
     color: #ffb100;
@@ -4529,6 +4593,21 @@ img.buyerSig {max-width: 100%;}
 }
 
 @media screen and (max-width: 767px) {
+  .p-menubar.p-component,button.logout-btn.header-logout-btn {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+}
+
+.p-menubar-end a.signup-btn,button.logout-btn.header-logout-btn {
+    font-size: 11px;
+    justify-content: center;
+    padding: 6px 11px;
+}
+
+.p-menubar-end a.signup-btn img,button.logout-btn.header-logout-btn img {
+    width: 15px;
+}
   .bannerSecContent {
     flex-wrap: wrap;
   }
@@ -4610,12 +4689,12 @@ img.buyerSig {max-width: 100%;}
     margin: 0;
   }
 
-  .p-menubar.p-component {
-    justify-content: space-between;
-  }
 
   header a.p-menubar-button {
     color: #fff;
+    background: transparent;
+    border: none;
+    outline: none;
   }
   .contentSecLeft h3 {
     font-size: 35px;
@@ -4847,7 +4926,7 @@ img.buyerSig {max-width: 100%;}
   }
 
   .OurMission__container .OurMission__left_col p {
-    font-size: 20px;
+    font-size: 17px;
   }
 
   .OurMission__container .OurMission__right_col .OurMission__right_col_top_row {
@@ -4865,7 +4944,7 @@ img.buyerSig {max-width: 100%;}
     .OurMission__right_col
     .OurMission__right_col_top_row
     p {
-    font-size: 20px;
+    font-size: 17px;
   }
 
   .OurMission__container
@@ -4885,7 +4964,7 @@ img.buyerSig {max-width: 100%;}
     .OurMission__right_col
     .OurMission__right_col_bottom_row
     p {
-    font-size: 20px;
+    font-size: 17px;
   }
   .NeedFingerTips__wrap_main .NeedFingerTips__container {
     padding: 30px 15px;
@@ -5006,4 +5085,193 @@ img.buyerSig {max-width: 100%;}
   .TermsCondition__contact_details .TermsCondition__contact_details_content {
     font-size: 20px;
   }
+
+  /*listing page mobile view*/
+  .listing__filter_col {
+    position: fixed;
+    left: -100%;
+    top: 0;
+    z-index: 999;
+    background: #dce9ff;
+    border-radius: 0;
+    height: 100vh;
+    overflow: auto;
+    transition: ease all 0.8s;
+}
+.content__listing_col {
+    width: 100%;
+}
+.drag__filter_listing {
+    position: absolute;
+    right: 0;
+    display: block;
+}
+.business__list_single_intro_block {
+    flex-wrap: wrap;
+}
+.business__list_single_highLevelSummary .busines_lisiting_highLevelSummary_list {
+    width: 100%;
+}
+
+.business_list_single_overview_list {
+    width: 100%;
+}
+
+.business__list_single_business_overview {
+    width: 100%;
+}
+
+.about_listing_toggle {
+    width: 100%;
+}
+button.button__save_listing_global_single_listing.p-button.p-component.p-button-icon-only {
+    top: 10px;
+    right: 10px;
+}
+.content__listing_col {
+    position: relative;
+}
+
+.listing__filter_col.active {
+    left: 0;
+}
+
+.listing__filter_col_overlay {position: fixed;width: 100%;height: 100%;background: #000000c7;top: 0;left: 0;z-index: -1;opacity: 0;}
+
+
+.listing__filter_col_overlay.open {
+    opacity: 1;
+    z-index: 1;
+}
+.content__listing_col h3 {
+    font-size: 25px;
+}
+
+.list__count {
+    font-size: 12px;
+}
+
+li.list__row_item span.list__image_col {
+    width: 80px;
+}
+
+li.list__row_item span.list__image_col img {
+    height: auto !important;
+}
+
+li.list__row_item span.list_content_col {
+    width: 100%;
+}
+
+li.list__row_item span.list_content_col p.list__item_industry span {
+    padding: 4px;
+    font-size: 12px;
+    margin: 0;
+}
+
+p.list__item_industry {
+    margin: 4px 0 0 0;
+}
+
+li.list__row_item span.list_content_col p.location__item_list {
+    font-size: 14px;
+}
+
+.list__content_prices {
+    font-size: 14px;
+    gap: 5px;
+    margin-top: 5px;
+}
+
+.main__listing_grid ul.list__ul_container li.list__row_item a.flex.gap-4 {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+li.list__row_item span.list_content_col h4 {
+    font-size: 20px;
+}
+.AboutHero__container h4 {
+    font-size: 25px;
+}
+
+.AboutHero__container p {
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+.UpgradeFree_when_ready_container h3 {
+    font-size: 25px;
+}
+
+.UpgradeFree_when_ready_container p {
+    font-size: 19px;
+    margin: 0 0 40px 0;
+}
+
+.UpgradeFree_when_ready_container button.UpgradeFree_when_ready_btn {
+    font-size: 18px;
+    padding: 10px 20px 10px 20px;
+}
+/*footer css*/
+.AboutHero__container h4 {
+    font-size: 25px;
+}
+
+.AboutHero__container p {
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+.UpgradeFree_when_ready_container h3 {
+    font-size: 25px;
+}
+
+.UpgradeFree_when_ready_container p {
+    font-size: 19px;
+    margin: 0 0 40px 0;
+}
+
+.UpgradeFree_when_ready_container button.UpgradeFree_when_ready_btn {
+    font-size: 18px;
+    padding: 10px 20px 10px 20px;
+}
+
+.footer__content_container .logo_block h3 {
+    font-size: 20px;
+    margin: 0 0 0 0;
+}
+
+.footer__content_container .logo_block p {
+    font-size: 15px;
+}
+
+.footer__content_container .logo_block form.subscription-form button {
+    font-size: 17px;
+    padding: 10px 20px;
+}
+
+.footer__content_container .logo_block form.subscription-form input[type="email"] {
+    font-size: 18px;
+}
+
+.footer__content_container .useful_link_block h3,.footer__content_container .content_block h3 {
+    font-size: 18px;
+}
+
+.footer__content_container .useful_link_block ul a {
+    font-size: 16px;
+}
+
+.footer__content_container .content_block ul li a.email_contact {
+    font-size: 16px;
+}
+
+.footer__content_container .content_block ul li a {
+    font-size: 16px;
+}
+
+.footer__content_copyright p {
+    font-size: 16px;
+}
 }
