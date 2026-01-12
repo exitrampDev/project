@@ -21,6 +21,7 @@ const PropertyCard = () => {
   const API_BASE = useRecoilValue(apiBaseUrlState);
   const toast = useRef(null);
   const [page, setPage] = useState(1);
+  const [total, setTotal] = useState(1);
   const limit = 10;
   const [filters, setFilters] = useState({
     type: "",
@@ -36,7 +37,7 @@ const PropertyCard = () => {
   // Fetch Data
  useEffect(() => {    
   fetchListing();
-  }, []);
+  }, [page]);
 
   const fetchListing = () => {
     console.log("Fetching listings with filters:", filters);
@@ -57,6 +58,7 @@ const PropertyCard = () => {
         const data = Array.isArray(result.data) ? result.data : [];
         setAllListings(data);
         setListings(data);
+        setTotal(result.total);
       })
       .catch((err) => console.error(err));
   };
@@ -242,10 +244,10 @@ const saveListingBtn = (businessId) => {
   };
 
   // Pagination calculations
-  const total = listings.length;
+  // const total = listings.length;
   const start = (page - 1) * limit + 1;
   const end = Math.min(page * limit, total);
-  const currentPageData = listings.slice(start - 1, end);
+  const currentPageData = listings;
 useEffect(() => {
   if (!access_token) return;
 
@@ -398,7 +400,7 @@ useEffect(() => {
 
         {/* Showing text */}
         <div className="list__count">
-          Showing {total === 0 ? 0 : start} - {end} of {total}
+          Showing { currentPageData.length} of {total}
         </div>
 
         <ul className="list__ul_container">
@@ -482,13 +484,14 @@ useEffect(() => {
           <Button
             label="Prev"
             disabled={page === 1}
-            onClick={() => setPage((p) => Math.max(p - 1, 1))}
+            // onClick={() => setPage((p) => Math.max(p - 1, 1))}
+            onClick={() => {setPage(page-1); }}
             className="p-button-secondary"
           />
           <Button
             label="Next"
-            disabled={page * limit >= total}
-            onClick={() => setPage((p) => (p * limit < total ? p + 1 : p))}
+            disabled={total < limit }
+            onClick={() => {setPage(page+1); }}
             className="p-button-secondary"
           />
         </div>
