@@ -13,13 +13,15 @@ import { authState,apiBaseUrlState, usStatesState,
 import { Column } from "primereact/column";
 import { Link } from "react-router-dom";
 import { Toast } from "primereact/toast";
+import { useSearchParams } from "react-router-dom";
 
 const PropertyCard = () => {
+    const [refreshKey, setRefreshKey] = useState(0);
+   const [searchParams, setSearchParams] = useSearchParams();
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 const states = useRecoilValue(usStatesState);
 const [selectedState, setSelectedState] = useRecoilState(selectedStateAtom);
-const [, setCounties] = useRecoilState(countiesState);
-const counties = useRecoilValue(countiesState);
+const [counties, setCounties] = useRecoilState(countiesState);
   const [favoriteIds, setFavoriteIds] = useState([]);
   const { access_token } = useRecoilValue(authState) ?? {};
   const [allListings, setAllListings] = useState([]);
@@ -31,14 +33,54 @@ const counties = useRecoilValue(countiesState);
   const limit = 10;
   const [filters, setFilters] = useState({
     type: "",
-    industry: "",
-    state: "",
-    county: "",
+    industry: searchParams.get("industry") || "",
+    state: searchParams.get("state") || "",
+    county: searchParams.get("county") || "",
     askingPrice: [0, 5000000],
     annualRevenue: [0, 5000000],
     cashFlow: [0, 5000000],
     businessType: [],
   });
+
+  // Fetch Data
+ useEffect(() => {    
+  fetchListing();
+ 
+  }, [page, refreshKey]);
+
+  useEffect(() => {
+    setSearchParams(serializeFiltersToParams(filters), { replace: true });
+
+
+  }, [filters, setSearchParams]);
+
+
+  
+  useEffect(() => {
+   
+    if(filters.state){
+      setCounties(usCountiesByState[filters.state] || []);
+      setFilters({...filters, county: searchParams.get("county")})
+
+    }
+
+             
+  }, [filters.state]);
+
+  const serializeFiltersToParams = (filters) => {
+    const params = {};
+
+    Object.entries(filters).forEach(([key, value]) => {
+      if (Array.isArray(value)) {
+        if (value.length) params[key] = value.join(",");
+      } else if (value) {
+        params[key] = value;
+      }
+    });
+
+    return params;
+  };
+
 
   // Fetch Data
  useEffect(() => {    
@@ -245,8 +287,9 @@ const saveListingBtn = (businessId) => {
       cashFlow: [0, 5000000],
       businessType: [],
     });
-    setListings(allListings);
-    setPage(1);
+    // setListings(allListings);
+    // setPage(1);
+    setRefreshKey(prev => prev + 1);
   };
 
   // Pagination calculations
