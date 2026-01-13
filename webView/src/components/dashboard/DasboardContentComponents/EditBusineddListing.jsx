@@ -34,8 +34,8 @@ export default function EditBusinessListing() {
   const [newListing, setNewListing] = useState(null);
   const states = useRecoilValue(usStatesState);
   const [selectedState, setSelectedState] = useRecoilState(selectedStateAtom);
-  const [, setCounties] = useRecoilState(countiesState);
-  const counties = useRecoilValue(countiesState);
+  const [counties, setCounties] = useRecoilState(countiesState);
+
 
   /* ---------------------- helpers ---------------------- */
   const industryOptions = [
@@ -117,6 +117,8 @@ export default function EditBusinessListing() {
         growthExpansion: safeParse(data.growthExpansion, []),
         annualRevenue: safeParse(data.annualRevenue, {}),
       });
+
+
     } catch (err) {
       console.error("Fetch error:", err);
     } finally {
@@ -163,6 +165,14 @@ export default function EditBusinessListing() {
     }
   };
 
+useEffect(() => {
+  if (newListing?.businessState) {
+    setSelectedState(newListing.businessState);
+    setCounties(
+      usCountiesByState[newListing.businessState] || []
+    );
+  }
+}, [newListing?.businessState]);
 
 const usStates = useRecoilValue(usStatesState);
 
@@ -353,8 +363,8 @@ const usStates = useRecoilValue(usStatesState);
 <div className="listing__creation_field_col md:col-4">
   <label>Business City </label>
   <InputText
-    value={newListing.businessCountry || ""}
-    onChange={(e) => handleChange(e, "businessCountry", e.target.value)}
+    value={newListing.businessCity || ""}
+    onChange={(e) => handleChange(e, "businessCity", e.target.value)}
     placeholder="Enter Business City"
   />
 </div>
@@ -384,13 +394,16 @@ const usStates = useRecoilValue(usStatesState);
   <label> Business County </label>
 
  <Dropdown
-    value={newListing.businessState || null}
-    options={counties}
-    optionLabel="label"
-    optionValue="value"
-    placeholder="Select Business County"
-    onChange={(e) => handleChange(e, "businessCountry", e.target.value)}
-  />
+  value={newListing.businessCountry || null}
+  options={counties}
+  optionLabel="label"
+  optionValue="value"
+  placeholder="Select Business County"
+  onChange={(e) =>
+    handleChange(e, "businessCountry", e.value)
+  }
+  className="w-full"
+/>
 
 
 </div> 
