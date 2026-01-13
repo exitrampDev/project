@@ -42,8 +42,7 @@ export default function SellerListing() {
 const [filteredListings, setFilteredListings] = useState([]);
 const states = useRecoilValue(usStatesState);
 const [selectedState, setSelectedState] = useRecoilState(selectedStateAtom);
-const [, setCounties] = useRecoilState(countiesState);
-const counties = useRecoilValue(countiesState);
+const [counties, setCounties] = useRecoilState(countiesState);
 const locationOptions = [
   { label: "Headquarters", value: "Headquarters" },
   { label: "Office", value: "Office" },
@@ -924,7 +923,7 @@ const usStates = useRecoilValue(usStatesState);
 <div className="listing__creation_field_col md:col-4">
   <label> Business County </label>
    <Dropdown
-    value={newListing.businessState || null}
+    value={newListing.businessCountry || null}
     options={counties}
     optionLabel="label"
     optionValue="value"
