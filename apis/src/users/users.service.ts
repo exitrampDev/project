@@ -22,6 +22,10 @@ export class UsersService {
    async findById(_id: string): Promise<UserDocument | null> {
     return this.userModel.findOne({ _id }).exec();
   }
+
+  async update(userId: string, updateData: Partial<User>): Promise<User | null> {
+    return this.userModel.findByIdAndUpdate(userId, updateData, { new: true }).exec();
+  }
  
   async create(createUserDto: CreateUserDto): Promise<Omit<User & { _id: any }, 'password'>> {
     const normalizedEmail = createUserDto.email.trim().toLowerCase();

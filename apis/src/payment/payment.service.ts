@@ -8,11 +8,14 @@ import { Payment, PaymentDocument } from './schemas/payment.schema';
 import { ApiFeatures } from 'src/common/utils/api-features';
 import { QuerySellerDto } from 'src/free-seller/dto/query-seller.dto';
 import { QueryPaymentDto } from './dto/query-payment.dto';
+import { User, UserDocument } from 'src/users/schemas/user.schema';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class PaymentService {
      constructor(
         @InjectModel(Payment.name) private readonly paymentModel: Model<PaymentDocument>,
+        private readonly usersService: UsersService,
      ){}
 
     async createCheckoutSession(amount: number, userId: Types.ObjectId|string) {
@@ -50,17 +53,57 @@ export class PaymentService {
   }
 
   // ------------------
-  async  createPaymentIntent(amount: number, userId: any, businessId?: string) {
+  async getOrCreateStripeCustomer(user) {
+  if (user.stripe_customer_id) {
+    return user.stripe_customer_id;
+  }
+
+  const customerId = await this.createStripeCustomer(user);
+
+  // Persist customerId in DB
+  await this.usersService.update(user.id, { stripe_customer_id: customerId });
+
+  return customerId;
+}
+  async createStripeCustomer(user: {
+  id: string;
+  email: string;
+  name?: string;
+}) {
   const payload = qs.stringify({
-    amount: Math.round(amount * 100),
-    currency: 'usd',
-    'payment_method_types[0]': 'card',
-    //  'automatic_payment_methods[enabled]': true,
-    'metadata[userId]': userId.toString(),
-    'metadata[businessId]': businessId?.toString(),
-    'metadata[purpose]': 'Business Posting',
-    
+    email: user.email,
+    name: user.name,
+    'metadata[userId]': user.id,
   });
+
+  const response = await axios.post(
+    'https://api.stripe.com/v1/customers',
+    payload,
+    {
+      headers: {
+        Authorization: `Bearer ${process.env.STRIPE_SECRET_KEY}`,
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+    }
+  );
+
+  return response.data.id; // cus_...
+}
+  async  createPaymentIntent(amount: number, userId: any, businessId?: string) {
+    let user = await this.usersService.findById(userId);
+    const customerId = await this.getOrCreateStripeCustomer(user);
+    const payload = qs.stringify({
+      amount: Math.round(amount * 100),
+      currency: 'usd',
+      customer: customerId,
+      setup_future_usage: 'off_session',
+      'payment_method_types[0]': 'card',
+      //  'automatic_payment_methods[enabled]': true,
+      'metadata[userId]': userId.toString(),
+      'metadata[businessId]': businessId?.toString(),
+      'metadata[purpose]': 'Business Posting',
+    
+   });
 
   const response = await axios.post(
     'https://api.stripe.com/v1/payment_intents',

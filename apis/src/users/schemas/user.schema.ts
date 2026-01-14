@@ -27,6 +27,12 @@ export class User {
   @Prop({ required: true, enum: UserType, default: UserType.SUBSCRIBER })
   user_type: string;
 
+  @Prop({ default: null })
+  stripe_customer_id: string;
+
+  @Prop({ default: null })
+  payment_method: string;
+
   @Prop({ default: false })
   isDeleted: boolean;
 

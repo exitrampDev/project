@@ -13,7 +13,8 @@ import { BusinessListingService } from 'src/business-listing/business-listing.se
 export class PaymentController {
   private readonly webhookSecret = <string> process.env.STRIPE_WEBHOOK_SECRET;
      constructor(private readonly paymentsService: PaymentService,
-      private bunisessService: BusinessListingService
+      private bunisessService: BusinessListingService,
+       private readonly usersService: UsersService,
 
      ) {}
 
@@ -103,11 +104,16 @@ export class PaymentController {
   }
 
   async handlePaymentSucceeded(intent) {
-    console.log('Payment succeeded:--->', intent);
+    console.log('----->Payment succeeded:--->', intent);
 
     let paidAmount = intent.amount_received; // Convert to dollars
     let userId = intent.metadata.userId;
     let businessId = intent.metadata.businessId;
+
+    //0. Update User Payment Method Id for future use
+    if(intent.payment_method){
+      this.usersService.update(userId, { payment_method: intent.payment_method });
+    }
 
     
     // 1. Create payment record
