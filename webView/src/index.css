@@ -1816,6 +1816,7 @@ button.logout-btn {
 
 .listing__filter_col .p-dropdown.p-component.p-inputwrapper {
   border-radius: 30px;
+      width: 100%;
 }
 
 .listing__filter_col .p-slider.p-component.p-slider-horizontal {
@@ -4103,6 +4104,41 @@ img.buyerSig {max-width: 100%;}
 }
 .drag__filter_listing {
     display: none;
+}
+.listing__quick_filter.flex.gap-3 {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.listing__quick_filter.flex.gap-3 .listing__filter_industry{
+    width: calc(50% - 5px);
+    border-radius: 30px;
+}
+
+.listing__quick_filter.flex.gap-3 .listing__filter_state{
+    width: calc(50% - 5px);
+    border-radius: 30px;
+}
+
+.listing__quick_filter.flex.gap-3 .listing__filter_county{
+    width: calc(50% - 5px);
+    border-radius: 30px;
+}
+
+.listing__quick_filter.flex.gap-3 button.listing__filter_submit.p-button.p-component {
+    width: calc(50% - 5px);
+    max-width: 100%;
+    align-items: center;
+    border: none;
+    background: #ffb100;
+    color: #fff;
+    font-size: 17px;
+    padding: 12px 30px;
+    gap: 10px;
+    border-radius: 100px;
+    cursor: pointer;
+    text-decoration: none;
 }
 @media screen and (min-width: 1024px) and (max-width: 2500px) {
   .header_container nav.nav_col a {

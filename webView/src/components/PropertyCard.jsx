@@ -274,7 +274,50 @@ const saveListingBtn = (businessId) => {
   // setListings(filtered);
   // setPage(1);
 };
-
+  const industryOptions = [
+  { label: "Administrative and Support", value: "Administrative and Support" },
+  { label: "Agriculture, Farming, Forestry", value: "Agriculture, Farming, Forestry" },
+  { label: "Entertainment and Recreation", value: "Entertainment and Recreation" },
+  { label: "Arts and Entertainment", value: "Arts and Entertainment" },
+  { label: "Automotive, RV, Boat", value: "Automotive, RV, Boat" },
+  { label: "Beauty and Personal Care", value: "Beauty and Personal Care" },
+  { label: "Building Material and Supplies", value: "Building Material and Supplies" },
+  { label: "Computer and Electronic", value: "Computer and Electronic" },
+  { label: "Construction", value: "Construction" },
+  { label: "Consulting", value: "Consulting" },
+  { label: "Contracting Services", value: "Contracting Services" },
+  { label: "Delivery Services", value: "Delivery Services" },
+  { label: "Education and Children", value: "Education and Children" },
+  { label: "Electrical and Appliance", value: "Electrical and Appliance" },
+  { label: "Financial Services", value: "Financial Services" },
+  { label: "Fitness", value: "Fitness" },
+  { label: "Food Services and Restaurants", value: "Food Services and Restaurants" },
+  { label: "Gas Stations", value: "Gas Stations" },
+  { label: "Health Care", value: "Health Care" },
+  { label: "Hotel and Accommodations", value: "Hotel and Accommodations" },
+  { label: "Waste Management", value: "Waste Management" },
+  { label: "Wholesale and Distribution", value: "Wholesale and Distribution" },
+  { label: "Daycare", value: "Daycare" },
+  { label: "Information Technology", value: "Information Technology" },
+  { label: "Insurance", value: "Insurance" },
+  { label: "Manufacturing", value: "Manufacturing" },
+  { label: "Mining and Quarrying", value: "Mining and Quarrying" },
+  { label: "Oil and Gas", value: "Oil and Gas" },
+  { label: "Other Non-Categorized", value: "Other Non-Categorized" },
+  { label: "Personal Care", value: "Personal Care" },
+  { label: "Pet Services", value: "Pet Services" },
+  { label: "Printing", value: "Printing" },
+  { label: "Real Estate", value: "Real Estate" },
+  { label: "Religious", value: "Religious" },
+  { label: "Retail", value: "Retail" },
+  { label: "Home Services", value: "Home Services" },
+  { label: "Storage", value: "Storage" },
+  { label: "Telecommunication", value: "Telecommunication" },
+  { label: "Transportation", value: "Transportation" },
+  { label: "Travel", value: "Travel" },
+  { label: "Advertising and Marketing", value: "Advertising and Marketing" },
+  { label: "Sanitation and Cleaning", value: "Sanitation and Cleaning" },
+];
   // Reset Filters
   const clearFilters = () => {
     setFilters({
@@ -347,6 +390,20 @@ useEffect(() => {
         {/* Industry */}
         <div className="p-field">
           <label>Industry</label>
+
+
+ <Dropdown
+  value={filters.industry}
+  options={industryOptions}
+  placeholder="Select Industry"
+  filter
+  showClear
+   onChange={(e) =>
+              setFilters({ ...filters, industry: e.target.value })
+            }
+/>
+
+{/* 
           <InputText
             value={filters.industry}
             onChange={(e) =>
@@ -354,7 +411,7 @@ useEffect(() => {
             }
             placeholder="Industry"
             style={{ width: "100%" }}
-          />
+          /> */}
         </div>
 
         {/* State */}
