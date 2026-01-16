@@ -115,9 +115,20 @@ const [pendingNdaCount, setPendingNdaCount] = useState(0);
       <span>{rowData.businessName}</span>
     </div>
   );
-  const industryTemplate = (indusValue) => (JSON.parse(Object(indusValue?.industry)))
+const industryTemplate = (indusValue) => {
+  const industry = indusValue?.industry;
+
+  if (!industry) return null;
+
+  try {
+    return JSON.parse(industry);
+  } catch (e) {
+    console.error('Invalid industry JSON:', industry);
+    return null;
+  }
+}
   const ndaStatusTemplate = () => "Pending";
-  const moneyTemplate = (value) => value ? `$${Number(value).toLocaleString()}` : "—";
+  const moneyTemplate = (value) => value ? `$ ${Number(value).toLocaleString()??''}` : "—";
 const saveIndustryTemplate = (indusValue) => (JSON.parse(Object(indusValue?.industry)));
 
   /* ---------------- Fetch Dashboard Counts ---------------- */

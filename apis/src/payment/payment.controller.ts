@@ -3,6 +3,7 @@ import { PaymentService } from './payment.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { Types } from 'mongoose';
+import { UsersService } from '../users/users.service';
 import { RolesGuard } from 'src/auth/roles.guards';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import * as crypto from 'crypto';
