@@ -415,6 +415,10 @@ export class Business {
   @Prop({ type: String, default: "" })
   cimUrl?: string;
 
+  //---------------------Payment Info-----------------
+  @Prop({ type: Date, default: null })
+  paymentDate?: Date;
+
   // ----------------- Relations -----------------
   @Prop({ type: Types.ObjectId, ref: 'User', required: true })
   ownerId: Types.ObjectId;

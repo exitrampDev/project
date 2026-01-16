@@ -9,6 +9,7 @@ import * as crypto from 'crypto';
 import { User } from 'src/common/decorators/user.decorator';
 import { QueryPaymentDto } from './dto/query-payment.dto';
 import { BusinessListingService } from 'src/business-listing/business-listing.service';
+import { UsersService } from 'src/users/users.service';
 @Controller('payment')
 export class PaymentController {
   private readonly webhookSecret = <string> process.env.STRIPE_WEBHOOK_SECRET;
