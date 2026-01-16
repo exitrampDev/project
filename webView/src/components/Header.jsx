@@ -32,18 +32,18 @@ const accountTypes = [
     description: "List your business and manage interest from serious buyers.",
     value: "seller",
   },
-  {
-    icon: icon3,
-    title: "I'm an M&A Expert",
-    description: "Showcase your expertise and help sellers close strong deals.",
-    value: "ma_expert",
-  },
-  {
-    icon: icon4,
-    title: "I Just Want Updates",
-    description: "Sign up for insights and M&A market news.",
-    value: "subscriber",
-  },
+  // {
+  //   icon: icon3,
+  //   title: "I'm an M&A Expert",
+  //   description: "Showcase your expertise and help sellers close strong deals.",
+  //   value: "ma_expert",
+  // },
+  // {
+  //   icon: icon4,
+  //   title: "I Just Want Updates",
+  //   description: "Sign up for insights and M&A market news.",
+  //   value: "subscriber",
+  // },
 ];
 
 const roleOptions = {
@@ -62,17 +62,17 @@ const roleOptions = {
           roleOptionValue: "buyer_basic",
         },
       },
-      {
-        icon: icon6,
-        title: "Premium Buyer Account",
-        description:
-          "Get direct access to sellers, unlock CIMs after NDA approval, and use advanced tools built for buyers.",
-        button: {
-          text: "Upgrade to Premium Buyer",
-          link: "/register",
-          roleOptionValue: "buyer_premium",
-        },
-      },
+      // {
+      //   icon: icon6,
+      //   title: "Premium Buyer Account",
+      //   description:
+      //     "Get direct access to sellers, unlock CIMs after NDA approval, and use advanced tools built for buyers.",
+      //   button: {
+      //     text: "Upgrade to Premium Buyer",
+      //     link: "/register",
+      //     roleOptionValue: "buyer_premium",
+      //   },
+      // },
     ],
   },
   seller: {
@@ -80,17 +80,17 @@ const roleOptions = {
     subtitle:
       "Select how you’d like to list and manage your business on Exit Ramp.",
     subOptions: [
-      {
-        icon: icon7,
-        title: "Seller Basic",
-        description:
-          "List your business, manage NDA requests, and message buyers privately — all while keeping your identity protected.",
-        button: {
-          text: "Register as Seller Basic",
-          link: "/register",
-          roleOptionValue: "seller_basic",
-        },
-      },
+      // {
+      //   icon: icon7,
+      //   title: "Seller Basic",
+      //   description:
+      //     "List your business, manage NDA requests, and message buyers privately — all while keeping your identity protected.",
+      //   button: {
+      //     text: "Register as Seller Basic",
+      //     link: "/register",
+      //     roleOptionValue: "seller_basic",
+      //   },
+      // },
       {
         icon: icon8,
         title: "Seller Listing",

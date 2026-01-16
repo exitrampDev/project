@@ -18,7 +18,7 @@ const DashboardContent = () => {
       <DashboardHeader headingData={`${user.user_type} Dashboard`}/>
       {user?.user_type === "buyer_basic" ? <FreeBuyerDashboard /> : " "}
       {user?.user_type === "seller_basic" ? <FreeSellerDashboard /> : " "}
-      {user?.user_type === "seller_listing" ? <FreeSellerDashboard /> : " "}
+      {user?.user_type === "seller_listing" ? <SellerCentralDasboard /> : " "}
       {user?.user_type === "seller_central" ? <SellerCentralDasboard /> : " "}
       {user?.user_type === "admin" ? <AdminDashboard /> : " "}
     </>
