@@ -262,6 +262,47 @@ if (industry) {
   }
 
 
+  async findLastPaymentOlderThan(date: Date) {
+  return this.businessModel.find({
+    lastPaymentDate: { $lt: date },
+    status: BusinessStatus.LIVE,
+    isDeleted: false,
+  });
+}
+
+  async getAllPendingForPaymentBusiness(query: QueryBusinessDto, user?: any) {
+    const {
+      page = 1,
+      limit = 10,
+      search,
+      sortBy = 'createdAt',
+      order = 'desc',
+    } = query;
+
+    const sortOrder = order === 'desc' ? -1 : 1;
+
+    const filter: any = { isDeleted: false , status: BusinessStatus.PENDING_FOR_PAYMENT };
+ 
+
+    // ✅ data fetch with
+    const data = await this.businessModel
+      .find(filter)
+      .sort({ [sortBy]: sortOrder })
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .lean();
+
+    const total = await this.businessModel.countDocuments(filter);
+
+    return {
+      total,
+      page,
+      limit,
+      data,
+    };
+  }
+
+
   async create(dto: CreateBusinessDto, user: any): Promise<Business> {
      let imageBase64 = dto.image;
     if (imageBase64 && !imageBase64.startsWith("data:image")) {
@@ -401,6 +442,36 @@ async attachFile(businessId: string, fileUrl: string, fileType: string = 'profit
       message: `Business ${status} successfully`,
       business,
     };
+  }
+
+   async updateBusinessPaymentDate(businessId: string) {
+    // Find the business
+    const business = await this.businessModel.findById(businessId) as BusinessDocument;
+    if (!business) {
+      throw new NotFoundException('Business not found');
+    }
+
+    // Update status
+    business.lastPaymentDate = new Date();
+    await business.save();
+
+   
+    return true;
+  }
+
+   async markBusinessAsPendingForPayment(businessId: string) {
+    // Find the business
+    const business = await this.businessModel.findById(businessId) as BusinessDocument;
+    if (!business) {
+      throw new NotFoundException('Business not found');
+    }
+
+    // Update status
+    business.status = BusinessStatus.PENDING_FOR_PAYMENT;
+    await business.save();
+
+   
+    return true;
   }
 
     async getCounts(user: any): Promise<any> {
