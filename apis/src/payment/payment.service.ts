@@ -222,5 +222,50 @@ export class PaymentService {
   };
 }
 
+// -----------------------------------------
+async chargeUserOffSessionREST(
+  stripe_customer_id: string,
+  payment_method: string,
+  amount: number,
+  metadata: Record<string, string>,
+) {
+  const payload = qs.stringify({
+    amount: Math.round(amount * 100),
+    currency: 'usd',
+    customer: stripe_customer_id,
+    payment_method: payment_method,
+    off_session: true,
+    confirm: true,
+    'metadata[userId]': metadata.userId,
+    'metadata[businessId]': metadata.businessId,
+    'metadata[purpose]': 'Subscription Charge',
+  });
+
+  try {
+    const response = await axios.post(
+      'https://api.stripe.com/v1/payment_intents',
+      payload,
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.STRIPE_SECRET_KEY}`,
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+      },
+    );
+
+    return response.data;
+  } catch (err: any) {
+    // Stripe error format
+    const stripeError = err.response?.data?.error;
+
+    if (stripeError?.code === 'authentication_required') {
+      // Card needs 3DS re-authentication
+      throw new Error('Authentication required');
+    }
+
+    throw new Error(stripeError?.message || 'Stripe charge failed');
+  }
+}
+
 
 }

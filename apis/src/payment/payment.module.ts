@@ -16,6 +16,7 @@ import { UsersModule } from 'src/users/users.module';
      UsersModule
   ],
   controllers: [PaymentController],
-  providers: [PaymentService, PaymentWebhookService, BusinessListingService]
+  providers: [PaymentService, PaymentWebhookService, BusinessListingService],
+  exports:[ PaymentService ],
 })
 export class PaymentModule {}
