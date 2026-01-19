@@ -14,10 +14,14 @@ import { Roles } from 'src/common/decorators/roles.decorator';
 import { RolesGuard } from 'src/auth/roles.guards';
 import { StatusBusinessDto } from './dto/status-business.dto';
 import { BusinessOwnerGuard } from 'src/auth/businessOwner.guards';
+import { ContactFormSellerDto } from './dto/contact-form-seller.dto';
+import { MailService } from 'src/common/mail/mail.service';
 
 @Controller('business-listing')
 export class BusinessListingController {
-  constructor(private readonly businessService: BusinessListingService) {}
+  constructor(private readonly businessService: BusinessListingService,
+    private readonly mailService: MailService
+  ) {}
 
     @UseGuards(JwtAuthGuard)
     @Post()
@@ -124,5 +128,24 @@ export class BusinessListingController {
     const fileUrl = `/uploads/${file.filename}`; // Public URL
     return this.businessService.attachFile(businessId, fileUrl, dbField);
   }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('contact-seller')
+    async ContactToSeller(@Body() dto: ContactFormSellerDto, @User() user: any) {
+      
+    await this.mailService.sendMail(
+     "test@gmail.com",
+      'New message from potential buyer',
+      'contactToSeller',
+      {
+          businessName: 'Acme Manufacturing LLC',
+          buyerMessage: 'I’m interested in learning more about your financials and growth opportunities.',
+          dashboardUrl: 'https://app.exitramp.com/messages',
+          year: new Date().getFullYear(),
+      }
+    );
+        return true;
+    }
+
 
 }
