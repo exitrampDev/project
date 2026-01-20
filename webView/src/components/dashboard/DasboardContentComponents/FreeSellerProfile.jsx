@@ -162,7 +162,7 @@ const openFile = (base64Data, fileName, mimeType) => {
           <div className="field form__field_col">
             <label>Full Name</label>
             <InputText
-            required
+            
               value={formData.fullName || ""}
               onChange={(e) => handleChange("fullName", e.target.value)}
             />
@@ -171,7 +171,7 @@ const openFile = (base64Data, fileName, mimeType) => {
           <div className="field form__field_col">
             <label>Phone</label>
             <InputText
-            required
+            
               value={formData.phone || ""}
               onChange={(e) => handleChange("phone", e.target.value)}
             />
@@ -180,7 +180,7 @@ const openFile = (base64Data, fileName, mimeType) => {
           <div className="field form__field_col">
             <label>Role / Investment Range</label>
             <InputText
-            required
+            
               value={formData.role || ""}
               onChange={(e) => handleChange("role", e.target.value)}
             />
@@ -189,7 +189,7 @@ const openFile = (base64Data, fileName, mimeType) => {
           <div className="field form__field_col">
             <label>Company Name</label>
             <InputText
-            required
+            
               value={formData.companyName || ""}
               onChange={(e) => handleChange("companyName", e.target.value)}
             />
@@ -246,8 +246,7 @@ const openFile = (base64Data, fileName, mimeType) => {
         <div className="field form__field_col field form__field_col_yearOperation_content">
           <label>Years in Operation</label>
           <Calendar
-          required
-            value={new Date(formData.yearsInOperation) || new Date()}
+            value={ formData?.yearsInOperation ? new Date(formData.yearsInOperation) : new Date()}
             onChange={(e) => handleChange("yearsInOperation", e.value)}
             dateFormat="yy" 
             view="year"     

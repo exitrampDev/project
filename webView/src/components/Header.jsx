@@ -51,28 +51,28 @@ const roleOptions = {
     title: "Choose Buyer Plan",
     subtitle: "Select the right plan to begin your buyer journey on Exit Ramp.",
     subOptions: [
-      {
-        icon: icon5,
-        title: "Free Buyer Account",
-        description:
-          "Browse listings, submit NDA requests, and save favorites — all with full confidentiality and no cost.",
-        button: {
-          text: "Continue with Free Account",
-          link: "/register",
-          roleOptionValue: "buyer_basic",
-        },
-      },
       // {
-      //   icon: icon6,
-      //   title: "Premium Buyer Account",
+      //   icon: icon5,
+      //   title: "Free Buyer Account",
       //   description:
-      //     "Get direct access to sellers, unlock CIMs after NDA approval, and use advanced tools built for buyers.",
+      //     "Browse listings, submit NDA requests, and save favorites — all with full confidentiality and no cost.",
       //   button: {
-      //     text: "Upgrade to Premium Buyer",
+      //     text: "Continue with Free Account",
       //     link: "/register",
-      //     roleOptionValue: "buyer_premium",
+      //     roleOptionValue: "buyer_basic",
       //   },
       // },
+      {
+        icon: icon6,
+        title: "Buyer ",
+        description:
+          "Get direct access to sellers, unlock CIMs after NDA approval, and use advanced tools built for buyers.",
+        button: {
+          text: "Register as Buyer",
+          link: "/register",
+          roleOptionValue: "buyer_premium",
+        },
+      },
     ],
   },
   seller: {
@@ -91,24 +91,24 @@ const roleOptions = {
       //     roleOptionValue: "seller_basic",
       //   },
       // },
+      // {
+      //   icon: icon8,
+      //   title: "Seller Listing",
+      //   description:
+      //     "Can Create Listing of the Businesses",
+      //   button: {
+      //     text: "Register as Seller Listing",
+      //     link: "/register",
+      //     roleOptionValue: "seller_listing",
+      //   },
+      // },
       {
         icon: icon8,
-        title: "Seller Listing",
-        description:
-          "Can Create Listing of the Businesses",
-        button: {
-          text: "Register as Seller Listing",
-          link: "/register",
-          roleOptionValue: "seller_listing",
-        },
-      },
-      {
-        icon: icon8,
-        title: "Seller Central Account (Premium)",
+        title: "Seller Central Account",
         description:
           "Get the full toolkit: NDA and CIM management, 2-year listing, buyer insights, and expert selling resources.",
         button: {
-          text: "Upgrade to Seller Central",
+          text: "Register as Seller Central",
           link: "/register",
           roleOptionValue: "seller_central",
         },

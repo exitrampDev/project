@@ -6,6 +6,7 @@ import SelleListingNav from "./dasboardNav/SelleListingNav";
 import { useNavigate } from "react-router-dom";
 import AdminNav from "./dasboardNav/AdminNav";
 import BuyerFreeNav from "./dasboardNav/BuyerFreeNav";
+import SellerPremiumNav from "./dasboardNav/SellerPremiumNav";
 
 const DashboardSidebar = () => {
   const user = useRecoilValue(authState).user;
@@ -27,7 +28,9 @@ const DashboardSidebar = () => {
       </div>
       {user?.user_type === "seller_basic" ? <SellerFreeNav /> : " "}
       {user?.user_type === "seller_listing" ? <SelleListingNav /> : " "}
-      {user?.user_type === "seller_central" ? <SelleListingNav /> : " "}
+      {user?.user_type === "seller_central" ? <SellerPremiumNav /> : " "}
+      {user?.user_type === "seller_broker" ? <SellerPremiumNav /> : " "}
+      {user?.user_type === "seller_individual" ? <SellerPremiumNav /> : " "}
       {user?.user_type === "buyer_basic" ? <BuyerFreeNav /> : " "}
       {user?.user_type === "subscriber" ? <SellerFreeNav /> : " "}
       {user?.user_type === "m&a_expert" ? <SellerFreeNav /> : " "}

@@ -8,7 +8,7 @@ import { authState,apiBaseUrlState, usStatesState,
   selectedStateAtom,
   countiesState  } from "../../../recoil/ctaState";
 import DashboardHeader from "./DashboardHeaderBlock";
-
+import { Editor } from 'primereact/editor';
 import { Toast } from "primereact/toast";
 import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
@@ -35,7 +35,8 @@ export default function EditBusinessListing() {
   const states = useRecoilValue(usStatesState);
   const [selectedState, setSelectedState] = useRecoilState(selectedStateAtom);
   const [counties, setCounties] = useRecoilState(countiesState);
-
+const [extraFiles, setExtraFiles] = useState([]);
+const [extraFilesFull, setExtraFilesFull] = useState([]);
 
   /* ---------------------- helpers ---------------------- */
   const industryOptions = [
@@ -96,8 +97,31 @@ export default function EditBusinessListing() {
 
   /* ---------------------- fetch listing ---------------------- */
 
+
+
+const fetchFiles = async () => {
+  try {
+    const res = await axios.get(`${API_BASE}/files/${id}`);
+
+    const mapped = {};
+    res.data.forEach((file) => {
+      if (/^listingImage[1-5]$/.test(file.displayName)) {
+        mapped[file.displayName] = file.url;
+      }
+    });
+
+    setExtraFiles(mapped);
+    setExtraFilesFull(res.data);
+  } catch (err) {
+    console.error("Error fetching files:", err);
+  }
+};
+
+
+
+  
   useEffect(() => {
-    if (id && access_token) fetchListing();
+    if (id && access_token) fetchListing().then(() => fetchFiles());
   }, [id, access_token]);
 
   const fetchListing = async () => {
@@ -125,6 +149,40 @@ export default function EditBusinessListing() {
       setLoading(false);
     }
   };
+
+
+
+const handleFileUpload = async (file, displayName) => {
+  try {
+    const existingFile = extraFilesFull.find(
+      (f) => f.displayName === displayName
+    );
+
+    if (existingFile?._id) {
+      await axios.delete(
+        `${API_BASE}/files/${existingFile._id}`,
+        { headers: { Authorization: `Bearer ${access_token}` } }
+      );
+    }
+
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("displayName", displayName);
+    formData.append("typeName", file.type);
+
+    await axios.post(
+      `${API_BASE}/files/${id}/upload`,
+      formData,
+      { headers: { Authorization: `Bearer ${access_token}` } }
+    );
+
+    fetchFiles();
+  } catch (error) {
+    console.error("Upload failed:", error);
+  }
+};
+
+
 
   /* ---------------------- update listing ---------------------- */
 
@@ -255,17 +313,18 @@ const usStates = useRecoilValue(usStatesState);
 
       </div>
 {/* Listing Description */}
-      <div className="listing__creation_field_col md:col-6">
+      <div className="listing__creation_field_col md:col-6 lisitng__text_editor">
         <label>Listing Description </label>
-         <InputTextarea
+         <Editor
             value={newListing.listingDescription || ""}
-            onChange={(e) =>
-              setNewListing({ ...newListing, listingDescription: e.target.value })
+            onTextChange={(e) =>
+              setNewListing({
+                ...newListing,
+                listingDescription: e.htmlValue,
+              })
             }
-            placeholder="Enter Listing Description"
-            rows={3}
-            cols={30}
           />
+
       </div>
 
  {/* Industry */}
@@ -806,7 +865,83 @@ const usStates = useRecoilValue(usStatesState);
 
 
 
+<div className="extraImage_wrap">
+        <div className="listing__upload_files_uploadFile">
+          <label>Listing Extra Image 1</label>
 
+           <FileUploader
+            accept="image/png, image/jpeg"
+            maxSizeMB={5}
+            existingFileUrl={
+                  extraFiles?.listingImage1
+                    ? `${API_BASE}${extraFiles.listingImage1}`
+                    : ""
+                }
+            onFileSelect={(file) => handleFileUpload(file, "listingImage1")}
+          />
+
+        </div>
+
+        <div className="listing__upload_files_uploadFile">
+          <label>Listing Extra Image 2</label>
+
+          <FileUploader
+            accept="image/png, image/jpeg"
+            maxSizeMB={5}
+            existingFileUrl={
+                  extraFiles?.listingImage2
+                    ? `${API_BASE}${extraFiles.listingImage2}`
+                    : ""
+                }
+            onFileSelect={(file) => handleFileUpload(file, "listingImage2")}
+          />
+        </div>
+
+        <div className="listing__upload_files_uploadFile">
+          <label>Listing Extra Image 3</label>
+
+          <FileUploader
+            accept="image/png, image/jpeg"
+            maxSizeMB={5}
+            existingFileUrl={
+                  extraFiles?.listingImage3
+                    ? `${API_BASE}${extraFiles.listingImage3}`
+                    : ""
+                }
+            onFileSelect={(file) => handleFileUpload(file, "listingImage3")}
+          />
+        </div>
+
+        <div className="listing__upload_files_uploadFile">
+          <label>Listing Extra Image 4</label>
+
+          <FileUploader
+            accept="image/png, image/jpeg"
+            maxSizeMB={5}
+            existingFileUrl={
+                  extraFiles?.listingImage4
+                    ? `${API_BASE}${extraFiles.listingImage4}`
+                    : ""
+                }
+            onFileSelect={(file) => handleFileUpload(file, "listingImage4")}
+          />
+        </div>
+
+        <div className="listing__upload_files_uploadFile">
+          <label>Listing Extra Image 5</label>
+
+          <FileUploader
+            accept="image/png, image/jpeg"
+            maxSizeMB={5}
+            existingFileUrl={
+                  extraFiles?.listingImage5
+                    ? `${API_BASE}${extraFiles.listingImage5}`
+                    : ""
+                }
+            onFileSelect={(file) => handleFileUpload(file, "listingImage5")}
+          />
+        </div>
+      </div>
 
 
 {/* ********************************************************************************* */}

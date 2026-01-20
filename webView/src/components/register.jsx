@@ -26,12 +26,13 @@ const API_BASE = useRecoilValue(apiBaseUrlState);
     password: "",
     confirm_password: "",
     phone_number: "",
-    user_type: role,
+    user_type: role?.includes("seller") ? "" : role,
     agree: false,
   });
 
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ text: "", type: "" });
+const isSeller = role?.includes("seller");
 
   const handleChange = (e) => {
     const { name, value, checked, type } = e.target;
@@ -164,6 +165,43 @@ const API_BASE = useRecoilValue(apiBaseUrlState);
               feedback={false}
             />
           </div>
+{isSeller && (
+  <div className="field__set">
+    <label>Seller Type</label>
+
+    <div className="flex gap-4 mt-2">
+      <div className="flex align-items-center">
+        <input
+          type="radio"
+          id="seller_broker"
+          name="user_type"
+          value="seller_broker"
+          checked={formData.user_type === "seller_broker"}
+          onChange={handleChange}
+          required
+        />
+        <label htmlFor="seller_broker" className="ml-2">
+          Broker / Advisor
+        </label>
+      </div>
+
+      <div className="flex align-items-center">
+        <input
+          type="radio"
+          id="seller_individual"
+          name="user_type"
+          value="seller_individual"
+          checked={formData.user_type === "seller_individual"}
+          onChange={handleChange}
+          required
+        />
+        <label htmlFor="seller_individual" className="ml-2">
+          Individual Seller
+        </label>
+      </div>
+    </div>
+  </div>
+)}
 
           <div className="field-checkbox">
             <Checkbox

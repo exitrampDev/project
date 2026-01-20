@@ -13,66 +13,76 @@ import icon27 from "../../../assets/icon27.png";
 import icon28 from "../../../assets/icon28.png";
 
 export default function SellerPremiumNav() {
-  return <div className="nav__dashboard">
-         <ul>
-           <li>
-             <NavLink
-               to="/"
-               className={({ isActive }) => (isActive ? "active" : "")}
-             >
-               <img src={icon1} alt="Dashboard" /> Web View
-             </NavLink>
-           </li>
-           <li>
-             <NavLink
-               to="/user/dashboard"
-               className={({ isActive }) => (isActive ? "active" : "")}
-             >
-               <img src={icon1} alt="Dashboard" /> Dashboard
-             </NavLink>
-           </li>
-          
-           <li>
-             <NavLink
-               to="/user/buyer-submission"
-               className={({ isActive }) => (isActive ? "active" : "")}
-             >
-               <img src={icon2} alt="Buyer Submission" /> Buyer Submission
-             </NavLink>
-           </li>
-           <li>
-                        <NavLink
-                          to="/user/payment-history"
-                          className={({ isActive }) => (isActive ? "active" : "")}
-                        >
-                          <img src={icon2} alt="My Listing" /> Payment History
-                        </NavLink>
-                      </li>
-<li>
-             <NavLink
-               to="/user/my-listing"
-               className={({ isActive }) => (isActive ? "active" : "")}
-             >
-               <img src={icon2} alt="My Listing" /> My Listing
-             </NavLink>
-           </li>
-           
-           <li>
-             <NavLink
-               to="/user/complete-profile-seller"
-               className={({ isActive }) => (isActive ? "active" : "")}
-             >
-               <img src={icon2} alt="My Listing" /> Profile
-             </NavLink>
-           </li>
-           <li>
-             <NavLink
-               to="/user/recent-view-listing"
-               className={({ isActive }) => (isActive ? "active" : "")}
-             >
-               <img src={icon3} alt="Recently Viewed" /> Recently Viewed
-             </NavLink>
-           </li>
-         </ul>
-       </div>;
+  return (
+  
+   <div className="nav__dashboard">
+           <ul>
+             <li>
+               <li>
+               <NavLink
+                 to="/"
+                 className={({ isActive }) => (isActive ? "active" : "")}
+               >
+                 <img src={icon3} alt="Dashboard" /> Web View
+               </NavLink>
+             </li>
+               <NavLink
+                 to="/user/dashboard"
+                 className={({ isActive }) => (isActive ? "active" : "")}
+               >
+                 <img src={icon1} alt="Dashboard" /> Dashboard
+               </NavLink>
+             </li>
+            
+  <li>
+    <li>
+              <NavLink
+                to="/user/my-save-listing"
+                className={({ isActive }) => (isActive ? "active" : "")}
+              >
+                <img src={icon23} alt="Saved Listing" /> Saved Listing
+              </NavLink>
+            </li>
+               <NavLink
+                 to="/user/my-listing"
+                 className={({ isActive }) => (isActive ? "active" : "")}
+               >
+                 <img src={icon23} alt="My Listing" /> My Listing
+               </NavLink>
+             </li>
+              <li>
+               <NavLink
+                 to="/user/buyer-submission"
+                 className={({ isActive }) => (isActive ? "active" : "")}
+               >
+                 <img src={icon24} alt="Buyer Submission" /> Buyer Submission
+               </NavLink>
+             </li>
+             <li>
+               <NavLink
+                 to="/user/payment-history"
+                 className={({ isActive }) => (isActive ? "active" : "")}
+               >
+                 <img src={icon25} alt="My Listing" /> Payment History
+               </NavLink>
+             </li>
+             {/* <li>
+               <NavLink
+                 to="/user/complete-profile-seller"
+                 className={({ isActive }) => (isActive ? "active" : "")}
+               >
+                 <img src={icon28} alt="My Listing" /> Profile
+               </NavLink>
+             </li> */}
+             <li>
+               <NavLink
+                 to="/user/recent-view-listing"
+                 className={({ isActive }) => (isActive ? "active" : "")}
+               >
+                 <img src={icon2} alt="Recently Viewed" /> Recently Viewed
+               </NavLink>
+             </li>
+           </ul>
+         </div>
+)
 }

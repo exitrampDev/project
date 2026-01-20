@@ -20,6 +20,8 @@ const DashboardContent = () => {
       {user?.user_type === "seller_basic" ? <FreeSellerDashboard /> : " "}
       {user?.user_type === "seller_listing" ? <SellerCentralDasboard /> : " "}
       {user?.user_type === "seller_central" ? <SellerCentralDasboard /> : " "}
+      {user?.user_type === "seller_broker" ? <SellerCentralDasboard /> : " "}
+      {user?.user_type === "seller_individual" ? <SellerCentralDasboard /> : " "}
       {user?.user_type === "admin" ? <AdminDashboard /> : " "}
     </>
   );

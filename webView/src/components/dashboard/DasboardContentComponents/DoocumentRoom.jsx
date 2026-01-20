@@ -254,7 +254,7 @@ const DocumentRoom = () => {
     <div className="dashboard__header">
       <Toast ref={toast} />
 
-      <DashboardHeader headingData={`Document Room | ${listingData.businessName}`} />
+      <DashboardHeader headingData={`Document Room  | ${listingData.businessName}`} />
 
       <div className="brief__infor_content">
         <p>

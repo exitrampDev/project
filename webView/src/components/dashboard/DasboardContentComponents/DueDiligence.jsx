@@ -211,7 +211,7 @@ const dltDiligence = async (itemId) => {
 
 
 
-     {user?.user_type === "seller_central" ? ( <>
+     {user?.user_type === "seller_central" || user?.user_type === "seller_broker" || user?.user_type === "seller_individual" ? ( <>
       <i
       class="pi pi-trash"
       onClick={() => dltDiligence(rowData._id)}
