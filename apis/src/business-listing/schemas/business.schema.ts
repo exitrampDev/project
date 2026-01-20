@@ -203,7 +203,7 @@ export class Business {
   @Prop({ type: String, default: '' })
   contactPhone?: string;
 
-  @Prop({ type: String, default: '' })
+  @Prop({ type: String, required: true })
   contactEmail?: string;
 
   @Prop({ type: String, default: '' })

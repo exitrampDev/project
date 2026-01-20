@@ -16,6 +16,7 @@ import { StatusBusinessDto } from './dto/status-business.dto';
 import { BusinessOwnerGuard } from 'src/auth/businessOwner.guards';
 import { ContactFormSellerDto } from './dto/contact-form-seller.dto';
 import { MailService } from 'src/common/mail/mail.service';
+import { send } from 'process';
 
 @Controller('business-listing')
 export class BusinessListingController {
@@ -129,20 +130,26 @@ export class BusinessListingController {
     return this.businessService.attachFile(businessId, fileUrl, dbField);
   }
 
-    @UseGuards(JwtAuthGuard)
+   
     @Post('contact-seller')
     async ContactToSeller(@Body() dto: ContactFormSellerDto, @User() user: any) {
-      
+    let business = await this.businessService.findOne(dto.businessId); // to ensure business exists
+    if (!business || !business.contactEmail) {
+        throw new NotFoundException('Business not found or contact email is missing');
+    }
     await this.mailService.sendMail(
-     "test@gmail.com",
+       business.contactEmail,
       'New message from potential buyer',
       'contactToSeller',
       {
-          businessName: 'Acme Manufacturing LLC',
-          buyerMessage: 'I’m interested in learning more about your financials and growth opportunities.',
+          
+          businessName: business.businessName,
+          buyerMessage: dto.details,
           dashboardUrl: 'https://app.exitramp.com/messages',
           year: new Date().getFullYear(),
-      }
+          senderEmail: dto.senderEmail,
+      },
+      
     );
         return true;
     }
