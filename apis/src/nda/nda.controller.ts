@@ -16,9 +16,7 @@ export class NdaController {
   @Post()
   @UseGuards(JwtAuthGuard)
   async create(@Body() dto: CreateNdaDto, @Req() req: any) {
-    console.log('req.user ===>', req.user);  
-
-    
+  
     const userId = new Types.ObjectId(req.user.userId);
 
     return this.ndaService.create(dto, userId);
