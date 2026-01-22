@@ -60,7 +60,7 @@ const [counties, setCounties] = useRecoilState(countiesState);
    
     if(filters.state){
       setCounties(usCountiesByState[filters.state] || []);
-      setFilters({...filters, county: searchParams.get("county")})
+      setFilters({...filters, county: searchParams.get("county") || ""});
 
     }
 
@@ -89,16 +89,23 @@ const [counties, setCounties] = useRecoilState(countiesState);
 
   const fetchListing = () => {
     console.log("Fetching listings with filters:", filters);
-    const params = new URLSearchParams({
-      page: page,
-      limit: limit,
-      industry: filters.industry,
-      state: filters.state,
-      county: filters.county,
-      askingPriceMin: filters.askingPrice[0],
-      askingPriceMax: filters.askingPrice[1],
-      annualRevenueMin: filters.annualRevenue[0],
-    });
+    const params = new URLSearchParams(
+      Object.entries({
+        page,
+        limit,
+        industry: filters.industry,
+        state: filters.state,
+        county: filters.county,
+        askingPriceMin: filters.askingPrice?.[0],
+        askingPriceMax: filters.askingPrice?.[1],
+        annualRevenueMin: filters.annualRevenue?.[0],
+        annualRevenueMax: filters.annualRevenue?.[1],
+      }).reduce((acc, [k, v]) => {
+        if (v !== undefined && v !== null && v !== "") acc[k] = v;
+        return acc;
+      }, {})
+    );
+
     
     fetch(`${API_BASE}/business-listing/public?${params}`)
       .then((res) => res.json())
@@ -454,18 +461,45 @@ useEffect(() => {
         </div>
 
         {/* Asking Price */}
-        <div className="p-field">
-          <label>Asking Price</label>
-          <Slider
-            value={filters.askingPrice}
-            onChange={(e) => setFilters({ ...filters, askingPrice: e.value })}
-            range
-            max={5000000}
-          />
-          <div>
-            ${filters.askingPrice[0]} - ${filters.askingPrice[1]}
-          </div>
-        </div>
+<div className="p-field value__range_field">
+  <label>Asking Price</label>
+
+  <div className="range__inputs">
+    <InputText
+      type="number"
+      placeholder="Min"
+      value={filters.askingPrice[0]}
+      onChange={(e) =>
+        setFilters({
+          ...filters,
+          askingPrice: [
+            Number(e.target.value || 0),
+            filters.askingPrice[1],
+          ],
+        })
+      }
+    />
+
+    <span className="range__separator">–</span>
+
+    <InputText
+      type="number"
+      placeholder="Max"
+      value={filters.askingPrice[1]}
+      onChange={(e) =>
+        setFilters({
+          ...filters,
+          askingPrice: [
+            filters.askingPrice[0],
+            Number(e.target.value || 0),
+          ],
+        })
+      }
+    />
+  </div>
+</div>
+
+
 
         {/* Annual Revenue */}
         {/* <div className="p-field">
@@ -482,21 +516,48 @@ useEffect(() => {
         </div> */}
 
         {/* Cash Flow */}
-        <div className="p-field">
-          <label>Cash Flow</label>
-          <Slider
-            value={filters.cashFlow}
-            onChange={(e) => setFilters({ ...filters, cashFlow: e.value })}
-            range
-            max={5000000}
-          />
-          <div>
-            ${filters.cashFlow[0]} - ${filters.cashFlow[1]}
-          </div>
-        </div>
+       <div className="p-field value__range_field">
+  <label>Cash Flow</label>
+
+  <div className="range__inputs">
+    <InputText
+      type="number"
+      placeholder="Min"
+      value={filters.cashFlow[0]}
+      onChange={(e) =>
+        setFilters({
+          ...filters,
+          cashFlow: [
+            Number(e.target.value || 0),
+            filters.cashFlow[1],
+          ],
+        })
+      }
+    />
+
+    <span className="range__separator">–</span>
+
+    <InputText
+      type="number"
+      placeholder="Max"
+      value={filters.cashFlow[1]}
+      onChange={(e) =>
+        setFilters({
+          ...filters,
+          cashFlow: [
+            filters.cashFlow[0],
+            Number(e.target.value || 0),
+          ],
+        })
+      }
+    />
+  </div>
+</div>
+
 
         {/* Buttons */}
-        <Button
+      <div className="filter__buttons_group">
+          <Button
           label="Apply Filters"
           className="listing__filter_apply_btn"
           onClick={applyFilters}
@@ -506,6 +567,7 @@ useEffect(() => {
           className="listing__filter_clearAll_btn"
           onClick={clearFilters}
         />
+      </div>
       </div>
 
       {/* Right Listings */}
@@ -537,7 +599,7 @@ useEffect(() => {
                       src={listing.image}
                       style={{
                         width: "100%",
-                        height: "180px",
+                        height: "140px",
                         objectFit: "cover",
                         borderRadius: "8px",
                       }}

@@ -10,11 +10,17 @@ import { useRecoilValue } from "recoil";
 import { authState,apiBaseUrlState } from "../recoil/ctaState";
 import ArrowIcon from "../assets/arrowIcon.png";
 import SingleListingLocation from "../assets/singleListingLocation.png";
-
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Pagination } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
+import { Dialog } from "primereact/dialog";
 import { Divider } from "primereact/divider";
 import { Tag } from "primereact/tag";
 import { Chip } from "primereact/chip";
 import { Toast } from "primereact/toast";
+import axios from "axios";
 
 export default function BusinessListingDetail() {
   const { user, access_token } = useRecoilValue(authState) ?? {};
@@ -22,11 +28,13 @@ export default function BusinessListingDetail() {
   const [business, setBusiness] = useState(null);
   const [loading, setLoading] = useState(true);
    const toast = useRef(null);
+  const [showImagesPopup, setShowImagesPopup] = useState(false);
   const API_BASE = useRecoilValue(apiBaseUrlState);
   const handleNonUserClick = () => {
     const signupBtn = document.querySelector(".signup-btn");
     if (signupBtn) signupBtn.click();
   };
+  const [additionalImages, setAdditionalImages] = useState([]);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -63,6 +71,20 @@ export default function BusinessListingDetail() {
     };
 
     fetchData();
+
+const fetchFilesMain = async () => {
+      try {
+        const res = await axios.get(`${API_BASE}/files/${id}`);
+        console.log("datata",res.data);
+        setAdditionalImages(res.data || []);
+      } catch (err) {
+        console.error("Error fetching files:", err);
+      }
+    };
+
+
+    fetchFilesMain();
+
   }, [id]);
 
   if (loading) return <ProgressSpinner />;
@@ -104,6 +126,15 @@ export default function BusinessListingDetail() {
     }
   };
 
+const allowedImages = [
+  "listingImage1",
+  "listingImage2",
+  "listingImage3",
+  "listingImage4",
+  "listingImage5",
+];
+    
+
   return (
     <>
     <Toast ref={toast} position="top-right" />
@@ -123,7 +154,7 @@ export default function BusinessListingDetail() {
 
     
 
-      <div className="business__list_single_main_wrap">
+      <div className="business__list_single_main_wrap web__view_wrapper">
        
        
                <div className="business__list_single_intro_block">
@@ -133,6 +164,13 @@ export default function BusinessListingDetail() {
                      alt={business.businessName}
                      className="w-64 h-64 object-cover rounded-lg mb-4"
                    />
+                   <div
+                className="business__lisiting_aditional_images"
+                onClick={() => setShowImagesPopup(true)}
+                style={{ cursor: "pointer" }}
+              >
+                view additional images
+              </div>
                  </div>
                  <div className="business__list_single_intro_block_content_col">
                    <h2 className="listing__single_title">{business?.businessName ? (<>{business.businessName}</>) : "-"}</h2>
@@ -209,7 +247,12 @@ export default function BusinessListingDetail() {
        
                <div className="business__list_single_description_row">
                  <h3>Business Description:</h3>
-                 <div className="business__list_single_description_content">{business.listingDescription}</div>
+                   <div
+  className="business__list_single_description_content"
+  dangerouslySetInnerHTML={{
+    __html: business.listingDescription,
+  }}
+/>
                  <div className="about_listing_toggle">
                    <div className="about_listing_toggle_item"><strong>Franchies:</strong> {business?.isFranchise ? "Yes" : "No"}</div>
                    <div className="about_listing_toggle_item"><strong>Relocate:</strong>{business?.isRelocatable ? "Yes" : "No"}</div>
@@ -304,6 +347,66 @@ export default function BusinessListingDetail() {
         </div>
       </div>
     <Footer />
+    
+      <Dialog
+  header="Additional Images"
+  visible={showImagesPopup}
+  style={{ width: "70vw", maxWidth: "900px" }}
+  onHide={() => setShowImagesPopup(false)}
+  modal
+  className="additional__image_pop_wrap"
+>
+  {additionalImages && additionalImages.length > 0 ? (
+  <Swiper
+    modules={[Navigation, Pagination]}
+    navigation
+    pagination={{ clickable: true }}
+    spaceBetween={20}
+    slidesPerView={1}
+  >
+    {additionalImages
+      .filter((img) => {
+        const name =
+          img?.displayName ||
+          img?.filename ||
+          img?.fileName ||
+          "";
+
+        return allowedImages.some((key) =>
+          name.includes(key)
+        );
+      })
+      .map((img, idx) => {
+        const src =
+          (typeof img === "string" && img) ||
+          img?.url ||
+          img?.path ||
+          img?.fileUrl ||
+          img?.filePath ||
+          img?.filename;
+
+        const imgName =
+          img?.displayName ||
+          img?.filename ||
+          `listingImage-${idx + 1}`;
+
+        return (
+          <SwiperSlide key={idx} className="additional__image_pop">
+            <img
+              src={`${API_BASE}${src}`}
+              alt={imgName}
+              className="object-contain"
+            />
+          </SwiperSlide>
+        );
+      })}
+  </Swiper>
+) : (
+  <p>No additional images available</p>
+)}
+
+</Dialog>
+
     </>
   );
 }

@@ -18,13 +18,15 @@
     "jspdf": "^3.0.4",
     "primeicons": "^7.0.0",
     "primereact": "^10.9.6",
+    "quill": "^2.0.3",
     "react": "^18.3.1",
     "react-data-table-component": "^7.7.0",
     "react-dom": "^18.3.1",
     "react-router-dom": "^7.6.3",
     "react-signature-canvas": "^1.1.0-alpha.2",
     "recoil": "^0.7.7",
-    "styled-components": "^6.1.19"
+    "styled-components": "^6.1.19",
+    "swiper": "^12.0.3"
   },
   "devDependencies": {
     "@eslint/js": "^9.30.1",

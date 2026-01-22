@@ -32,6 +32,8 @@ import { InputSwitch } from "primereact/inputswitch";
 import DashboardHeader from "./DashboardHeaderBlock";
 import { useNavigate } from "react-router-dom";
 import FileUploader from "../../customcomponent/FileUploader";
+import { Editor } from "primereact/editor";
+
 
 export default function SellerListing() {
   const toast = useRef(null);
@@ -198,7 +200,7 @@ listingReferenceNumber: Math.random().toString(16).substring(2, 10),
 const documentRoomLink = (id) => {
   return(
     <>
- {user?.user_type === "seller_central" && <>
+ {user?.user_type === "seller_central" || user?.user_type === "seller_broker" || user?.user_type === "seller_individual" && <>
       <Link to={`/user/document-room/${id}`} className="">View Doc Room</Link>
     </>}
      {user?.user_type === "seller_listing" && <>
@@ -214,7 +216,7 @@ const documentRoomLink = (id) => {
 const createCIMList = (id, cimUrl) => {
   return(
     <>
- {user?.user_type === "seller_central" && <>
+ {user?.user_type === "seller_central" || user?.user_type === "seller_broker" || user?.user_type === "seller_individual" && <>
  {cimUrl ? (<><Link to={`/user/create-cim/${id}`} className="">View CIM</Link></>) : (<><Link to={`/user/create-cim/${id}`} className="">Create CIM</Link></>)}
       
     </>}
@@ -508,7 +510,7 @@ window.location.href = `/user/payment-process/${businessId}`;
 
   return (
    <>
-   {user?.user_type === "seller_central" && <>
+   {user?.user_type === "seller_central" || user?.user_type === "seller_broker" || user?.user_type === "seller_individual" && <>
     <Tag
       value={formattedStatus}
       severity={
@@ -614,7 +616,6 @@ const moneyTemplate = (row, { field }) => {
       <Link to={`/user/single-listing/${row._id}`} className="flex gap-4">
       <i
         className="pi pi-eye cursor-pointer text-blue-500 hover:text-blue-700"
-        onClick={() => console.log("View", row._id)}
       ></i>
       </Link>
       
@@ -784,16 +785,16 @@ const usStates = useRecoilValue(usStatesState);
 
       </div>
 {/* Listing Description */}
-      <div className="listing__creation_field_col md:col-6">
+      <div className="listing__creation_field_col md:col-6 lisitng__text_editor">
         <label>Listing Description </label>
-         <InputTextarea
+         <Editor
             value={newListing.listingDescription || ""}
-            onChange={(e) =>
-              setNewListing({ ...newListing, listingDescription: e.target.value })
+            onTextChange={(e) =>
+              setNewListing({
+                ...newListing,
+                listingDescription: e.htmlValue,
+              })
             }
-            placeholder="Enter Listing Description"
-            rows={3}
-            cols={30}
           />
       </div>
 
@@ -813,9 +814,13 @@ const usStates = useRecoilValue(usStatesState);
         className="w-full"
       />
       </div>
+        {/*///////////////////////////////////////////////////////////////////////////////////////////////////*/}
+        
+        
+        {user?.user_type === "seller_individual" || user?.user_type === "seller_central" || user?.user_type === "seller_listing" || user?.user_type === "seller_basic" ? <>
  {/* Your Role */}
       <div className="listing__creation_field_col md:col-6">
-        <label>Your Role </label>
+        <label>Your Role  </label>
         <Dropdown
           value={newListing.yourRole}
           options={[{ label: "Legal Owner", value: "Legal Owner" }, { label: "Broker", value: "Broker" }, { label: "Other Third Party", value: "Other Third Party" }]}
@@ -823,6 +828,9 @@ const usStates = useRecoilValue(usStatesState);
           placeholder="Select"
         />
       </div>
+
+
+
 
 
 
@@ -887,6 +895,16 @@ const usStates = useRecoilValue(usStatesState);
     placeholder="Enter Zip Code"
   />
 </div>
+
+</> : " "}
+
+{/*///////////////////////////////////////////////////////////////////////////////////////////////////*/}
+
+
+
+
+
+
 
  {/* Business City */}
 <div className="listing__creation_field_col md:col-4">
@@ -1652,11 +1670,11 @@ const usStates = useRecoilValue(usStatesState);
     };
   }}
 >
-  <Column header="Listing Name dada" body={listingNameTemplate} />
+  <Column header="Listing Name" body={listingNameTemplate} />
   <Column header="Industry" body={industryTemplate} />
   <Column field="yearStablished" header="Year" />
   <Column header="Location" body={locationTemplate} />
-  <Column field="revenue" header="Revenue" body={moneyTemplate} />
+  {/* <Column field="revenue" header="Revenue" body={moneyTemplate} /> */}
   <Column field="askingPrice" header="Asking Price" body={moneyTemplate} />
   <Column header="Last Edited" body={dateTemplate} />
   <Column field="cimStatus" header="CIM Status" body={cimTemplate} />
