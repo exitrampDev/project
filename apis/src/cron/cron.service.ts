@@ -20,30 +20,30 @@ export class CronService {
    * Runs every 30 seconds (example)
    * In real systems use EVERY_DAY_AT_MIDNIGHT or hourly
    */
-  @Interval(10000)
-  async handleInterval() {
-    this.logger.log('Running billing cron job');
+  // @Interval(10000)
+  // async handleInterval() {
+  //   this.logger.log('Running billing cron job');
 
-    try {
-      const businesses = await this.businessListingService.findAll({
-        page: 1,
-        limit: 10,
-      });
+  //   try {
+  //     const businesses = await this.businessListingService.findAll({
+  //       page: 1,
+  //       limit: 10,
+  //     });
 
-      for (const business of businesses.data) {
-        try {
-          await this.chargeBusinessOwner(business);
-        } catch (err) {
-          this.logger.error(
-            `Failed to charge business ${business.id}`,
-            err?.response?.data || err.message,
-          );
-        }
-      }
-    } catch (error) {
-      this.logger.error('Error fetching businesses', error);
-    }
-  }
+  //     for (const business of businesses.data) {
+  //       try {
+  //         await this.chargeBusinessOwner(business);
+  //       } catch (err) {
+  //         this.logger.error(
+  //           `Failed to charge business ${business.id}`,
+  //           err?.response?.data || err.message,
+  //         );
+  //       }
+  //     }
+  //   } catch (error) {
+  //     this.logger.error('Error fetching businesses', error);
+  //   }
+  // }
 
   /**
    * Charges a business owner off-session using Stripe REST API
