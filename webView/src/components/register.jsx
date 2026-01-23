@@ -8,6 +8,7 @@ import { Button } from "primereact/button";
 import { InputMask } from "primereact/inputmask";
 import { Checkbox } from "primereact/checkbox";
 import { Message } from "primereact/message";
+import { Dropdown } from "primereact/dropdown";
 import { useRecoilValue } from "recoil";
 import Header from "./Header";
 import Footer from "./Footer";
@@ -81,6 +82,10 @@ const isSeller = role?.includes("seller");
       setLoading(false);
     }
   };
+const sellerOptions = [
+  { label: "Broker", value: "seller_broker" },
+  { label: "Individual Seller", value: "seller_individual" },
+];
 
   return (
     <>
@@ -167,39 +172,23 @@ const isSeller = role?.includes("seller");
           </div>
 {isSeller && (
   <div className="field__set">
-    <label>Seller Type</label>
+    <label htmlFor="user_type">Seller Type</label>
 
-    <div className="flex gap-4 mt-2">
-      <div className="flex align-items-center">
-        <input
-          type="radio"
-          id="seller_broker"
-          name="user_type"
-          value="seller_broker"
-          checked={formData.user_type === "seller_broker"}
-          onChange={handleChange}
-          required
-        />
-        <label htmlFor="seller_broker" className="ml-2">
-          Broker / Advisor
-        </label>
-      </div>
-
-      <div className="flex align-items-center">
-        <input
-          type="radio"
-          id="seller_individual"
-          name="user_type"
-          value="seller_individual"
-          checked={formData.user_type === "seller_individual"}
-          onChange={handleChange}
-          required
-        />
-        <label htmlFor="seller_individual" className="ml-2">
-          Individual Seller
-        </label>
-      </div>
-    </div>
+    <Dropdown
+      id="user_type"
+      name="user_type"
+      value={formData.user_type}
+      options={sellerOptions}
+      onChange={(e) =>
+        setFormData((prev) => ({
+          ...prev,
+          user_type: e.value,
+        }))
+      }
+      placeholder="Select Seller Type"
+      className="w-full"
+      required
+    />
   </div>
 )}
 
