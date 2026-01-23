@@ -452,7 +452,7 @@ async attachFile(businessId: string, fileUrl: string, fileType: string = 'profit
     }
 
     // Update status
-    business.lastPaymentDate = new Date();
+    business.paymentDate = new Date();
     await business.save();
 
    
