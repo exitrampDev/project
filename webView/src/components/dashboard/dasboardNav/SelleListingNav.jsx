@@ -16,7 +16,6 @@ export default function SellerListingNav() {
   return (
     <div className="nav__dashboard">
          <ul>
-           <li>
              <li>
              <NavLink
                to="/"
@@ -25,6 +24,7 @@ export default function SellerListingNav() {
                <img src={icon3} alt="Dashboard" /> Web View
              </NavLink>
            </li>
+           <li>
              <NavLink
                to="/user/dashboard"
                className={({ isActive }) => (isActive ? "active" : "")}
@@ -33,7 +33,7 @@ export default function SellerListingNav() {
              </NavLink>
            </li>
           
-<li>
+              <li>
              <NavLink
                to="/user/my-listing"
                className={({ isActive }) => (isActive ? "active" : "")}
@@ -57,6 +57,7 @@ export default function SellerListingNav() {
                <img src={icon25} alt="My Listing" /> Payment History
              </NavLink>
            </li>
+
            <li>
              <NavLink
                to="/user/complete-profile-seller"
@@ -65,6 +66,8 @@ export default function SellerListingNav() {
                <img src={icon28} alt="My Listing" /> Profile
              </NavLink>
            </li>
+
+
            <li>
              <NavLink
                to="/user/recent-view-listing"

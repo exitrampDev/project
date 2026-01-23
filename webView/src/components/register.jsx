@@ -8,6 +8,7 @@ import { Button } from "primereact/button";
 import { InputMask } from "primereact/inputmask";
 import { Checkbox } from "primereact/checkbox";
 import { Message } from "primereact/message";
+import { Dropdown } from "primereact/dropdown";
 import { useRecoilValue } from "recoil";
 import Header from "./Header";
 import Footer from "./Footer";
@@ -26,12 +27,13 @@ const API_BASE = useRecoilValue(apiBaseUrlState);
     password: "",
     confirm_password: "",
     phone_number: "",
-    user_type: role,
+    user_type: role?.includes("seller") ? "" : role,
     agree: false,
   });
 
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ text: "", type: "" });
+const isSeller = role?.includes("seller");
 
   const handleChange = (e) => {
     const { name, value, checked, type } = e.target;
@@ -80,6 +82,10 @@ const API_BASE = useRecoilValue(apiBaseUrlState);
       setLoading(false);
     }
   };
+const sellerOptions = [
+  { label: "Broker", value: "seller_broker" },
+  { label: "Individual Seller", value: "seller_individual" },
+];
 
   return (
     <>
@@ -164,6 +170,27 @@ const API_BASE = useRecoilValue(apiBaseUrlState);
               feedback={false}
             />
           </div>
+{isSeller && (
+  <div className="field__set">
+    <label htmlFor="user_type">Seller Type</label>
+
+    <Dropdown
+      id="user_type"
+      name="user_type"
+      value={formData.user_type}
+      options={sellerOptions}
+      onChange={(e) =>
+        setFormData((prev) => ({
+          ...prev,
+          user_type: e.value,
+        }))
+      }
+      placeholder="Select Seller Type"
+      className="w-full"
+      required
+    />
+  </div>
+)}
 
           <div className="field-checkbox">
             <Checkbox

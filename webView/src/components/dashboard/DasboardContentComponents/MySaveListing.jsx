@@ -12,6 +12,7 @@ import serachIcon from "../../../assets/serachIcon.png";
 import notifInfo from "../../../assets/notifInfo.png";
 import userImg from "../../../assets/userImg.png";
 import { Link } from "react-router-dom";
+import DashboardHeader from "./DashboardHeaderBlock";
 
 
 
@@ -140,34 +141,15 @@ const cimTemplate = (rowData) => (
    const ndaStatusTemplate = () => <><div className="class__nda_not_started">Not Started</div></>;
 
   const saveIndustryTemplate = (indusValue) => (JSON.parse(Object(indusValue?.industry)))
-  
+   const locationTemplate = (row) =>  row.businessCountry && row.businessState ? `${row.businessCountry}, ${row.businessState}` : "-"; 
   return (
     <>
 
-
-    <div className="dashboard__header_block">
-            <h3 className="heading__Digital_CIM">Saved Listing</h3>
-    
-            <div className="dashboard__header_search_notification_wrap">
-              <div className="dashboard__search_field_wrap">
-                <input type="text" placeholder="Search" />
-                <img src={serachIcon} alt="search" />
-              </div>
-              <div className="dashboard__notification_wrap">
-                <button>
-                  <img src={notifInfo} alt="notifications" />
-                </button>
-              </div>
-              <div className="dashboard__user_wrap">
-                <button>
-                  <img src={userImg} alt="user" />
-                </button>
-              </div>
-            </div>
-          </div>
+<DashboardHeader headingData="Saved Listing"/>
       {user?.user_type === "buyer_basic"  && ( 
         <>
-     
+       <div className="brief__infor_content">Allow users to view listings they have bookmarked. No publishing, editing, or cancellation capabilities are available.</div>
+   
           <div className="my__save_listing_wrap">
            <DataTable
         value={filteredListings}
@@ -181,7 +163,7 @@ const cimTemplate = (rowData) => (
         <Column header="Industry" body={saveIndustryTemplate}/>
         <Column header="NDA Status" body={ndaStatusTemplate} />
         <Column field="entityType" header="Type" />
-        <Column field="revenue" header="Revenue" />
+        {/* <Column field="revenue" header="Revenue" /> */}
         <Column field="askingPrice" header="Asking Price" />
         <Column header="View Listing" body={cimTemplate} />
         <Column header="Action" body={actionTemplate} />
@@ -194,7 +176,7 @@ const cimTemplate = (rowData) => (
 
 
 
-      {user?.user_type === "seller"  && ( 
+      {user?.user_type === "seller_central" || user?.user_type === "seller_broker" || user?.user_type === "seller_individual" && ( 
         <>
       <div className="brief__infor_content">Allow users to view listings they have bookmarked. No publishing, editing, or cancellation capabilities are available.</div>
           <div className="my__save_listing_wrap">
@@ -206,10 +188,11 @@ const cimTemplate = (rowData) => (
         responsiveLayout="scroll"
         emptyMessage={error ? `Error: ${error}` : "No business listings found."}
       >
-        <Column header="Listing Name" body={saveIndustryTemplate}/>
-        <Column field="entityType" header="Type" />
-        <Column header="Region" field="state" />
+        <Column header="Listing Name" body={listingNameTemplate}/>
+        
         <Column header="Industry" body={saveIndustryTemplate} />
+        <Column field="yearStablished" header="Year" />
+          <Column header="Location" body={locationTemplate} />
         <Column header="NDA Status" body={ndaStatusTemplate} />
        <Column
           header="Saved On"
@@ -223,9 +206,11 @@ const cimTemplate = (rowData) => (
           }}
         />
 
-        <Column field="revenue" header="Revenue" />
+        {/* <Column field="revenue" header="Revenue" /> */}
         <Column field="askingPrice" header="Asking Price" />
-        <Column header="Action" body={(row)=> (<><Link to={`/user/single-listing/${row?._id}`} className="flex gap-4">View Listing</Link></>)} />
+        <Column header="Action" body={(row)=> (<> <div className="action__listing_btns"><Link to={`/user/single-listing/${row?._id}`} className="flex gap-4 "><i
+        className="pi pi-eye cursor-pointer text-blue-500 hover:text-blue-700"
+      ></i></Link></div></>)} />
       </DataTable>
           </div>
    </>

@@ -128,6 +128,7 @@ export class PaymentController {
 
     // 2. Activate business
     this.bunisessService.updateBusinessStatus(businessId, 'live');
+    this.bunisessService.updateBusinessPaymentDate(businessId);
 
     // const paymentRecord = await this.paymentsService.getBySessionId(intent.id);
     // // console.log('Payment record found:', paymentRecord);

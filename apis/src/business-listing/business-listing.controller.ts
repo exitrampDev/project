@@ -14,10 +14,15 @@ import { Roles } from 'src/common/decorators/roles.decorator';
 import { RolesGuard } from 'src/auth/roles.guards';
 import { StatusBusinessDto } from './dto/status-business.dto';
 import { BusinessOwnerGuard } from 'src/auth/businessOwner.guards';
+import { ContactFormSellerDto } from './dto/contact-form-seller.dto';
+import { MailService } from 'src/common/mail/mail.service';
+import { send } from 'process';
 
 @Controller('business-listing')
 export class BusinessListingController {
-  constructor(private readonly businessService: BusinessListingService) {}
+  constructor(private readonly businessService: BusinessListingService,
+    private readonly mailService: MailService
+  ) {}
 
     @UseGuards(JwtAuthGuard)
     @Post()
@@ -124,5 +129,30 @@ export class BusinessListingController {
     const fileUrl = `/uploads/${file.filename}`; // Public URL
     return this.businessService.attachFile(businessId, fileUrl, dbField);
   }
+
+   
+    @Post('contact-seller')
+    async ContactToSeller(@Body() dto: ContactFormSellerDto, @User() user: any) {
+    let business = await this.businessService.findOne(dto.businessId); // to ensure business exists
+    if (!business || !business.contactEmail) {
+        throw new NotFoundException('Business not found or contact email is missing');
+    }
+    await this.mailService.sendMail(
+       business.contactEmail,
+      'New message from potential buyer',
+      'contactToSeller',
+      {
+          
+          businessName: business.businessName,
+          buyerMessage: dto.details,
+          dashboardUrl: 'https://app.exitramp.com/messages',
+          year: new Date().getFullYear(),
+          senderEmail: dto.senderEmail,
+      },
+      
+    );
+        return true;
+    }
+
 
 }

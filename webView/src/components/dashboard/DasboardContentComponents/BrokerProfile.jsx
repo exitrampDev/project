@@ -13,8 +13,9 @@ import serachIcon from "../../../assets/serachIcon.png";
 import userImg from "../../../assets/userImg.png";
 import { Calendar } from "primereact/calendar";
 import DashboardHeader from "./DashboardHeaderBlock";
+import FileUploader from "../../customcomponent/FileUploader";
 
-const FreeSellerForm = () => {
+const BrokerProfile = () => {
   const { access_token } = useRecoilValue(authState) ?? {};
   const API_BASE = useRecoilValue(apiBaseUrlState);
   const user = useRecoilValue(authState).user;
@@ -75,16 +76,26 @@ const FreeSellerForm = () => {
 
   // Handle file upload
    // Handle file upload
- const handleFileUpload = (event, field) => {
-  const file = event.files?.[0] || event.originalEvent?.target?.files?.[0];
-  if (!file) return;
+ 
 
+
+const handleImageSelect = (e) => {
+  console.log("File selected for listing image:", e);
+  const file = e;
   const reader = new FileReader();
+
   reader.onloadend = () => {
-    handleChange(field, reader.result); // store as base64 string
+    handleChange("companyLogo", reader.result); 
   };
+
   reader.readAsDataURL(file);
 };
+
+
+
+
+
+
 
 
   const handleSubmit = async (e) => {
@@ -145,10 +156,9 @@ const openFile = (base64Data, fileName, mimeType) => {
     <>
       <Toast ref={toast} />
    
-<DashboardHeader headingData="My Seller Profile"/>
+<DashboardHeader headingData="Broker Profile"/>
       <div className="brief__infor_content">
-        Update your seller details and company information. This helps buyers
-        understand who you are and improves listing visibility.
+        Update your broker details and company information. 
       </div>
 
       <div className="complete_buyer_form_wrap seller__form_profile">
@@ -163,7 +173,7 @@ const openFile = (base64Data, fileName, mimeType) => {
             <label>Full Name</label>
             <InputText
             
-              value={formData.fullName || ""}
+              value={user?.fname}
               onChange={(e) => handleChange("fullName", e.target.value)}
             />
           </div>
@@ -174,15 +184,6 @@ const openFile = (base64Data, fileName, mimeType) => {
             
               value={formData.phone || ""}
               onChange={(e) => handleChange("phone", e.target.value)}
-            />
-          </div>
-
-          <div className="field form__field_col">
-            <label>Role / Investment Range</label>
-            <InputText
-            
-              value={formData.role || ""}
-              onChange={(e) => handleChange("role", e.target.value)}
             />
           </div>
 
@@ -203,13 +204,6 @@ const openFile = (base64Data, fileName, mimeType) => {
             />
           </div>
 
-          <div className="field form__field_col">
-            <label>Business Type</label>
-            <InputText
-              value={formData.businessType || ""}
-              onChange={(e) => handleChange("businessType", e.target.value)}
-            />
-          </div>
 
           <div className="field form__field_col">
             <label>City</label>
@@ -256,70 +250,22 @@ const openFile = (base64Data, fileName, mimeType) => {
         </div>
 
           {/* Image Uploader */}
-          <div className="field form__field_col field__image_uploader_profile">
+          <div className="field form__field_col ">
             <label>Company Logo / Image *</label>
             <div className="field__image_uploader_profile_block">
-               <FileUpload
-                accept="image/*"
-                maxFileSize={1000000}
-                customUpload
-                auto 
-                uploadHandler={(e) => {
-                  handleFileUpload(e, "companyLogo");
-                  e.options.clear();
-                }}
-                chooseLabel="Company Logo Upload"
-                
-              />
-
-            {formData.companyLogo && (
-              <div className="preview">
-                <img
-                  src={formData.companyLogo}
-                  alt="Uploaded preview"
-                  style={{ maxWidth: "150px", marginTop: "10px" }}
-                />
-              </div>
-            )}
+                <FileUploader
+                accept="image/png, image/jpeg,.pdf"
+                maxSizeMB={0.5}
+                onFileSelect={(file) =>  handleImageSelect(file)}
+                />  
             </div>
           </div>
-        {/* File Uploader */}
-        <div className="field form__field_col team__summary_doc_wrap">
-          <label>Team Summary Document</label>
-                <div className="team__summary_doc_wrap_field_block">
-                  <FileUpload
-                  mode="basic"
-                  accept=".pdf,.doc,.docx"
-                  maxFileSize={2000000}
-                  customUpload
-                  chooseLabel="File Upload"
-                  auto
-                  uploadHandler={(e) => {
-                    handleFileUpload(e, "teamSummaryDocument");
-                    e.options.clear(); // reset input so you can re-upload
-                  }}
-                />
-
-                {formData.teamSummaryDocument && (
-                  <div className="team__summary_doc_wrap_cont">
-                     <a
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      openFile(formData.teamSummaryDocument, "team-summary.pdf", "application/pdf");
-                    }}
-                  >
-                    <i className="pi pi-file" />
-                  </a>
-                  </div>
-                )}
-              </div>
-        </div>
+    
 
 
           {/* Textarea */}
           <div className="field form__field_col col_overvice_textarea">
-            <label>Company Overview</label>
+            <label>Broker Overview</label>
             <InputTextarea
               rows={4}
               autoResize
@@ -339,4 +285,4 @@ const openFile = (base64Data, fileName, mimeType) => {
   );
 };
 
-export default FreeSellerForm;
+export default BrokerProfile;

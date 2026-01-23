@@ -41,6 +41,8 @@ const AdminUserShow = () => {
     { label: "Seller Basic", value: "seller_basic" },
     { label: "Seller Listing", value: "seller_listing" },
     { label: "Seller Central", value: "seller_central" },
+    { label: "Seller Broker", value: "seller_broker" },
+    { label: "Seller Individual", value: "seller_individual" },
     { label: "M&A Expert Basic", value: "m&a_expert_basic" },
     { label: "M&A Expert Premium", value: "m&a_expert_premium" },
   ];

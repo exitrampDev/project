@@ -1792,7 +1792,7 @@ button.logout-btn {
 
 .content__listing_col h3 {
   margin: 0;
-  font-size: 35px;
+  font-size: 30px;
   color: #4f93ff;
   font-weight: 500;
   line-height: 1;
@@ -1803,7 +1803,7 @@ button.logout-btn {
 }
 
 .listing__filter_col .p-field label {
-  font-size: 18px;
+  font-size: 16px;
   color: #002f68;
   margin-bottom: 5px;
   display: block;
@@ -1832,15 +1832,13 @@ button.logout-btn {
 button.listing__filter_apply_btn.p-button.p-component {
   display: block;
   width: 100%;
-  margin-bottom: 10px;
   background: #ffb100;
   border-radius: 25px;
-  margin-top: 50px;
 }
 
 button.listing__filter_apply_btn.p-button.p-component span.p-button-label.p-c {
   text-transform: capitalize;
-  font-size: 18px;
+  font-size: 14px;
 }
 
 button.listing__filter_clearAll_btn.p-button.p-component {
@@ -1849,13 +1847,20 @@ button.listing__filter_clearAll_btn.p-button.p-component {
   background: transparent;
   border-radius: 30px;
   border: 1px solid #ffb100;
+  font-size: 16px;
 }
 
 button.listing__filter_clearAll_btn.p-button.p-component
   span.p-button-label.p-c {
   color: #002f68;
-  font-size: 18px;
+  font-size: 14px;
   text-transform: capitalize;
+}
+.filter__btn_footer {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin-top: 40px;
 }
 li.list__row_item {
   display: flex;
@@ -1868,7 +1873,7 @@ li.list__row_item {
 }
 
 li.list__row_item span.list__image_col {
-  width: 200px;
+  width: 160px;
 }
 
 li.list__row_item span.list_content_col {
@@ -1878,13 +1883,13 @@ li.list__row_item span.list_content_col {
 li.list__row_item span.list_content_col h4 {
   margin: 0;
   color: #002f68;
-  font-size: 25px;
+  font-size: 20px;
   line-height: 1;
   font-weight: 500;
 }
 li.list__row_item span.list_content_col p.location__item_list {
   margin: 5px 0 0 0;
-  font-size: 18px;
+  font-size: 16px;
   color: #002f68;
 }
 
@@ -1900,12 +1905,13 @@ li.list__row_item span.list_content_col p.list__item_industry span {
   padding: 8px 25px;
   border-radius: 30px;
   line-height: 1;
+  font-size: 13px;
 }
 .list__content_prices {
   display: flex;
   gap: 20px;
   color: #002f68;
-  font-size: 18px;
+  font-size: 16px;
   margin-top: 20px;
 }
 .listing__pagination_btn {
@@ -1930,7 +1936,7 @@ li.list__row_item
   margin-top: 20px;
   column-gap: 30px;
   row-gap: 15px;
-  align-items: flex-end;
+  align-items: flex-start;
 }
 
 .complete_buyer_form_wrap .field.form__field_col {
@@ -2531,8 +2537,39 @@ button.button__remove_listing_fav .pi-heart-fill:before {
     width: 100%;
 }
 
-.listing__creation_block_main_wrap .listing__creation_field_col span {
+/* .listing__creation_block_main_wrap
+  .listing__creation_field_col:not(.lisitng__text_editor)
+  span{
     width: 100%;
+} */
+.nav__dashboard ul li a.active {
+    color: #ffb100;
+}
+
+.nav__dashboard ul li a.active img {
+    filter: invert(37%) sepia(95%) saturate(1200%) hue-rotate(360deg) brightness(102%) contrast(103%);
+}
+.lisitng__text_editor  [data-pc-name="editor"]{
+background: #fff;
+    border: 1px solid #d1d5db;
+    border-radius: 9px;
+}
+.lisitng__text_editor [data-pc-name="editor"] .ql-toolbar.ql-snow {
+    border-top: none;
+    border-left: none;
+    border-right: none;
+}
+
+.lisitng__text_editor [data-pc-name="editor"]  .ql-container.ql-snow {
+    border: none;
+}
+.lisitng__text_editor .ql-editor {
+    max-height: 130px;
+}
+.business__list_single_description_content p, .business__list_single_description_content ul, .business__list_single_description_content ol {
+    margin: 0;
+        color: #002F68;
+        font-size: 14px;
 }
 
 .listing__creation_block_main_wrap .listing__creation_field_col .p-inputwrapper {
@@ -2741,7 +2778,7 @@ button.p-button-secondary.p-button.p-component {
         background: #fff;
 }
 
-.business__list_single_main_wrap {max-width: 1200px;margin: 0 auto;}
+.business__list_single_main_wrap {max-width: 1200px;}
 
 .breadcrubs__main_container {
     max-width: 1200px;
@@ -2765,7 +2802,7 @@ button.p-button-secondary.p-button.p-component {
 }
 
 .business__list_single_intro_block_content_col h2.listing__single_title {
-    font-size: 24px;
+    font-size: 20px;
     color: #002F68;
     font-weight: 600;
     margin: 0 0 5px 0;
@@ -2774,17 +2811,17 @@ button.p-button-secondary.p-button.p-component {
     display: flex;
     align-items: center;
     gap: 15px;
-    font-size: 18px;
+    font-size: 16px;
     color: #002F68;
     margin-bottom: 15px;
 }
 .business__list_single_intro_block_content_col .listing__single_listingId {
-    font-size: 16px;
+    font-size: 15px;
     color: #002F68;
     margin-bottom: 10px;
 }
 .business__list_single_intro_block_content_col .listing__single_businessOverview {
-    font-size: 16px;
+    font-size: 15px;
     color: #002F68;
     margin-bottom: 15px;
 }
@@ -2821,6 +2858,7 @@ button.p-button-secondary.p-button.p-component {
     width: 100%;
     color: #002F68;
     margin: 0 0 10px 0;
+    font-size: 18px;
 }
 
 .business__list_single_highLevelSummary .busines_lisiting_highLevelSummary_list {
@@ -2828,6 +2866,7 @@ button.p-button-secondary.p-button.p-component {
     color: #002F68;
     display: inline-flex;
     justify-content: space-between;
+    font-size: 14px;
 }
 
 .business__list_single_description_row {
@@ -2918,15 +2957,19 @@ button.p-button-secondary.p-button.p-component {
     width: 100%;
     justify-content: space-between;
     color: #002F68;
+    font-size: 14px;
 }
 .breadcrubs__main_container a {
     color: #002F68;
 }
-.listing__creation_block_main_wrap .listing__creation_field_col span {
-    display: flex;
-    align-items: center;
-    gap: 8px;
+.listing__creation_block_main_wrap
+  .listing__creation_field_col:not(.lisitng__text_editor)
+  span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
+
 .listing__creation_block_main_wrap .listing__creation_field_col {
     padding: 20px;
     background: #eff4fd;
@@ -3229,6 +3272,7 @@ h3.docRoom_data_table_access_files_title {
     display: inline-flex;
     justify-content: space-between;
     width: 100%;
+    font-size: 14px;
 }
 .m-b-10{margin-bottom: 10px !important;}
 .cim__file_exchange_wrap {
@@ -4139,6 +4183,67 @@ img.buyerSig {max-width: 100%;}
     border-radius: 100px;
     cursor: pointer;
     text-decoration: none;
+}
+.business__lisiting_aditional_images {
+    background: #fff;
+    position: absolute;
+    bottom: 11px;
+    right: 7px;
+    padding: 5px 10px;
+    font-size: 10px;
+    text-transform: capitalize;
+    border: 1px solid #E5E8F6;
+    border-radius: 7px;
+    color: #002F68;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.business__list_single_intro_block_img_col {
+    position: relative;
+}
+.additional__image_pop img.object-contain {
+    max-width: 100%;
+}
+
+.additional__image_pop_wrap .swiper-pagination.swiper-pagination-clickable.swiper-pagination-bullets.swiper-pagination-horizontal {
+    display: none;
+}
+
+.additional__image_pop_wrap svg.swiper-navigation-icon {
+    color: #fff;
+    width: 35px;
+    height: 35px;
+    background: #000;
+    padding: 9px;
+    border-radius: 5px;
+}
+.business__list_single_main_wrap.web__view_wrapper {
+    margin: 0 auto;
+}
+.filter__buttons_group {
+    display: flex;
+    gap: 15px;
+    margin-top: 50px;
+}
+.value__range_field .range__inputs {
+    display: flex;
+    align-items: center;
+}
+
+.value__range_field .range__inputs input.p-inputtext.p-component.p-filled {
+    width: fit-content;
+    max-width: 48%;
+}
+.listing__creation_block_main_wrap .listing__creation_field_col em {
+    font-size: 9px;
+    line-height: 1.3;
+    position: relative;
+    letter-spacing: 0.4px;
+    display: block;
+}
+.listing__creation_block_main_wrap .listing__creation_field_col .file__upload_info em{
+  font-size: 13px;
 }
 @media screen and (min-width: 1024px) and (max-width: 2500px) {
   .header_container nav.nav_col a {
@@ -5134,6 +5239,12 @@ header.signup_content .p-menubar.p-component {
     overflow: auto;
     transition: ease all 0.8s;
 }
+.filter__buttons_group {
+    display: flex;
+    gap: 15px;
+    margin-top: 40px;
+}
+
 .content__listing_col {
     width: 100%;
 }
