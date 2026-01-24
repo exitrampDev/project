@@ -331,11 +331,9 @@ export class CreateBusinessDto {
   @IsString()
   MonthlyRentAmount?: any;
 
-    @IsOptional()
-  leaseExpiration?: string;
-
   @IsOptional()
   leaseExpiration?: string;
+
 
   @IsOptional()
   buildingSF?: string;

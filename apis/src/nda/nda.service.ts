@@ -57,7 +57,7 @@ export class NdaService {
     await this.notificationHelper.createNotification({
       userId: new Types.ObjectId(business.ownerId),
       title: 'NDA Submitted',
-      message: `A new NDA has been submitted for on your business "${business.businessName}"`,
+      message: `A new NDA has been submitted for on your business "${business.listingTitle}"`,
     });
 
     // Send email to business owner
@@ -67,7 +67,7 @@ export class NdaService {
       'New NDA Submission',
       'ndaSubmitted',
       {
-        message: `A new NDA has been submitted for your business "${business.businessName}". Please review it at your earliest convenience.`,
+        message: `A new NDA has been submitted for your business "${business.listingTitle}". Please review it at your earliest convenience.`,
       }
     );
   }
