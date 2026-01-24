@@ -1,4 +1,4 @@
-import { IsString, IsOptional, IsArray, IsNumber, Matches, IsObject, IsBoolean, IsEnum, IsNotEmpty, IsEmail, IsInt } from 'class-validator';
+import { IsString, IsOptional, IsArray, IsNumber, Matches, IsObject, IsBoolean, IsEnum, IsNotEmpty, IsEmail, IsInt, IsIn } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { UniqueInCollection } from 'src/common/decorators/unique-in-collection.validator';
 
@@ -323,15 +323,15 @@ export class CreateBusinessDto {
   propertiesIncluded?: any;
 
   @IsOptional()
-  @IsString()
+  @IsInt()
   propertyValue?: any;
 
   @IsOptional()
-   @IsString()
+  @IsString()
   isPropertyLeased?: any;
 
   @IsOptional()
-  @IsString()
+  @IsInt()
   monthlyRentAmount?: any;
 
   @IsOptional()

@@ -351,14 +351,14 @@ export class Business {
   @Prop({ type: String, default: null })
   propertiesIncluded?: string;
 
-  @Prop({ type: String, default: null })
-  propertyValue?: string;
+  @Prop({ type: Number, default: null })
+  propertyValue?: number;
 
   @Prop({ type: String, default: null })
   isPropertyLeased?: string;
 
-  @Prop({ type: String, default: null })
-  monthlyRentAmount?: string;
+  @Prop({ type: Number, default: null })
+  monthlyRentAmount?: number;
 
   @Prop({ type: String, default: null })
   leaseExpiration?: string;
