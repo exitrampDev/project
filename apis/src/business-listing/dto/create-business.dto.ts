@@ -92,7 +92,6 @@ export class CreateBusinessDto {
   @IsString()
   confidentiality?: string;
 
- 
 
   @IsBoolean()
   showContactOnListing?: boolean;

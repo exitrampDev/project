@@ -412,8 +412,8 @@ export class Business {
   @Prop({ type: String, default: 0 })
   latestSDE?: string;
 
-  @Prop({ type: String, default: 0 })
-  latestNetProfit?: string;
+  @Prop({ type: Number, default: 0 })
+  latestNetProfit?: number;
 
   @Prop({ type: String, default: 0 })
   ffeValue?: string;
