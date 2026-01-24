@@ -129,7 +129,7 @@ export class NdaService {
             { message: { $regex: search, $options: 'i' } },
             { cimAccess: { $regex: search, $options: 'i' } },
             { status: { $regex: search, $options: 'i' } },
-            { 'business.businessName': { $regex: search, $options: 'i' } }, // 👈 new
+            { 'business.listingTitle': { $regex: search, $options: 'i' } }, // 👈 new
           ],
         },
       });
