@@ -144,7 +144,7 @@ export class NdaService {
           _id: 1,
           businessId:1,
           docRoomAccess:1,
-          businessName: { $ifNull: ['$business.listingTitle', 'N/A'] },
+          listingTitle: { $ifNull: ['$business.listingTitle', 'N/A'] },
           businessType: { $ifNull: ['$business.businessType', 'N/A'] },
           ndaStatus: '$status',
           // cimUrl: { $ifNull: ['$business.cimUrl', 'N/A'] },
