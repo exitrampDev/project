@@ -201,8 +201,8 @@ export class CreateBusinessDto {
   industry?: string;
 
   @IsOptional()
-  @IsString()
-  revenue?: string;
+  @IsInt()
+  revenue?: number;
 
   @IsOptional()
   @IsInt()
