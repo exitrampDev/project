@@ -1,4 +1,4 @@
-import { IsString, IsOptional, IsArray, IsNumber, Matches, IsObject, IsBoolean, IsEnum, IsNotEmpty, IsEmail } from 'class-validator';
+import { IsString, IsOptional, IsArray, IsNumber, Matches, IsObject, IsBoolean, IsEnum, IsNotEmpty, IsEmail, IsInt } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { UniqueInCollection } from 'src/common/decorators/unique-in-collection.validator';
 
@@ -21,7 +21,7 @@ export enum CimStatus {
 export class CreateBusinessDto {
 
   @IsString()
-  businessName: string;
+  referenceName: string;
   
 
   @IsOptional()
@@ -29,7 +29,7 @@ export class CreateBusinessDto {
   businessType?: string;
 
   @IsOptional()
-  @IsString()
+  // @IsString()
   listingTitle?: string;
 
   @IsOptional()
@@ -60,6 +60,7 @@ export class CreateBusinessDto {
   @IsOptional()
   @IsString()
   businessCountry?: string;
+
 
   // ----------------- Ownership & Structure -----------------
   @IsOptional()
@@ -92,6 +93,11 @@ export class CreateBusinessDto {
 
   @IsString()
   confidentiality?: string;
+
+ 
+  @IsEnum({ yes: 'yes', no: 'no' })
+  @IsString()
+  showContactOnListing?: 'yes' | 'no';
 
   @IsOptional()
   @IsString()
@@ -160,9 +166,10 @@ export class CreateBusinessDto {
   workforceAllocation?: any;
 
   @IsOptional()
-  @IsNumber()
-  @Transform(({ value }) => parseInt(value, 10))
-  numberOfEmployees?: number;
+  @IsString()
+  // @IsNumber()
+  // @Transform(({ value }) => parseInt(value, 10))
+  numberOfEmployees?: string;
 
   @IsOptional()
   @IsString()
@@ -195,16 +202,16 @@ export class CreateBusinessDto {
 
   @IsOptional()
   @IsString()
-  annualRevenue?: string;
+  revenue?: string;
 
   @IsOptional()
-  @IsNumber()
-  @Transform(({ value }) => parseFloat(value))
+  @IsInt()
+  @Transform(({ value }) => parseInt(value, 10))
   askingPrice?: number;
 
   @IsOptional()
-  @IsNumber()
-  @Transform(({ value }) => parseFloat(value))
+  @IsInt()
+  @Transform(({ value }) => parseInt(value))
   cashFlow?: number;
 
   // ----------------- Status -----------------
@@ -232,16 +239,16 @@ export class CreateBusinessDto {
   franchise?: string;
 
   @IsOptional()
-  @IsBoolean()
-  isFranchise?: boolean;
+  @IsString()
+  isFranchise?: string;
 
   @IsOptional()
-  @IsBoolean()
-  isRelocatable?: boolean;
+  @IsString()
+  isRelocatable?: string;
 
   @IsOptional()
-  @IsBoolean()
-  isStartup?: boolean;
+  @IsString()
+  isStartup?: string;
 
   @IsOptional()
   @IsString()
@@ -307,10 +314,25 @@ export class CreateBusinessDto {
   facilityAndLocationDetails?: string;
 
   @IsOptional()
+   @IsString()
+  propertyIncludededInSale?:boolean;
+
+  @IsOptional()
   propertyIncludedinAskingPrice?:boolean;
 
   @IsOptional()
   propertiesIncluded?: any;
+
+  @IsOptional()
+   @IsString()
+  isPropertyLeased?: any;
+
+  @IsOptional()
+  @IsString()
+  MonthlyRentAmount?: any;
+
+    @IsOptional()
+  leaseExpiration?: string;
 
   @IsOptional()
   leaseExpiration?: string;
@@ -346,7 +368,7 @@ export class CreateBusinessDto {
 
   @IsOptional()
   @IsString()
-  inventoryIncluded?: number;
+  inventoryIncluded?: string;
 
   @IsOptional()
   @IsNumber()

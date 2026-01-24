@@ -130,7 +130,7 @@ export const FinancialEntrySchema = SchemaFactory.createForClass(FinancialEntry)
 @Schema({ timestamps: true })
 export class Business {
   @Prop({ required: true })
-  businessName: string;
+  referenceName: string;
 
   @Prop({ default: null })
   businessType?: string;
@@ -159,11 +159,6 @@ export class Business {
   @Prop({ default: null })
   businessCountry?: string;
 
-  @Prop({ type: String, default: '' })
-  businessAddress?: string;
-
-  @Prop({ type: String, default: '' })
-  businessZipCode?: string;
 
   @Prop({ type: String, default: '' })
   postCloseSupport?: string;
@@ -196,6 +191,9 @@ export class Business {
 
   @Prop({ type: String, default: null })
   confidentiality?: string;
+
+  @Prop({ type: String, default: 'no' })
+  showContactOnListing?: string;
 
   @Prop({ type: String, default: '' })
   contactName?: string;
@@ -237,8 +235,8 @@ export class Business {
   @Prop({ type: String, default: null })
   workforceAllocation?: string;
 
-  @Prop({ type: Number, default: 0 })
-  numberOfEmployees?: number;
+  @Prop({ type: String, default: '0' })
+  numberOfEmployees?: string;
 
   @Prop({ type: Number, default: 0 })
   averageTenureInYears?: number;
@@ -286,14 +284,14 @@ export class Business {
   @Prop({ type: String, default: false })
   franchise?: string;
 
-  @Prop({ type: Boolean, default: false })
-  isFranchise?: boolean;
+  @Prop({ type: String, default: false })
+  isFranchise?: string;
 
-  @Prop({ type: Boolean, default: false })
-  isRelocatable?: boolean;
+  @Prop({ type: String, default: false })
+  isRelocatable?: string;
 
-  @Prop({ type: Boolean, default: false })
-  isStartup?: boolean;
+  @Prop({ type: String, default: false })
+  isStartup?: string;
 
   @Prop({ type: String, default: '' })
   supportAndTraining?: string;
@@ -346,11 +344,23 @@ export class Business {
   @Prop({ type: String, default: '' })
   facilityAndLocationDetails?: string;
 
+  @Prop({ type: String, default: '' })
+  propertyIncludededInSale?: string;
+
   @Prop({ type: Boolean, default: false })
   propertyIncludedinAskingPrice?: boolean;
 
   @Prop({ type: String, default: null })
   propertiesIncluded?: string;
+
+  @Prop({ type: String, default: null })
+  propertyValue?: string;
+
+  @Prop({ type: String, default: null })
+  isPropertyLeased?: string;
+
+  @Prop({ type: String, default: null })
+  MonthlyRentAmount?: string;
 
   @Prop({ type: String, default: null })
   leaseExpiration?: string;
@@ -379,7 +389,7 @@ export class Business {
   inventoryValue?: number;
 
   @Prop({ type: String })
-  inventoryIncluded?: number;
+  inventoryIncluded?: string;
 
   @Prop({ type: Number, default: 0 })
   realEstateValue?: number;
