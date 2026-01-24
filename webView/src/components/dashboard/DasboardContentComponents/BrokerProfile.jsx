@@ -1,179 +1,187 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Toast } from "primereact/toast";
-import { Link } from "react-router-dom";
 import axios from "axios";
 import { useRecoilValue } from "recoil";
-import { authState,apiBaseUrlState  } from "../../../recoil/ctaState";
+import { Toast } from "primereact/toast";
 import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Button } from "primereact/button";
-import { FileUpload } from "primereact/fileupload";
-import notifInfo from "../../../assets/notifInfo.png";
-import serachIcon from "../../../assets/serachIcon.png";
-import userImg from "../../../assets/userImg.png";
 import { Calendar } from "primereact/calendar";
+
+import { authState, apiBaseUrlState } from "../../../recoil/ctaState";
 import DashboardHeader from "./DashboardHeaderBlock";
 import FileUploader from "../../customcomponent/FileUploader";
 
 const BrokerProfile = () => {
-  const { access_token } = useRecoilValue(authState) ?? {};
-  const API_BASE = useRecoilValue(apiBaseUrlState);
-  const user = useRecoilValue(authState).user;
   const toast = useRef(null);
+
+  const { access_token, user } = useRecoilValue(authState) ?? {};
+  const API_BASE = useRecoilValue(apiBaseUrlState);
+
+  const [loading, setLoading] = useState(true);
   const [dirty, setDirty] = useState(false);
+
   const [formData, setFormData] = useState({
     fullName: "",
     phone: "",
-    role: "",
     companyName: "",
     companyWebsite: "",
-    businessType: "",
     city: "",
     state: "",
     country: "",
     zipCode: "",
-    yearsInOperation: "",
-    status: "draft",
-    companyLogo: "",
-    teamSummaryDocument: "",
+    yearsInOperation: null,
     companyOverview: "",
+    companyLogo: "",
   });
 
-  const [existingId, setExistingId] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  // Fetch existing seller data
+  /* ===========================
+     FETCH EXISTING PROFILE
+  ============================ */
   useEffect(() => {
     if (!access_token) return;
 
-    axios
-      .get(`${API_BASE}/free-seller`, {
-        headers: { Authorization: `Bearer ${access_token}` },
-      })
-      .then((res) => {
-        if (res.data.data[0]) {
-          if (res.data.data[0]._id) {
-            setExistingId(res.data.data[0]._id);
-            setFormData(res.data.data[0]);
-          } else if (Array.isArray(res.data) && res.data.length > 0) {
-            setExistingId(res.data[0]._id);
-            setFormData(res.data[0]);
-          }
-        }
-         
-      })
-      .catch((err) => console.error("Error fetching data", err))
-      .finally(() => setLoading(false));
-  }, [access_token]);
+    const fetchProfile = async () => {
+      try {
+        const res = await axios.get(`${API_BASE}/auth/me`, {
+          headers: {
+            Authorization: `Bearer ${access_token}`,
+          },
+        });
 
+        const data = res.data;
+
+        if (data) {
+          setFormData({
+            fullName: `${data.first_name || ""} ${data.last_name || ""}`.trim(),
+            phone: data.profile?.phone_number || "",
+            companyName: data.profile?.company || "",
+            companyWebsite: data.profile?.website || "",
+            city: data.profile?.location || "",
+            state: data.profile?.state || "",
+            country: "",
+            zipCode: data.profile?.zipCode || "",
+            yearsInOperation: data.profile?.years_in_operation
+              ? new Date(data.profile.years_in_operation)
+              : null,
+            companyOverview: data.profile?.overview || "",
+            companyLogo: data.profile?.logo || "",
+          });
+        }
+      } catch (err) {
+        console.error("Profile fetch failed", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProfile();
+  }, [access_token, API_BASE]);
+
+console.log("user>>>>>>>>>>>", user);
+
+
+  /* ===========================
+     FORM HANDLERS
+  ============================ */
   const handleChange = (name, value) => {
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
     setDirty(true);
   };
 
-  // Handle file upload
-   // Handle file upload
- 
-
-
-const handleImageSelect = (e) => {
-  console.log("File selected for listing image:", e);
-  const file = e;
-  const reader = new FileReader();
-
-  reader.onloadend = () => {
-    handleChange("companyLogo", reader.result); 
+  const handleImageSelect = (file) => {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      handleChange("companyLogo", reader.result);
+    };
+    reader.readAsDataURL(file);
   };
 
-  reader.readAsDataURL(file);
-};
+  /* ===========================
+     BUILD API PAYLOAD
+  ============================ */
+  const buildPayload = () => {
+    const [first_name = "", last_name = ""] = formData.fullName.split(" ");
+    return {
+      first_name,
+      last_name,
+      
+      email: user?.email,
 
+      profile: {
+        company: formData.companyName,
+        website: formData.companyWebsite,
+        location: formData.city,
+        state: formData.state,
+        zipCode: formData.zipCode,
+        phone_number: formData.phone,
+        overview: formData.companyOverview,
+        logo: formData.companyLogo,
+        years_in_operation: formData.yearsInOperation,
+      },
+    };
+  };
 
-
-
-
-
-
-
+  /* ===========================
+     SUBMIT
+  ============================ */
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("existingId PATCH", existingId);
+
     try {
-      if (existingId) {
-        await axios.patch(
-          `${API_BASE}/free-seller/${existingId}`,
-          formData,
-          { headers: { Authorization: `Bearer ${access_token}` } }
-        );
-        toast.current.show({
-          severity: "success",
-          summary: "Success",
-          detail: "Data updated successfully!",
-          life: 3000,
-        });
-      } else {
-        const res = await axios.post(
-         `${API_BASE}/free-seller`,
-          formData,
-          { headers: { Authorization: `Bearer ${access_token}` } }
-        );
-        setExistingId(res.data.data[0]._id);
-        toast.current.show({
-          severity: "success",
-          summary: "Success",
-          detail: "Data created successfully!",
-          life: 3000,
-        });
-      }
+      await axios.patch(`${API_BASE}/users/profile`, buildPayload(), {
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+        },
+      });
+
+      toast.current.show({
+        severity: "success",
+        summary: "Success",
+        detail: "Profile updated successfully",
+        life: 3000,
+      });
+
       setDirty(false);
     } catch (err) {
-      console.error("Error saving data", err);
+      console.error("Profile update error", err);
       toast.current.show({
         severity: "error",
         summary: "Error",
-        detail: "Error saving data",
+        detail: "Failed to update profile",
         life: 3000,
       });
     }
   };
 
   if (loading) return <p>Loading...</p>;
-const openFile = (base64Data, fileName, mimeType) => {
-  const byteCharacters = atob(base64Data.split(",")[1]);
-  const byteNumbers = new Array(byteCharacters.length).fill().map((_, i) =>
-    byteCharacters.charCodeAt(i)
-  );
-  const byteArray = new Uint8Array(byteNumbers);
-  const blob = new Blob([byteArray], { type: mimeType });
-  const blobUrl = URL.createObjectURL(blob);
 
-  window.open(blobUrl, "_blank"); // safe preview
-};
+  /* ===========================
+     RENDER
+  ============================ */
   return (
     <>
       <Toast ref={toast} />
-   
-<DashboardHeader headingData="Broker Profile"/>
+
+      <DashboardHeader headingData="Broker Profile" />
+
       <div className="brief__infor_content">
-        Update your broker details and company information. 
+        Update your broker details and company information.
       </div>
 
       <div className="complete_buyer_form_wrap seller__form_profile">
         <form onSubmit={handleSubmit} className="form_wrap">
-          {/* Email (read-only) */}
+          {/* Email */}
           <div className="field form__field_col">
             <label>Email</label>
-            <div className="form__field_col_hardocded_email">{user?.email}</div>
+            <div className="form__field_col_hardocded_email">
+              {user?.email}
+            </div>
           </div>
 
           <div className="field form__field_col">
             <label>Full Name</label>
             <InputText
-            
-              value={user?.fname}
+              value={formData.fullName}
               onChange={(e) => handleChange("fullName", e.target.value)}
             />
           </div>
@@ -181,8 +189,7 @@ const openFile = (base64Data, fileName, mimeType) => {
           <div className="field form__field_col">
             <label>Phone</label>
             <InputText
-            
-              value={formData.phone || ""}
+              value={formData.phone}
               onChange={(e) => handleChange("phone", e.target.value)}
             />
           </div>
@@ -190,8 +197,7 @@ const openFile = (base64Data, fileName, mimeType) => {
           <div className="field form__field_col">
             <label>Company Name</label>
             <InputText
-            
-              value={formData.companyName || ""}
+              value={formData.companyName}
               onChange={(e) => handleChange("companyName", e.target.value)}
             />
           </div>
@@ -199,16 +205,17 @@ const openFile = (base64Data, fileName, mimeType) => {
           <div className="field form__field_col">
             <label>Company Website</label>
             <InputText
-              value={formData.companyWebsite || ""}
-              onChange={(e) => handleChange("companyWebsite", e.target.value)}
+              value={formData.companyWebsite}
+              onChange={(e) =>
+                handleChange("companyWebsite", e.target.value)
+              }
             />
           </div>
-
 
           <div className="field form__field_col">
             <label>City</label>
             <InputText
-              value={formData.city || ""}
+              value={formData.city}
               onChange={(e) => handleChange("city", e.target.value)}
             />
           </div>
@@ -216,68 +223,56 @@ const openFile = (base64Data, fileName, mimeType) => {
           <div className="field form__field_col">
             <label>State</label>
             <InputText
-              value={formData.state || ""}
+              value={formData.state}
               onChange={(e) => handleChange("state", e.target.value)}
-            />
-          </div>
-
-          <div className="field form__field_col">
-            <label>Country</label>
-            <InputText
-              value={formData.country || ""}
-              onChange={(e) => handleChange("country", e.target.value)}
             />
           </div>
 
           <div className="field form__field_col">
             <label>Zip Code</label>
             <InputText
-              value={formData.zipCode || ""}
+              value={formData.zipCode}
               onChange={(e) => handleChange("zipCode", e.target.value)}
             />
           </div>
 
-        <div className="field form__field_col field form__field_col_yearOperation_content">
-          <label>Years in Operation</label>
-          <Calendar
-            value={ formData?.yearsInOperation ? new Date(formData.yearsInOperation) : new Date()}
-            onChange={(e) => handleChange("yearsInOperation", e.value)}
-            dateFormat="yy" 
-            view="year"     
-            showIcon        
-            placeholder="Select Year"
-          />
-        </div>
-
-          {/* Image Uploader */}
-          <div className="field form__field_col ">
-            <label>Company Logo / Image *</label>
-            <div className="field__image_uploader_profile_block">
-                <FileUploader
-                accept="image/png, image/jpeg,.pdf"
-                maxSizeMB={0.5}
-                onFileSelect={(file) =>  handleImageSelect(file)}
-                />  
-            </div>
+          <div className="field form__field_col">
+            <label>Years in Operation</label>
+            <Calendar
+              value={formData.yearsInOperation}
+              onChange={(e) =>
+                handleChange("yearsInOperation", e.value)
+              }
+              view="year"
+              dateFormat="yy"
+              showIcon
+            />
           </div>
-    
 
+          <div className="field form__field_col">
+            <label>Company Logo</label>
+            <FileUploader
+              accept="image/png, image/jpeg"
+              maxSizeMB={0.5}
+              existingFileUrl={formData.companyLogo || "dss"}
+              onFileSelect={handleImageSelect}
+            />
+          </div>
 
-          {/* Textarea */}
           <div className="field form__field_col col_overvice_textarea">
             <label>Broker Overview</label>
             <InputTextarea
               rows={4}
               autoResize
-              value={formData.companyOverview || ""}
-              onChange={(e) => handleChange("companyOverview", e.target.value)}
+              value={formData.companyOverview}
+              onChange={(e) =>
+                handleChange("companyOverview", e.target.value)
+              }
             />
           </div>
 
           <div className="submit__btn_block">
-            <div className="col-12 flex justify-content-end mt-3">
-              <Button label="Save Profile" type="submit" disabled={!dirty} />
-            </div>
+            <Button label="Save Profile" type="submit" disabled={!dirty} />
           </div>
         </form>
       </div>

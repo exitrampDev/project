@@ -1,25 +1,26 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Toast } from "primereact/toast";
-import { Link } from "react-router-dom";
 import axios from "axios";
 import { useRecoilValue } from "recoil";
-import { authState,apiBaseUrlState  } from "../../../recoil/ctaState";
+import { Toast } from "primereact/toast";
 import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Button } from "primereact/button";
-import { FileUpload } from "primereact/fileupload";
-import notifInfo from "../../../assets/notifInfo.png";
-import serachIcon from "../../../assets/serachIcon.png";
-import userImg from "../../../assets/userImg.png";
 import { Calendar } from "primereact/calendar";
+import { FileUpload } from "primereact/fileupload";
+
+import { authState, apiBaseUrlState } from "../../../recoil/ctaState";
 import DashboardHeader from "./DashboardHeaderBlock";
+import FileUploader from "../../customcomponent/FileUploader";
 
 const FreeSellerForm = () => {
-  const { access_token } = useRecoilValue(authState) ?? {};
-  const API_BASE = useRecoilValue(apiBaseUrlState);
-  const user = useRecoilValue(authState).user;
   const toast = useRef(null);
+
+  const { access_token, user } = useRecoilValue(authState) ?? {};
+  const API_BASE = useRecoilValue(apiBaseUrlState);
+
+  const [loading, setLoading] = useState(true);
   const [dirty, setDirty] = useState(false);
+
   const [formData, setFormData] = useState({
     fullName: "",
     phone: "",
@@ -31,307 +32,275 @@ const FreeSellerForm = () => {
     state: "",
     country: "",
     zipCode: "",
-    yearsInOperation: "",
+    yearsInOperation: null,
     status: "draft",
     companyLogo: "",
     teamSummaryDocument: "",
     companyOverview: "",
   });
 
-  const [existingId, setExistingId] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  // Fetch existing seller data
+  /* ===========================
+     FETCH PROFILE (GET)
+  ============================ */
   useEffect(() => {
     if (!access_token) return;
 
-    axios
-      .get(`${API_BASE}/free-seller`, {
-        headers: { Authorization: `Bearer ${access_token}` },
-      })
-      .then((res) => {
-        if (res.data.data[0]) {
-          if (res.data.data[0]._id) {
-            setExistingId(res.data.data[0]._id);
-            setFormData(res.data.data[0]);
-          } else if (Array.isArray(res.data) && res.data.length > 0) {
-            setExistingId(res.data[0]._id);
-            setFormData(res.data[0]);
-          }
-        }
-         
-      })
-      .catch((err) => console.error("Error fetching data", err))
-      .finally(() => setLoading(false));
-  }, [access_token]);
+    const fetchProfile = async () => {
+      try {
+        const res = await axios.get(`${API_BASE}/auth/me`, {
+          headers: { Authorization: `Bearer ${access_token}` },
+        });
 
+        const data = res.data;
+        if (!data) return;
+
+        setFormData({
+          fullName: `${data.first_name || ""} ${data.last_name || ""}`.trim(),
+          phone: data.profile?.phone_number || "",
+          role: "",
+          companyName: data.profile?.company || "",
+          companyWebsite: data.profile?.website || "",
+          businessType: "",
+          city: data.profile?.location || "",
+          state: data.profile?.state || "",
+          country: "",
+          zipCode: data.profile?.zipCode || "",
+          yearsInOperation: data.profile?.years_in_operation
+            ? new Date(data.profile.years_in_operation)
+            : null,
+          status: "draft",
+          companyLogo: data.profile?.logo || "",
+          teamSummaryDocument: "",
+          companyOverview: data.profile?.overview || "",
+        });
+      } catch (err) {
+        console.error("Profile fetch failed", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProfile();
+  }, [access_token, API_BASE]);
+
+  /* ===========================
+     FORM HANDLERS
+  ============================ */
   const handleChange = (name, value) => {
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
     setDirty(true);
   };
 
-  // Handle file upload
-   // Handle file upload
- const handleFileUpload = (event, field) => {
-  const file = event.files?.[0] || event.originalEvent?.target?.files?.[0];
-  if (!file) return;
+  const handleFileUpload = (event, field) => {
+    const file =
+      event.files?.[0] || event.originalEvent?.target?.files?.[0];
+    if (!file) return;
 
-  const reader = new FileReader();
-  reader.onloadend = () => {
-    handleChange(field, reader.result); // store as base64 string
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      handleChange(field, reader.result);
+    };
+    reader.readAsDataURL(file);
   };
-  reader.readAsDataURL(file);
-};
 
+  /* ===========================
+     BUILD PATCH PAYLOAD
+  ============================ */
+  const buildPayload = () => {
+    const [first_name = "", last_name = ""] =
+      formData.fullName.split(" ");
 
+    return {
+      first_name,
+      last_name,
+      email: user?.email,
+      profile: {
+        phone_number: formData.phone,
+        company: formData.companyName,
+        website: formData.companyWebsite,
+        location: formData.city,
+        state: formData.state,
+        zipCode: formData.zipCode,
+        overview: formData.companyOverview,
+        logo: formData.companyLogo,
+        years_in_operation: formData.yearsInOperation,
+      },
+    };
+  };
+
+  /* ===========================
+     SUBMIT (PATCH)
+  ============================ */
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("existingId PATCH", existingId);
+
     try {
-      if (existingId) {
-        await axios.patch(
-          `${API_BASE}/free-seller/${existingId}`,
-          formData,
-          { headers: { Authorization: `Bearer ${access_token}` } }
-        );
-        toast.current.show({
-          severity: "success",
-          summary: "Success",
-          detail: "Data updated successfully!",
-          life: 3000,
-        });
-      } else {
-        const res = await axios.post(
-         `${API_BASE}/free-seller`,
-          formData,
-          { headers: { Authorization: `Bearer ${access_token}` } }
-        );
-        setExistingId(res.data.data[0]._id);
-        toast.current.show({
-          severity: "success",
-          summary: "Success",
-          detail: "Data created successfully!",
-          life: 3000,
-        });
-      }
+      await axios.patch(
+        `${API_BASE}/users/profile`,
+        buildPayload(),
+        {
+          headers: { Authorization: `Bearer ${access_token}` },
+        }
+      );
+
+      toast.current.show({
+        severity: "success",
+        summary: "Success",
+        detail: "Profile updated successfully",
+        life: 3000,
+      });
+
       setDirty(false);
     } catch (err) {
-      console.error("Error saving data", err);
+      console.error("Profile update failed", err);
       toast.current.show({
         severity: "error",
         summary: "Error",
-        detail: "Error saving data",
+        detail: "Failed to update profile",
         life: 3000,
       });
     }
   };
 
   if (loading) return <p>Loading...</p>;
-const openFile = (base64Data, fileName, mimeType) => {
-  const byteCharacters = atob(base64Data.split(",")[1]);
-  const byteNumbers = new Array(byteCharacters.length).fill().map((_, i) =>
-    byteCharacters.charCodeAt(i)
-  );
-  const byteArray = new Uint8Array(byteNumbers);
-  const blob = new Blob([byteArray], { type: mimeType });
-  const blobUrl = URL.createObjectURL(blob);
 
-  window.open(blobUrl, "_blank"); // safe preview
-};
+  /* ===========================
+     RENDER
+  ============================ */
   return (
     <>
       <Toast ref={toast} />
-   
-<DashboardHeader headingData="My Seller Profile"/>
+
+      <DashboardHeader headingData="My Seller Profile" />
+
       <div className="brief__infor_content">
-        Update your seller details and company information. This helps buyers
-        understand who you are and improves listing visibility.
+        Update your seller details and company information. This helps
+        buyers understand who you are and improves listing visibility.
       </div>
 
       <div className="complete_buyer_form_wrap seller__form_profile">
         <form onSubmit={handleSubmit} className="form_wrap">
-          {/* Email (read-only) */}
+          {/* Email */}
           <div className="field form__field_col">
             <label>Email</label>
-            <div className="form__field_col_hardocded_email">{user?.email}</div>
+            <div className="form__field_col_hardocded_email">
+              {user?.email}
+            </div>
           </div>
 
           <div className="field form__field_col">
             <label>Full Name</label>
             <InputText
-            
-              value={formData.fullName || ""}
-              onChange={(e) => handleChange("fullName", e.target.value)}
+              value={formData.fullName}
+              onChange={(e) =>
+                handleChange("fullName", e.target.value)
+              }
             />
           </div>
 
           <div className="field form__field_col">
             <label>Phone</label>
             <InputText
-            
-              value={formData.phone || ""}
-              onChange={(e) => handleChange("phone", e.target.value)}
-            />
-          </div>
-
-          <div className="field form__field_col">
-            <label>Role / Investment Range</label>
-            <InputText
-            
-              value={formData.role || ""}
-              onChange={(e) => handleChange("role", e.target.value)}
+              value={formData.phone}
+              onChange={(e) =>
+                handleChange("phone", e.target.value)
+              }
             />
           </div>
 
           <div className="field form__field_col">
             <label>Company Name</label>
             <InputText
-            
-              value={formData.companyName || ""}
-              onChange={(e) => handleChange("companyName", e.target.value)}
+              value={formData.companyName}
+              onChange={(e) =>
+                handleChange("companyName", e.target.value)
+              }
             />
           </div>
 
           <div className="field form__field_col">
             <label>Company Website</label>
             <InputText
-              value={formData.companyWebsite || ""}
-              onChange={(e) => handleChange("companyWebsite", e.target.value)}
-            />
-          </div>
-
-          <div className="field form__field_col">
-            <label>Business Type</label>
-            <InputText
-              value={formData.businessType || ""}
-              onChange={(e) => handleChange("businessType", e.target.value)}
+              value={formData.companyWebsite}
+              onChange={(e) =>
+                handleChange("companyWebsite", e.target.value)
+              }
             />
           </div>
 
           <div className="field form__field_col">
             <label>City</label>
             <InputText
-              value={formData.city || ""}
-              onChange={(e) => handleChange("city", e.target.value)}
+              value={formData.city}
+              onChange={(e) =>
+                handleChange("city", e.target.value)
+              }
             />
           </div>
 
           <div className="field form__field_col">
             <label>State</label>
             <InputText
-              value={formData.state || ""}
-              onChange={(e) => handleChange("state", e.target.value)}
-            />
-          </div>
-
-          <div className="field form__field_col">
-            <label>Country</label>
-            <InputText
-              value={formData.country || ""}
-              onChange={(e) => handleChange("country", e.target.value)}
+              value={formData.state}
+              onChange={(e) =>
+                handleChange("state", e.target.value)
+              }
             />
           </div>
 
           <div className="field form__field_col">
             <label>Zip Code</label>
             <InputText
-              value={formData.zipCode || ""}
-              onChange={(e) => handleChange("zipCode", e.target.value)}
+              value={formData.zipCode}
+              onChange={(e) =>
+                handleChange("zipCode", e.target.value)
+              }
             />
           </div>
 
-        <div className="field form__field_col field form__field_col_yearOperation_content">
-          <label>Years in Operation</label>
-          <Calendar
-            value={ formData?.yearsInOperation ? new Date(formData.yearsInOperation) : new Date()}
-            onChange={(e) => handleChange("yearsInOperation", e.value)}
-            dateFormat="yy" 
-            view="year"     
-            showIcon        
-            placeholder="Select Year"
-          />
-        </div>
-
-          {/* Image Uploader */}
-          <div className="field form__field_col field__image_uploader_profile">
-            <label>Company Logo / Image *</label>
-            <div className="field__image_uploader_profile_block">
-               <FileUpload
-                accept="image/*"
-                maxFileSize={1000000}
-                customUpload
-                auto 
-                uploadHandler={(e) => {
-                  handleFileUpload(e, "companyLogo");
-                  e.options.clear();
-                }}
-                chooseLabel="Company Logo Upload"
-                
-              />
-
-            {formData.companyLogo && (
-              <div className="preview">
-                <img
-                  src={formData.companyLogo}
-                  alt="Uploaded preview"
-                  style={{ maxWidth: "150px", marginTop: "10px" }}
-                />
-              </div>
-            )}
-            </div>
+          <div className="field form__field_col">
+            <label>Years in Operation</label>
+            <Calendar
+              value={formData.yearsInOperation}
+              onChange={(e) =>
+                handleChange("yearsInOperation", e.value)
+              }
+              view="year"
+              dateFormat="yy"
+              showIcon
+            />
           </div>
-        {/* File Uploader */}
-        <div className="field form__field_col team__summary_doc_wrap">
-          <label>Team Summary Document</label>
-                <div className="team__summary_doc_wrap_field_block">
-                  <FileUpload
-                  mode="basic"
-                  accept=".pdf,.doc,.docx"
-                  maxFileSize={2000000}
-                  customUpload
-                  chooseLabel="File Upload"
-                  auto
-                  uploadHandler={(e) => {
-                    handleFileUpload(e, "teamSummaryDocument");
-                    e.options.clear(); // reset input so you can re-upload
-                  }}
-                />
 
-                {formData.teamSummaryDocument && (
-                  <div className="team__summary_doc_wrap_cont">
-                     <a
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      openFile(formData.teamSummaryDocument, "team-summary.pdf", "application/pdf");
-                    }}
-                  >
-                    <i className="pi pi-file" />
-                  </a>
-                  </div>
-                )}
-              </div>
-        </div>
+          <div className="field form__field_col">
+            <label>Company Logo</label>
+
+  <FileUploader
+  accept="image/png, image/jpeg,.pdf"
+  maxSizeMB={0.5}
+  onFileSelect={(e) => {
+                handleFileUpload(e, "companyLogo");
+                e.options.clear();
+              }}  existingFileUrl={formData.companyLogo || "dss"}
+/>
 
 
-          {/* Textarea */}
+
+          </div>
+
           <div className="field form__field_col col_overvice_textarea">
             <label>Company Overview</label>
             <InputTextarea
               rows={4}
               autoResize
-              value={formData.companyOverview || ""}
-              onChange={(e) => handleChange("companyOverview", e.target.value)}
+              value={formData.companyOverview}
+              onChange={(e) =>
+                handleChange("companyOverview", e.target.value)
+              }
             />
           </div>
 
           <div className="submit__btn_block">
-            <div className="col-12 flex justify-content-end mt-3">
-              <Button label="Save Profile" type="submit" disabled={!dirty} />
-            </div>
+            <Button label="Save Profile" type="submit" disabled={!dirty} />
           </div>
         </form>
       </div>

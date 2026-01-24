@@ -155,6 +155,7 @@ const assetsIncludedOptions = [
 askingPrice: 0,
 image: "",
 listingDescription: "",
+showContactOnListing:"",
 industry: [],
 // yourRole: "",
 contactAddress: "",
@@ -169,25 +170,25 @@ businessCountry: "",
 businessZipCode: "",
 yearStablished: 1900,
 reasonForSelling: "",
-isFranchise: "",
-isRelocatable: "",
-isStartup: "",
+isFranchise: false,
+isRelocatable: false,
+isStartup: false,
 postCloseSupport: "",
 managementWillingToStay: "",
 numberOfEmployees: 0,
 financing: "",
 growthExpansion: [],
 facilityAndLocationDetails: "",
-propertyIncludedinAskingPrice: false,
+propertyIncludedinAskingPrice: "",
 propertyIncludedinSale:"",
-realEstateValue: 0,
+propertyValue: "",
 leaseExpiration:"",
 buildingSF: "", 
 ffEValue: 0,
 ffEValueIncludeinAskingPrice: false,
 inventoryValue: 0,
-propertyLeased:"",
-inventoryIncludedinAskingPrice: false,
+IsPropertyLeased:"",
+inventoryIncluded: "",
 annualRevenue: {
       reportingYear: "",
       revenue: ""
@@ -316,6 +317,7 @@ const handleCreateListing = async () => {
 askingPrice: 0,
 image: "",
 listingDescription: "",
+showContactOnListing:"",
 industry: [],
 // yourRole: "",
 contactAddress: "",
@@ -330,25 +332,25 @@ businessCountry: "",
 businessZipCode:"",
 yearStablished: 1900,
 reasonForSelling: "",
-isFranchise: "",
-isRelocatable: "",
-isStartup: "",
+isFranchise: false,
+isRelocatable: false,
+isStartup: false,
 postCloseSupport: "",
 managementWillingToStay: "",
 numberOfEmployees: 0,
 financing: "",
 growthExpansion: [],
 facilityAndLocationDetails: "",
-propertyIncludedinAskingPrice: false,
+propertyIncludedinAskingPrice: "",
 propertyIncludedinSale:"",
-realEstateValue: 0,
+propertyValue: 0,
 leaseExpiration:"",
 buildingSF: "", 
 ffEValue: 0,
 ffEValueIncludeinAskingPrice: false,
 inventoryValue: 0,
-propertyLeased:"",
-inventoryIncludedinAskingPrice: false,
+IsPropertyLeased:"",
+inventoryIncluded: "",
 annualRevenue: {
       reportingYear: "",
       revenue: ""
@@ -565,7 +567,7 @@ const moneyTemplate = (row, { field }) => {
     : "-";
 };
 
-
+// console.log("user>>>>>>>>>>>", user);
   const dateTemplate = (row) =>
     row.lastEdited
       ? new Date(row.lastEdited).toLocaleDateString()
@@ -650,7 +652,7 @@ const moneyTemplate = (row, { field }) => {
     </div>
   );
 const handleImageSelect = (e) => {
-  console.log("File selected for listing image:", e);
+  // console.log("File selected for listing image:", e);
   const file = e;
   const reader = new FileReader();
 
@@ -693,7 +695,7 @@ useEffect(() => {
   }
 
   // Location filter
-  console.log('industry filter', filters.location, filtered)
+  // console.log('industry filter', filters.location, filtered)
   if (filters.location) {
     const locationTerm = filters.location.toLowerCase();
     filtered = filtered.filter((item) =>
@@ -715,6 +717,11 @@ useEffect(() => {
 }, [filters, listings]);
 const usStates = useRecoilValue(usStatesState);
 
+
+console.log("user>>>>>>>>>>>", user);
+
+
+
   // ==== UI ====
   return (
     <>
@@ -723,7 +730,9 @@ const usStates = useRecoilValue(usStatesState);
         <ConfirmPopup />
         {showCreateDialog ? (
           <>
-             {listingStep === 0 && (<>
+             {listingStep === 0 && (
+              
+              <>
            
             <DashboardHeader headingData="Create Your Business Listing"/>
             <div className="brief__infor_content">
@@ -838,9 +847,9 @@ const usStates = useRecoilValue(usStatesState);
 <div className="listing__creation_field_col md:col-4">
   <label>Show Contact Info on Listing </label>
   <InputSwitch
-    checked={newListing.showContactInfo}
+    checked={newListing.showContactOnListing}
     onChange={(e) =>
-      setNewListing({ ...newListing, showContactInfo: e.value })
+      setNewListing({ ...newListing, showContactOnListing: e.value })
     }
   />
 </div>
@@ -848,21 +857,41 @@ const usStates = useRecoilValue(usStatesState);
 {/* Contact Name */}
 <div className="listing__creation_field_col md:col-6">
   <label>Contact Name </label>
- <div className="form__field_col_hardocded_email">
+ {user?.user_type === "seller_broker" ? (
+    <div className="form__field_col_hardocded_email">
   {user?.first_name || ""} {user?.last_name || ""}
  </div>
+  ) : (
+    <InputText
+    value={newListing.contactName || ""}
+    onChange={(e) =>
+      setNewListing({ ...newListing, contactName: e.target.value })
+    }
+    placeholder="Enter Contact Name"
+  />
+  )}
 </div>
 
 {/* Contact Email */}
 <div className="listing__creation_field_col md:col-6">
   <label>Contact Email </label>
-   <div className="form__field_col_hardocded_email">
+   {user?.user_type === "seller_broker" ? (
+    <div className="form__field_col_hardocded_email">
   {user?.email || ""}
  </div>
+  ) : (
+    <InputText
+    value={newListing.contactEmail || ""}
+    onChange={(e) =>
+      setNewListing({ ...newListing, contactEmail: e.target.value })
+    }
+    placeholder="Enter Contact Email"
+  />
+  )}
 </div>
 
 {/* Contact Address */}
-<div className="listing__creation_field_col md:col-6">
+{/* <div className="listing__creation_field_col md:col-6">
   <label>Contact Address </label>
   <InputText
     value={newListing.contactAddress || ""}
@@ -871,41 +900,89 @@ const usStates = useRecoilValue(usStatesState);
     }
     placeholder="Enter Contact Address"
   />
-</div>
+</div> */}
 
 
 
 
 {/* Contact Phone */}
 <div className="listing__creation_field_col md:col-6">
-  <label>Contact Phone </label>
-<InputMask
-  mask="(999) 999-9999"
-  placeholder="(999) 999-9999"
-  value={newListing.contactPhone}
-  onChange={(e) =>
-    setNewListing({ ...newListing, contactPhone: e.target.value })
-  }
-/>
+  <label>Contact Phone</label>
 
- 
+  {user?.user_type === "seller_broker" ? (
+    <div className="form__field_col_hardocded_email">
+      {user?.profile?.phone_number || ""}
+    </div>
+  ) : (
+    <InputMask
+      mask="(999) 999-9999"
+      placeholder={`${user.profile.phone_number}`}
+      value="2121212112"
+      onChange={(e) =>
+        setNewListing({ ...newListing, contactPhone: e.target.value })
+      }
+    />
+  )}
 </div>
 
+  {user?.user_type === "seller_broker" && (
+  <>
+    <div className="listing__creation_field_col md:col-6">
+      <label>Year In Operation</label>
+        <div className="form__field_col_hardocded_email">
+          {user?.profile?.years_in_operation
+            ? new Date(user.profile.years_in_operation).toLocaleDateString()
+            : ""}
+        </div>
+    </div>
+    <div className="listing__creation_field_col md:col-6">
+      <label>Company Website</label>
+        <div className="form__field_col_hardocded_email">
+          {user?.profile?.website || ""}
+        </div>
+    </div>
+     <div className="listing__creation_field_col md:col-6">
+      <label>City</label>
+        <div className="form__field_col_hardocded_email">
+          {user?.profile?.location || ""}
+        </div>
+    </div>
+    <div className="listing__creation_field_col md:col-6">
+      <label>State</label>
+        <div className="form__field_col_hardocded_email">
+          {user?.profile?.state || ""}
+        </div>
+    </div>
+  </>
+  )}
 
 
 {/* Contact Zip Code */}
 <div className="listing__creation_field_col md:col-6">
   <label>Contact Zip Code </label>
-<InputMask
+
+
+
+{user?.user_type === "seller_broker" ? (
+    <div className="form__field_col_hardocded_email">
+      {user?.profile?.zipCode || ""}
+    </div>
+  ) : (
+    <InputMask
   id="zip"
   name="zip"
   mask="99999"
-   value={newListing.contactZipCode || ""}
+   value={`${user.profile.zipCode}`}
     onChange={(e) =>
       setNewListing({ ...newListing, contactZipCode: e.target.value })
     }
     placeholder="Enter Zip Code"
 />
+  )}
+
+
+
+
 
 </div>
 
@@ -985,13 +1062,26 @@ const usStates = useRecoilValue(usStatesState);
   />
 </div>
  {/* Reason For Selling */}
-      <div className="listing__creation_field_col md:col-6">
+      <div className="listing__creation_field_col md:col-6 lisitng__text_editor">
         <label>Reason For Selling </label>
-        <InputTextarea
+        {/* <InputTextarea
           rows={3}
           value={newListing.reasonForSelling}
           onChange={(e) => handleChange(e, "reasonForSelling")}
-        />
+        /> */}
+
+
+ <Editor
+            value={newListing.reasonForSelling || ""}
+            onTextChange={(e) =>
+              setNewListing({
+                ...newListing,
+                reasonForSelling: e.htmlValue,
+              })
+            }
+          />
+<em>Provide a brief explanation as to why you are selling. </em>
+
       </div>
 
 
@@ -1008,8 +1098,8 @@ const usStates = useRecoilValue(usStatesState);
     <Dropdown
           value={newListing.isFranchise}
           options={[
-              { label: "Yes", value: "Yes" },
-              { label: "No", value: "No" }
+              { label: "Yes", value: true },
+              { label: "No", value: false }
             ]}
           onChange={(e) => handleChange(e, "isFranchise")}
           placeholder="Select"
@@ -1028,8 +1118,8 @@ const usStates = useRecoilValue(usStatesState);
   <Dropdown
           value={newListing.isRelocatable}
           options={[
-              { label: "Yes", value: "Yes" },
-              { label: "No", value: "No" }
+              { label: "Yes", value: true },
+              { label: "No", value: false }
             ]}
           onChange={(e) => handleChange(e, "isRelocatable")}
           placeholder="Select"
@@ -1049,8 +1139,8 @@ const usStates = useRecoilValue(usStatesState);
 <Dropdown
           value={newListing.isStartup}
           options={[
-              { label: "Yes", value: "Yes" },
-              { label: "No", value: "No" }
+              { label: "Yes", value: true },
+              { label: "No", value: false }
             ]}
           onChange={(e) => handleChange(e, "isStartup")}
           placeholder="Select"
@@ -1185,23 +1275,23 @@ impact the confidentiality of your sale.</em>
   <div className="flex align-items-center gap-3 mt-2">
     <RadioButton
       inputId="propertyIncludedinSaleYes"
-      name="propertyIncludedinSale"
+      name="propertyIncludededInSale"
       value="true"
       onChange={(e) =>
-        setNewListing({ ...newListing, propertyIncludedinSale: e.value })
+        setNewListing({ ...newListing, propertyIncludededInSale: e.value })
       }
-      checked={newListing.propertyIncludedinSale === "true"}
+      checked={newListing.propertyIncludededInSale === "true"}
     />
     <label htmlFor="propertyIncludedinSaleYes">Yes </label>
 
     <RadioButton
       inputId="propertyIncludedinSaleNo"
-      name="propertyIncludedinSale"
+      name="propertyIncludededInSale"
       value="false"
       onChange={(e) =>
-        setNewListing({ ...newListing, propertyIncludedinSale: e.value })
+        setNewListing({ ...newListing, propertyIncludededInSale: e.value })
       }
-      checked={newListing.propertyIncludedinSale === "false"}
+      checked={newListing.propertyIncludededInSale === "false"}
     />
     <label htmlFor="propertyIncludedinSaleNo">No </label>
   </div>
@@ -1238,11 +1328,11 @@ impact the confidentiality of your sale.</em>
 
 {/* Real Estate Value */}
 <div className="listing__creation_field_col md:col-6">
-  <label>Real Estate Value </label>
+  <label>Propert Value </label>
   <InputNumber
-    value={newListing.realEstateValue || 0}
+    value={newListing.propertyValue || 0}
     onValueChange={(e) =>
-      setNewListing({ ...newListing, realEstateValue: e.value })
+      setNewListing({ ...newListing, propertyValue: e.value })
     }
     mode="currency"
     currency="USD"
@@ -1250,6 +1340,36 @@ impact the confidentiality of your sale.</em>
   maxFractionDigits={0}
     placeholder="Enter real estate value"
   />
+</div>
+
+
+
+{/* Property Leased?  */}
+<div className="listing__creation_field_col md:col-4">
+  <label>Property Leased? </label>
+  <div className="flex align-items-center gap-3 mt-2">
+    <RadioButton
+      inputId="propertyLeasedYes"
+      name="IsPropertyLeased"
+      value="true"
+      onChange={(e) =>
+        setNewListing({ ...newListing, IsPropertyLeased: e.value })
+      }
+      checked={newListing.IsPropertyLeased === "true"}
+    />
+    <label htmlFor="propertyLeasedYes">Yes </label>
+
+    <RadioButton
+      inputId="propertyLeasedNo"
+      name="IsPropertyLeased"
+      value="false"
+      onChange={(e) =>
+        setNewListing({ ...newListing, IsPropertyLeased: e.value })
+      }
+      checked={newListing.IsPropertyLeased === "false"}
+    />
+    <label htmlFor="nonConfidential">No </label>
+  </div>
 </div>
 
 {/* Monthly Rent Amount */}
@@ -1270,7 +1390,7 @@ impact the confidentiality of your sale.</em>
 
 
 {/* Lease Expiration */}
-<div className="listing__creation_field_col md:col-4">
+<div className="listing__creation_field_col md:col-4 lease__creation">
   <label>Lease Expiration</label>
 
   <Calendar
@@ -1350,9 +1470,8 @@ impact the confidentiality of your sale.</em>
 </div>
 
 
-{/* Property Value */}
 <div className="listing__creation_field_col md:col-6">
-  <label>Property Value </label>
+  <label>Inventory Value</label>
   <InputNumber
     value={newListing.inventoryValue || 0}
     onValueChange={(e) =>
@@ -1370,59 +1489,29 @@ impact the confidentiality of your sale.</em>
 
 
 
-{/* Property Leased?  */}
-<div className="listing__creation_field_col md:col-4">
-  <label>Property Leased? </label>
-  <div className="flex align-items-center gap-3 mt-2">
-    <RadioButton
-      inputId="propertyLeasedYes"
-      name="propertyLeased"
-      value="true"
-      onChange={(e) =>
-        setNewListing({ ...newListing, propertyLeased: e.value })
-      }
-      checked={newListing.propertyLeased === "true"}
-    />
-    <label htmlFor="propertyLeasedYes">Yes </label>
-
-    <RadioButton
-      inputId="propertyLeasedNo"
-      name="propertyLeased"
-      value="false"
-      onChange={(e) =>
-        setNewListing({ ...newListing, propertyLeased: e.value })
-      }
-      checked={newListing.propertyLeased === "false"}
-    />
-    <label htmlFor="nonConfidential">No </label>
-  </div>
-</div>
-
-
-
 {/* inventoryIncludedinAskingPrice */}
 <div className="listing__creation_field_col md:col-4">
-  <label>Inventory Included in Asking Price</label>
+  <label>Inventory Included </label>
   <div className="flex align-items-center gap-3 mt-2">
     <RadioButton
       inputId="confidential"
-      name="inventoryIncludedinAskingPrice"
+      name="inventoryIncluded"
       value="true"
       onChange={(e) =>
-        setNewListing({ ...newListing, inventoryIncludedinAskingPrice: e.value })
+        setNewListing({ ...newListing, inventoryIncluded: e.value })
       }
-      checked={newListing.inventoryIncludedinAskingPrice === "true"}
+      checked={newListing.inventoryIncluded === "true"}
     />
     <label htmlFor="confidential">Yes </label>
 
     <RadioButton
       inputId="nonConfidential"
-      name="inventoryIncludedinAskingPrice"
+      name="inventoryIncluded"
       value="false"
       onChange={(e) =>
-        setNewListing({ ...newListing, inventoryIncludedinAskingPrice: e.value })
+        setNewListing({ ...newListing, inventoryIncluded: e.value })
       }
-      checked={newListing.inventoryIncludedinAskingPrice === "false"}
+      checked={newListing.inventoryIncluded === "false"}
     />
     <label htmlFor="nonConfidential">No </label>
   </div>
