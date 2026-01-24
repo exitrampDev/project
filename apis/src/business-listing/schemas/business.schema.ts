@@ -190,8 +190,8 @@ export class Business {
   @Prop({ type: String, default: null })
   confidentiality?: string;
 
-  @Prop({ type: String, default: 'no' })
-  showContactOnListing?: string;
+  @Prop({ type: Boolean, default: false })
+  showContactOnListing?: boolean;
 
   @Prop({ type: String, default: '' })
   contactName?: string;

@@ -133,9 +133,15 @@ if (industry) {
       .sort({ [sortBy]: sortOrder })
       .skip((page - 1) * limit)
       .limit(limit)
-      .populate({
-        path: 'cim', 
-      })
+      .populate([
+    {
+      path: 'ownerId',
+      select: '-password -stripe_customer_id -payment_method -__v',
+    },
+    {
+      path: 'cim',
+    },
+  ])
       .lean();
 
     const total = await this.businessModel.countDocuments(filter);

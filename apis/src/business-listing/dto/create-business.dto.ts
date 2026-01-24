@@ -93,9 +93,9 @@ export class CreateBusinessDto {
   confidentiality?: string;
 
  
-  @IsEnum({ yes: 'yes', no: 'no' })
-  @IsString()
-  showContactOnListing?: 'yes' | 'no';
+
+  @IsBoolean()
+  showContactOnListing?: boolean;
 
   @IsOptional()
   @IsString()
