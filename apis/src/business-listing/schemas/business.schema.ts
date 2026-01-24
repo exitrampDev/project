@@ -358,7 +358,7 @@ export class Business {
   isPropertyLeased?: string;
 
   @Prop({ type: String, default: null })
-  MonthlyRentAmount?: string;
+  monthlyRentAmount?: string;
 
   @Prop({ type: String, default: null })
   leaseExpiration?: string;

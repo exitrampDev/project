@@ -323,12 +323,16 @@ export class CreateBusinessDto {
   propertiesIncluded?: any;
 
   @IsOptional()
+  @IsString()
+  propertyValue?: any;
+
+  @IsOptional()
    @IsString()
   isPropertyLeased?: any;
 
   @IsOptional()
   @IsString()
-  MonthlyRentAmount?: any;
+  monthlyRentAmount?: any;
 
   @IsOptional()
   @IsString()
