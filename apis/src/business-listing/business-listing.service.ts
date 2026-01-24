@@ -266,7 +266,12 @@ if (industry) {
 
 
   async findOne(id: string): Promise<Business> {
-    const business = await this.businessModel.findById(id).exec();
+    const business = await this.businessModel.findById(id)
+     .populate({
+      path: 'ownerId',
+      select: '-password -stripe_customer_id -payment_method -__v',
+    })
+    .exec();
     if (!business) throw new NotFoundException(`Business with ID ${id} not found`);
     return business;
   }
