@@ -427,9 +427,10 @@ export class CreateBusinessDto {
   latestEBITDA?: string;
   @IsOptional()
   latestSDE?: string;
+
   @IsOptional()
-  @IsString()
-  latestNetProfit?: string;
+  @IsInt()
+  latestNetProfit?: number;
   @IsOptional()
   ffeValue?: string;
 // -------------------------------------

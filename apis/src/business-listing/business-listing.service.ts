@@ -45,7 +45,7 @@ export class BusinessListingService {
       filter.ownerId = user.userId;
     }
     // -------------------------------------------------------------------------------------
-const andConditions: any[] = [];
+  const andConditions: any[] = [];
 
   const escapeRegex = (value: string) =>
     value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -125,66 +125,6 @@ if (industry) {
   if (andConditions.length > 0) {
     filter.$and = andConditions;
   }
-
-
-    // -------------------------------------------------------------------------------------
-
-  //  if (search || industry || state || county || askingPrice || cashFlow) {
-  //    const orConditions: any[] = [];
-  //    if (search){
-  //         const regex = new RegExp(search, 'i');
-  //          orConditions.push(           
-  //           { industry: regex },           
-  //           { state: regex },
-  //           { country: regex },
-  //         );
-  //   }
-
-  //   if(industry){
-  //        const industryRegex = new RegExp(industry, 'i');
-  //        orConditions.push(           
-  //           { industry: industryRegex },  );    
-  //   }
-
-  //   if(state){
-  //        const stateRegex = new RegExp(state, 'i');
-  //        orConditions.push(           
-  //           { businessState: stateRegex },  );    
-  //   }
-
-  //    if(county){
-  //        const countyRegex = new RegExp(county, 'i');
-  //        orConditions.push(           
-  //           { businessCountry: countyRegex },  );    
-  //   }
-  
-  
-  //   // If search is a number, include askingPrice
-  //   if (!isNaN(Number(askingPrice))) {
-  //     const priceValue = Number(askingPrice);
-  //     orConditions.push({
-  //       askingPrice: {
-  //         $gte: priceValue - 100,
-  //         $lte: priceValue + 100,
-  //       },
-  //     });
-  //   }
-
-  //    if (!isNaN(Number(cashFlow))) {
-  //     const cashFlowValue = Number(cashFlow);
-  //     orConditions.push({
-  //       cashFlow: {
-  //         $gte: cashFlowValue - 100,
-  //         $lte: cashFlowValue + 100,
-  //       },
-  //     });
-  //   }
-
-
-  //   filter.$or = orConditions;
-  //   console.log('filter:', JSON.stringify(filter, null, 2));
-  // }
-
 
 
     // ✅ data fetch with
