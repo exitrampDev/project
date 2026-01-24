@@ -73,7 +73,7 @@ const { user, access_token } = useRecoilValue(authState) ?? {};
                </NavLink>
              </li>
 
-        {user?.user_type === "seller_broker" ? <>
+        {user?.user_type === "seller_broker" && (<>
         
              <li>
                <NavLink
@@ -84,7 +84,22 @@ const { user, access_token } = useRecoilValue(authState) ?? {};
                </NavLink>
              </li>
         
-        </> : ""}
+        </> )}
+
+
+
+         {(user?.user_type === "seller_individual") || (user?.user_type === "seller_central") && (<>
+        
+             <li>
+               <NavLink
+                 to="/user/complete-profile-seller"
+                 className={({ isActive }) => (isActive ? "active" : "")}
+               >
+                 <img src={icon28} alt="My Listing" /> My Profile
+               </NavLink>
+             </li>
+        
+        </> )}
 
 
 

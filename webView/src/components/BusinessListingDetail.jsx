@@ -21,6 +21,8 @@ import { Tag } from "primereact/tag";
 import { Chip } from "primereact/chip";
 import { Toast } from "primereact/toast";
 import axios from "axios";
+import { InputTextarea } from "primereact/inputtextarea";
+import { InputText } from "primereact/inputtext";
 
 export default function BusinessListingDetail() {
   const { user, access_token } = useRecoilValue(authState) ?? {};
@@ -30,6 +32,15 @@ export default function BusinessListingDetail() {
    const toast = useRef(null);
   const [showImagesPopup, setShowImagesPopup] = useState(false);
   const API_BASE = useRecoilValue(apiBaseUrlState);
+  const [showContactModal, setShowContactModal] = useState(false);
+const [contactForm, setContactForm] = useState({
+  senderEmail: user?.email || "",
+  subject: "",
+  details: "",
+});
+
+const [sending, setSending] = useState(false);
+
   const handleNonUserClick = () => {
     const signupBtn = document.querySelector(".signup-btn");
     if (signupBtn) signupBtn.click();
@@ -53,7 +64,7 @@ export default function BusinessListingDetail() {
         }
 
         const favData = await response.json();
-        console.log("Favorite saved:", favData);
+        // console.log("Favorite saved:", favData);
       } catch (error) {
         console.error("Error saving favorite:", error);
       }
@@ -61,7 +72,8 @@ export default function BusinessListingDetail() {
       try {
         // Fetch business detail
         const res = await fetch(`${API_BASE}/business-listing/${id}`);
-        const data = await res.json();  
+        const data = await res.json(); 
+        console.log("Business data:", data); 
         setBusiness(data);
       } catch (err) {
         console.error("Error fetching business:", err);
@@ -75,7 +87,7 @@ export default function BusinessListingDetail() {
 const fetchFilesMain = async () => {
       try {
         const res = await axios.get(`${API_BASE}/files/${id}`);
-        console.log("datata",res.data);
+        // console.log("datata",res.data);
         setAdditionalImages(res.data || []);
       } catch (err) {
         console.error("Error fetching files:", err);
@@ -107,7 +119,7 @@ const fetchFilesMain = async () => {
       }
 
       const data = await response.json();
-      console.log("Favorite saved:", data);
+      // console.log("Favorite saved:", data);
 
       toast.current.show({
         severity: "success",
@@ -133,7 +145,43 @@ const allowedImages = [
   "listingImage4",
   "listingImage5",
 ];
-    
+  const handleContactSeller = async (e) => {
+  e.preventDefault();
+
+  try {
+    setSending(true);
+
+    await axios.post(`${API_BASE}/business-listing/contact-seller`, {
+      senderEmail: contactForm.senderEmail,
+      businessId: id,
+      subject: contactForm.subject,
+      details: contactForm.details,
+    });
+
+    toast.current.show({
+      severity: "success",
+      summary: "Message Sent",
+      detail: "Your message has been sent to the seller.",
+      life: 3000,
+    });
+
+    setContactForm({
+      senderEmail: user?.email || "",
+      subject: "",
+      details: "",
+    });
+  } catch (error) {
+    toast.current.show({
+      severity: "error",
+      summary: "Error",
+      detail: "Failed to send message. Please try again.",
+      life: 3000,
+    });
+  } finally {
+    setSending(false);
+  }
+};
+  
 
   return (
     <>
@@ -141,7 +189,8 @@ const allowedImages = [
       <Header />
    <div className="business__listing_content">
      
-      <div className="breadcrubs__main_container">
+      <div className="header__wrap_listing">
+        <div className="breadcrubs__main_container">
         <Link to={`/`} className="">
           Home
         </Link>
@@ -151,12 +200,29 @@ const allowedImages = [
         </Link>
         / Business listing details
       </div>
-
+<div className="bussiness__contact_form_seller_wrap">
+            <Button
+              label="Contact Listing Owner"
+              icon="pi pi-envelope"
+              className="contact__seller_btn"
+              onClick={() => {
+                if (!access_token) {
+                  handleNonUserClick();
+                  return;
+                }
+                setShowContactModal(true);
+                
+              }}
+            />
+          </div>
+      </div>
     
 
       <div className="business__list_single_main_wrap web__view_wrapper">
        
        
+
+
                <div className="business__list_single_intro_block">
                  <div className="business__list_single_intro_block_img_col">
                    <img
@@ -405,6 +471,74 @@ const allowedImages = [
   <p>No additional images available</p>
 )}
 
+</Dialog>
+<Dialog
+  header="Contact Seller"
+  visible={showContactModal}
+  style={{ width: "450px", maxWidth: "95vw" }}
+  modal
+  onHide={() => setShowContactModal(false)}
+>
+   <form onSubmit={handleContactSeller} className="p-fluid contact__form_listin_seller">
+
+    <div className="field">
+      <label>Email</label>
+      <InputText
+          value={contactForm.senderEmail}
+        onChange={(e) =>
+          setContactForm({ ...contactForm, senderEmail: e.target.value })
+        }
+      
+      />
+      {/* <input
+        type="email"
+        className="p-inputtext"
+        required
+      /> */}
+    </div>
+
+    <div className="field">
+      <label>Subject</label>
+      {/* <input
+        type="text"
+        className="p-inputtext"
+        value={contactForm.subject}
+        required
+        onChange={(e) =>
+          setContactForm({ ...contactForm, subject: e.target.value })
+        }
+      /> */}
+
+
+      <InputText
+
+          value={contactForm.subject}
+         onChange={(e) =>
+          setContactForm({ ...contactForm, subject: e.target.value })
+        }
+        required
+      
+      />
+    </div>
+
+    <div className="field">
+      <label>Message</label>
+      <InputTextarea
+        rows={5}
+        value={contactForm.details}
+        onChange={(e) =>
+          setContactForm({ ...contactForm, details: e.target.value })
+        }
+      />
+    </div>
+
+    <Button
+      type="submit"
+      label={sending ? "Sending..." : "Send Message"}
+      disabled={sending}
+      className="btn__crt_listing"
+    />
+  </form>
 </Dialog>
 
     </>
