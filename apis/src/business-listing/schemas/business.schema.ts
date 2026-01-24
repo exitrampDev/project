@@ -366,8 +366,9 @@ export class Business {
   @Prop({ type: String, default: null })
   buildingSF?: string;
 
-  @Prop({ type: Boolean, default: false })
-  ffEValueIncludeinAskingPrice?: boolean;
+ 
+  @Prop({ type: String, default: null })
+  ffEValueIncludeinAskingPrice?: string;
 
   // ----------------- FF&E -----------------
   @Prop({ type: String, default: '' })

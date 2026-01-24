@@ -331,6 +331,7 @@ export class CreateBusinessDto {
   MonthlyRentAmount?: any;
 
   @IsOptional()
+  @IsString()
   leaseExpiration?: string;
 
 
@@ -338,7 +339,8 @@ export class CreateBusinessDto {
   buildingSF?: string;
 
   @IsOptional()
-  ffEValueIncludeinAskingPrice?:boolean;
+  @IsString()
+  ffEValueIncludeinAskingPrice?:string;
 
 
   @IsOptional()
@@ -422,6 +424,7 @@ export class CreateBusinessDto {
   @IsOptional()
   latestSDE?: string;
   @IsOptional()
+  @IsString()
   latestNetProfit?: string;
   @IsOptional()
   ffeValue?: string;
