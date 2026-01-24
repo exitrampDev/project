@@ -20,9 +20,7 @@ export enum CimStatus {
 
 export class CreateBusinessDto {
 
-  @IsString()
-  referenceName: string;
-  
+ 
 
   @IsOptional()
   @IsString()

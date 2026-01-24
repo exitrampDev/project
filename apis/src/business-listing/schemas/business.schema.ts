@@ -129,8 +129,6 @@ export const FinancialEntrySchema = SchemaFactory.createForClass(FinancialEntry)
 // ----------------- Main Business Schema -----------------
 @Schema({ timestamps: true })
 export class Business {
-  @Prop({ required: true })
-  referenceName: string;
 
   @Prop({ default: null })
   businessType?: string;
