@@ -312,11 +312,12 @@ export class CreateBusinessDto {
   facilityAndLocationDetails?: string;
 
   @IsOptional()
-   @IsString()
-  propertyIncludededInSale?:boolean;
+  @IsString()
+  propertyIncludededInSale?:string;
 
   @IsOptional()
-  propertyIncludedinAskingPrice?:boolean;
+  @IsString()
+  propertyIncludedinAskingPrice?:string;
 
   @IsOptional()
   propertiesIncluded?: any;

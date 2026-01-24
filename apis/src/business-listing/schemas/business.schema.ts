@@ -345,8 +345,8 @@ export class Business {
   @Prop({ type: String, default: '' })
   propertyIncludededInSale?: string;
 
-  @Prop({ type: Boolean, default: false })
-  propertyIncludedinAskingPrice?: boolean;
+  @Prop({ type: String, default: '' })
+  propertyIncludedinAskingPrice?: string;
 
   @Prop({ type: String, default: null })
   propertiesIncluded?: string;
