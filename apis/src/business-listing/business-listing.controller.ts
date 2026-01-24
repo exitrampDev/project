@@ -143,7 +143,7 @@ export class BusinessListingController {
       'contactToSeller',
       {
           
-          businessName: business.businessName,
+          businessName: business.listingTitle,
           buyerMessage: dto.details,
           dashboardUrl: 'https://app.exitramp.com/messages',
           year: new Date().getFullYear(),
