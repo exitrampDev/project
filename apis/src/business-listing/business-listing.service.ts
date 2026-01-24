@@ -177,7 +177,7 @@ if (industry) {
     if (search) {
       const regex = new RegExp(search, 'i');
       filter.$or = [
-        { businessName: regex },
+        { listingTitle: regex },
         { businessType: regex },
         { entityType: regex },
         { city: regex },
