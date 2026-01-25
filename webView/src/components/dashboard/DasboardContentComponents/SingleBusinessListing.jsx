@@ -103,7 +103,12 @@ export default function SingleBusinessListing() {
 
       try {
         // Fetch business detail
-        const res = await fetch(`${API_BASE}/business-listing/${id}`);
+        const res = await fetch(`${API_BASE}/business-listing/with-nda/${id}`, {
+          headers: {
+            Authorization: `Bearer ${access_token}`,
+            "Content-Type": "application/json",
+          },
+        });
         const data = await res.json();
         setBusiness(data);
       } catch (err) {
@@ -146,7 +151,14 @@ export default function SingleBusinessListing() {
           Complete Profile
         </Button>
                 </>)} */}
+
+
+       {business?.ndas?.[0]?.status? <>
        
+       <div className="status__nda_submit_block">
+        {business?.ndas?.[0]?.status}
+       </div>
+       </>: 
 
         <Button
           className="business__list_submit_nda_btn"
@@ -154,6 +166,9 @@ export default function SingleBusinessListing() {
         >
           Submit NDA
         </Button>
+        } 
+
+        
                 </div>
 
                 {/* Conditionally render NDAComponent */}
@@ -166,7 +181,7 @@ export default function SingleBusinessListing() {
           <div className="business__list_single_intro_block_img_col">
             <img
               src={business.image}
-              alt={business.listingTitle}
+              alt={business.businessName}
               className="w-64 h-64 object-cover rounded-lg mb-4"
             />
             <div
@@ -217,9 +232,12 @@ export default function SingleBusinessListing() {
           <div className="busines_lisiting_highLevelSummary_list">
             <strong>Cash Flow:</strong> ${business?.cashFlow.toLocaleString()}
           </div>
-          {/* <div className="busines_lisiting_highLevelSummary_list">
+          <div className="busines_lisiting_highLevelSummary_list">
             <strong>Revenue:</strong> ${business?.revenue.toLocaleString()}
-          </div> */}
+          </div>
+          <div className="busines_lisiting_highLevelSummary_list">
+            <strong>Rent:</strong> ${business?.monthlyRentAmount.toLocaleString()}
+          </div>
           <div className="busines_lisiting_highLevelSummary_list">
             <strong>SDE:</strong> {business?.latestSDE ? (<>{business.latestSDE}</>) : "-"}
           </div>
@@ -266,8 +284,17 @@ export default function SingleBusinessListing() {
           <div className="business__list_single_business_overview">
             <h3 className="m-b-10">Detailed Information</h3>
             <div className="business_list_single_overview_list">
-              <strong>Reason for Selling :</strong> {business?.reasonForSelling ? (<>{business.reasonForSelling}</>) : "-" }
-            </div>
+                    <strong>Reason for Selling :</strong>{" "}
+                    {business?.reasonForSelling ? (
+                      <span
+                        dangerouslySetInnerHTML={{
+                          __html: business.reasonForSelling,
+                        }}
+                      />
+                    ) : (
+                      "-"
+                    )}
+                  </div>
              <div className="business_list_single_overview_list">
               <strong>Support and Training:</strong> {business?.postCloseSupport ? (<>{business.postCloseSupport}</>) : "-" }
               </div>

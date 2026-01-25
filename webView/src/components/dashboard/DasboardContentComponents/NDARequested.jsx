@@ -142,9 +142,9 @@ const DueDiligenceAction = (statusNDA, Id) => {
                 </p>
               </div>
               <div className="business__list_single_nda_submit_row_intro_btns">
-        <Button className="business__list_complete_profile_btn " >
+        {/* <Button className="business__list_complete_profile_btn " >
           Upgrade Now
-        </Button>
+        </Button> */}
 
         
                 </div>

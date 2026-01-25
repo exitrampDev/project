@@ -2791,7 +2791,19 @@ button.p-button-secondary.p-button.p-component {
     align-items: center;
     justify-content: space-between;
 }
-
+.status__nda_submit_block {
+    background: #FFB100;
+    color: #fff;
+    display: flex;
+    max-width: fit-content;
+    margin: 0;
+    font-size: 13px;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    text-transform: capitalize;
+    cursor: not-allowed;
+}
 .business__list_single_intro_block_img_col {
     width: 320px;
     height: 230px;
