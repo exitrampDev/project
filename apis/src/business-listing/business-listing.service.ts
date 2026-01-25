@@ -283,14 +283,16 @@ async findOneWithUserNda(
 
   const business = await this.businessModel
     .findById(businessId)
-    .populate({
+  
+    .populate([
+      {
       path: 'ownerId',
       select: '-password -stripe_customer_id -payment_method -__v',
-    })
-    .populate({
+    },
+      {
       path: 'ndas',
-      match: { submittedBy: userId },
-    })
+      match: { submittedBy: new Types.ObjectId(userId) },
+    }])
     .lean()
     .exec();
 
