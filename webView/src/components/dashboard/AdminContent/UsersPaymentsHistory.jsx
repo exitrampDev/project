@@ -115,7 +115,7 @@ const PaymentHistory = () => {
     row?.objectId?.listingTitle || "-";
 
   const businessNameTemplate = (row) =>
-    row?.objectId?.businessName || "-";
+    row?.objectId?.listingTitle || "-";
 
   return (
     <>
@@ -138,7 +138,7 @@ const PaymentHistory = () => {
           <Column header="User" body={userNameTemplate} />
           <Column header="Email" body={emailTemplate} />
           <Column header="Listing Title" body={listingTitleTemplate} />
-          <Column header="Business Name" body={businessNameTemplate} />
+          <Column header="Business Name" body={listingTitleTemplate} />
           <Column header="Listing Description" body={(row) => row?.objectId?.listingDescription || "-"} />
 <Column header="Business Type" body={(row) => row?.objectId?.businessType || "-"} />
 
@@ -192,7 +192,7 @@ const PaymentHistory = () => {
 
               <p>
                 <strong>Business:</strong>{" "}
-                {singlePayment?.objectId?.businessName}
+                {singlePayment?.objectId?.listingTitle}
               </p>
 
               <p><strong>Amount:</strong> ${singlePayment.amount}</p>

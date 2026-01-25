@@ -166,7 +166,7 @@ export default function SingleBusinessListing() {
           <div className="business__list_single_intro_block_img_col">
             <img
               src={business.image}
-              alt={business.businessName}
+              alt={business.listingTitle}
               className="w-64 h-64 object-cover rounded-lg mb-4"
             />
             <div
@@ -179,7 +179,7 @@ export default function SingleBusinessListing() {
 
           </div>
           <div className="business__list_single_intro_block_content_col">
-            <h2 className="listing__single_title">{business?.businessName ? (<>{business.businessName}</>) : "-"}</h2>
+            <h2 className="listing__single_title">{business?.listingTitle ? (<>{business.listingTitle}</>) : "-"}</h2>
             <div className="listing__single_location">
               <img src={SingleListingLocation} alt="SingleListingLocation" />
               {business?.businessCountry && business.businessState ? (<>{business.businessCountry}, {business.businessState} </>) : "-" }

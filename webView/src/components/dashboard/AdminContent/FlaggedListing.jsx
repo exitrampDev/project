@@ -111,10 +111,10 @@ const businessListing = (listing) => {
   if (!listing) return "-";
   if (Array.isArray(listing) && listing.length > 0) {
     return listing.map((u, i) => (
-      <span key={i}>{u.businessName}</span>
+      <span key={i}>{u.listingTitle}</span>
     ));
   } else if (typeof listing === "object") {
-    return listing.businessName || "-";
+    return listing.listingTitle || "-";
   } else {
     return "-";
   }
@@ -137,7 +137,7 @@ const businessListing = (listing) => {
       {/* Table */}
       <div className="my__save_listing_wrap my__listing_table">
         <DataTable value={filteredListings} paginator rows={10} loading={loading} emptyMessage="No flagged listings found.">
-          <Column header="Business Name" body={(row) => row.business?.businessName || "-"} />
+          <Column header="Business Name" body={(row) => row.business?.listingTitle || "-"} />
           <Column header="Business Owner Name" body={(row) => row.businessOwner?.first_name +" "+ row.businessOwner?.last_name || "-"} />
           <Column header="Business Owner Email" body={(row) => row.businessOwner?.email || "-"} />
           <Column header="First Reported By" body={(row) => `${row.users?.[0]?.first_name || ""} ${row.users?.[0]?.last_name || ""}`} />

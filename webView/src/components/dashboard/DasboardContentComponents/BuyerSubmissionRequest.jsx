@@ -53,7 +53,7 @@ const [selectedBuyer, setSelectedBuyer] = useState(null);
 
   // Search filter
   const filteredData = buyerSubmissions.filter((item) =>
-    item.businessName?.toLowerCase().includes(search.toLowerCase())
+    item.listingTitle?.toLowerCase().includes(search.toLowerCase())
   );
 
   const listingBuyerName = (businessId, name) => (
@@ -203,7 +203,7 @@ const openBuyerInfoModal = (row) => {
         >
           <Column
             body={(rowData) =>
-              listingBuyerName(rowData.businessId, rowData.businessName)
+              listingBuyerName(rowData.businessId, rowData.listingTitle)
             }
             header="Name"
             sortable
@@ -280,7 +280,7 @@ const openBuyerInfoModal = (row) => {
         <strong>{selectedSubmission.buyerName}</strong>, hereinafter known as{" "}
         <strong>“Party A”</strong>, and the listing owner of{" "}
         <strong>
-          {selectedSubmission.businessName}  (Listing ID: #{selectedSubmission.businessId.toString().slice(-6)})
+          {selectedSubmission.listingTitle}  (Listing ID: #{selectedSubmission.businessId.toString().slice(-6)})
         </strong>
         , hereinafter known as <strong>“Party B”</strong>, and collectively
         known as the <strong>“Parties”</strong>.

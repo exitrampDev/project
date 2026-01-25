@@ -116,7 +116,7 @@ const fetchSubmissions = async () => {
       <Toast ref={toast} position="top-right" />
 
     
-<DashboardHeader headingData={`Document Room | ${listingData.businessName}`}/>
+<DashboardHeader headingData={`Document Room | ${listingData.listingTitle}`}/>
       <div className="brief__infor_content">
         <p>
           Securely Manage And Share Files With Buyers Who Have Been Approved To
@@ -170,7 +170,7 @@ const fetchSubmissions = async () => {
           <Column field="displayName" header="File Name" />
           <Column
             header="Listing"
-            body={(listingData) => <span>{listingData.businessName}</span>}
+            body={(listingData) => <span>{listingData.listingTitle}</span>}
           />
           <Column
             field="mimetype"

@@ -254,7 +254,7 @@ const DocumentRoom = () => {
     <div className="dashboard__header">
       <Toast ref={toast} />
 
-      <DashboardHeader headingData={`Document Room  | ${listingData.businessName}`} />
+      <DashboardHeader headingData={`Document Room  | ${listingData.listingTitle}`} />
 
       <div className="brief__infor_content">
         <p>
@@ -290,7 +290,7 @@ const DocumentRoom = () => {
       <div className="my__save_listing_wrap my__listing_table docRoom_data_table">
         <DataTable value={filteredFiles} emptyMessage="No files found.">
           <Column field="displayName" header="File Name" />
-          <Column header="Listing" body={() => listingData.businessName} />
+          <Column header="Listing" body={() => listingData.listingTitle} />
           <Column header="Category" body={(row) => row.typeName.toUpperCase()} />
           <Column
             header="Uploaded On"
@@ -313,7 +313,7 @@ const DocumentRoom = () => {
 
         <div className="my__save_listing_wrap my__listing_table docRoom_data_table">
           <DataTable value={submissions} emptyMessage="No data">
-            <Column field="businessName" header="Listing Name" />
+            <Column field="listingTitle" header="Listing Name" />
             <Column field="buyerName" header="Buyer Name" />
             <Column header="NDA Status" body={() => ndaStatusUI("approved")} />
             <Column header="CIM Shared" body={(row) => ndaStatusUI(row.ndaStatus)} />

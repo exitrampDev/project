@@ -159,7 +159,7 @@ const DueDiligenceAction = (statusNDA, Id) => {
         stripedRows
         emptyMessage="No NDA requests found."
       >
-        <Column field="businessName" header="Listing Name" sortable />
+        <Column field="listingTitle" header="Listing Name" sortable />
        <Column
           field="ndaStatus"
           header="NDA Status"

@@ -23,6 +23,7 @@ import { Toast } from "primereact/toast";
 import axios from "axios";
 import { InputTextarea } from "primereact/inputtextarea";
 import { InputText } from "primereact/inputtext";
+import { InputMask } from "primereact/inputmask";
 
 export default function BusinessListingDetail() {
   const { user, access_token } = useRecoilValue(authState) ?? {};
@@ -35,7 +36,10 @@ export default function BusinessListingDetail() {
   const [showContactModal, setShowContactModal] = useState(false);
 const [contactForm, setContactForm] = useState({
   senderEmail: user?.email || "",
-  subject: "",
+  fullName: "",
+  phone: "",
+  zipCode: "",
+  amountToInvest: "",
   details: "",
 });
 
@@ -73,7 +77,7 @@ const [sending, setSending] = useState(false);
         // Fetch business detail
         const res = await fetch(`${API_BASE}/business-listing/${id}`);
         const data = await res.json(); 
-        console.log("Business data:", data); 
+        // console.log("Business data:", data); 
         setBusiness(data);
       } catch (err) {
         console.error("Error fetching business:", err);
@@ -154,7 +158,10 @@ const allowedImages = [
     await axios.post(`${API_BASE}/business-listing/contact-seller`, {
       senderEmail: contactForm.senderEmail,
       businessId: id,
-      subject: contactForm.subject,
+      fullName: contactForm.fullName,
+      phone: contactForm.phone,
+      zipCode: contactForm.zipCode,
+      amountToInvest: contactForm.amountToInvest,
       details: contactForm.details,
     });
 
@@ -167,9 +174,13 @@ const allowedImages = [
 
     setContactForm({
       senderEmail: user?.email || "",
-      subject: "",
+      fullName: "",
+      phone: "",
+      zipCode: "",
+      amountToInvest: "",
       details: "",
     });
+    setShowContactModal(false);
   } catch (error) {
     toast.current.show({
       severity: "error",
@@ -200,21 +211,39 @@ const allowedImages = [
         </Link>
         / Business listing details
       </div>
-<div className="bussiness__contact_form_seller_wrap">
-            <Button
-              label="Contact Listing Owner"
-              icon="pi pi-envelope"
-              className="contact__seller_btn"
-              onClick={() => {
-                if (!access_token) {
-                  handleNonUserClick();
-                  return;
-                }
-                setShowContactModal(true);
-                
-              }}
-            />
-          </div>
+
+
+{business?.ownerId?.user_type === "seller_broker" ? <>
+
+ <div className="bussiness__contact_form_seller_wrap">
+          <Button
+            label="Contact Listing Broker"
+            icon="pi pi-envelope"
+            className="contact__seller_btn"
+            onClick={() => {
+              
+              setShowContactModal(true);
+            }}
+          />
+        </div>
+</> : <>
+        <div className="bussiness__contact_form_seller_wrap">
+          <Button
+            label="Contact Listing Owner"
+            icon="pi pi-envelope"
+            className="contact__seller_btn"
+            onClick={() => {
+              
+              setShowContactModal(true);
+            }}
+          />
+        </div>
+
+
+</>}
+
+
+
       </div>
     
 
@@ -227,7 +256,7 @@ const allowedImages = [
                  <div className="business__list_single_intro_block_img_col">
                    <img
                      src={business.image}
-                     alt={business.businessName}
+                     alt={business.listingTitle}
                      className="w-64 h-64 object-cover rounded-lg mb-4"
                    />
                    <div
@@ -239,7 +268,7 @@ const allowedImages = [
               </div>
                  </div>
                  <div className="business__list_single_intro_block_content_col">
-                   <h2 className="listing__single_title">{business?.businessName ? (<>{business.businessName}</>) : "-"}</h2>
+                   <h2 className="listing__single_title">{business?.listingTitle ? (<>{business.listingTitle}</>) : "-"}</h2>
                    <div className="listing__single_location">
                      <img src={SingleListingLocation} alt="SingleListingLocation" />
                      {business?.businessCountry && business.businessState ? (<>{business.businessCountry}, {business.businessState} </>) : "-" }
@@ -296,9 +325,12 @@ const allowedImages = [
                  <div className="busines_lisiting_highLevelSummary_list">
                    <strong>Cash Flow:</strong> ${business?.cashFlow.toLocaleString()}
                  </div>
-                 {/* <div className="busines_lisiting_highLevelSummary_list">
+                 <div className="busines_lisiting_highLevelSummary_list">
                    <strong>Revenue:</strong> ${business?.revenue.toLocaleString()}
-                 </div> */}
+                 </div>
+                 <div className="busines_lisiting_highLevelSummary_list">
+                   <strong>Monthly Rent:</strong> ${business?.monthlyRentAmount.toLocaleString()}
+                 </div>
                  <div className="busines_lisiting_highLevelSummary_list">
                    <strong>SDE:</strong> {business?.latestSDE ? (<>{business.latestSDE}</>) : "-"}
                  </div>
@@ -343,9 +375,19 @@ const allowedImages = [
                <div className="business__list_single_key_highlights_Business_overview">
                  <div className="business__list_single_business_overview">
                    <h3 className="m-b-10">Detailed Information</h3>
-                   <div className="business_list_single_overview_list">
-                     <strong>Reason for Selling :</strong> {business?.reasonForSelling ? (<>{business.reasonForSelling}</>) : "-" }
-                   </div>
+                  <div className="business_list_single_overview_list">
+                    <strong>Reason for Selling :</strong>{" "}
+                    {business?.reasonForSelling ? (
+                      <span
+                        dangerouslySetInnerHTML={{
+                          __html: business.reasonForSelling,
+                        }}
+                      />
+                    ) : (
+                      "-"
+                    )}
+                  </div>
+
                     <div className="business_list_single_overview_list">
                      <strong>Support and Training:</strong> {business?.postCloseSupport ? (<>{business.postCloseSupport}</>) : "-" }
                      </div>
@@ -388,6 +430,31 @@ const allowedImages = [
                   
                  </div>
                </div>
+
+
+              <div className="business__list_single_key_highlights_Business_overview">
+              <div className="business__list_single_business_overview">
+                <h3 className="m-b-10">Owner Contact Details</h3>
+                      <div className="business_list_single_overview_list"><strong>Name:</strong> {business?.ownerId?.first_name || "-"} {business?.ownerId?.last_name || "-"}</div>
+                      <div className="business_list_single_overview_list"><strong>Email:</strong> {business?.ownerId?.email || "-"}</div>
+                      <div className="business_list_single_overview_list"><strong>Company:</strong> {business?.ownerId?.profile?.company || "-"}</div>
+                      <div className="business_list_single_overview_list"><strong>Website:</strong>{" "}
+                        {business?.ownerId?.profile?.website ? (
+                          <a href={business?.ownerId?.profile?.website} target="_blank" rel="noopener noreferrer">
+                            {business?.ownerId?.profile?.website}
+                          </a>
+                        ) : "-"}
+                      </div>
+                      <div className="business_list_single_overview_list"><strong>Overview:</strong> {business?.ownerId?.profile?.overview || "-"}</div>
+                      <div className="business_list_single_overview_list"><strong>Phone:</strong> {business?.ownerId?.profile?.phone_number || "-"}</div>
+                      <div className="business_list_single_overview_list"><strong>State:</strong> {business?.ownerId?.profile?.state || "-"}</div>
+                      <div className="business_list_single_overview_list"><strong>Zip Code:</strong> {business?.ownerId?.profile?.zip_code || business?.ownerId?.profile?.zipCode || "-"}</div>
+                    </div>
+              
+            </div>
+
+
+
       </div>
 
 
@@ -481,48 +548,85 @@ const allowedImages = [
 >
    <form onSubmit={handleContactSeller} className="p-fluid contact__form_listin_seller">
 
+
+<div className="field">
+      <label>Full Name *</label>
+    
+      <InputText
+
+          value={contactForm.fullName}
+         onChange={(e) =>
+          setContactForm({ ...contactForm, fullName: e.target.value })
+        }
+        
+      required
+      />
+    </div>
+
+<div className="field">
+      <label>Phone Number *</label>
+      <InputMask
+            mask="(999) 999-9999"
+             value={contactForm.phone}
+            onChange={(e) =>
+              setContactForm({ ...contactForm, phone: e.target.value })
+            }
+            required
+          />
+</div>
     <div className="field">
-      <label>Email</label>
+      <label>Email Address *</label>
       <InputText
           value={contactForm.senderEmail}
         onChange={(e) =>
           setContactForm({ ...contactForm, senderEmail: e.target.value })
         }
-      
+      required
       />
-      {/* <input
-        type="email"
-        className="p-inputtext"
-        required
-      /> */}
+
     </div>
 
+
+
+
+{business?.ownerId?.user_type === "seller_broker" && <>
+
     <div className="field">
-      <label>Subject</label>
-      {/* <input
-        type="text"
-        className="p-inputtext"
-        value={contactForm.subject}
-        required
-        onChange={(e) =>
-          setContactForm({ ...contactForm, subject: e.target.value })
-        }
-      /> */}
-
-
+      <label>Zip Code</label>
+    
       <InputText
 
-          value={contactForm.subject}
+          value={contactForm.zipCode}
          onChange={(e) =>
-          setContactForm({ ...contactForm, subject: e.target.value })
+          setContactForm({ ...contactForm, zipCode: e.target.value })
         }
-        required
+        
       
       />
     </div>
 
+     <div className="field">
+      <label>Amount To invest</label>
+    
+      <InputText
+
+          value={contactForm.amountToInvest}
+         onChange={(e) =>
+          setContactForm({ ...contactForm, amountToInvest: e.target.value })
+        }
+        
+      
+      />
+    </div>
+
+</>}
+
+
+
+
+
     <div className="field">
-      <label>Message</label>
+      <label>Optional Message</label>
       <InputTextarea
         rows={5}
         value={contactForm.details}
