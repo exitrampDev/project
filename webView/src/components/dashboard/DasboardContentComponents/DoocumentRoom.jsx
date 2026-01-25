@@ -79,7 +79,7 @@ const DocumentRoom = () => {
     const fetchSubmissions = async () => {
       if (!access_token) return;
       try {
-        const res = await axios.get(`${API_BASE}/nda/owner-submissions`, {
+        const res = await axios.get(`${API_BASE}/nda/owner-submissions/${id}`, {
           headers: { Authorization: `Bearer ${access_token}` },
         });
         setSubmissions(res?.data?.data || []);

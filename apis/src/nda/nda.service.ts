@@ -229,7 +229,7 @@ export class NdaService {
     };
   }
 
-  async findAllForOwner(query: QueryNdaDto, userId: string) {
+  async findAllForOwner(query: QueryNdaDto, userId: string, businessId: string) {
     const {
       search = '',
       page = 1,
@@ -243,7 +243,7 @@ export class NdaService {
     const sortOrder = order === 'desc' ? -1 : 1;
 
     // Sirf current user ka data
-    const matchFilter: any = { businessOwnerId: userId };
+    const matchFilter: any = { businessOwnerId: userId, businessId: businessId };
 
     if (ndaStatus) matchFilter.status = ndaStatus;
     if (cimStatus) matchFilter.cimAccess = cimStatus;

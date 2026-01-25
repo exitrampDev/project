@@ -35,14 +35,15 @@ export class NdaController {
   }
   ///////
   @UseGuards(JwtAuthGuard)
-  @Get('owner-submissions')
+  @Get('owner-submissions/:businessId')
   async findAllForOwner(
     @Query() query: QueryNdaDto,
-    @Req() req: any
+    @Req() req: any,
+    @Param('businessId') businessId: string
   ) {
     
   const ownerId: string = req.user.userId;
-  return this.ndaService.findAllForOwner(query, ownerId);
+  return this.ndaService.findAllForOwner(query, ownerId, businessId);
   }
 
   //reject ka kaam hai 
