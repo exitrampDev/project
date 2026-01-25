@@ -148,6 +148,11 @@ export class BusinessListingController {
           dashboardUrl: 'https://app.exitramp.com/messages',
           year: new Date().getFullYear(),
           senderEmail: dto.senderEmail,
+          
+          fullName: dto.fullName,
+          phone: dto.phone,
+          zipCode: dto.zipCode,
+          amountToInvest: dto.amountToInvest,
       },
       
     );
