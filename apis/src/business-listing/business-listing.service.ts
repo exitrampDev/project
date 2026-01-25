@@ -289,7 +289,7 @@ async findOneWithUserNda(
     })
     .populate({
       path: 'ndas',
-      match: { submittedBy: new Types.ObjectId(userId) },
+      match: { submittedBy: userId },
     })
     .lean()
     .exec();
