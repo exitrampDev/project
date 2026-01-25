@@ -124,9 +124,9 @@ const fetchFiles = async () => {
 
   //   useEffect(() => {
     
-  //     console.log("New Listing Data:", newListing);
+  //     console.log("New user Data:", user);
       
-  // }, [newListing]);
+  // }, [user]);
 
   useEffect(() => {
     if (id && access_token) fetchListing().then(() => fetchFiles());
@@ -281,8 +281,8 @@ const usStates = useRecoilValue(usStatesState);
       <div className="listing__creation_field_col md:col-4">
         <label>Listing Title <span className="required__star">*</span></label>
         <InputText
-          value={newListing.businessName}
-          onChange={(e) => handleChange(e, "businessName")}
+          value={newListing.listingTitle}
+          onChange={(e) => handleChange(e, "listingTitle")}
         />
       </div>
 {/* Asking Price */}
@@ -429,16 +429,17 @@ const usStates = useRecoilValue(usStatesState);
     <div className="form__field_col_hardocded_email">
       {user?.profile?.phone_number || ""}
     </div>
-  ) : (
+  ) :
+   (
     <InputMask
       mask="(999) 999-9999"
-      placeholder={`${user.profile.phone_number}`}
-      value="2121212112"
+      value={newListing.contactPhone || ""}
       onChange={(e) =>
         setNewListing({ ...newListing, contactPhone: e.target.value })
       }
     />
-  )}
+  )
+  }
 </div>
 
 
@@ -488,7 +489,7 @@ const usStates = useRecoilValue(usStatesState);
   id="zip"
   name="zip"
   mask="99999"
-   value={`${user.profile.zipCode}`}
+   value={`${user?.profile?.zipCode}`}
     onChange={(e) =>
       setNewListing({ ...newListing, contactZipCode: e.target.value })
     }
@@ -1096,12 +1097,13 @@ impact the confidentiality of your sale.</em>
       <div className="listing__creation_field_col md:col-4">
         <label>Latest Net Profit </label>
         <InputNumber
-          value={newListing.latestNetProfit}
+          value={newListing.latestNetProfit || 0}
           onValueChange={(e) => setNewListing({ ...newListing, latestNetProfit: e.value })}
          mode="currency"
     currency="USD"
     minFractionDigits={0}
   maxFractionDigits={0}
+      placeholder="Enter Latest Net Profit "
         />
       </div>
 

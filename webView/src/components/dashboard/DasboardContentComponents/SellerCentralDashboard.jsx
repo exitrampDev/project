@@ -109,10 +109,10 @@ const [pendingNdaCount, setPendingNdaCount] = useState(0);
     <div className="flex items-center gap-2 img_my_save_lisiting">
       <img
         src={rowData.image || "https://via.placeholder.com/40"}
-        alt={rowData.businessName}
+        alt={rowData.listingTitle}
         className="w-10 h-10 rounded"
       />
-      <span>{rowData.businessName}</span>
+      <span>{rowData.listingTitle}</span>
     </div>
   );
 const industryTemplate = (indusValue) => {

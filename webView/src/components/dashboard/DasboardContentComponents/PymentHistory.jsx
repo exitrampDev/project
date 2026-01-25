@@ -156,7 +156,7 @@ pdf.save(
         >
           <Column
             header="Business Name"
-            body={(row) => row?.referenceId?.businessName || "-"}
+            body={(row) => row?.referenceId?.listingTitle || "-"}
           />
           <Column field="_id" header="Payment ID" style={{ width: "260px" }} />
           <Column field="amount" header="Amount ($)" />
@@ -209,7 +209,7 @@ pdf.save(
               <div className="invoice__row">
                 <div>
                   <h4>Business Name</h4>
-                  <p>{singlePayment?.referenceId?.businessName}</p>
+                  <p>{singlePayment?.referenceId?.listingTitle}</p>
                 </div>
 
                 <div>

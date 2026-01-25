@@ -163,16 +163,16 @@ contactName: `${user?.first_name || ""} ${user?.last_name || ""}`,
 contactPhone: "",
 contactEmail: `${user?.email || ""}`,
 contactZipCode: "",
- businessName: "",
+ listingTitle: "",
 businessCity: "",
 businessState: "",
 businessCountry: "",
 businessZipCode: "",
 yearStablished: 1900,
 reasonForSelling: "",
-isFranchise: false,
-isRelocatable: false,
-isStartup: false,
+isFranchise: "",
+isRelocatable:"" ,
+isStartup:"" ,
 postCloseSupport: "",
 managementWillingToStay: "",
 numberOfEmployees: 0,
@@ -295,7 +295,7 @@ const handleCreateListing = async () => {
           productRevenueMix: JSON.stringify(newListing.productRevenueMix),
           propertiesIncluded: JSON.stringify(newListing.propertiesIncluded),
           growthExpansion: JSON.stringify(newListing.growthExpansion), 
-          // businessName: newListing.businessName),
+          // listingTitle: newListing.listingTitle),
           growthOpportunities: JSON.stringify(newListing.growthOpportunities),
           growthOpportunityNarrative: JSON.stringify(newListing.growthOpportunityNarrative),
     };
@@ -325,16 +325,16 @@ contactName: "",
 contactPhone: "",
 contactEmail: "",
 contactZipCode: "",
- businessName: "",
+ listingTitle: "",
 businessCity: "",
 businessState: "",
 businessCountry: "",
 businessZipCode:"",
 yearStablished: 1900,
 reasonForSelling: "",
-isFranchise: false,
-isRelocatable: false,
-isStartup: false,
+isFranchise: "",
+isRelocatable: "",
+isStartup: "",
 postCloseSupport: "",
 managementWillingToStay: "",
 numberOfEmployees: 0,
@@ -358,7 +358,7 @@ annualRevenue: {
 latestEBITDA:"",
 latestSDE: "",
 cashFlow: "",
-latestNetProfit: "",
+latestNetProfit: 0,
 listingReferenceNumber: Math.random().toString(16).substring(2, 10),
     });
 
@@ -477,10 +477,10 @@ window.location.href = `/user/payment-process/${businessId}`;
     <div className="flex align-items-center">
       <img
         src={row.image || "https://via.placeholder.com/40"}
-        alt={row.businessName}
+        alt={row.listingTitle}
         style={{ width: "40px", borderRadius: "6px", marginRight: "10px" }}
       />
-      <span>{row.businessName?.replace(/^"|"$/g, '')}</span>
+      <span>{row.listingTitle?.replace(/^"|"$/g, '')}</span>
     </div>
   );
 
@@ -670,7 +670,7 @@ useEffect(() => {
     const searchTerm = filters.search.toLowerCase();
     filtered = filtered.filter(
       (item) =>
-        item.businessName?.toLowerCase().includes(searchTerm) ||
+        item.listingTitle?.toLowerCase().includes(searchTerm) ||
         item.industry?.toLowerCase().includes(searchTerm)||
         item.askingPrice?.toString().includes(searchTerm)
     );
@@ -758,8 +758,8 @@ console.log("user>>>>>>>>>>>", user);
       <div className="listing__creation_field_col md:col-4">
         <label>Listing Title <span className="required__star">*</span></label>
         <InputText
-          value={newListing.businessName}
-          onChange={(e) => handleChange(e, "businessName")}
+          value={newListing.listingTitle}
+          onChange={(e) => handleChange(e, "listingTitle")}
         />
       </div>
 
@@ -916,8 +916,8 @@ console.log("user>>>>>>>>>>>", user);
   ) : (
     <InputMask
       mask="(999) 999-9999"
-      placeholder={`${user.profile.phone_number}`}
-      value="2121212112"
+       placeholder={`${user?.profile?.phone_number}`}
+      value={`${user?.profile?.phone_number??''}`}
       onChange={(e) =>
         setNewListing({ ...newListing, contactPhone: e.target.value })
       }
@@ -931,7 +931,7 @@ console.log("user>>>>>>>>>>>", user);
       <label>Year In Operation</label>
         <div className="form__field_col_hardocded_email">
           {user?.profile?.years_in_operation
-            ? new Date(user.profile.years_in_operation).toLocaleDateString()
+            ? new Date(user?.profile?.years_in_operation).toLocaleDateString()
             : ""}
         </div>
     </div>
@@ -972,7 +972,7 @@ console.log("user>>>>>>>>>>>", user);
   id="zip"
   name="zip"
   mask="99999"
-   value={`${user.profile.zipCode}`}
+   value={`${user?.profile?.zipCode}`}
     onChange={(e) =>
       setNewListing({ ...newListing, contactZipCode: e.target.value })
     }
@@ -1098,8 +1098,8 @@ console.log("user>>>>>>>>>>>", user);
     <Dropdown
           value={newListing.isFranchise}
           options={[
-              { label: "Yes", value: true },
-              { label: "No", value: false }
+              { label: "Yes", value: "Yes" },
+              { label: "No", value: "No" }
             ]}
           onChange={(e) => handleChange(e, "isFranchise")}
           placeholder="Select"
@@ -1118,8 +1118,8 @@ console.log("user>>>>>>>>>>>", user);
   <Dropdown
           value={newListing.isRelocatable}
           options={[
-              { label: "Yes", value: true },
-              { label: "No", value: false }
+             { label: "Yes", value: "Yes" },
+              { label: "No", value: "No" }
             ]}
           onChange={(e) => handleChange(e, "isRelocatable")}
           placeholder="Select"
@@ -1139,8 +1139,8 @@ console.log("user>>>>>>>>>>>", user);
 <Dropdown
           value={newListing.isStartup}
           options={[
-              { label: "Yes", value: true },
-              { label: "No", value: false }
+              { label: "Yes", value: "Yes" },
+              { label: "No", value: "No" }
             ]}
           onChange={(e) => handleChange(e, "isStartup")}
           placeholder="Select"
@@ -1955,6 +1955,7 @@ impact the confidentiality of your sale.</em>
   <Column field="yearStablished" header="Year" />
   <Column header="Location" body={locationTemplate} />
   <Column field="revenue" header="Revenue" body={moneyTemplate} />
+  <Column field="monthlyRentAmount" header="Rent"  />
   <Column field="askingPrice" header="Asking Price" body={moneyTemplate} />
   <Column header="Last Edited" body={dateTemplate} />
   <Column field="cimStatus" header="CIM Status" body={cimTemplate} />

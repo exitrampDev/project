@@ -79,10 +79,10 @@ const RecentViewListing = () => {
     <div className="flex items-center gap-2 img_my_save_lisiting">
       <img
         src={rowData.image || "https://via.placeholder.com/40"}
-        alt={rowData.businessName}
+        alt={rowData.listingTitle}
         className="w-10 h-10 rounded"
       />
-      <span>{rowData.businessName}</span>
+      <span>{rowData.listingTitle}</span>
     </div>
   );
   const industryTemplate = (indusValue) => (JSON.parse(Object(indusValue?.industry)))
@@ -118,7 +118,7 @@ const RecentViewListing = () => {
           <Column header="Listing Name" body={listingNameTemplate} />
           <Column header="Industry" body={industryTemplate} />
          <Column  header="Business State" body={(listingData) => { return listingData.businessState;}}/>
-          <Column header="Cash Flow" body={(listingData) => { return listingData.cashFlow}} />
+          <Column header="Cash Flow" body={(listingData) => { return `$${listingData.cashFlow}`}} />
           <Column header="Asking Price"  body={(rowData) => moneyTemplate(rowData.askingPrice)} />
           <Column body={(listingData)=>{return new Date(listingData.createdAt).toLocaleDateString()}} header="Created Date" />
           <Column header="Action" body={actionTemplate} />

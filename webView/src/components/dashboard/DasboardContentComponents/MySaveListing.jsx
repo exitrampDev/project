@@ -90,7 +90,7 @@ const FavoriteListings = () => {
     if (listingType) filtered = filtered.filter(l => l.listingType === listingType);
     if (keyword)
       filtered = filtered.filter(l =>
-        l.businessName?.toLowerCase().includes(keyword.toLowerCase()) ||
+        l.listingTitle?.toLowerCase().includes(keyword.toLowerCase()) ||
         l.businessType?.toLowerCase().includes(keyword.toLowerCase())
       );
     if (industry) filtered = filtered.filter(l => l.businessType === industry);
@@ -111,10 +111,10 @@ const FavoriteListings = () => {
     <div className="flex items-center gap-2 img_my_save_lisiting">
       <img
         src={rowData?.image || "https://via.placeholder.com/40"}
-        alt={rowData?.businessName}
+        alt={rowData?.listingTitle}
         className=" rounded"
       />
-      <span>{rowData?.businessName}</span>
+      <span>{rowData?.listingTitle}</span>
     </div>
   );
 
@@ -176,7 +176,7 @@ const cimTemplate = (rowData) => (
 
 
 
-      {user?.user_type === "seller_central" || user?.user_type === "seller_broker" || user?.user_type === "seller_individual" && ( 
+      {(user?.user_type === "seller_central" || user?.user_type === "seller_broker" || user?.user_type === "seller_individual") && ( 
         <>
       <div className="brief__infor_content">Allow users to view listings they have bookmarked. No publishing, editing, or cancellation capabilities are available.</div>
           <div className="my__save_listing_wrap">

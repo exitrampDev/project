@@ -11,6 +11,7 @@ import { FileUpload } from "primereact/fileupload";
 import { authState, apiBaseUrlState } from "../../../recoil/ctaState";
 import DashboardHeader from "./DashboardHeaderBlock";
 import FileUploader from "../../customcomponent/FileUploader";
+import { InputMask } from "primereact/inputmask";
 
 const FreeSellerForm = () => {
   const toast = useRef(null);
@@ -200,12 +201,20 @@ const FreeSellerForm = () => {
 
           <div className="field form__field_col">
             <label>Phone</label>
-            <InputText
+            {/* <InputText
               value={formData.phone}
               onChange={(e) =>
                 handleChange("phone", e.target.value)
               }
-            />
+            /> */}
+
+            <InputMask
+                  mask="(999) 999-9999"
+                  value={formData.phone}
+                  onChange={(e) =>
+                      handleChange("phone", e.target.value)
+                  }
+                />
           </div>
 
           <div className="field form__field_col">
