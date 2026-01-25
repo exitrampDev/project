@@ -276,22 +276,40 @@ if (industry) {
     return business;
   }
 
-  async findOneWithUserNda(id: string, userId: string): Promise<Business> {
-    const business = await this.businessModel.findById(id)
-     .populate([{
-      path: 'ownerId',
-      select: '-password -stripe_customer_id -payment_method -__v',
-    },
-     {
-        path: 'ndas',
-        match: { submittedBy: userId },
+async findOneWithUserNda(
+  id: string,
+  userId: string,
+) {
+  const result = await this.businessModel.aggregate([
+    { $match: { _id: new Types.ObjectId(id) } },
+    {
+      $lookup: {
+        from: 'ndas',
+        let: { businessId: '$_id' },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $and: [
+                  { $eq: ['$businessId', '$$businessId'] },
+                  { $eq: ['$submittedBy', new Types.ObjectId(userId)] },
+                ],
+              },
+            },
+          },
+        ],
+        as: 'ndas',
       },
-  
-  ])
-    .exec();
-    if (!business) throw new NotFoundException(`Business with ID ${id} not found`);
-    return business;
+    },
+  ]);
+
+  if (!result.length) {
+    throw new NotFoundException(`Business with ID ${id} not found`);
   }
+
+  return result[0];
+}
+
 
  async remove(id: string, user: any) {
   const business = await this.businessModel.findById(id);
