@@ -55,6 +55,13 @@ export class BusinessListingController {
     }
 
     @UseGuards(JwtAuthGuard)
+    @Get('with-nda/:id')
+    findOneWithNda(@Param('id') id: string,  @User() user: any) {
+
+        return this.businessService.findOneWithUserNda(id, user.userId);
+    }
+
+    @UseGuards(JwtAuthGuard)
     @Patch(':id')
     async update(
         @Param('id') id: string,

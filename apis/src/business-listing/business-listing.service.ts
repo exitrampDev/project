@@ -276,6 +276,23 @@ if (industry) {
     return business;
   }
 
+  async findOneWithUserNda(id: string, userId: string): Promise<Business> {
+    const business = await this.businessModel.findById(id)
+     .populate([{
+      path: 'ownerId',
+      select: '-password -stripe_customer_id -payment_method -__v',
+    },
+     {
+        path: 'ndas',
+        match: { submittedBy: userId },
+      },
+  
+  ])
+    .exec();
+    if (!business) throw new NotFoundException(`Business with ID ${id} not found`);
+    return business;
+  }
+
  async remove(id: string, user: any) {
   const business = await this.businessModel.findById(id);
 
