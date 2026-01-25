@@ -43,7 +43,7 @@ export class NdaService {
 
     // Create NDA
     const newNda = new this.ndaModel({
-      businessId: dto.businessId,
+      businessId: new Types.ObjectId(dto.businessId),
       businessOwnerId: business.ownerId,
       submittedBy: userObjectId,
       status: 'pending',
