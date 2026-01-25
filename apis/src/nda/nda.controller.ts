@@ -7,6 +7,7 @@ import { Types } from 'mongoose';
 import { QueryNdaDto } from './dto/query-nda.dto';
 import { RejectNdaDto } from './dto/reject-nda.dto';
 import { ApproveNdaDto } from './dto/approve-nda.dto';
+import { AllowDocRoomDto } from './dto/allow-doc-room.dto';
 
 @Controller('nda')
 export class NdaController {
@@ -64,7 +65,7 @@ export class NdaController {
       //approved ka kaam hai ye 
     @UseGuards(JwtAuthGuard) 
     @Patch('allow-doc-room')
-    async allowDocRoom(@Body() ApproveDto: ApproveNdaDto, @Req() req: any) {
+    async allowDocRoom(@Body() ApproveDto: AllowDocRoomDto, @Req() req: any) {
         const userId = req.user.userId; 
         return await this.ndaService.allowDocRoom(ApproveDto.ndaId, userId);
     }
@@ -72,7 +73,7 @@ export class NdaController {
        //approved ka kaam hai ye 
     @UseGuards(JwtAuthGuard) 
     @Patch('disallow-doc-room')
-    async disallowDocRoom(@Body() ApproveDto: ApproveNdaDto, @Req() req: any) {
+    async disallowDocRoom(@Body() ApproveDto: AllowDocRoomDto, @Req() req: any) {
         const userId = req.user.userId; 
         return await this.ndaService.rejectDocRoom(ApproveDto.ndaId, userId);
     }
