@@ -55,6 +55,13 @@ export class BusinessListingController {
     }
 
     @UseGuards(JwtAuthGuard)
+    @Get('with-nda/:id')
+    findOneWithNda(@Param('id') id: string,  @User() user: any) {
+
+        return this.businessService.findOneWithUserNda(id, user.userId);
+    }
+
+    @UseGuards(JwtAuthGuard)
     @Patch(':id')
     async update(
         @Param('id') id: string,
@@ -143,11 +150,16 @@ export class BusinessListingController {
       'contactToSeller',
       {
           
-          businessName: business.businessName,
+          listingTitle: business.listingTitle,
           buyerMessage: dto.details,
           dashboardUrl: 'https://app.exitramp.com/messages',
           year: new Date().getFullYear(),
           senderEmail: dto.senderEmail,
+          
+          fullName: dto.fullName,
+          phone: dto.phone,
+          zipCode: dto.zipCode,
+          amountToInvest: dto.amountToInvest,
       },
       
     );

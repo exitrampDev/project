@@ -30,7 +30,7 @@ useEffect(() => {
         },
       }
     );
-
+console.log("Payment Intent Response:", response.data);
     setClientSecret(response.data.clientSecret);
   };
 

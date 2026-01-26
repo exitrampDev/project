@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Types } from 'mongoose';
+import { Document, Types, Schema as MongooseSchema } from 'mongoose';
 import { UserType } from '../enums/user-type.enum';
 
 export type UserDocument = User & Document;
@@ -11,9 +11,6 @@ export class User {
 
   @Prop({ required: true })
   last_name: string;
-
-  @Prop({ default: '' })
-  phone_number: string;
 
   @Prop({ required: true, unique: true })
   email: string;
@@ -27,12 +24,19 @@ export class User {
   @Prop({ required: true, enum: UserType, default: UserType.SUBSCRIBER })
   user_type: string;
 
+  // -------------------------Stripe Integration Fields Start-------------------------
+
   @Prop({ default: null })
   stripe_customer_id: string;
 
   @Prop({ default: null })
   payment_method: string;
+    // -------------------------Stripe Integration Fields End-------------------------
 
+   // ---------------- Dynamic Profile ----------------
+  @Prop({ type: MongooseSchema.Types.Mixed, default: {} })
+  profile: Record<string, any>;
+// ---------------- Meta ----------------
   @Prop({ default: false })
   isDeleted: boolean;
 

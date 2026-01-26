@@ -9,9 +9,8 @@ export enum UserType {
   SELLER_CENTRAL = 'seller_central',
   MA_EXPERT_BASIC = 'm&a_expert_basic', // underscore instead of space (recommended)
   MA_EXPERT_PREMIUM = 'm&a_expert_premium', // underscore instead of space (recommended)
-  // ----------------------------------
-  ADMIN = 'admin',
+
   BUYER_BASIC = 'buyer_basic',
-  SELLERBROKER = 'seller_broker',
-  SELLERINDIVIDUAL = 'seller_individual',
+  SELLER_BROKER = 'seller_broker',
+  SELLER_INDIVIDUAL = 'seller_individual',
 }

@@ -21,6 +21,9 @@ import { Tag } from "primereact/tag";
 import { Chip } from "primereact/chip";
 import { Toast } from "primereact/toast";
 import axios from "axios";
+import { InputTextarea } from "primereact/inputtextarea";
+import { InputText } from "primereact/inputtext";
+import { InputMask } from "primereact/inputmask";
 
 export default function BusinessListingDetail() {
   const { user, access_token } = useRecoilValue(authState) ?? {};
@@ -30,6 +33,18 @@ export default function BusinessListingDetail() {
    const toast = useRef(null);
   const [showImagesPopup, setShowImagesPopup] = useState(false);
   const API_BASE = useRecoilValue(apiBaseUrlState);
+  const [showContactModal, setShowContactModal] = useState(false);
+const [contactForm, setContactForm] = useState({
+  senderEmail: user?.email || "",
+  fullName: "",
+  phone: "",
+  zipCode: "",
+  amountToInvest: "",
+  details: "",
+});
+
+const [sending, setSending] = useState(false);
+
   const handleNonUserClick = () => {
     const signupBtn = document.querySelector(".signup-btn");
     if (signupBtn) signupBtn.click();
@@ -53,7 +68,7 @@ export default function BusinessListingDetail() {
         }
 
         const favData = await response.json();
-        console.log("Favorite saved:", favData);
+        // console.log("Favorite saved:", favData);
       } catch (error) {
         console.error("Error saving favorite:", error);
       }
@@ -61,7 +76,8 @@ export default function BusinessListingDetail() {
       try {
         // Fetch business detail
         const res = await fetch(`${API_BASE}/business-listing/${id}`);
-        const data = await res.json();  
+        const data = await res.json(); 
+        // console.log("Business data:", data); 
         setBusiness(data);
       } catch (err) {
         console.error("Error fetching business:", err);
@@ -75,7 +91,7 @@ export default function BusinessListingDetail() {
 const fetchFilesMain = async () => {
       try {
         const res = await axios.get(`${API_BASE}/files/${id}`);
-        console.log("datata",res.data);
+        // console.log("datata",res.data);
         setAdditionalImages(res.data || []);
       } catch (err) {
         console.error("Error fetching files:", err);
@@ -107,7 +123,7 @@ const fetchFilesMain = async () => {
       }
 
       const data = await response.json();
-      console.log("Favorite saved:", data);
+      // console.log("Favorite saved:", data);
 
       toast.current.show({
         severity: "success",
@@ -133,7 +149,50 @@ const allowedImages = [
   "listingImage4",
   "listingImage5",
 ];
-    
+  const handleContactSeller = async (e) => {
+  e.preventDefault();
+
+  try {
+    setSending(true);
+
+    await axios.post(`${API_BASE}/business-listing/contact-seller`, {
+      senderEmail: contactForm.senderEmail,
+      businessId: id,
+      fullName: contactForm.fullName,
+      phone: contactForm.phone,
+      zipCode: contactForm.zipCode,
+      amountToInvest: contactForm.amountToInvest,
+      details: contactForm.details,
+    });
+
+    toast.current.show({
+      severity: "success",
+      summary: "Message Sent",
+      detail: "Your message has been sent to the seller.",
+      life: 3000,
+    });
+
+    setContactForm({
+      senderEmail: user?.email || "",
+      fullName: "",
+      phone: "",
+      zipCode: "",
+      amountToInvest: "",
+      details: "",
+    });
+    setShowContactModal(false);
+  } catch (error) {
+    toast.current.show({
+      severity: "error",
+      summary: "Error",
+      detail: "Failed to send message. Please try again.",
+      life: 3000,
+    });
+  } finally {
+    setSending(false);
+  }
+};
+  
 
   return (
     <>
@@ -141,7 +200,8 @@ const allowedImages = [
       <Header />
    <div className="business__listing_content">
      
-      <div className="breadcrubs__main_container">
+      <div className="header__wrap_listing">
+        <div className="breadcrubs__main_container">
         <Link to={`/`} className="">
           Home
         </Link>
@@ -152,16 +212,51 @@ const allowedImages = [
         / Business listing details
       </div>
 
+
+{business?.ownerId?.user_type === "seller_broker" ? <>
+
+ <div className="bussiness__contact_form_seller_wrap">
+          <Button
+            label="Contact Listing Broker"
+            icon="pi pi-envelope"
+            className="contact__seller_btn"
+            onClick={() => {
+              
+              setShowContactModal(true);
+            }}
+          />
+        </div>
+</> : <>
+        <div className="bussiness__contact_form_seller_wrap">
+          <Button
+            label="Contact Listing Owner"
+            icon="pi pi-envelope"
+            className="contact__seller_btn"
+            onClick={() => {
+              
+              setShowContactModal(true);
+            }}
+          />
+        </div>
+
+
+</>}
+
+
+
+      </div>
     
 
       <div className="business__list_single_main_wrap web__view_wrapper">
        
        
+
+
                <div className="business__list_single_intro_block">
                  <div className="business__list_single_intro_block_img_col">
                    <img
                      src={business.image}
-                     alt={business.businessName}
+                     alt={business.listingTitle}
                      className="w-64 h-64 object-cover rounded-lg mb-4"
                    />
                    <div
@@ -173,7 +268,7 @@ const allowedImages = [
               </div>
                  </div>
                  <div className="business__list_single_intro_block_content_col">
-                   <h2 className="listing__single_title">{business?.businessName ? (<>{business.businessName}</>) : "-"}</h2>
+                   <h2 className="listing__single_title">{business?.listingTitle ? (<>{business.listingTitle}</>) : "-"}</h2>
                    <div className="listing__single_location">
                      <img src={SingleListingLocation} alt="SingleListingLocation" />
                      {business?.businessCountry && business.businessState ? (<>{business.businessCountry}, {business.businessState} </>) : "-" }
@@ -230,9 +325,12 @@ const allowedImages = [
                  <div className="busines_lisiting_highLevelSummary_list">
                    <strong>Cash Flow:</strong> ${business?.cashFlow.toLocaleString()}
                  </div>
-                 {/* <div className="busines_lisiting_highLevelSummary_list">
+                 <div className="busines_lisiting_highLevelSummary_list">
                    <strong>Revenue:</strong> ${business?.revenue.toLocaleString()}
-                 </div> */}
+                 </div>
+                 <div className="busines_lisiting_highLevelSummary_list">
+                   <strong>Monthly Rent:</strong> ${business?.monthlyRentAmount.toLocaleString()}
+                 </div>
                  <div className="busines_lisiting_highLevelSummary_list">
                    <strong>SDE:</strong> {business?.latestSDE ? (<>{business.latestSDE}</>) : "-"}
                  </div>
@@ -277,9 +375,19 @@ const allowedImages = [
                <div className="business__list_single_key_highlights_Business_overview">
                  <div className="business__list_single_business_overview">
                    <h3 className="m-b-10">Detailed Information</h3>
-                   <div className="business_list_single_overview_list">
-                     <strong>Reason for Selling :</strong> {business?.reasonForSelling ? (<>{business.reasonForSelling}</>) : "-" }
-                   </div>
+                  <div className="business_list_single_overview_list">
+                    <strong>Reason for Selling :</strong>{" "}
+                    {business?.reasonForSelling ? (
+                      <span
+                        dangerouslySetInnerHTML={{
+                          __html: business.reasonForSelling,
+                        }}
+                      />
+                    ) : (
+                      "-"
+                    )}
+                  </div>
+
                     <div className="business_list_single_overview_list">
                      <strong>Support and Training:</strong> {business?.postCloseSupport ? (<>{business.postCloseSupport}</>) : "-" }
                      </div>
@@ -322,6 +430,31 @@ const allowedImages = [
                   
                  </div>
                </div>
+
+
+              <div className="business__list_single_key_highlights_Business_overview">
+              <div className="business__list_single_business_overview">
+                <h3 className="m-b-10">Owner Contact Details</h3>
+                      <div className="business_list_single_overview_list"><strong>Name:</strong> {business?.ownerId?.first_name || "-"} {business?.ownerId?.last_name || "-"}</div>
+                      <div className="business_list_single_overview_list"><strong>Email:</strong> {business?.ownerId?.email || "-"}</div>
+                      <div className="business_list_single_overview_list"><strong>Company:</strong> {business?.ownerId?.profile?.company || "-"}</div>
+                      <div className="business_list_single_overview_list"><strong>Website:</strong>{" "}
+                        {business?.ownerId?.profile?.website ? (
+                          <a href={business?.ownerId?.profile?.website} target="_blank" rel="noopener noreferrer">
+                            {business?.ownerId?.profile?.website}
+                          </a>
+                        ) : "-"}
+                      </div>
+                      <div className="business_list_single_overview_list"><strong>Overview:</strong> {business?.ownerId?.profile?.overview || "-"}</div>
+                      <div className="business_list_single_overview_list"><strong>Phone:</strong> {business?.ownerId?.profile?.phone_number || "-"}</div>
+                      <div className="business_list_single_overview_list"><strong>State:</strong> {business?.ownerId?.profile?.state || "-"}</div>
+                      <div className="business_list_single_overview_list"><strong>Zip Code:</strong> {business?.ownerId?.profile?.zip_code || business?.ownerId?.profile?.zipCode || "-"}</div>
+                    </div>
+              
+            </div>
+
+
+
       </div>
 
 
@@ -405,6 +538,111 @@ const allowedImages = [
   <p>No additional images available</p>
 )}
 
+</Dialog>
+<Dialog
+  header="Contact Seller"
+  visible={showContactModal}
+  style={{ width: "450px", maxWidth: "95vw" }}
+  modal
+  onHide={() => setShowContactModal(false)}
+>
+   <form onSubmit={handleContactSeller} className="p-fluid contact__form_listin_seller">
+
+
+<div className="field">
+      <label>Full Name *</label>
+    
+      <InputText
+
+          value={contactForm.fullName}
+         onChange={(e) =>
+          setContactForm({ ...contactForm, fullName: e.target.value })
+        }
+        
+      required
+      />
+    </div>
+
+<div className="field">
+      <label>Phone Number *</label>
+      <InputMask
+            mask="(999) 999-9999"
+             value={contactForm.phone}
+            onChange={(e) =>
+              setContactForm({ ...contactForm, phone: e.target.value })
+            }
+            required
+          />
+</div>
+    <div className="field">
+      <label>Email Address *</label>
+      <InputText
+          value={contactForm.senderEmail}
+        onChange={(e) =>
+          setContactForm({ ...contactForm, senderEmail: e.target.value })
+        }
+      required
+      />
+
+    </div>
+
+
+
+
+{business?.ownerId?.user_type === "seller_broker" && <>
+
+    <div className="field">
+      <label>Zip Code</label>
+    
+      <InputText
+
+          value={contactForm.zipCode}
+         onChange={(e) =>
+          setContactForm({ ...contactForm, zipCode: e.target.value })
+        }
+        
+      
+      />
+    </div>
+
+     <div className="field">
+      <label>Amount To invest</label>
+    
+      <InputText
+
+          value={contactForm.amountToInvest}
+         onChange={(e) =>
+          setContactForm({ ...contactForm, amountToInvest: e.target.value })
+        }
+        
+      
+      />
+    </div>
+
+</>}
+
+
+
+
+
+    <div className="field">
+      <label>Optional Message</label>
+      <InputTextarea
+        rows={5}
+        value={contactForm.details}
+        onChange={(e) =>
+          setContactForm({ ...contactForm, details: e.target.value })
+        }
+      />
+    </div>
+
+    <Button
+      type="submit"
+      label={sending ? "Sending..." : "Send Message"}
+      disabled={sending}
+      className="btn__crt_listing"
+    />
+  </form>
 </Dialog>
 
     </>

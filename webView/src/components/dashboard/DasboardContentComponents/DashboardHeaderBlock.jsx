@@ -26,12 +26,37 @@ const DashboardHeader = ({headingData}) => {
             </button>
           </div>
           <div className="dashboard__user_wrap">
-            <button>
-               <Link to={`/user/complete-profile-seller`}>
+{user?.user_type === "seller_broker" ? <>
+<button>
+              
+
+               <Link to={`/user/broker-profile`}>
                <img src={userImg} alt="User" />
                </Link>
               
             </button>
+</> : ""}
+
+
+{(user?.user_type === "seller_central" || user?.user_type === "seller_listing") ? <>
+<button>
+           <Link to={`/user/complete-profile-seller`}>
+               <img src={userImg} alt="User" />
+               </Link>     
+              
+            </button>
+</> : ""}
+{user?.user_type === "buyer_basic" ? <>
+<button>
+              
+
+               <Link to={`/user/complete-profile-buyer-free`}>
+               <img src={userImg} alt="User" />
+               </Link>
+              
+            </button>
+</> : ""}
+            
           </div>
         </div>
       </div>

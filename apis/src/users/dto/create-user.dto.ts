@@ -2,13 +2,15 @@ import {
   IsEmail,
   IsEnum,
   IsNotEmpty,
+  IsObject,
   IsOptional,
   IsString,
   MinLength,
 } from 'class-validator';
 import { UserType } from '../enums/user-type.enum';
+import { ProfileDto } from './profile.dto';
 
-export class CreateUserDto {
+export class CreateUserDto extends ProfileDto {
   @IsNotEmpty()
   @IsString()
   first_name: string;

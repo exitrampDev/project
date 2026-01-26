@@ -25,7 +25,7 @@ export class CimService {
     const features = new ApiFeatures(this.cimModel);
     return features.paginateAndFilter({
       ...query,
-      searchFields: ['businessName', 'businessType', 'entityType','city','state','country'],
+      searchFields: ['listingTitle', 'businessType', 'entityType','city','state','country'],
        baseFilter: { isDeleted: false },
     });
   }

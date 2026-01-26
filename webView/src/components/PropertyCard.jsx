@@ -595,7 +595,7 @@ useEffect(() => {
                 <Link to={`/listing/${listing._id}`} className="flex gap-4">
                   <span className="list__image_col">
                     <img
-                      alt={listing.businessName}
+                      alt={listing.listingTitle}
                       src={listing.image}
                       style={{
                         width: "100%",
@@ -606,7 +606,7 @@ useEffect(() => {
                     />
                   </span>
                   <span className="list_content_col">
-                    <h4>{listing.businessName}</h4>
+                    <h4>{listing.listingTitle}</h4>
                     <p className="location__item_list">
                       {listing.businessCountry}, {listing.businessState}
                     </p>

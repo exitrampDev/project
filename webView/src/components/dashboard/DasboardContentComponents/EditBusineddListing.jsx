@@ -21,6 +21,9 @@ import { RadioButton } from "primereact/radiobutton";
 import { FileUpload } from "primereact/fileupload";
 import { Button } from "primereact/button";
 import FileUploader from "../../customcomponent/FileUploader";
+import { InputMask } from "primereact/inputmask";
+
+
 
 export default function EditBusinessListing() {
   const { id } = useParams();
@@ -28,7 +31,7 @@ export default function EditBusinessListing() {
   const toast = useRef(null);
 
   const API_BASE = useRecoilValue(apiBaseUrlState);
-  const { access_token } = useRecoilValue(authState);
+  const {user, access_token } = useRecoilValue(authState);
 
   const [loading, setLoading] = useState(false);
   const [newListing, setNewListing] = useState(null);
@@ -119,7 +122,12 @@ const fetchFiles = async () => {
 
 
 
-  
+  //   useEffect(() => {
+    
+  //     console.log("New user Data:", user);
+      
+  // }, [user]);
+
   useEffect(() => {
     if (id && access_token) fetchListing().then(() => fetchFiles());
   }, [id, access_token]);
@@ -198,7 +206,6 @@ const handleFileUpload = async (file, displayName) => {
         isOwnerInvolved: "true",
         listingReferenceNumber: Math.random().toString(16).substring(2, 10),
       };
-
       await axios.patch(
         `${API_BASE}/business-listing/${id}`,
         payload,
@@ -274,8 +281,8 @@ const usStates = useRecoilValue(usStatesState);
       <div className="listing__creation_field_col md:col-4">
         <label>Listing Title <span className="required__star">*</span></label>
         <InputText
-          value={newListing.businessName}
-          onChange={(e) => handleChange(e, "businessName")}
+          value={newListing.listingTitle}
+          onChange={(e) => handleChange(e, "listingTitle")}
         />
       </div>
 {/* Asking Price */}
@@ -344,7 +351,7 @@ const usStates = useRecoilValue(usStatesState);
       />
       </div>
  {/* Your Role */}
-      <div className="listing__creation_field_col md:col-6">
+      {/* <div className="listing__creation_field_col md:col-6">
         <label>Your Role </label>
         <Dropdown
           value={newListing.yourRole}
@@ -352,12 +359,56 @@ const usStates = useRecoilValue(usStatesState);
           onChange={(e) => handleChange(e, "yourRole")}
           placeholder="Select"
         />
-      </div>
+      </div> */}
 
 
 
-{/* Contact Address */}
+<div className="listing__creation_field_col md:col-4">
+  <label>Show Contact Info on Listing </label>
+  <InputSwitch
+    checked={newListing.showContactOnListing}
+    onChange={(e) =>
+      setNewListing({ ...newListing, showContactOnListing: e.value })
+    }
+  />
+</div>
+
+
+{/* Contact Name */}
 <div className="listing__creation_field_col md:col-6">
+  <label>Contact Name </label>
+ {user?.user_type === "seller_broker" ? (
+    <div className="form__field_col_hardocded_email">
+  {user?.first_name || ""} {user?.last_name || ""}
+ </div>
+  ) : (
+    <InputText
+    value={newListing.contactName || ""}
+    onChange={(e) =>
+      setNewListing({ ...newListing, contactName: e.target.value })
+    }
+    placeholder="Enter Contact Name"
+  />
+  )}
+</div>
+<div className="listing__creation_field_col md:col-6">
+  <label>Contact Email </label>
+   {user?.user_type === "seller_broker" ? (
+    <div className="form__field_col_hardocded_email">
+  {user?.email || ""}
+ </div>
+  ) : (
+    <InputText
+    value={newListing.contactEmail || ""}
+    onChange={(e) =>
+      setNewListing({ ...newListing, contactEmail: e.target.value })
+    }
+    placeholder="Enter Contact Email"
+  />
+  )}
+</div>
+{/* Contact Address */}
+{/* <div className="listing__creation_field_col md:col-6">
   <label>Contact Address </label>
   <InputText
     value={newListing.contactAddress || ""}
@@ -366,57 +417,92 @@ const usStates = useRecoilValue(usStatesState);
     }
     placeholder="Enter Contact Address"
   />
-</div>
+</div> */}
 
 
-{/* Contact Name */}
-<div className="listing__creation_field_col md:col-6">
-  <label>Contact Name </label>
-  <InputText
-    value={newListing.contactName || ""}
-    onChange={(e) =>
-      setNewListing({ ...newListing, contactName: e.target.value })
-    }
-    placeholder="Enter Contact Name"
-  />
-</div>
 
 {/* Contact Phone */}
 <div className="listing__creation_field_col md:col-6">
-  <label>Contact Phone </label>
-  <InputText
-    value={newListing.contactPhone || ""}
-    onChange={(e) =>
-      setNewListing({ ...newListing, contactPhone: e.target.value })
-    }
-    placeholder="Enter Contact Phone"
-  />
+  <label>Contact Phone</label>
+
+  {user?.user_type === "seller_broker" ? (
+    <div className="form__field_col_hardocded_email">
+      {user?.profile?.phone_number || ""}
+    </div>
+  ) :
+   (
+    <InputMask
+      mask="(999) 999-9999"
+      value={newListing.contactPhone || ""}
+      onChange={(e) =>
+        setNewListing({ ...newListing, contactPhone: e.target.value })
+      }
+    />
+  )
+  }
 </div>
 
-{/* Contact Email */}
-<div className="listing__creation_field_col md:col-6">
-  <label>Contact Email </label>
-  <InputText
-    type="email"
-    value={newListing.contactEmail || ""}
-    onChange={(e) =>
-      setNewListing({ ...newListing, contactEmail: e.target.value })
-    }
-    placeholder="Enter Contact Email"
-  />
-</div>
+
+  {user?.user_type === "seller_broker" && (
+  <>
+    <div className="listing__creation_field_col md:col-6">
+      <label>Year In Operation</label>
+        <div className="form__field_col_hardocded_email">
+          {user?.profile?.years_in_operation
+            ? new Date(user.profile.years_in_operation).toLocaleDateString()
+            : ""}
+        </div>
+    </div>
+    <div className="listing__creation_field_col md:col-6">
+      <label>Company Website</label>
+        <div className="form__field_col_hardocded_email">
+          {user?.profile?.website || ""}
+        </div>
+    </div>
+     <div className="listing__creation_field_col md:col-6">
+      <label>City</label>
+        <div className="form__field_col_hardocded_email">
+          {user?.profile?.location || ""}
+        </div>
+    </div>
+    <div className="listing__creation_field_col md:col-6">
+      <label>State</label>
+        <div className="form__field_col_hardocded_email">
+          {user?.profile?.state || ""}
+        </div>
+    </div>
+  </>
+  )}
 
 {/* Contact Zip Code */}
 <div className="listing__creation_field_col md:col-6">
   <label>Contact Zip Code </label>
-  <InputText
-    value={newListing.contactZipCode || ""}
+
+
+
+{user?.user_type === "seller_broker" ? (
+    <div className="form__field_col_hardocded_email">
+      {user?.profile?.zipCode || ""}
+    </div>
+  ) : (
+    <InputMask
+  id="zip"
+  name="zip"
+  mask="99999"
+   value={`${user?.profile?.zipCode}`}
     onChange={(e) =>
       setNewListing({ ...newListing, contactZipCode: e.target.value })
     }
     placeholder="Enter Zip Code"
-  />
+/>
+  )}
+
+
+
+
+
 </div>
+
 
  {/* Business City */}
 <div className="listing__creation_field_col md:col-4">
@@ -470,10 +556,15 @@ const usStates = useRecoilValue(usStatesState);
 {/* Business Zip Code */}
 <div className="listing__creation_field_col md:col-4">
   <label> Business Zip Code </label>
-  <InputText
-    value={newListing.businessZipCode || ""}
-    onChange={(e) => handleChange(e, "businessZipCode", e.target.value)}
-    placeholder="Enter Business Zip Code"
+  <InputMask
+    id="businessZip"
+    name="businessZip"
+    mask="99999"
+     value={newListing.businessZipCode || ""}
+      onChange={(e) =>
+        setNewListing({ ...newListing, businessZipCode: e.target.value })
+      }
+      placeholder="Enter Business Zip Code"
   />
 </div>  
  {/* Founding Year */}
@@ -491,13 +582,25 @@ const usStates = useRecoilValue(usStatesState);
   />
 </div>
  {/* Reason For Selling */}
-      <div className="listing__creation_field_col md:col-6">
+      <div className="listing__creation_field_col md:col-6  lisitng__text_editor">
         <label>Reason For Selling </label>
-        <InputTextarea
+        {/* <InputTextarea
           rows={3}
           value={newListing.reasonForSelling}
           onChange={(e) => handleChange(e, "reasonForSelling")}
-        />
+        /> */}
+
+         <Editor
+                    value={newListing.reasonForSelling || ""}
+                    onTextChange={(e) =>
+                      setNewListing({
+                        ...newListing,
+                        reasonForSelling: e.htmlValue,
+                      })
+                    }
+                  />
+        <em>Provide a brief explanation as to why you are selling. </em>
+        
       </div>
 
 
@@ -505,34 +608,43 @@ const usStates = useRecoilValue(usStatesState);
 {/* Is Franchise */}
 <div className="listing__creation_field_col md:col-4">
   <label>Is Franchise </label>
-  <InputSwitch
-    checked={newListing.isFranchise}
-    onChange={(e) =>
-      setNewListing({ ...newListing, isFranchise: e.value })
-    }
-  />
+   <Dropdown
+            value={newListing.isFranchise}
+            options={[
+                { label: "Yes", value: "Yes" },
+                { label: "No", value: "No" }
+              ]}
+            onChange={(e) => handleChange(e, "isFranchise")}
+            placeholder="Select"
+          />
 </div>
 
 {/* Is Relocatable */}
 <div className="listing__creation_field_col md:col-4">
   <label>Is Relocatable </label>
-  <InputSwitch
-    checked={newListing.isRelocatable}
-    onChange={(e) =>
-      setNewListing({ ...newListing, isRelocatable: e.value })
-    }
-  />
+   <Dropdown
+            value={newListing.isRelocatable}
+            options={[
+                { label: "Yes", value: "Yes" },
+                { label: "No", value: "No" }
+              ]}
+            onChange={(e) => handleChange(e, "isRelocatable")}
+            placeholder="Select"
+          />
 </div>
 
 {/* Is Startup */}
 <div className="listing__creation_field_col md:col-4">
   <label>Is Startup </label>
-  <InputSwitch
-    checked={newListing.isStartup}
-    onChange={(e) =>
-      setNewListing({ ...newListing, isStartup: e.value })
-    }
-  />
+  <Dropdown
+            value={newListing.isStartup}
+            options={[
+                { label: "Yes", value: "Yes" },
+                { label: "No", value: "No" }
+              ]}
+            onChange={(e) => handleChange(e, "isStartup")}
+            placeholder="Select"
+          />
 </div>
 {/* Post Close Support */}
       <div className="listing__creation_field_col md:col-4">
@@ -582,47 +694,52 @@ const usStates = useRecoilValue(usStatesState);
       <div className="listing__creation_field_col md:col-4">
         <label>Number of Employees </label>
         <Dropdown
-          value={newListing.numberOfEmployees}
-          options={[{ label: "10-50", value: "10-50" }, { label: "50-100", value: "50-100" }]}
-          onChange={(e) => handleChange(e, "numberOfEmployees")}
-          placeholder="Select"
-        />
+                  value={newListing.numberOfEmployees}
+                  options={[
+                    { label: "1", value: "1" }, 
+                    { label: "2-5", value: "2-5" },
+                    { label: "5-10", value: "5-10" },
+                    { label: "10-20", value: "10-20" },
+                    { label: "20-50", value: "20-50" },
+                    { label: "50+ or More", value: "50+ or More" }
+                  ]}
+                  onChange={(e) => handleChange(e, "numberOfEmployees")}
+                  placeholder="Select"
+                />
       </div>
 
       {/* Financiing */}
         <div className="listing__creation_field_col md:col-6">
-          <label>Financiing </label>
-          <InputNumber
-            value={newListing.financing || 0}
-            onValueChange={(e) =>
-              setNewListing({ ...newListing, financing: e.value })
-            }
-            mode="currency"
-            currency="USD"
-            locale="en-US"
-            className="w-full"
-            placeholder="Enter financiing value"
-          />
+          <label>Are you willing to finance. </label>
+         
+                    <Dropdown
+                   value={newListing.financing}
+                   options={[
+                     { label: "Terms to be Defined", value: "Terms to be Defined" }, 
+                     { label: "No Seller Financing", value: "No Seller Financing" },
+                     { label: "Dependent on Buyer Qualifications", value: "Dependent on Buyer Qualifications" }
+                   ]}
+                   onChange={(e) => handleChange(e, "financing")}
+                   placeholder="Select"
+                 />
         </div>
 
 {/* Growth Expansion */}
 <div className="listing__creation_field_col md:col-12">
-  <label>Growth and Expansion (up to 6) </label>
+  <label>Growth and Expansion  </label>
   <InputTextarea
-  value={newListing.growthExpansion?.join("\n") || ""}
+  value={newListing.growthExpansion}
   onChange={(e) =>
     setNewListing({
       ...newListing,
       growthExpansion: e.target.value
-        .split("\n")
-        .slice(0, 6),
     })
   }
 
   rows={6}
   cols={30}
 />
-
+<em>Provide a description of how a new owner could grow and expand this business. </em>
 </div>
 
 {/* Facility and Location Summary */}
@@ -632,61 +749,148 @@ const usStates = useRecoilValue(usStatesState);
   name="facilityAndLocationDetails"
   value={newListing.facilityAndLocationDetails}
   onChange={(e) => handleChange(e, "facilityAndLocationDetails")}
+   rows={6}
 />
+<em>Provide a brief overview about the facility and the location of the facility. 				
+Remember not to include specific address details or information that could				
+impact the confidentiality of your sale.</em>
 </div>
 
-{/* Property Includedin Asking Price */}
+{/* Property Includedin Listing Price */}
 <div className="listing__creation_field_col md:col-4">
-  <label>Property Includedin Asking Price </label>
+  <label>Property Included in Sale</label>
   <div className="flex align-items-center gap-3 mt-2">
     <RadioButton
-      inputId="confidential"
-      name="propertyIncludedinAskingPrice"
+      inputId="propertyIncludedinSaleYes"
+      name="propertyIncludededInSale"
       value="true"
       onChange={(e) =>
-        setNewListing({ ...newListing, propertyIncludedinAskingPrice: e.value })
+        setNewListing({ ...newListing, propertyIncludededInSale: e.value })
       }
-      checked={newListing.propertyIncludedinAskingPrice === "true"}
+      checked={newListing.propertyIncludededInSale == "true"}
     />
-    <label htmlFor="confidential">Yes </label>
+    <label htmlFor="propertyIncludedinSaleYes">Yes </label>
 
     <RadioButton
-      inputId="nonConfidential"
-      name="propertyIncludedinAskingPrice"
+      inputId="propertyIncludedinSaleNo"
+      name="propertyIncludededInSale"
       value="false"
+      onChange={(e) =>
+        setNewListing({ ...newListing, propertyIncludededInSale: e.value })
+      }
+      checked={newListing.propertyIncludededInSale == "false"}
+    />
+    <label htmlFor="propertyIncludedinSaleNo">No </label>
+  </div>
+</div>
+
+{/* Property Includedin Listing Price */}
+<div className="listing__creation_field_col md:col-4">
+  <label>Property Included in Listing Price </label>
+  <div className="flex align-items-center gap-3 mt-2">
+    <RadioButton
+      inputId="propertyIncludedinAskingPriceYes"
+      name="propertyIncludedinAskingPrice"
+      value="yes"
       onChange={(e) =>
         setNewListing({ ...newListing, propertyIncludedinAskingPrice: e.value })
       }
-      checked={newListing.propertyIncludedinAskingPrice === "false"}
+      checked={newListing.propertyIncludedinAskingPrice == "yes"}
+    />
+    <label htmlFor="propertyIncludedinAskingPriceYes">Yes </label>
+
+    <RadioButton
+      inputId="propertyIncludedinAskingPriceNo"
+      name="propertyIncludedinAskingPrice"
+      value="no"
+      onChange={(e) =>
+        setNewListing({ ...newListing, propertyIncludedinAskingPrice: e.value })
+      }
+      checked={newListing.propertyIncludedinAskingPrice == "no"}
+    />
+    <label htmlFor="propertyIncludedinAskingPriceNo">No </label>
+  </div>
+</div>
+{/* Real Estate Value */}
+<div className="listing__creation_field_col md:col-6">
+  <label>Propert Value </label>
+  <InputNumber
+    value={newListing.propertyValue || 0}
+    onValueChange={(e) =>
+      setNewListing({ ...newListing, propertyValue: e.value })
+    }
+    mode="currency"
+    currency="USD"
+    minFractionDigits={0}
+  maxFractionDigits={0}
+    placeholder="Enter real estate value"
+  />
+</div>
+
+
+
+{/* Property Leased?  */}
+<div className="listing__creation_field_col md:col-4">
+  <label>Property Leased? </label>
+  <div className="flex align-items-center gap-3 mt-2">
+    <RadioButton
+      inputId="propertyLeasedYes"
+      name="IsPropertyLeased"
+      value="yes"
+      onChange={(e) =>
+        setNewListing({ ...newListing, isPropertyLeased: e.value })
+      }
+      checked={newListing.isPropertyLeased == "yes"}
+    />
+    <label htmlFor="propertyLeasedYes">Yes </label>
+
+    <RadioButton
+      inputId="propertyLeasedNo"
+      name="IsPropertyLeased"
+      value="no"
+      onChange={(e) =>{
+        setNewListing({ ...newListing, isPropertyLeased: e.value })
+      }
+      }
+      checked={newListing.isPropertyLeased == "no"}
     />
     <label htmlFor="nonConfidential">No </label>
   </div>
 </div>
 
-{/* Real Estate Value */}
+{/* Monthly Rent Amount */}
 <div className="listing__creation_field_col md:col-6">
-  <label>Real Estate Value </label>
+  <label>Monthly Rent Amount </label>
   <InputNumber
-    value={newListing.realEstateValue || 0}
+    value={newListing.monthlyRentAmount || 0}
     onValueChange={(e) =>
-      setNewListing({ ...newListing, realEstateValue: e.value })
+      setNewListing({ ...newListing, monthlyRentAmount: e.value })
     }
     mode="currency"
     currency="USD"
-    locale="en-US"
-    className="w-full"
-    placeholder="Enter real estate value"
+    minFractionDigits={0}
+  maxFractionDigits={0}
+    placeholder="Enter monthly rent amount"
   />
 </div>
 
-  {/* Lease Expiration */}
-      <div className="listing__creation_field_col md:col-4">
-        <label> Lease Expiration</label>
-        <InputText
-          value={newListing.leaseExpiration}
-          onChange={(e) => handleChange(e, "leaseExpiration")}
-        />
-      </div>
+
+{/* Lease Expiration */}
+<div className="listing__creation_field_col md:col-4 lease__creation">
+  <label>Lease Expiration</label>
+
+  <Calendar
+    value={new Date(newListing.leaseExpiration)}
+    onChange={(e) =>
+      setNewListing({ ...newListing, leaseExpiration: e.value })
+    }
+    dateFormat="mm/dd/yy"
+    placeholder="MM/DD/YYYY"
+    showIcon
+  />
+</div>
+
+
 
  {/* Building SF */}
       <div className="listing__creation_field_col md:col-4">
@@ -696,6 +900,7 @@ const usStates = useRecoilValue(usStatesState);
           onChange={(e) => handleChange(e, "buildingSF")}
         />
       </div>
+
 
 {/* FFE Value */}
 <div className="listing__creation_field_col md:col-6">
@@ -707,8 +912,8 @@ const usStates = useRecoilValue(usStatesState);
     }
     mode="currency"
     currency="USD"
-    locale="en-US"
-    className="w-full"
+    minFractionDigits={0}
+  maxFractionDigits={0}
     placeholder="Enter FFE value"
   />
 </div>
@@ -744,9 +949,9 @@ const usStates = useRecoilValue(usStatesState);
 </div>
 
 
-{/* Inventory Value */}
+
 <div className="listing__creation_field_col md:col-6">
-  <label>Inventory Value </label>
+  <label>Inventory Value</label>
   <InputNumber
     value={newListing.inventoryValue || 0}
     onValueChange={(e) =>
@@ -754,8 +959,8 @@ const usStates = useRecoilValue(usStatesState);
     }
     mode="currency"
     currency="USD"
-    locale="en-US"
-    className="w-full"
+    minFractionDigits={0}
+  maxFractionDigits={0}
     placeholder="Enter inventory value"
   />
 </div>
@@ -763,38 +968,59 @@ const usStates = useRecoilValue(usStatesState);
 
 
 
-
 {/* inventoryIncludedinAskingPrice */}
 <div className="listing__creation_field_col md:col-4">
-  <label>Inventory Included in Asking Price</label>
+  <label>Inventory Included </label>
   <div className="flex align-items-center gap-3 mt-2">
     <RadioButton
       inputId="confidential"
-      name="inventoryIncludedinAskingPrice"
+      name="inventoryIncluded"
       value="true"
       onChange={(e) =>
-        setNewListing({ ...newListing, inventoryIncludedinAskingPrice: e.value })
+        setNewListing({ ...newListing, inventoryIncluded: e.value })
       }
-      checked={newListing.inventoryIncludedinAskingPrice === "true"}
+      checked={newListing.inventoryIncluded === "true"}
     />
     <label htmlFor="confidential">Yes </label>
 
     <RadioButton
       inputId="nonConfidential"
-      name="inventoryIncludedinAskingPrice"
+      name="inventoryIncluded"
       value="false"
       onChange={(e) =>
-        setNewListing({ ...newListing, inventoryIncludedinAskingPrice: e.value })
+        setNewListing({ ...newListing, inventoryIncluded: e.value })
       }
-      checked={newListing.inventoryIncludedinAskingPrice === "false"}
+      checked={newListing.inventoryIncluded === "false"}
     />
     <label htmlFor="nonConfidential">No </label>
   </div>
 </div>
 
     
-{/* Latest Reporting Year */}
+
+
+{/* Property Value */}
 <div className="listing__creation_field_col md:col-6">
+  <label>Revenue </label>
+  <InputNumber
+    value={newListing.revenue|| 0}
+    onValueChange={(e) =>
+      setNewListing({ ...newListing, revenue: e.value })
+    }
+    mode="currency"
+    currency="USD"
+    minFractionDigits={0}
+  maxFractionDigits={0}
+    placeholder="Enter Revenue"
+  />
+</div>
+
+
+
+
+
+{/* Latest Reporting Year */}
+{/* <div className="listing__creation_field_col md:col-6">
   <label>Latest Reporting Year </label>
   <InputText
   type="number"
@@ -811,7 +1037,7 @@ const usStates = useRecoilValue(usStatesState);
   placeholder="Enter Year (e.g. 2024)"
 />
 
-</div>
+</div> */}
 
 
  {/* Latest EBITDA */}
@@ -820,9 +1046,18 @@ const usStates = useRecoilValue(usStatesState);
         <InputNumber
           value={newListing.latestEBITDA}
           onValueChange={(e) => setNewListing({ ...newListing, latestEBITDA: e.value })}
-      
+       mode="currency"
+    currency="USD"
+    minFractionDigits={0}
+  maxFractionDigits={0}
+   placeholder="Enter inventory value"
         />
       </div>
+
+
+
+
+
 
 
  {/* Latest SDE */}
@@ -831,7 +1066,10 @@ const usStates = useRecoilValue(usStatesState);
         <InputNumber
           value={newListing.latestSDE}
           onValueChange={(e) => setNewListing({ ...newListing, latestSDE: e.value })}
-    
+     mode="currency"
+    currency="USD"
+    minFractionDigits={0}
+  maxFractionDigits={0}
         />
       </div>
 
@@ -845,7 +1083,10 @@ const usStates = useRecoilValue(usStatesState);
         <InputNumber
           value={newListing.cashFlow}
           onValueChange={(e) => setNewListing({ ...newListing, cashFlow: e.value })}
-       
+        mode="currency"
+    currency="USD"
+    minFractionDigits={0}
+  maxFractionDigits={0}
         />
       </div>
 
@@ -856,11 +1097,17 @@ const usStates = useRecoilValue(usStatesState);
       <div className="listing__creation_field_col md:col-4">
         <label>Latest Net Profit </label>
         <InputNumber
-          value={newListing.latestNetProfit}
+          value={newListing.latestNetProfit || 0}
           onValueChange={(e) => setNewListing({ ...newListing, latestNetProfit: e.value })}
-        
+         mode="currency"
+    currency="USD"
+    minFractionDigits={0}
+  maxFractionDigits={0}
+      placeholder="Enter Latest Net Profit "
         />
       </div>
+
+
 
 
 

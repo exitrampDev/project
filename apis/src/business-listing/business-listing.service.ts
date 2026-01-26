@@ -45,7 +45,7 @@ export class BusinessListingService {
       filter.ownerId = user.userId;
     }
     // -------------------------------------------------------------------------------------
-const andConditions: any[] = [];
+  const andConditions: any[] = [];
 
   const escapeRegex = (value: string) =>
     value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -127,75 +127,21 @@ if (industry) {
   }
 
 
-    // -------------------------------------------------------------------------------------
-
-  //  if (search || industry || state || county || askingPrice || cashFlow) {
-  //    const orConditions: any[] = [];
-  //    if (search){
-  //         const regex = new RegExp(search, 'i');
-  //          orConditions.push(           
-  //           { industry: regex },           
-  //           { state: regex },
-  //           { country: regex },
-  //         );
-  //   }
-
-  //   if(industry){
-  //        const industryRegex = new RegExp(industry, 'i');
-  //        orConditions.push(           
-  //           { industry: industryRegex },  );    
-  //   }
-
-  //   if(state){
-  //        const stateRegex = new RegExp(state, 'i');
-  //        orConditions.push(           
-  //           { businessState: stateRegex },  );    
-  //   }
-
-  //    if(county){
-  //        const countyRegex = new RegExp(county, 'i');
-  //        orConditions.push(           
-  //           { businessCountry: countyRegex },  );    
-  //   }
-  
-  
-  //   // If search is a number, include askingPrice
-  //   if (!isNaN(Number(askingPrice))) {
-  //     const priceValue = Number(askingPrice);
-  //     orConditions.push({
-  //       askingPrice: {
-  //         $gte: priceValue - 100,
-  //         $lte: priceValue + 100,
-  //       },
-  //     });
-  //   }
-
-  //    if (!isNaN(Number(cashFlow))) {
-  //     const cashFlowValue = Number(cashFlow);
-  //     orConditions.push({
-  //       cashFlow: {
-  //         $gte: cashFlowValue - 100,
-  //         $lte: cashFlowValue + 100,
-  //       },
-  //     });
-  //   }
-
-
-  //   filter.$or = orConditions;
-  //   console.log('filter:', JSON.stringify(filter, null, 2));
-  // }
-
-
-
     // ✅ data fetch with
     const data = await this.businessModel
       .find(filter)
       .sort({ [sortBy]: sortOrder })
       .skip((page - 1) * limit)
       .limit(limit)
-      .populate({
-        path: 'cim', 
-      })
+      .populate([
+    {
+      path: 'ownerId',
+      select: '-password -stripe_customer_id -payment_method -__v',
+    },
+    {
+      path: 'cim',
+    },
+  ])
       .lean();
 
     const total = await this.businessModel.countDocuments(filter);
@@ -231,7 +177,7 @@ if (industry) {
     if (search) {
       const regex = new RegExp(search, 'i');
       filter.$or = [
-        { businessName: regex },
+        { listingTitle: regex },
         { businessType: regex },
         { entityType: regex },
         { city: regex },
@@ -320,10 +266,45 @@ if (industry) {
 
 
   async findOne(id: string): Promise<Business> {
-    const business = await this.businessModel.findById(id).exec();
+    const business = await this.businessModel.findById(id)
+     .populate({
+      path: 'ownerId',
+      select: '-password -stripe_customer_id -payment_method -__v',
+    })
+    .exec();
     if (!business) throw new NotFoundException(`Business with ID ${id} not found`);
     return business;
   }
+
+async findOneWithUserNda(
+  businessId: string,
+  userId: string,
+): Promise<any> {
+
+  const business = await this.businessModel
+    .findById(businessId)
+  
+    .populate([
+      {
+      path: 'ownerId',
+      select: '-password -stripe_customer_id -payment_method -__v',
+    },
+      {
+      path: 'ndas',
+      match: { submittedBy: new Types.ObjectId(userId) },
+    }])
+    .lean()
+    .exec();
+
+  if (!business) {
+    throw new NotFoundException(
+      `Business with ID ${businessId} not found`,
+    );
+  }
+
+  return business;
+}
+
 
  async remove(id: string, user: any) {
   const business = await this.businessModel.findById(id);
@@ -452,7 +433,7 @@ async attachFile(businessId: string, fileUrl: string, fileType: string = 'profit
     }
 
     // Update status
-    business.lastPaymentDate = new Date();
+    business.paymentDate = new Date();
     await business.save();
 
    

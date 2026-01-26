@@ -16,7 +16,7 @@ export default function SelelrListingCreation() {
   const [step, setStep] = useState(1);
 const API_BASE = useRecoilValue(apiBaseUrlState);
   const [step1Data, setStep1Data] = useState({
-    businessName: "",
+    listingTitle: "",
     businessType: "",
     entityType: "",
     yearEstablished: null,
@@ -149,9 +149,9 @@ const API_BASE = useRecoilValue(apiBaseUrlState);
           <div className="field col-6">
             <label>Business Name</label>
             <InputText
-              value={step1Data.businessName}
+              value={step1Data.listingTitle}
               onChange={(e) =>
-                handleInputChange("businessName", e.target.value)
+                handleInputChange("listingTitle", e.target.value)
               }
             />
           </div>

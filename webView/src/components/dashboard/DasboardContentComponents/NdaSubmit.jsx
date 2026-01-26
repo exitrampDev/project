@@ -149,7 +149,7 @@ useEffect(() => {
         <strong>{user.first_name} {user.last_name}</strong>, hereinafter known as{" "}
         <strong>“Party A”</strong>, and the listing owner of{" "}
         <strong>
-          {businessData.businessName} (Listing ID: #{businessData._id.toString().slice(-6)})
+          {businessData.listingTitle} (Listing ID: #{businessData._id.toString().slice(-6)})
         </strong>
         , hereinafter known as <strong>“Party B”</strong>, and collectively
         known as the <strong>“Parties”</strong>.

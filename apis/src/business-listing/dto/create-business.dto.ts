@@ -1,4 +1,4 @@
-import { IsString, IsOptional, IsArray, IsNumber, Matches, IsObject, IsBoolean, IsEnum, IsNotEmpty, IsEmail } from 'class-validator';
+import { IsString, IsOptional, IsArray, IsNumber, Matches, IsObject, IsBoolean, IsEnum, IsNotEmpty, IsEmail, IsInt, IsIn } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { UniqueInCollection } from 'src/common/decorators/unique-in-collection.validator';
 
@@ -20,16 +20,14 @@ export enum CimStatus {
 
 export class CreateBusinessDto {
 
-  @IsString()
-  businessName: string;
-  
+ 
 
   @IsOptional()
   @IsString()
   businessType?: string;
 
   @IsOptional()
-  @IsString()
+  // @IsString()
   listingTitle?: string;
 
   @IsOptional()
@@ -60,6 +58,7 @@ export class CreateBusinessDto {
   @IsOptional()
   @IsString()
   businessCountry?: string;
+
 
   // ----------------- Ownership & Structure -----------------
   @IsOptional()
@@ -92,6 +91,10 @@ export class CreateBusinessDto {
 
   @IsString()
   confidentiality?: string;
+
+
+  @IsBoolean()
+  showContactOnListing?: boolean;
 
   @IsOptional()
   @IsString()
@@ -160,9 +163,10 @@ export class CreateBusinessDto {
   workforceAllocation?: any;
 
   @IsOptional()
-  @IsNumber()
-  @Transform(({ value }) => parseInt(value, 10))
-  numberOfEmployees?: number;
+  @IsString()
+  // @IsNumber()
+  // @Transform(({ value }) => parseInt(value, 10))
+  numberOfEmployees?: string;
 
   @IsOptional()
   @IsString()
@@ -194,17 +198,17 @@ export class CreateBusinessDto {
   industry?: string;
 
   @IsOptional()
-  @IsString()
-  annualRevenue?: string;
+  @IsInt()
+  revenue?: number;
 
   @IsOptional()
-  @IsNumber()
-  @Transform(({ value }) => parseFloat(value))
+  @IsInt()
+  @Transform(({ value }) => parseInt(value, 10))
   askingPrice?: number;
 
   @IsOptional()
-  @IsNumber()
-  @Transform(({ value }) => parseFloat(value))
+  @IsInt()
+  @Transform(({ value }) => parseInt(value))
   cashFlow?: number;
 
   // ----------------- Status -----------------
@@ -232,16 +236,16 @@ export class CreateBusinessDto {
   franchise?: string;
 
   @IsOptional()
-  @IsBoolean()
-  isFranchise?: boolean;
+  @IsString()
+  isFranchise?: string;
 
   @IsOptional()
-  @IsBoolean()
-  isRelocatable?: boolean;
+  @IsString()
+  isRelocatable?: string;
 
   @IsOptional()
-  @IsBoolean()
-  isStartup?: boolean;
+  @IsString()
+  isStartup?: string;
 
   @IsOptional()
   @IsString()
@@ -307,19 +311,39 @@ export class CreateBusinessDto {
   facilityAndLocationDetails?: string;
 
   @IsOptional()
-  propertyIncludedinAskingPrice?:boolean;
+  @IsString()
+  propertyIncludededInSale?:string;
+
+  @IsOptional()
+  @IsString()
+  propertyIncludedinAskingPrice?:string;
 
   @IsOptional()
   propertiesIncluded?: any;
 
   @IsOptional()
+  @IsInt()
+  propertyValue?: any;
+
+  @IsOptional()
+  @IsString()
+  isPropertyLeased?: any;
+
+  @IsOptional()
+  @IsInt()
+  monthlyRentAmount?: any;
+
+  @IsOptional()
+  @IsString()
   leaseExpiration?: string;
+
 
   @IsOptional()
   buildingSF?: string;
 
   @IsOptional()
-  ffEValueIncludeinAskingPrice?:boolean;
+  @IsString()
+  ffEValueIncludeinAskingPrice?:string;
 
 
   @IsOptional()
@@ -346,7 +370,7 @@ export class CreateBusinessDto {
 
   @IsOptional()
   @IsString()
-  inventoryIncluded?: number;
+  inventoryIncluded?: string;
 
   @IsOptional()
   @IsNumber()
@@ -402,8 +426,10 @@ export class CreateBusinessDto {
   latestEBITDA?: string;
   @IsOptional()
   latestSDE?: string;
+
   @IsOptional()
-  latestNetProfit?: string;
+  @IsInt()
+  latestNetProfit?: number;
   @IsOptional()
   ffeValue?: string;
 // -------------------------------------

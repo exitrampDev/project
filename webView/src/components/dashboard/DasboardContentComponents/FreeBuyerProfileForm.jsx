@@ -1,133 +1,198 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Toast } from "primereact/toast";
 import axios from "axios";
 import { useRecoilValue } from "recoil";
-import { authState,apiBaseUrlState } from "../../../recoil/ctaState";
+import { Toast } from "primereact/toast";
 import { InputText } from "primereact/inputtext";
-import { Dropdown } from "primereact/dropdown";
 import { InputTextarea } from "primereact/inputtextarea";
+import { Dropdown } from "primereact/dropdown";
 import { Button } from "primereact/button";
-import { Card } from "primereact/card";
-import notifInfo from "../../../assets/notifInfo.png";
-import serachIcon from "../../../assets/serachIcon.png";
-import userImg from "../../../assets/userImg.png";
+import { InputMask } from "primereact/inputmask";
+
+import {
+  authState,
+  apiBaseUrlState,
+  industryOptions,
+  usStatesState,
+} from "../../../recoil/ctaState";
+
 import DashboardHeader from "./DashboardHeaderBlock";
 
 const FreeBuyerForm = () => {
-  const { access_token } = useRecoilValue(authState) ?? {};
-  const API_BASE = useRecoilValue(apiBaseUrlState);
-  const user = useRecoilValue(authState).user;
   const toast = useRef(null);
+
+  const { access_token, user } = useRecoilValue(authState) ?? {};
+  const API_BASE = useRecoilValue(apiBaseUrlState);
+  const industryList = useRecoilValue(industryOptions);
+  const usStatesList = useRecoilValue(usStatesState);
+
+  const [loading, setLoading] = useState(true);
   const [dirty, setDirty] = useState(false);
+
+  /* ===========================
+     FORM STATE
+  ============================ */
   const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    email: user?.email,
-    phone: "",
-    investmentBudget: "",
-    industryOfInterest: "",
-    regionOfInterest: "",
-    businessTypePreferrd: "",
-    howSoonLookinToAcquire: "",
-    liquidAssetToSupporPurchase: "",
-    financingIsPlaced: "",
-    previousAcquisitionExperience: "",
-    howDoYouPlanToFundYourPurchase: "",
-    verificationOfFinancialQualification: "",
-    briefBackground: "",
-    willingToSignNDAsDigitally: "",
+    first_name: "",
+    last_name: "",
+    phone_number: "",
+    profile: {
+      phone: "",
+      investment_budget: "",
+      industry: "",
+      region: "",
+      business_type_preferred: "",
+      timeline: "",
+      liquid_assets: "",
+      financing: "",
+      previous_experience: "",
+      funding_plan: "",
+      financial_verification: "",
+      background: "",
+      nda_willing: "",
+    },
+    verification_file: null,
   });
 
-  const [existingId, setExistingId] = useState(null); // will store record _id if exists
-  const [loading, setLoading] = useState(true);
-
+  /* ===========================
+     OPTIONS
+  ============================ */
   const yesNoOptions = [
     { label: "Yes", value: "yes" },
     { label: "No", value: "no" },
   ];
 
-  const ndaOptions = [
-    { label: "Yes", value: "true" },
-    { label: "No", value: "false" },
+  const acquisitionOptions = [
+    { label: "Immediately", value: "immediately" },
+    { label: "1–3 Months", value: "1-3_months" },
+    { label: "3–6 Months", value: "3-6_months" },
+    { label: "6+ Months", value: "6_plus_months" },
   ];
 
-  // Fetch API data
+  /* ===========================
+     FETCH PROFILE
+  ============================ */
+   useEffect(() => {
+    console.log("Form Data Updated:", formData);
+
+   }, [formData]);
   useEffect(() => {
     if (!access_token) return;
 
-    axios
-      .get(`${API_BASE}/buyer-profile/me`, {
-        headers: { Authorization: `Bearer ${access_token}` },
-      })
-      .then((res) => {
-        if (res.data) {
-          if (res.data._id) {
-            // single object
-            setExistingId(res.data._id);
-            setFormData(res.data);
-          } else if (Array.isArray(res.data) && res.data.length > 0) {
-            // array
-            setExistingId(res.data[0]._id);
-            setFormData(res.data[0]);
-          }
-        }
-      })
-      .catch((err) => console.error("Error fetching data", err))
-      .finally(() => setLoading(false));
-  }, [access_token]);
+    const fetchProfile = async () => {
+      try {
+        const res = await axios.get(`${API_BASE}/auth/me`, {
+          headers: { Authorization: `Bearer ${access_token}` },
+        });
 
-  const handleChange = (name, value) => {
+        const data = res.data;
+
+        if (!data) return;
+
+        setFormData({
+          first_name: data.first_name || "",
+          last_name: data.last_name || "",
+          phone_number: data.phone_number || "",
+          profile: {
+            phone: data.profile?.phone || "",
+            investment_budget: data.profile?.investment_budget || "",
+            industry: data.profile?.industry || "",
+            region: data.profile?.region || "",
+            business_type_preferred:
+              data.profile?.business_type_preferred || "",
+            timeline: data.profile?.timeline || "",
+            liquid_assets: data.profile?.liquid_assets || "",
+            financing: data.profile?.financing || "",
+            previous_experience:
+              data.profile?.previous_experience || "",
+            funding_plan: data.profile?.funding_plan || "",
+            financial_verification:
+              data.profile?.financial_verification || "",
+            background: data.profile?.background || "",
+            nda_willing: data.profile?.nda_willing || "",
+          },
+          verification_file: null,
+        });
+      } catch (err) {
+        console.error("Failed to fetch buyer profile", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProfile();
+  }, [access_token, API_BASE]);
+
+  /* ===========================
+     HANDLERS
+  ============================ */
+  const updateRoot = (key, value) => {
+    setFormData((prev) => ({ ...prev, [key]: value }));
+    setDirty(true);
+  };
+
+  const updateProfile = (key, value) => {
+    console.log("Updating profile key:", key, "with value:", value);
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      profile: { ...prev.profile, [key]: value },
     }));
     setDirty(true);
   };
 
+  /* ===========================
+     BUILD PAYLOAD
+  ============================ */
+  const buildPayload = () => {
+    const fd = new FormData();
+
+    fd.append("first_name", formData.first_name);
+    fd.append("last_name", formData.last_name);
+    fd.append("phone_number", formData.phone_number);
+    fd.append("email", user?.email);
+
+    Object.entries(formData.profile).forEach(([key, value]) => {
+      fd.append(`profile[${key}]`, value ?? "");
+    });
+
+    if (formData.verification_file) {
+      fd.append("verification_file", formData.verification_file);
+    }
+
+    return fd;
+  };
+
+  /* ===========================
+     SUBMIT
+  ============================ */
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      if (existingId) {
-        // PATCH update
-        await axios.patch(
-          `${API_BASE}/buyer-profile/${existingId}`,
-          formData,
-          {
-            headers: { Authorization: `Bearer ${access_token}` },
-          }
-        );
-        toast.current.show({
-          severity: "success",
-          summary: "Success",
-          detail: "Data updated successfully!",
-          life: 3000,
-        });
-        setDirty(false);
-      } else {
-        // POST create
-        const res = await axios.post(
-          `${API_BASE}/buyer-profile`,
-          formData,
-          {
-            headers: { Authorization: `Bearer ${access_token}` },
-          }
-        );
-        setExistingId(res.data._id);
-        toast.current.show({
-          severity: "success",
-          summary: "Success",
-          detail: "Data created successfully!",
-          life: 3000,
-        });
-        setDirty(false);
-      }
+      await axios.patch(
+        `${API_BASE}/users/profile`,
+        formData,
+        {
+          headers: {
+        Authorization: `Bearer ${access_token}`,
+        "Content-Type": "application/json",
+          },
+        }
+      );
+
+      toast.current.show({
+        severity: "success",
+        summary: "Success",
+        detail: "Buyer profile updated successfully",
+        life: 3000,
+      });
+
+      setDirty(false);
     } catch (err) {
-      console.error("Error saving data", err);
+      console.error("Profile update failed", err);
       toast.current.show({
         severity: "error",
         summary: "Error",
-        detail: "Error saving data",
+        detail: "Failed to update buyer profile",
         life: 3000,
       });
     }
@@ -135,184 +200,181 @@ const FreeBuyerForm = () => {
 
   if (loading) return <p>Loading...</p>;
 
+  /* ===========================
+     RENDER
+  ============================ */
   return (
     <>
       <Toast ref={toast} />
 
-<DashboardHeader headingData="Complete Your Buyer Profile"/>
+      <DashboardHeader headingData="Complete Your Buyer Profile" />
 
       <div className="brief__infor_content">
-        Provide additional details to help sellers assess your fit. A complete
-        profile increases your chances of NDA approval and unlocks advanced deal
-        access.
+        Provide additional details to help sellers assess your fit.
+        A complete profile increases NDA approval chances.
       </div>
 
-      <div className="complete_buyer_form_wrap">
-        {" "}
+      <div className="complete_buyer_form_wrap seller__form_profile">
         <form onSubmit={handleSubmit} className="form_wrap">
-          {/* Contact Info */}
+          {/* Email */}
           <div className="field form__field_col">
             <label>Email</label>
-            <div className="form__field_col_hardocded_email">{user?.email}</div>
+            <div className="form__field_col_hardocded_email">
+              {user?.email}
+            </div>
           </div>
-          {/* Name */}
+
+          {/* First / Last Name */}
           <div className="field form__field_col">
             <label>First Name</label>
             <InputText
-              value={formData.firstName || ""}
-              onChange={(e) => handleChange("firstName", e.target.value)}
+              value={formData.first_name}
+              onChange={(e) =>
+                updateRoot("first_name", e.target.value)
+              }
             />
           </div>
 
           <div className="field form__field_col">
             <label>Last Name</label>
             <InputText
-              value={formData.lastName || ""}
-              onChange={(e) => handleChange("lastName", e.target.value)}
+              value={formData.last_name}
+              onChange={(e) =>
+                updateRoot("last_name", e.target.value)
+              }
             />
           </div>
 
+          {/* Phone */}
           <div className="field form__field_col">
             <label>Phone</label>
-            <InputText
-              value={formData.phone || ""}
-              onChange={(e) => handleChange("phone", e.target.value)}
+            <InputMask
+              mask="(999) 999-9999"
+              value={formData.profile.phone}
+              onChange={(e) =>
+                updateProfile("phone", e.target.value)
+              }
             />
           </div>
 
-          {/* Financial & Business Info */}
+          {/* Investment Budget */}
           <div className="field form__field_col">
             <label>Investment Budget</label>
             <InputText
-              value={formData.investmentBudget || ""}
-              onChange={(e) => handleChange("investmentBudget", e.target.value)}
-            />
-          </div>
-
-          <div className="field form__field_col">
-            <label>Industry of Interest</label>
-            <InputText
-              value={formData.industryOfInterest || ""}
+              keyfilter="int"
+              value={formData.profile.investment_budget}
               onChange={(e) =>
-                handleChange("industryOfInterest", e.target.value)
+                updateProfile("investment_budget", e.target.value)
               }
             />
           </div>
 
+          {/* Industry */}
           <div className="field form__field_col">
-            <label>Region of Interest</label>
-            <InputText
-              value={formData.regionOfInterest || ""}
-              onChange={(e) => handleChange("regionOfInterest", e.target.value)}
+            <label>Industry of Interest</label>
+            <Dropdown
+              value={formData.profile.industry}
+              options={industryList}
+              optionLabel="label"
+              optionValue="value"
+              onChange={(e) =>
+                updateProfile("industry", e.value)
+              }
             />
           </div>
 
+          {/* Region */}
+          <div className="field form__field_col">
+            <label>Region of Interest</label>
+            <Dropdown
+              value={formData.profile.region}
+              options={usStatesList}
+              optionLabel="label"
+              optionValue="value"
+              onChange={(e) =>
+                updateProfile("region", e.value)
+              }
+            />
+          </div>
+
+          {/* Business Type */}
           <div className="field form__field_col">
             <label>Business Type Preferred</label>
             <InputText
-              value={formData.businessTypePreferrd || ""}
+              value={formData.profile.business_type_preferred}
               onChange={(e) =>
-                handleChange("businessTypePreferrd", e.target.value)
-              }
-            />
-          </div>
-
-          <div className="field form__field_col">
-            <label>How Soon Looking to Acquire</label>
-            <InputText
-              value={formData.howSoonLookinToAcquire || ""}
-              onChange={(e) =>
-                handleChange("howSoonLookinToAcquire", e.target.value)
-              }
-            />
-          </div>
-
-          <div className="field form__field_col">
-            <label>Liquid Assets to Support Purchase</label>
-            <InputText
-              value={formData.liquidAssetToSupporPurchase || ""}
-              onChange={(e) =>
-                handleChange("liquidAssetToSupporPurchase", e.target.value)
-              }
-            />
-          </div>
-
-          {/* Yes/No Dropdowns */}
-          <div className="field form__field_col">
-            <label>Financing is Placed</label>
-            <Dropdown
-              value={formData.financingIsPlaced || ""}
-              options={yesNoOptions}
-              onChange={(e) => handleChange("financingIsPlaced", e.value)}
-              placeholder="Select"
-            />
-          </div>
-
-          <div className="field form__field_col">
-            <label>Previous Acquisition Experience</label>
-            <Dropdown
-              value={formData.previousAcquisitionExperience || ""}
-              options={yesNoOptions}
-              onChange={(e) =>
-                handleChange("previousAcquisitionExperience", e.value)
-              }
-              placeholder="Select"
-            />
-          </div>
-
-          <div className="field plan_purchase_field">
-            <label>How Do You Plan to Fund Your Purchase?</label>
-            <InputText
-              value={formData.howDoYouPlanToFundYourPurchase || ""}
-              onChange={(e) =>
-                handleChange("howDoYouPlanToFundYourPurchase", e.target.value)
-              }
-            />
-          </div>
-
-          <div className="field form__field_col_verifications">
-            <label>
-              Do you Have a Verification of Financial Qualification?
-            </label>
-            <InputText
-              value={formData.verificationOfFinancialQualification || ""}
-              onChange={(e) =>
-                handleChange(
-                  "verificationOfFinancialQualification",
+                updateProfile(
+                  "business_type_preferred",
                   e.target.value
                 )
               }
             />
           </div>
 
+          {/* Timeline */}
+          <div className="field form__field_col">
+            <label>Acquisition Timeframe</label>
+            <Dropdown
+              value={formData.profile.timeline}
+              options={acquisitionOptions}
+              onChange={(e) =>
+                updateProfile("timeline", e.value)
+              }
+            />
+          </div>
+
+          {/* Financial Verification */}
+          <div className="field form__field_col">
+            <label>Financial Verification</label>
+            <Dropdown
+              value={formData.profile.financial_verification}
+              options={yesNoOptions}
+              onChange={(e) =>
+                updateProfile(
+                  "financial_verification",
+                  e.value
+                )
+              }
+            />
+          </div>
+
+          {/* Upload */}
+          {formData.profile.financial_verification === "yes" && (
+            <div className="field form__field_col">
+              <label>Upload Verification (PDF)</label>
+              <input
+                type="file"
+                accept="application/pdf"
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    verification_file: e.target.files[0],
+                  }))
+                }
+              />
+            </div>
+          )}
+
           {/* Background */}
-          <div className="field brief_bg_wrap">
+          <div className="field form__field_col col_overvice_textarea">
             <label>Brief Background</label>
             <InputTextarea
               rows={3}
               autoResize
-              value={formData.briefBackground || ""}
-              onChange={(e) => handleChange("briefBackground", e.target.value)}
+              value={formData.profile.background}
+              onChange={(e) =>
+                updateProfile("background", e.target.value)
+              }
             />
           </div>
 
+          {/* Submit */}
           <div className="submit__btn_block">
-            <div className="field form__field_col">
-              <label>Willing to Sign NDAs Digitally</label>
-              <Dropdown
-                value={formData.willingToSignNDAsDigitally || ""}
-                options={ndaOptions}
-                onChange={(e) =>
-                  handleChange("willingToSignNDAsDigitally", e.value)
-                }
-                placeholder="Select"
-              />
-            </div>
-
-            {/* Submit Button */}
-            <div className="col-12 flex justify-content-end mt-3">
-              <Button label="Save Profile" type="submit" disabled={!dirty} />
-            </div>
+            <Button
+              label="Save Profile"
+              type="submit"
+              disabled={!dirty}
+            />
           </div>
         </form>
       </div>

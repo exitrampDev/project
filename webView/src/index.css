@@ -2781,11 +2781,29 @@ button.p-button-secondary.p-button.p-component {
 .business__list_single_main_wrap {max-width: 1200px;}
 
 .breadcrubs__main_container {
-    max-width: 1200px;
-    margin: 50px auto 0 auto;
+  
     color: #002F68;
 }
-
+.header__wrap_listing {
+    max-width: 1200px;
+    margin: 50px auto 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.status__nda_submit_block {
+    background: #FFB100;
+    color: #fff;
+    display: flex;
+    max-width: fit-content;
+    margin: 0;
+    font-size: 13px;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    text-transform: capitalize;
+    cursor: not-allowed;
+}
 .business__list_single_intro_block_img_col {
     width: 320px;
     height: 230px;
@@ -4244,6 +4262,31 @@ img.buyerSig {max-width: 100%;}
 }
 .listing__creation_block_main_wrap .listing__creation_field_col .file__upload_info em{
   font-size: 13px;
+}
+.listing__creation_field_col.lease__creation span.p-calendar.p-component {
+    gap: 0;
+    align-items: normal;
+}
+form.p-fluid.contact__form_listin_seller {
+    gap: 15px;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+form.p-fluid.contact__form_listin_seller .field {
+    width: 100%;
+}
+
+form.p-fluid.contact__form_listin_seller .field input {font-size: 13px;}
+
+form.p-fluid.contact__form_listin_seller label {
+    font-size: 13px;
+    margin-bottom: 5px;
+    display: inline-block;
+}
+
+form.p-fluid.contact__form_listin_seller button.btn__crt_listing.p-button.p-component {
+    color: #fff;
 }
 @media screen and (min-width: 1024px) and (max-width: 2500px) {
   .header_container nav.nav_col a {

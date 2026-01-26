@@ -1,5 +1,5 @@
 // src/users/users.service.ts
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
@@ -7,6 +7,7 @@ import { User, UserDocument } from './schemas/user.schema';
 import { CreateUserDto } from './dto/create-user.dto';
 import { QueryUsersDto } from './dto/query-user.dto';
 import { ApiFeatures } from 'src/common/utils/api-features';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 
 @Injectable()
 export class UsersService {
@@ -78,5 +79,22 @@ export class UsersService {
     password: hashedPassword,
   });
 }
+// ---------------------------------------------------------------------
+ async updateProfile(userId: string, dto: UpdateProfileDto) {
+    const user = await this.userModel.findById(userId);
+    if (!user) {
+      throw new NotFoundException('User not found...');
+    }
 
+    user.profile = {
+      ...(user.profile || {}),
+      ...(dto.profile || {}),
+    };
+    await user.save();
+
+    return {
+      message: 'Profile updated successfully',
+      profile: user.profile,
+    };
+  }
 }

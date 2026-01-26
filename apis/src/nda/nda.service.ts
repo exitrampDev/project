@@ -43,7 +43,7 @@ export class NdaService {
 
     // Create NDA
     const newNda = new this.ndaModel({
-      businessId: dto.businessId,
+      businessId: new Types.ObjectId(dto.businessId),
       businessOwnerId: business.ownerId,
       submittedBy: userObjectId,
       status: 'pending',
@@ -57,7 +57,7 @@ export class NdaService {
     await this.notificationHelper.createNotification({
       userId: new Types.ObjectId(business.ownerId),
       title: 'NDA Submitted',
-      message: `A new NDA has been submitted for on your business "${business.businessName}"`,
+      message: `A new NDA has been submitted for on your business "${business.listingTitle}"`,
     });
 
     // Send email to business owner
@@ -67,7 +67,7 @@ export class NdaService {
       'New NDA Submission',
       'ndaSubmitted',
       {
-        message: `A new NDA has been submitted for your business "${business.businessName}". Please review it at your earliest convenience.`,
+        message: `A new NDA has been submitted for your business "${business.listingTitle}". Please review it at your earliest convenience.`,
       }
     );
   }
@@ -104,7 +104,7 @@ export class NdaService {
           let: { businessIdObj: { $toObjectId: "$businessId" } },
           pipeline: [
             { $match: { $expr: { $eq: ["$_id", "$$businessIdObj"] } } },
-            { $project: { businessName: 1, businessType: 1, cimUrl:1 } }
+            { $project: { listingTitle: 1, businessType: 1, cimUrl:1 } }
           ],
           as: 'business'
         }
@@ -129,7 +129,7 @@ export class NdaService {
             { message: { $regex: search, $options: 'i' } },
             { cimAccess: { $regex: search, $options: 'i' } },
             { status: { $regex: search, $options: 'i' } },
-            { 'business.businessName': { $regex: search, $options: 'i' } }, // 👈 new
+            { 'business.listingTitle': { $regex: search, $options: 'i' } }, // 👈 new
           ],
         },
       });
@@ -144,7 +144,7 @@ export class NdaService {
           _id: 1,
           businessId:1,
           docRoomAccess:1,
-          businessName: { $ifNull: ['$business.businessName', 'N/A'] },
+          listingTitle: { $ifNull: ['$business.listingTitle', 'N/A'] },
           businessType: { $ifNull: ['$business.businessType', 'N/A'] },
           ndaStatus: '$status',
           // cimUrl: { $ifNull: ['$business.cimUrl', 'N/A'] },
@@ -229,7 +229,7 @@ export class NdaService {
     };
   }
 
-  async findAllForOwner(query: QueryNdaDto, userId: string) {
+  async findAllForOwner(query: QueryNdaDto, userId: string, businessId: string) {
     const {
       search = '',
       page = 1,
@@ -243,7 +243,7 @@ export class NdaService {
     const sortOrder = order === 'desc' ? -1 : 1;
 
     // Sirf current user ka data
-    const matchFilter: any = { businessOwnerId: userId };
+    const matchFilter: any = { businessOwnerId: userId, businessId: businessId };
 
     if (ndaStatus) matchFilter.status = ndaStatus;
     if (cimStatus) matchFilter.cimAccess = cimStatus;

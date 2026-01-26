@@ -3,13 +3,13 @@ import { PaymentService } from './payment.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { Types } from 'mongoose';
-import { UsersService } from '../users/users.service';
 import { RolesGuard } from 'src/auth/roles.guards';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import * as crypto from 'crypto';
 import { User } from 'src/common/decorators/user.decorator';
 import { QueryPaymentDto } from './dto/query-payment.dto';
 import { BusinessListingService } from 'src/business-listing/business-listing.service';
+import { UsersService } from 'src/users/users.service';
 @Controller('payment')
 export class PaymentController {
   private readonly webhookSecret = <string> process.env.STRIPE_WEBHOOK_SECRET;
@@ -178,6 +178,12 @@ export class PaymentController {
       else if(user.role == 'seller_central'){
         amount = 60; //60 USD for premium sellers
       }
+      else if(user.role == 'seller_individual'){
+        amount = 30; //60 USD for premium sellers
+      }
+      else if(user.role == 'seller_broker'){
+        amount = 60; //60 USD for premium sellers
+      }
     
     const session = await this.paymentsService.createCheckoutSession(
       amount, userId,
@@ -207,6 +213,12 @@ export class PaymentController {
         amount = 30; //60 USD for premium sellers
       }
       else if(user.role == 'seller_central'){
+        amount = 60; //60 USD for premium sellers
+      }
+      else if(user.role == 'seller_individual'){
+        amount = 30; //60 USD for premium sellers
+      }
+      else if(user.role == 'seller_broker'){
         amount = 60; //60 USD for premium sellers
       }
     
