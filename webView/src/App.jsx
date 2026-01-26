@@ -39,6 +39,7 @@ import SuccessPayment from "./components/dashboard/DasboardContentComponents/Suc
 import PaymentHistory from "./components/dashboard/DasboardContentComponents/PymentHistory";
 import UserPaymentHistory from "./components/dashboard/AdminContent/UsersPaymentsHistory";
 import EditBusineddListing from "./components/dashboard/DasboardContentComponents/EditBusineddListing";
+import BrokerProfile from "./components/dashboard/DasboardContentComponents/BrokerProfile";
 
 
 const App = () => {
@@ -92,6 +93,10 @@ const App = () => {
           <Route
             path="complete-profile-seller"
             element={<FreeSellerForm />}
+          />
+          <Route
+            path="broker-profile"
+            element={<BrokerProfile />}
           />
           <Route
             path="recent-view-listing"

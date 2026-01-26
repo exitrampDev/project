@@ -252,7 +252,7 @@ const usStates = useRecoilValue(usStatesState);
   return (
      <>
            <Toast ref={toast} />
-            <DashboardHeader headingData="Create Your Business Listing"/>
+            <DashboardHeader headingData="Edit Your Business Listing"/>
             <div className="brief__infor_content">
               <p>
                 This information is used to generate your business listing and prepare your business for buyer review.

@@ -11,13 +11,18 @@ import icon25 from "../../../assets/icon25.png";
 import icon26 from "../../../assets/icon26.png";
 import icon27 from "../../../assets/icon27.png";
 import icon28 from "../../../assets/icon28.png";
+import { useRecoilValue } from "recoil";
+import { authState } from "../../../recoil/ctaState";
 
 export default function SellerPremiumNav() {
+
+const { user, access_token } = useRecoilValue(authState) ?? {};
+
+  
   return (
   
    <div className="nav__dashboard">
            <ul>
-             <li>
                <li>
                <NavLink
                  to="/"
@@ -26,6 +31,7 @@ export default function SellerPremiumNav() {
                  <img src={icon3} alt="Dashboard" /> Web View
                </NavLink>
              </li>
+             <li>
                <NavLink
                  to="/user/dashboard"
                  className={({ isActive }) => (isActive ? "active" : "")}
@@ -66,14 +72,22 @@ export default function SellerPremiumNav() {
                  <img src={icon25} alt="My Listing" /> Payment History
                </NavLink>
              </li>
-             {/* <li>
+
+        {user?.user_type === "seller_broker" ? <>
+        
+             <li>
                <NavLink
-                 to="/user/complete-profile-seller"
+                 to="/user/broker-profile"
                  className={({ isActive }) => (isActive ? "active" : "")}
                >
-                 <img src={icon28} alt="My Listing" /> Profile
+                 <img src={icon28} alt="My Listing" /> Broker Profile
                </NavLink>
-             </li> */}
+             </li>
+        
+        </> : ""}
+
+
+
              <li>
                <NavLink
                  to="/user/recent-view-listing"
