@@ -170,12 +170,11 @@ const FreeBuyerForm = () => {
     try {
       await axios.patch(
         `${API_BASE}/users/profile`,
-        // buildPayload(),
         formData,
         {
           headers: {
-            Authorization: `Bearer ${access_token}`,
-            "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${access_token}`,
+        "Content-Type": "application/json",
           },
         }
       );
