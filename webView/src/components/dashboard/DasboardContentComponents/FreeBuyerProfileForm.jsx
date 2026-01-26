@@ -6,8 +6,15 @@ import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Dropdown } from "primereact/dropdown";
 import { Button } from "primereact/button";
+import { InputMask } from "primereact/inputmask";
 
-import { authState, apiBaseUrlState } from "../../../recoil/ctaState";
+import {
+  authState,
+  apiBaseUrlState,
+  industryOptions,
+  usStatesState,
+} from "../../../recoil/ctaState";
+
 import DashboardHeader from "./DashboardHeaderBlock";
 
 const FreeBuyerForm = () => {
@@ -15,39 +22,59 @@ const FreeBuyerForm = () => {
 
   const { access_token, user } = useRecoilValue(authState) ?? {};
   const API_BASE = useRecoilValue(apiBaseUrlState);
+  const industryList = useRecoilValue(industryOptions);
+  const usStatesList = useRecoilValue(usStatesState);
 
   const [loading, setLoading] = useState(true);
   const [dirty, setDirty] = useState(false);
 
   /* ===========================
-     FORM STATE (UI FRIENDLY)
+     FORM STATE
   ============================ */
   const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    phone: "",
-    investmentBudget: "",
-    industryOfInterest: "",
-    regionOfInterest: "",
-    businessTypePreferred: "",
-    acquisitionTimeline: "",
-    liquidAssets: "",
-    financingPlaced: "",
-    previousAcquisitionExperience: "",
-    fundingPlan: "",
-    financialVerification: "",
-    background: "",
-    ndaWilling: "",
+    first_name: "",
+    last_name: "",
+    phone_number: "",
+    profile: {
+      phone: "",
+      investment_budget: "",
+      industry: "",
+      region: "",
+      business_type_preferred: "",
+      timeline: "",
+      liquid_assets: "",
+      financing: "",
+      previous_experience: "",
+      funding_plan: "",
+      financial_verification: "",
+      background: "",
+      nda_willing: "",
+    },
+    verification_file: null,
   });
 
+  /* ===========================
+     OPTIONS
+  ============================ */
   const yesNoOptions = [
     { label: "Yes", value: "yes" },
     { label: "No", value: "no" },
   ];
 
+  const acquisitionOptions = [
+    { label: "Immediately", value: "immediately" },
+    { label: "1–3 Months", value: "1-3_months" },
+    { label: "3–6 Months", value: "3-6_months" },
+    { label: "6+ Months", value: "6_plus_months" },
+  ];
+
   /* ===========================
-     FETCH EXISTING PROFILE
+     FETCH PROFILE
   ============================ */
+   useEffect(() => {
+    console.log("Form Data Updated:", formData);
+
+   }, [formData]);
   useEffect(() => {
     if (!access_token) return;
 
@@ -59,29 +86,34 @@ const FreeBuyerForm = () => {
 
         const data = res.data;
 
-        if (data?.profile) {
-          setFormData({
-            firstName: data.first_name || "",
-            lastName: data.last_name || "",
-            phone: data.profile.phone || "",
-            investmentBudget: data.profile.investment_budget || "",
-            industryOfInterest: data.profile.industry || "",
-            regionOfInterest: data.profile.region || "",
-            businessTypePreferred: data.profile.business_type || "",
-            acquisitionTimeline: data.profile.timeline || "",
-            liquidAssets: data.profile.liquid_assets || "",
-            financingPlaced: data.profile.financing || "",
-            previousAcquisitionExperience:
-              data.profile.previous_experience || "",
-            fundingPlan: data.profile.funding_plan || "",
-            financialVerification:
-              data.profile.financial_verification || "",
-            background: data.profile.background || "",
-            ndaWilling: data.profile.nda_willing || "",
-          });
-        }
+        if (!data) return;
+
+        setFormData({
+          first_name: data.first_name || "",
+          last_name: data.last_name || "",
+          phone_number: data.phone_number || "",
+          profile: {
+            phone: data.profile?.phone || "",
+            investment_budget: data.profile?.investment_budget || "",
+            industry: data.profile?.industry || "",
+            region: data.profile?.region || "",
+            business_type_preferred:
+              data.profile?.business_type_preferred || "",
+            timeline: data.profile?.timeline || "",
+            liquid_assets: data.profile?.liquid_assets || "",
+            financing: data.profile?.financing || "",
+            previous_experience:
+              data.profile?.previous_experience || "",
+            funding_plan: data.profile?.funding_plan || "",
+            financial_verification:
+              data.profile?.financial_verification || "",
+            background: data.profile?.background || "",
+            nda_willing: data.profile?.nda_willing || "",
+          },
+          verification_file: null,
+        });
       } catch (err) {
-        console.error("Buyer profile fetch failed", err);
+        console.error("Failed to fetch buyer profile", err);
       } finally {
         setLoading(false);
       }
@@ -91,37 +123,43 @@ const FreeBuyerForm = () => {
   }, [access_token, API_BASE]);
 
   /* ===========================
-     FORM HANDLERS
+     HANDLERS
   ============================ */
-  const handleChange = (name, value) => {
-    setFormData((prev) => ({ ...prev, [name]: value }));
+  const updateRoot = (key, value) => {
+    setFormData((prev) => ({ ...prev, [key]: value }));
+    setDirty(true);
+  };
+
+  const updateProfile = (key, value) => {
+    console.log("Updating profile key:", key, "with value:", value);
+    setFormData((prev) => ({
+      ...prev,
+      profile: { ...prev.profile, [key]: value },
+    }));
     setDirty(true);
   };
 
   /* ===========================
-     BUILD API PAYLOAD
+     BUILD PAYLOAD
   ============================ */
-  const buildPayload = () => ({
-    first_name: formData.firstName,
-    last_name: formData.lastName,
-    email: user?.email,
+  const buildPayload = () => {
+    const fd = new FormData();
 
-    profile: {
-      phone: formData.phone,
-      investment_budget: formData.investmentBudget,
-      industry: formData.industryOfInterest,
-      region: formData.regionOfInterest,
-      business_type: formData.businessTypePreferred,
-      timeline: formData.acquisitionTimeline,
-      liquid_assets: formData.liquidAssets,
-      financing: formData.financingPlaced,
-      previous_experience: formData.previousAcquisitionExperience,
-      funding_plan: formData.fundingPlan,
-      financial_verification: formData.financialVerification,
-      background: formData.background,
-      nda_willing: formData.ndaWilling,
-    },
-  });
+    fd.append("first_name", formData.first_name);
+    fd.append("last_name", formData.last_name);
+    fd.append("phone_number", formData.phone_number);
+    fd.append("email", user?.email);
+
+    Object.entries(formData.profile).forEach(([key, value]) => {
+      fd.append(`profile[${key}]`, value ?? "");
+    });
+
+    if (formData.verification_file) {
+      fd.append("verification_file", formData.verification_file);
+    }
+
+    return fd;
+  };
 
   /* ===========================
      SUBMIT
@@ -130,9 +168,17 @@ const FreeBuyerForm = () => {
     e.preventDefault();
 
     try {
-      await axios.patch(`${API_BASE}/users/profile`, buildPayload(), {
-        headers: { Authorization: `Bearer ${access_token}` },
-      });
+      await axios.patch(
+        `${API_BASE}/users/profile`,
+        // buildPayload(),
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${access_token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
 
       toast.current.show({
         severity: "success",
@@ -143,7 +189,7 @@ const FreeBuyerForm = () => {
 
       setDirty(false);
     } catch (err) {
-      console.error("Profile update error", err);
+      console.error("Profile update failed", err);
       toast.current.show({
         severity: "error",
         summary: "Error",
@@ -165,12 +211,11 @@ const FreeBuyerForm = () => {
       <DashboardHeader headingData="Complete Your Buyer Profile" />
 
       <div className="brief__infor_content">
-        Provide additional details to help sellers assess your fit. A complete
-        profile increases your chances of NDA approval and unlocks advanced deal
-        access.
+        Provide additional details to help sellers assess your fit.
+        A complete profile increases NDA approval chances.
       </div>
 
-      <div className="complete_buyer_form_wrap">
+      <div className="complete_buyer_form_wrap seller__form_profile">
         <form onSubmit={handleSubmit} className="form_wrap">
           {/* Email */}
           <div className="field form__field_col">
@@ -180,12 +225,13 @@ const FreeBuyerForm = () => {
             </div>
           </div>
 
+          {/* First / Last Name */}
           <div className="field form__field_col">
             <label>First Name</label>
             <InputText
-              value={formData.firstName}
+              value={formData.first_name}
               onChange={(e) =>
-                handleChange("firstName", e.target.value)
+                updateRoot("first_name", e.target.value)
               }
             />
           </div>
@@ -193,157 +239,137 @@ const FreeBuyerForm = () => {
           <div className="field form__field_col">
             <label>Last Name</label>
             <InputText
-              value={formData.lastName}
+              value={formData.last_name}
               onChange={(e) =>
-                handleChange("lastName", e.target.value)
+                updateRoot("last_name", e.target.value)
               }
             />
           </div>
 
+          {/* Phone */}
           <div className="field form__field_col">
             <label>Phone</label>
-            <InputText
-              value={formData.phone}
+            <InputMask
+              mask="(999) 999-9999"
+              value={formData.profile.phone}
               onChange={(e) =>
-                handleChange("phone", e.target.value)
+                updateProfile("phone", e.target.value)
               }
             />
           </div>
 
+          {/* Investment Budget */}
           <div className="field form__field_col">
             <label>Investment Budget</label>
             <InputText
-              value={formData.investmentBudget}
+              keyfilter="int"
+              value={formData.profile.investment_budget}
               onChange={(e) =>
-                handleChange("investmentBudget", e.target.value)
+                updateProfile("investment_budget", e.target.value)
               }
             />
           </div>
 
+          {/* Industry */}
           <div className="field form__field_col">
             <label>Industry of Interest</label>
-            <InputText
-              value={formData.industryOfInterest}
+            <Dropdown
+              value={formData.profile.industry}
+              options={industryList}
+              optionLabel="label"
+              optionValue="value"
               onChange={(e) =>
-                handleChange("industryOfInterest", e.target.value)
+                updateProfile("industry", e.value)
               }
             />
           </div>
 
+          {/* Region */}
           <div className="field form__field_col">
             <label>Region of Interest</label>
-            <InputText
-              value={formData.regionOfInterest}
+            <Dropdown
+              value={formData.profile.region}
+              options={usStatesList}
+              optionLabel="label"
+              optionValue="value"
               onChange={(e) =>
-                handleChange("regionOfInterest", e.target.value)
+                updateProfile("region", e.value)
               }
             />
           </div>
 
+          {/* Business Type */}
           <div className="field form__field_col">
             <label>Business Type Preferred</label>
             <InputText
-              value={formData.businessTypePreferred}
+              value={formData.profile.business_type_preferred}
               onChange={(e) =>
-                handleChange("businessTypePreferred", e.target.value)
-              }
-            />
-          </div>
-
-          <div className="field form__field_col">
-            <label>How Soon Looking to Acquire</label>
-            <InputText
-              value={formData.acquisitionTimeline}
-              onChange={(e) =>
-                handleChange("acquisitionTimeline", e.target.value)
-              }
-            />
-          </div>
-
-          <div className="field form__field_col">
-            <label>Liquid Assets to Support Purchase</label>
-            <InputText
-              value={formData.liquidAssets}
-              onChange={(e) =>
-                handleChange("liquidAssets", e.target.value)
-              }
-            />
-          </div>
-
-          <div className="field form__field_col">
-            <label>Financing is Placed</label>
-            <Dropdown
-              value={formData.financingPlaced}
-              options={yesNoOptions}
-              onChange={(e) =>
-                handleChange("financingPlaced", e.value)
-              }
-              placeholder="Select"
-            />
-          </div>
-
-          <div className="field form__field_col">
-            <label>Previous Acquisition Experience</label>
-            <Dropdown
-              value={formData.previousAcquisitionExperience}
-              options={yesNoOptions}
-              onChange={(e) =>
-                handleChange(
-                  "previousAcquisitionExperience",
-                  e.value
-                )
-              }
-              placeholder="Select"
-            />
-          </div>
-
-          <div className="field form__field_col">
-            <label>How Do You Plan to Fund Your Purchase?</label>
-            <InputText
-              value={formData.fundingPlan}
-              onChange={(e) =>
-                handleChange("fundingPlan", e.target.value)
-              }
-            />
-          </div>
-
-          <div className="field form__field_col">
-            <label>Verification of Financial Qualification</label>
-            <InputText
-              value={formData.financialVerification}
-              onChange={(e) =>
-                handleChange(
-                  "financialVerification",
+                updateProfile(
+                  "business_type_preferred",
                   e.target.value
                 )
               }
             />
           </div>
 
-          <div className="field brief_bg_wrap">
+          {/* Timeline */}
+          <div className="field form__field_col">
+            <label>Acquisition Timeframe</label>
+            <Dropdown
+              value={formData.profile.timeline}
+              options={acquisitionOptions}
+              onChange={(e) =>
+                updateProfile("timeline", e.value)
+              }
+            />
+          </div>
+
+          {/* Financial Verification */}
+          <div className="field form__field_col">
+            <label>Financial Verification</label>
+            <Dropdown
+              value={formData.profile.financial_verification}
+              options={yesNoOptions}
+              onChange={(e) =>
+                updateProfile(
+                  "financial_verification",
+                  e.value
+                )
+              }
+            />
+          </div>
+
+          {/* Upload */}
+          {formData.profile.financial_verification === "yes" && (
+            <div className="field form__field_col">
+              <label>Upload Verification (PDF)</label>
+              <input
+                type="file"
+                accept="application/pdf"
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    verification_file: e.target.files[0],
+                  }))
+                }
+              />
+            </div>
+          )}
+
+          {/* Background */}
+          <div className="field form__field_col col_overvice_textarea">
             <label>Brief Background</label>
             <InputTextarea
               rows={3}
               autoResize
-              value={formData.background}
+              value={formData.profile.background}
               onChange={(e) =>
-                handleChange("background", e.target.value)
+                updateProfile("background", e.target.value)
               }
             />
           </div>
 
-          <div className="field form__field_col">
-            <label>Willing to Sign NDAs Digitally</label>
-            <Dropdown
-              value={formData.ndaWilling}
-              options={yesNoOptions}
-              onChange={(e) =>
-                handleChange("ndaWilling", e.value)
-              }
-              placeholder="Select"
-            />
-          </div>
-
+          {/* Submit */}
           <div className="submit__btn_block">
             <Button
               label="Save Profile"

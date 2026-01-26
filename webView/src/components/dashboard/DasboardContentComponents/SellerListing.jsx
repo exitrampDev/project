@@ -907,7 +907,7 @@ console.log("user>>>>>>>>>>>", user);
 
 {/* Contact Phone */}
 <div className="listing__creation_field_col md:col-6">
-  <label>Contact Phone</label>
+  <label>Contact Phone </label>
 
   {user?.user_type === "seller_broker" ? (
     <div className="form__field_col_hardocded_email">
