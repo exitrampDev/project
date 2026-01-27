@@ -2,7 +2,7 @@ import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 
 const stripePromise = loadStripe(
-  "pk_test_51SXzJMGhVrxnC7SP8OZVq1SLxgjAZ4aDdBf43I1WyRsicyfB3ONFuwImOW9LVr2XFZPG11Yf0v3OWvtDKmQeuW62004rbhpFeQ"
+  "pk_test_51RaBBDIZVmJBLRE4JCnzatrXn34mX81yfddRAFA7Cgl6KegNr3j1heGKU0ZCj133AMS1WDKcOaeFj62FeRWDuxMr00ncqX50QJ"
 );
 
 const StripeProvider = ({ clientSecret, children }) => {
