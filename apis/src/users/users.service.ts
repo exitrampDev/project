@@ -90,7 +90,6 @@ export class UsersService {
       ...(user.profile || {}),
       ...(dto.profile || {}),
     };
-    console.log('Updated Profile Data:', dto);
     await user.save();
 
     return {

@@ -31,8 +31,7 @@ export class UsersController {
     @Body() updateProfileDto: UpdateProfileDto,
     @User() user: any
   ) {
-    console.log('Logged-in User updateProfileDto:',  updateProfileDto);
-    console.log('Logged-in User ID:',  user.userId);
+  
     return this.usersService.updateProfile(
       user.userId,
       updateProfileDto,
