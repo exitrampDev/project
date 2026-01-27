@@ -4288,6 +4288,10 @@ form.p-fluid.contact__form_listin_seller label {
 form.p-fluid.contact__form_listin_seller button.btn__crt_listing.p-button.p-component {
     color: #fff;
 }
+.file-upload-invalid .drop-zone {
+    border-color:#e24c4c;
+        color:#e24c4c;
+}
 @media screen and (min-width: 1024px) and (max-width: 2500px) {
   .header_container nav.nav_col a {
     font-size: 18px;
