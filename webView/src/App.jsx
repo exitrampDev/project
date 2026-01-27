@@ -57,7 +57,7 @@ const App = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/reset-password/:token" element={<ResetPassword />} />
+        <Route path="/verify-email/" element={<ResetPassword />} />
         <Route path="/listing/:id" element={<BusinessListingDetail />} />
         {/* dashboard pages */}
         {/* <Route path="user/dashboard" element={<Dashboard />} />
