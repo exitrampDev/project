@@ -1,56 +1,77 @@
-import React, { useState } from "react";
+import React, { useState,useRef } from "react";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 import axios from "axios";
 import { Password } from "primereact/password";
 import { Button } from "primereact/button";
 import { Message } from "primereact/message";
+import { useRecoilValue } from "recoil";
+import { Toast } from "primereact/toast";
 import Header from "./Header";
 import Footer from "./Footer";
 import { authState,apiBaseUrlState  } from "../recoil/ctaState";
 
 const ResetPassword = () => {
   const navigate = useNavigate();
-  const location = useLocation();
+const location = useLocation();
+const toast = useRef(null);
+const token = new URLSearchParams(location.search).get("token");
   const API_BASE = useRecoilValue(apiBaseUrlState);
-  const { token } = useParams();
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-
+  
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setMessage("");
-    setError("");
+  e.preventDefault();
+  setError("");
+  setMessage("");
 
-    if (newPassword !== confirmPassword) {
-      setError("Passwords do not match.");
-      return;
-    }
+  if (newPassword !== confirmPassword) {
+    toast.current.show({
+      severity: "error",
+      summary: "Password Mismatch",
+      detail: "New password and confirm password must match.",
+      life: 3000,
+    });
+    return;
+  }
 
-    setLoading(true);
+  setLoading(true);
 
-    try {
-      await axios.post(`${API_BASE}/auth/reset-password`, {
-        newPassword,
-        token,
-      });
+  try {
+    await axios.post(`${API_BASE}/auth/reset-password`, {
+      newPassword,
+      token,
+    });
 
-      setMessage("Password reset successful. Redirecting...");
-      setTimeout(() => navigate("/login"), 3000);
-    } catch (error) {
-      setError(
-        error.response?.data?.message || "Something went wrong. Try again."
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
+    toast.current.show({
+      severity: "success",
+      summary: "Success",
+      detail: "Password reset successful. Redirecting to login...",
+      life: 3000,
+    });
+
+    setTimeout(() => navigate("/login"), 3000);
+  } catch (error) {
+    toast.current.show({
+      severity: "error",
+      summary: "Error",
+      detail:
+        error.response?.data?.message ||
+        "Something went wrong. Please try again.",
+      life: 4000,
+    });
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <>
       <Header />
+       <Toast ref={toast} position="top-right" />
       <div className="reset-password-page">
         <h2>Reset Password</h2>
 
