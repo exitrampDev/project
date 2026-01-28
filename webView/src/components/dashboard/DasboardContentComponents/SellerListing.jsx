@@ -40,6 +40,7 @@ export default function SellerListing() {
   const toast = useRef(null);
   const setAuth = useSetRecoilState(authState);
   const navigate = useNavigate();
+  const [formErrors, setFormErrors] = useState({});
   const yearOptions = Array.from({ length: 101 }, (_, i) => ({ label: i, value: i }));
   const API_BASE = useRecoilValue(apiBaseUrlState);
 const [filteredListings, setFilteredListings] = useState([]);
@@ -85,6 +86,8 @@ const assetsIncludedOptions = [
   const { user, access_token } = useRecoilValue(authState) ?? {};
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [checkingError, setCheckingError] = useState(false);
+
   const entityTypes = [
     { label: "LLC", value: "LLC" },
     { label: "C-Corp", value: "C-Corp" },
@@ -155,7 +158,7 @@ const assetsIncludedOptions = [
 askingPrice: 0,
 image: "",
 listingDescription: "",
-showContactOnListing:"",
+showContactOnListing:false,
 industry: [],
 // yourRole: "",
 contactAddress: "",
@@ -175,17 +178,17 @@ isRelocatable:"" ,
 isStartup:"" ,
 postCloseSupport: "",
 managementWillingToStay: "",
-numberOfEmployees: 0,
+numberOfEmployees: "",
 financing: "",
 growthExpansion: [],
 facilityAndLocationDetails: "",
 propertyIncludedinAskingPrice: "",
 propertyIncludedinSale:"",
-propertyValue: "",
+propertyValue: 0,
 leaseExpiration:"",
 buildingSF: "", 
 ffEValue: 0,
-ffEValueIncludeinAskingPrice: false,
+ffEValueIncludeinAskingPrice: "",
 inventoryValue: 0,
 IsPropertyLeased:"",
 inventoryIncluded: "",
@@ -317,7 +320,7 @@ const handleCreateListing = async () => {
 askingPrice: 0,
 image: "",
 listingDescription: "",
-showContactOnListing:"",
+showContactOnListing: false,
 industry: [],
 // yourRole: "",
 contactAddress: "",
@@ -337,7 +340,7 @@ isRelocatable: "",
 isStartup: "",
 postCloseSupport: "",
 managementWillingToStay: "",
-numberOfEmployees: 0,
+numberOfEmployees: "",
 financing: "",
 growthExpansion: [],
 facilityAndLocationDetails: "",
@@ -347,7 +350,7 @@ propertyValue: 0,
 leaseExpiration:"",
 buildingSF: "", 
 ffEValue: 0,
-ffEValueIncludeinAskingPrice: false,
+ffEValueIncludeinAskingPrice: "",
 inventoryValue: 0,
 IsPropertyLeased:"",
 inventoryIncluded: "",
@@ -371,13 +374,15 @@ listingReferenceNumber: Math.random().toString(16).substring(2, 10),
       life: 4000,
     });
   } catch (error) {
-   // console.error("Error creating listing:", error.response?.data || error.message);
+     if (error.response?.status === 400) {
+    setFormErrors(error.response.data.message || {});
+  }
 
-     toast.current.show({
-      severity: "error",
-      detail: error.message,
-      life: 4000,
-    });
+  toast.current.show({
+    severity: "error",
+    detail: "Please fix the highlighted errors",
+    life: 4000,
+  });
   }
 };
 const handleCancelSubscription = async (event,listingId) => {
@@ -718,7 +723,11 @@ useEffect(() => {
 const usStates = useRecoilValue(usStatesState);
 
 
-console.log("user>>>>>>>>>>>", user);
+const isListingTitleInvalid =
+  checkingError && (!newListing.listingTitle || newListing.listingTitle.trim() === "");
+
+const isMainImageInvalid =
+  checkingError && (!newListing.image || newListing.image === "");
 
 
 
@@ -759,7 +768,8 @@ console.log("user>>>>>>>>>>>", user);
         <label>Listing Title <span className="required__star">*</span></label>
         <InputText
           value={newListing.listingTitle}
-          onChange={(e) => handleChange(e, "listingTitle")}
+           onChange={(e) => handleChange(e, "listingTitle")}
+            className={isListingTitleInvalid ? "p-invalid" : ""}
         />
       </div>
 
@@ -778,26 +788,23 @@ console.log("user>>>>>>>>>>>", user);
 
 
 {/* File Uploads */}
-      <div className="listing__creation_field_col file_business_logo md:col-6">
-        <label>Main Listing Image <span className="required__star">*</span></label>
-        {/* <FileUpload
-          accept="image/*"
-          maxFileSize={1000000}
-          customUpload
-          auto
-          chooseLabel="Upload Image (Max 500KB)"
-           uploadHandler={(e) => {
-            handleImageSelect(e);
-            e.options.clear(); 
-          }}
-        /> */}
-        <FileUploader
-  accept="image/png, image/jpeg,.pdf"
-  maxSizeMB={0.5}
-  onFileSelect={(file) =>  handleImageSelect(file)}
-/>
+     <div
+  className={`listing__creation_field_col file_business_logo md:col-6 ${
+    isMainImageInvalid ? "file-upload-invalid" : ""
+  }`}
+>
+  <label>
+    Main Listing Image <span className="required__star">*</span>
+  </label>
 
-      </div>
+  <FileUploader
+    accept="image/png, image/jpeg,.pdf"
+    maxSizeMB={0.5}
+    onFileSelect={(file) => handleImageSelect(file)}
+  />
+
+</div>
+
 {/* Listing Description */}
       <div className="listing__creation_field_col md:col-6 lisitng__text_editor">
         <label>Listing Description </label>
@@ -847,11 +854,19 @@ console.log("user>>>>>>>>>>>", user);
 <div className="listing__creation_field_col md:col-4">
   <label>Show Contact Info on Listing </label>
   <InputSwitch
-    checked={newListing.showContactOnListing}
-    onChange={(e) =>
-      setNewListing({ ...newListing, showContactOnListing: e.value })
-    }
-  />
+  checked={Boolean(newListing.showContactOnListing)}
+  onChange={(e) =>
+    setNewListing({ ...newListing, showContactOnListing: !!e.value })
+  }
+  className={formErrors.showContactOnListing ? "p-invalid" : ""}
+/>
+
+{formErrors.showContactOnListing && (
+  <small className="p-error">
+    {formErrors.showContactOnListing}
+  </small>
+)}
+
 </div>
 
 {/* Contact Name */}
@@ -1647,7 +1662,10 @@ impact the confidentiality of your sale.</em>
                   label="Save & Continue"
                   icon="pi pi-check"
                   className="p-button-success"
-                  onClick={handleCreateListing}
+                   onClick={() => {
+                      setCheckingError(true);
+                      handleCreateListing();
+                    }}
                 />
               </div>
             </div>
