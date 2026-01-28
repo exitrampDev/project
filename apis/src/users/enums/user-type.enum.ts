@@ -1,6 +1,7 @@
 // src/users/enums/user-type.enum.ts
 export enum UserType {
 
+  ADMIN = 'admin',
   SUBSCRIBER = 'subscriber',
   
   Buyer_PREMIUM = 'buyer_premium',

@@ -8,6 +8,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { QueryUsersDto } from './dto/query-user.dto';
 import { ApiFeatures } from 'src/common/utils/api-features';
 import { UpdateProfileDto } from './dto/update-profile.dto';
+import { UserType } from './enums/user-type.enum';
 
 @Injectable()
 export class UsersService {
@@ -96,5 +97,21 @@ export class UsersService {
       message: 'Profile updated successfully',
       profile: user.profile,
     };
+  }
+
+  async getAllUsersTotal() {
+    return await this.userModel.countDocuments({ isDeleted: false, user_type: { $ne: UserType.ADMIN } });
+  }
+
+  async getAllUsersBrokerTotal() {
+    return await this.userModel.countDocuments({ isDeleted: false, user_type: UserType.SELLER_BROKER });
+  }
+
+   async getIndividulaSellerTotal() {
+    return await this.userModel.countDocuments({ isDeleted: false, user_type: UserType.SELLER_INDIVIDUAL });
+  }
+
+     async getBuyerTotal() {
+    return await this.userModel.countDocuments({ isDeleted: false, user_type: UserType.BUYER_BASIC });
   }
 }

@@ -481,4 +481,7 @@ async attachFile(businessId: string, fileUrl: string, fileType: string = 'profit
     return count > 0;
   }
 
+  async getAllBusinessesTotal() {
+    return await this.businessModel.countDocuments({ isDeleted: false });
+  }
 }

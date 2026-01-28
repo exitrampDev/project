@@ -512,6 +512,9 @@ export class NdaService {
      return nda;
   }
 
+    async getAllNdaTotal() {
+    return await this.ndaModel.countDocuments({});
+  }
   
 
 
