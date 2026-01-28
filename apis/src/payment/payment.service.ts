@@ -177,7 +177,7 @@ export class PaymentService {
   async getById(id: Types.ObjectId) {
   return this.paymentModel.findById(id)
     .populate({
-      path: 'objectId',  
+      path: 'referenceId',  
       model: 'Business', 
       select: '_id businessName businessType listingTitle listingDescription' 
     })
@@ -205,7 +205,7 @@ export class PaymentService {
   const payments = await this.paymentModel.find(baseFilter)
     .populate('userId')       
     .populate({ 
-      path: 'objectId',       
+      path: 'referenceId',       
       model: 'Business',
       select: 'businessName businessType listingTitle listingDescription'
     })
