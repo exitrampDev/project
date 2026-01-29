@@ -9,6 +9,14 @@ export default function AdminNav() {
     <div className="nav__dashboard">
       <ul>
         <li>
+               <NavLink
+                 to="/"
+                 className={({ isActive }) => (isActive ? "active" : "")}
+               >
+                 <img src={icon3} alt="Dashboard" /> Web View
+               </NavLink>
+             </li>
+        <li>
           <NavLink
             to="/user/dashboard"
             className={({ isActive }) => (isActive ? "active" : "")}

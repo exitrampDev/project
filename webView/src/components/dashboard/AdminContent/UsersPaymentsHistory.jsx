@@ -10,6 +10,7 @@ import { Tag } from "primereact/tag";
 import { Dialog } from "primereact/dialog";
 import { Button } from "primereact/button";
 import DashboardHeader from "../DasboardContentComponents/DashboardHeaderBlock";
+import { Link } from "react-router-dom";
 
 const PaymentHistory = () => {
   const API_BASE = useRecoilValue(apiBaseUrlState);
@@ -59,7 +60,7 @@ const PaymentHistory = () => {
 
   // Format date
   const dateTemplate = (row) => {
-    return new Date(row.transactionDateTime).toLocaleString();
+    return new Date(row.updatedAt).toLocaleString();
   };
 
   // Payment Status Tag
@@ -112,10 +113,24 @@ const PaymentHistory = () => {
   const emailTemplate = (row) => row?.userId?.email || "-";
 
   const listingTitleTemplate = (row) =>
-    row?.objectId?.listingTitle || "-";
+    row?.referenceId?.listingTitle || "-";
 
   const businessNameTemplate = (row) =>
-    row?.objectId?.listingTitle || "-";
+    row?.referenceId?.businessName || "-";
+
+
+const formatUserType = (value) => {
+  if (!value) return "-";
+
+  return value
+    .split("_")
+    .map(
+      word => word.charAt(0).toUpperCase() + word.slice(1)
+    )
+    .join(" ");
+};
+
+
 
   return (
     <>
@@ -133,24 +148,45 @@ const PaymentHistory = () => {
           emptyMessage="No payments found."
           className="p-datatable-gridlines"
         >
-          <Column field="_id" header="ID" style={{ width: "250px" }} />
+          <Column header="Listing Title" body={listingTitleTemplate} />
+          <Column
+  header="Listing ID / Link"
+  body={(row) =>
+    row?.referenceId?._id ? (
+      <Link
+        to={`/user/single-listing/${row.referenceId._id}`}
+        className="text-blue-600 underline"
+      >
+        {row.referenceId._id}
+      </Link>
+    ) : (
+      "-"
+    )
+  }
+/>
+
+          
+  <Column
+  header="Amount ($)"
+  body={(row) =>
+    row?.amount || row?.amount === 0
+      ? `$${(row.amount / 100).toLocaleString()}`
+      : "-"
+  }
+/>
 
           <Column header="User" body={userNameTemplate} />
           <Column header="Email" body={emailTemplate} />
-          <Column header="Listing Title" body={listingTitleTemplate} />
-          <Column header="Business Name" body={listingTitleTemplate} />
-          <Column header="Listing Description" body={(row) => row?.objectId?.listingDescription || "-"} />
-<Column header="Business Type" body={(row) => row?.objectId?.businessType || "-"} />
+          <Column header="Stripe Customer ID" body={(row) => row?.userId?.stripe_customer_id || "-"} />
+<Column
+  header="Listing Owner Type"
+  body={(row) => formatUserType(row?.userId?.user_type)}
+/>
 
 
-          <Column field="amount" header="Amount ($)" />
+        
 
-          <Column
-            field="paymentStatus"
-            header="Status"
-            body={statusTemplate}
-            style={{ width: "140px" }}
-          />
+        
 
           <Column
             field="transactionDateTime"
@@ -192,17 +228,13 @@ const PaymentHistory = () => {
 
               <p>
                 <strong>Business:</strong>{" "}
-                {singlePayment?.objectId?.listingTitle}
+                {singlePayment?.objectId?.businessName}
               </p>
 
               <p><strong>Amount:</strong> ${singlePayment.amount}</p>
 
               {/* <p><strong>Payment For:</strong> {singlePayment.paymentFor}</p> */}
 
-              <p>
-                <strong>Status:</strong>{" "}
-                <Tag value={singlePayment.paymentStatus} />
-              </p>
 
               <p>
                 <strong>Date:</strong>{" "}
