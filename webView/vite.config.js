@@ -3,10 +3,11 @@ import react from '@vitejs/plugin-react'
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react()],
+   base: '/exitramp/',
+   plugins: [react()],
    server: {
     host: '0.0.0.0',
-    allowedHosts: ['test.exitramp.co'],
+    allowedHosts: ['exitramp.co', 'test.exitramp.co'],
     port: 5173
   },
 })
