@@ -93,16 +93,24 @@ const FreeSellerForm = () => {
   };
 
   const handleFileUpload = (event, field) => {
-    const file =
-      event.files?.[0] || event.originalEvent?.target?.files?.[0];
-    if (!file) return;
+  const file =
+    event instanceof File
+      ? event
+      : event.files?.[0] || event.originalEvent?.target?.files?.[0];
 
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      handleChange(field, reader.result);
-    };
-    reader.readAsDataURL(file);
+  if (!file) return;
+
+  const reader = new FileReader();
+
+  reader.onloadend = () => {
+    console.log("file base64:", reader.result);
+    // reader.result is base64 string
+    handleChange(field, reader.result);
   };
+
+  reader.readAsDataURL(file); // converts to base64
+};
+
 
   /* ===========================
      BUILD PATCH PAYLOAD
@@ -288,7 +296,7 @@ const FreeSellerForm = () => {
   maxSizeMB={0.5}
   onFileSelect={(e) => {
                 handleFileUpload(e, "companyLogo");
-                e.options.clear();
+               
               }}  existingFileUrl={formData.companyLogo || "dss"}
 />
 

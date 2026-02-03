@@ -154,7 +154,6 @@ const assetsIncludedOptions = [
   // Create Listing Dialog
   const [showCreateDialog, setShowCreateDialog] = useState(false);
      const [newListing, setNewListing] = useState({
-     listingTitle: "",
 askingPrice: 0,
 image: "",
 listingDescription: "",
@@ -316,7 +315,6 @@ const handleCreateListing = async () => {
 
     // reset form
     setNewListing({
-    listingTitle: "",
 askingPrice: 0,
 image: "",
 listingDescription: "",
