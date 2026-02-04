@@ -6,17 +6,18 @@ import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Button } from "primereact/button";
 import { Calendar } from "primereact/calendar";
-
-import { authState, apiBaseUrlState } from "../../../recoil/ctaState";
+import { authState, apiBaseUrlState, usStatesState } from "../../../recoil/ctaState";
 import DashboardHeader from "./DashboardHeaderBlock";
 import FileUploader from "../../customcomponent/FileUploader";
+import { Dropdown } from "primereact/dropdown";
+import { InputMask } from "primereact/inputmask";
 
 const BrokerProfile = () => {
   const toast = useRef(null);
 
   const { access_token, user } = useRecoilValue(authState) ?? {};
   const API_BASE = useRecoilValue(apiBaseUrlState);
-
+const usStates = useRecoilValue(usStatesState);
   const [loading, setLoading] = useState(true);
   const [dirty, setDirty] = useState(false);
 
@@ -65,6 +66,7 @@ const BrokerProfile = () => {
               : null,
             companyOverview: data.profile?.overview || "",
             companyLogo: data.profile?.logo || "",
+            brokerProfileImage: data.profile?.brokerProfileImage || "",
           });
         }
       } catch (err) {
@@ -77,7 +79,7 @@ const BrokerProfile = () => {
     fetchProfile();
   }, [access_token, API_BASE]);
 
-console.log("user>>>>>>>>>>>", user);
+
 
 
   /* ===========================
@@ -92,6 +94,15 @@ console.log("user>>>>>>>>>>>", user);
     const reader = new FileReader();
     reader.onloadend = () => {
       handleChange("companyLogo", reader.result);
+    };
+    reader.readAsDataURL(file);
+  };
+
+
+   const handleProfileImage = (file) => {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      handleChange("brokerProfileImage", reader.result);
     };
     reader.readAsDataURL(file);
   };
@@ -117,6 +128,7 @@ console.log("user>>>>>>>>>>>", user);
         overview: formData.companyOverview,
         logo: formData.companyLogo,
         years_in_operation: formData.yearsInOperation,
+        brokerProfileImage: formData.brokerProfileImage,
       },
     };
   };
@@ -188,10 +200,21 @@ console.log("user>>>>>>>>>>>", user);
 
           <div className="field form__field_col">
             <label>Phone</label>
-            <InputText
+            {/* <InputText
               value={formData.phone}
               onChange={(e) => handleChange("phone", e.target.value)}
-            />
+            /> */}
+
+ <InputMask
+      mask="(999) 999-9999"
+       placeholder="(999) 999-9999"
+      value={formData.phone}
+      onChange={(e) =>
+        handleChange("phone", e.target.value)
+      }
+    />
+
+
           </div>
 
           <div className="field form__field_col">
@@ -222,18 +245,48 @@ console.log("user>>>>>>>>>>>", user);
 
           <div className="field form__field_col">
             <label>State</label>
-            <InputText
+
+
+
+  <Dropdown
+    value={formData.state || null}
+    options={usStates}
+    optionLabel="label"
+    optionValue="value"
+    placeholder="Select State"
+    onChange={(e) => {
+      handleChange("state", e.value);
+    }
+    }
+    className="w-full"
+  />
+
+
+
+
+            {/* <InputText
               value={formData.state}
               onChange={(e) => handleChange("state", e.target.value)}
-            />
+            /> */}
           </div>
 
           <div className="field form__field_col">
             <label>Zip Code</label>
-            <InputText
+            {/* <InputText
               value={formData.zipCode}
               onChange={(e) => handleChange("zipCode", e.target.value)}
-            />
+            /> */}
+
+<InputMask
+  id="zip"
+  name="zip"
+  mask="99999"
+   value={formData.zipCode}
+              onChange={(e) => handleChange("zipCode", e.target.value)} 
+    placeholder="Enter Zip Code"
+/>
+
+
           </div>
 
           <div className="field form__field_col">
@@ -256,6 +309,16 @@ console.log("user>>>>>>>>>>>", user);
               maxSizeMB={0.5}
               existingFileUrl={formData.companyLogo || "dss"}
               onFileSelect={handleImageSelect}
+            />
+          </div>
+
+          <div className="field form__field_col">
+            <label>Broker Profile Image</label>
+            <FileUploader
+              accept="image/png, image/jpeg"
+              maxSizeMB={0.5}
+              existingFileUrl={formData.brokerProfileImage || "dss"}
+              onFileSelect={handleProfileImage}
             />
           </div>
 

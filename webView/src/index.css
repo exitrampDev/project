@@ -2514,7 +2514,7 @@ button.button__remove_listing_fav .pi-heart-fill:before {
 }
 .listing__creation_block_main_wrap .listing__creation_field_col {
     width: 100%;
-    max-width: 440px;
+    max-width: calc(33.3% - 20px);
 }
 
 .listing__creation_block_main_wrap .listing__creation_field_col label {

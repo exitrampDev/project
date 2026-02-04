@@ -796,7 +796,7 @@ const isMainImageInvalid =
   </label>
 
   <FileUploader
-    accept="image/png, image/jpeg,.pdf"
+    accept="image/png, image/jpeg"
     maxSizeMB={0.5}
     onFileSelect={(file) => handleImageSelect(file)}
   />
@@ -868,40 +868,44 @@ const isMainImageInvalid =
 </div>
 
 {/* Contact Name */}
+ {user?.user_type !== "seller_broker" && (
 <div className="listing__creation_field_col md:col-6">
   <label>Contact Name </label>
- {user?.user_type === "seller_broker" ? (
-    <div className="form__field_col_hardocded_email">
-  {user?.first_name || ""} {user?.last_name || ""}
- </div>
-  ) : (
     <InputText
     value={newListing.contactName || ""}
     onChange={(e) =>
       setNewListing({ ...newListing, contactName: e.target.value })
     }
     placeholder="Enter Contact Name"
-  />
-  )}
-</div>
+    />
+  </div>
+  ) 
+//   : (
+//     <div className="form__field_col_hardocded_email">
+//   {user?.first_name || ""} {user?.last_name || ""}
+//  </div>
+//   )
+  }
 
 {/* Contact Email */}
-<div className="listing__creation_field_col md:col-6">
-  <label>Contact Email </label>
-   {user?.user_type === "seller_broker" ? (
-    <div className="form__field_col_hardocded_email">
-  {user?.email || ""}
- </div>
-  ) : (
-    <InputText
-    value={newListing.contactEmail || ""}
-    onChange={(e) =>
-      setNewListing({ ...newListing, contactEmail: e.target.value })
-    }
-    placeholder="Enter Contact Email"
-  />
-  )}
-</div>
+   {user?.user_type !== "seller_broker" && (
+  <div className="listing__creation_field_col md:col-6">
+    <label>Contact Email </label>
+      <InputText
+      value={newListing.contactEmail || ""}
+      onChange={(e) =>
+        setNewListing({ ...newListing, contactEmail: e.target.value })
+      }
+      placeholder="Enter Contact Email"
+    />
+  </div>
+  ) 
+//   : (
+//     <div className="form__field_col_hardocded_email">
+//   {user?.email || ""}
+//  </div>
+//   )
+}
 
 {/* Contact Address */}
 {/* <div className="listing__creation_field_col md:col-6">
@@ -919,14 +923,9 @@ const isMainImageInvalid =
 
 
 {/* Contact Phone */}
+  {user?.user_type !== "seller_broker" && (
 <div className="listing__creation_field_col md:col-6">
   <label>Contact Phone </label>
-
-  {user?.user_type === "seller_broker" ? (
-    <div className="form__field_col_hardocded_email">
-      {user?.profile?.phone_number || ""}
-    </div>
-  ) : (
     <InputMask
       mask="(999) 999-9999"
        placeholder={`${user?.profile?.phone_number}`}
@@ -935,10 +934,17 @@ const isMainImageInvalid =
         setNewListing({ ...newListing, contactPhone: e.target.value })
       }
     />
-  )}
-</div>
 
-  {user?.user_type === "seller_broker" && (
+</div>
+  ) 
+  // : (
+  //   <div className="form__field_col_hardocded_email">
+  //     {user?.profile?.phone_number || ""}
+  //   </div>
+  // )
+  }
+
+  {/* {user?.user_type === "seller_broker" && (
   <>
     <div className="listing__creation_field_col md:col-6">
       <label>Year In Operation</label>
@@ -967,20 +973,14 @@ const isMainImageInvalid =
         </div>
     </div>
   </>
-  )}
+  )} */}
 
 
 {/* Contact Zip Code */}
+{user?.user_type !== "seller_broker" && (
 <div className="listing__creation_field_col md:col-6">
   <label>Contact Zip Code </label>
 
-
-
-{user?.user_type === "seller_broker" ? (
-    <div className="form__field_col_hardocded_email">
-      {user?.profile?.zipCode || ""}
-    </div>
-  ) : (
     <InputMask
   id="zip"
   name="zip"
@@ -991,13 +991,24 @@ const isMainImageInvalid =
     }
     placeholder="Enter Zip Code"
 />
-  )}
-
-
-
-
 
 </div>
+
+  ) 
+  
+  // : (
+  
+  //   <div className="form__field_col_hardocded_email">
+  //     {user?.profile?.zipCode || ""}
+  //   </div>
+  
+  // )
+  }
+
+
+
+
+
 
 
  {/* Business City */}
