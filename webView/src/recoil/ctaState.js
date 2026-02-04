@@ -34,8 +34,7 @@ export const activePageAtom = atom({
 });
 export const apiBaseUrlState = atom({
   key: "apiBaseUrlState",
-  default: "http://localhost:3000", //need to add till /api if needed
-  // default: "http://testapi.exitramp.co"
+  default: import.meta.env.VITE_API_BASE_URL || "http://localhost:3000",
 });
 
 
