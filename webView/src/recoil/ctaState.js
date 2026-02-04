@@ -36,7 +36,7 @@ export const apiBaseUrlState = atom({
   key: "apiBaseUrlState",
   // default: "http://localhost:3000", //need to add till /api if needed
   // default: "http://testapi.exitramp.co"
-  default: "http://api.exitramp.co"
+  default: "https://api.exitramp.co"
 });
 
 
