@@ -104,11 +104,11 @@ const roleOptions = {
       // },
       {
         icon: icon8,
-        title: "Seller Central Account",
+        title: "Seller Sign Up",
         description:
-          "Get the full toolkit: NDA and CIM management, 2-year listing, buyer insights, and expert selling resources.",
+          "Get the toolkit: Buyer NDA Management, CIM Management, Document Management Room, Buyer Access Management, and more.",
         button: {
-          text: "Register as Seller Central",
+          text: "Register as Seller",
           link: "/register",
           roleOptionValue: "seller_central",
         },

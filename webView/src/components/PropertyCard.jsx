@@ -203,26 +203,16 @@ const saveListingBtn = (businessId) => {
       }
     };
     const isFavorite = favoriteIds.includes(businessId);
-    console.log("isFavorite>>>>>", businessId);
+    // console.log("isFavorite>>>>>", businessId);
     return (
       <>
       <Toast ref={toast} position="top-right" />
         <Button
           icon={isFavorite ? "pi pi-heart-fill" : "pi pi-heart"}
           className={`button__save_listing_global ${isFavorite ? "active" : ""}`}
-          onClick={handleSave}
+          onClick={ isFavorite ? "" : handleSave}
         />
-        <div className="flag__hit_list" onClick={markFlag}>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="20"
-            viewBox="0 0 512 512"
-            fill="#002F68"
-          >
-            <path d="M64 32v448h32V288h320l-96-128 96-128H64z" />
-          </svg>
-        </div>
+       
       </>
     );
   }
@@ -592,17 +582,13 @@ useEffect(() => {
           ) : (
             currentPageData.map((listing) => (
               <li key={listing._id} className="list__row_item">
-                <Link to={`/listing/${listing._id}`} className="flex gap-4">
+                <span className="listing__info_left_content">
+                  <Link to={`/listing/${listing._id}`} className="flex gap-4">
                   <span className="list__image_col">
                     <img
                       alt={listing.listingTitle}
                       src={listing.image}
-                      style={{
-                        width: "100%",
-                        height: "140px",
-                        objectFit: "cover",
-                        borderRadius: "8px",
-                      }}
+                      
                     />
                   </span>
                   <span className="list_content_col">
@@ -655,6 +641,21 @@ useEffect(() => {
                     </div>
                   </span>
                 </Link>
+                </span>
+                <span  className="list_content_col_listing_des">
+                 <Link to={`/listing/${listing._id}`} className="list_content_col_listing_des_text_wrap">
+                 <h2>Listing Description:</h2>
+                     <span className="list_content_col_listing_des_text">
+                              {(
+                                listing?.listingDescription?.replace(/<[^>]*>/g, "") || "-"
+                              ).slice(0, 200)}
+                              {((listing?.listingDescription?.replace(/<[^>]*>/g, "") || "").length > 3)
+                                ? "..."
+                                : ""}
+                            </span>
+</Link>
+
+                </span>
 
                 <div className="list__actions">{saveListingBtn(listing._id)}</div>
               </li>

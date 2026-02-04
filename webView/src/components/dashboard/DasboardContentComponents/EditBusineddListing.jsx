@@ -120,13 +120,17 @@ const fetchFiles = async () => {
   }
 };
 
-
-
-  //   useEffect(() => {
+const editorHeader = (
+  <span className="ql-formats">
+    <button className="ql-bold" />
+    <button className="ql-italic" />
+    <button className="ql-underline" />
+    <button className="ql-list" value="ordered" />
+    <button className="ql-list" value="bullet" />
     
-  //     console.log("New user Data:", user);
-      
-  // }, [user]);
+  </span>
+);
+
 
   useEffect(() => {
     if (id && access_token) fetchListing().then(() => fetchFiles());
@@ -324,6 +328,7 @@ const usStates = useRecoilValue(usStatesState);
         <label>Listing Description </label>
          <Editor
             value={newListing.listingDescription || ""}
+            headerTemplate={editorHeader}
             onTextChange={(e) =>
               setNewListing({
                 ...newListing,
@@ -375,13 +380,9 @@ const usStates = useRecoilValue(usStatesState);
 
 
 {/* Contact Name */}
+ {user?.user_type !== "seller_broker" && (
 <div className="listing__creation_field_col md:col-6">
   <label>Contact Name </label>
- {user?.user_type === "seller_broker" ? (
-    <div className="form__field_col_hardocded_email">
-  {user?.first_name || ""} {user?.last_name || ""}
- </div>
-  ) : (
     <InputText
     value={newListing.contactName || ""}
     onChange={(e) =>
@@ -389,15 +390,17 @@ const usStates = useRecoilValue(usStatesState);
     }
     placeholder="Enter Contact Name"
   />
-  )}
 </div>
+  ) 
+//   : (
+//     <div className="form__field_col_hardocded_email">
+//   {user?.first_name || ""} {user?.last_name || ""}
+//  </div>
+//   )
+  }
+   {user?.user_type !== "seller_broker" && (
 <div className="listing__creation_field_col md:col-6">
   <label>Contact Email </label>
-   {user?.user_type === "seller_broker" ? (
-    <div className="form__field_col_hardocded_email">
-  {user?.email || ""}
- </div>
-  ) : (
     <InputText
     value={newListing.contactEmail || ""}
     onChange={(e) =>
@@ -405,8 +408,14 @@ const usStates = useRecoilValue(usStatesState);
     }
     placeholder="Enter Contact Email"
   />
-  )}
 </div>
+  ) 
+//   : (
+//     <div className="form__field_col_hardocded_email">
+//   {user?.email || ""}
+//  </div>
+//   )
+  }
 {/* Contact Address */}
 {/* <div className="listing__creation_field_col md:col-6">
   <label>Contact Address </label>
@@ -422,15 +431,9 @@ const usStates = useRecoilValue(usStatesState);
 
 
 {/* Contact Phone */}
+  {user?.user_type !== "seller_broker" && (
 <div className="listing__creation_field_col md:col-6">
   <label>Contact Phone</label>
-
-  {user?.user_type === "seller_broker" ? (
-    <div className="form__field_col_hardocded_email">
-      {user?.profile?.phone_number || ""}
-    </div>
-  ) :
-   (
     <InputMask
       mask="(999) 999-9999"
       value={newListing.contactPhone || ""}
@@ -438,11 +441,17 @@ const usStates = useRecoilValue(usStatesState);
         setNewListing({ ...newListing, contactPhone: e.target.value })
       }
     />
+  </div>
+
   )
+  //  :(
+  //   <div className="form__field_col_hardocded_email">
+  //     {user?.profile?.phone_number || ""}
+  //   </div>
+  // ) 
   }
-</div>
 
-
+{/* 
   {user?.user_type === "seller_broker" && (
   <>
     <div className="listing__creation_field_col md:col-6">
@@ -472,19 +481,13 @@ const usStates = useRecoilValue(usStatesState);
         </div>
     </div>
   </>
-  )}
+  )} */}
 
 {/* Contact Zip Code */}
+{user?.user_type !== "seller_broker" && (
 <div className="listing__creation_field_col md:col-6">
   <label>Contact Zip Code </label>
 
-
-
-{user?.user_type === "seller_broker" ? (
-    <div className="form__field_col_hardocded_email">
-      {user?.profile?.zipCode || ""}
-    </div>
-  ) : (
     <InputMask
   id="zip"
   name="zip"
@@ -495,13 +498,16 @@ const usStates = useRecoilValue(usStatesState);
     }
     placeholder="Enter Zip Code"
 />
-  )}
-
-
-
-
 
 </div>
+
+  ) 
+  // : (
+  //   <div className="form__field_col_hardocded_email">
+  //     {user?.profile?.zipCode || ""}
+  //   </div>
+  // )
+  }
 
 
  {/* Business City */}
@@ -592,6 +598,7 @@ const usStates = useRecoilValue(usStatesState);
 
          <Editor
                     value={newListing.reasonForSelling || ""}
+                    headerTemplate={editorHeader}
                     onTextChange={(e) =>
                       setNewListing({
                         ...newListing,
@@ -599,6 +606,11 @@ const usStates = useRecoilValue(usStatesState);
                       })
                     }
                   />
+
+
+
+
+                  
         <em>Provide a brief explanation as to why you are selling. </em>
         
       </div>

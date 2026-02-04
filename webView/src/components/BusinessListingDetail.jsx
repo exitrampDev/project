@@ -31,6 +31,7 @@ export default function BusinessListingDetail() {
   const [business, setBusiness] = useState(null);
   const [loading, setLoading] = useState(true);
    const toast = useRef(null);
+    const [favoriteIds, setFavoriteIds] = useState([]);
   const [showImagesPopup, setShowImagesPopup] = useState(false);
   const API_BASE = useRecoilValue(apiBaseUrlState);
   const [showContactModal, setShowContactModal] = useState(false);
@@ -102,45 +103,33 @@ const fetchFilesMain = async () => {
     fetchFilesMain();
 
   }, [id]);
+useEffect(() => {
+  if (!access_token) return;
 
+  const fetchFavorites = async () => {
+    try {
+      const res = await fetch(`${API_BASE}/favorite`, {
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+        },
+      });
+
+      const result = await res.json();
+
+      // assuming result.data = [{ businessId: "..." }]
+      const ids = result.data.map(fav => fav.businessId._id);
+      setFavoriteIds(ids);
+    } catch (err) {
+      console.error("Failed to fetch favorites", err);
+    }
+  };
+
+  fetchFavorites();
+}, [access_token]);
   if (loading) return <ProgressSpinner />;
   if (!business) return <p>Business not found</p>;
 
 
-  const handleSave = async () => {
-    try {
-      const response = await fetch(`${API_BASE}/favorite`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${access_token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ businessId: id }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      // console.log("Favorite saved:", data);
-
-      toast.current.show({
-        severity: "success",
-        summary: "Added to Favorites",
-        detail: "This listing has been added to your favorites.",
-        life: 3000,
-      });
-    } catch (error) {
-      console.error("Error saving favorite:", error);
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Failed to save favorite. Please try again.",
-        life: 3000,
-      });
-    }
-  };
 
 const allowedImages = [
   "listingImage1",
@@ -191,6 +180,128 @@ const allowedImages = [
   } finally {
     setSending(false);
   }
+};
+
+const saveListingBtn = (businessId) => {
+ 
+
+  if (access_token) {
+    // --- Save Favorite ---
+   const handleSave = async () => {
+  try {
+    const response = await fetch(`${API_BASE}/favorite`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${access_token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ businessId }),
+    });
+
+    const data = await response.json();
+console.log("Favorite response:", data);
+    // ✅ add to local state instantly
+    setFavoriteIds(prev => [...prev, businessId]);
+    toast.current.show({
+      severity: "success",
+      summary: "Added to Favorites",
+      detail: "This listing has been added to your favorites.",
+      life: 3000,
+    });
+  } catch (error) {
+    toast.current.show({
+      severity: "error",
+      summary: "Error",
+      detail: "Failed to save favorite.",
+      life: 3000,
+    });
+  }
+};
+
+
+const markFlag = async () => {
+
+      const confirmFlag = window.confirm(
+      "Are you sure you want to flag this listing as suspicious?"
+    );
+
+    if (!confirmFlag) return;
+
+      try {
+        const payload = {
+          description: "This business is suspicious",
+          businessId,
+        };
+
+        const response = await fetch(`${API_BASE}/flag`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${access_token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log("Flag created:", data);
+
+        toast.current.show({
+          severity: "warn",
+          summary: "Business Flagged",
+          detail: "This business has been flagged for review.",
+          life: 3000,
+        });
+      } catch (error) {
+        console.error("Error flagging business:", error);
+        toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: "Failed to flag this business. Please try again.",
+          life: 3000,
+        });
+      }
+    };
+    const isFavorite = favoriteIds.includes(businessId);
+    // console.log("isFavorite>>>>>", favoriteIds);
+    return (
+      <>
+      <Toast ref={toast} position="top-right" />
+        <Button
+          icon={isFavorite ? "pi pi-heart-fill" : "pi pi-heart"}
+          className={`button__save_listing_global ${isFavorite ? "active" : ""}`}
+          onClick={ isFavorite ? "" : handleSave}
+        />
+       <div className="flag__hit_list_inner_listing" onClick={markFlag}>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 512 512"
+            fill="#002F68"
+          >
+            <path d="M64 32v448h32V288h320l-96-128 96-128H64z" />
+          </svg>
+        </div>
+      </>
+    );
+  }
+
+  const handleNonUserClick = () => {
+    const signupBtn = document.querySelector(".signup-btn");
+    if (signupBtn) signupBtn.click();
+  };
+
+  return (
+    <Button
+      icon="pi pi-heart"
+      className="button__save_listing_non_user"
+      onClick={handleNonUserClick}
+    />
+  );
 };
   
 
@@ -295,23 +406,8 @@ const allowedImages = [
                      </div>
        
                  </div>
-                 <div className="save_button_wrap">
-                      {access_token ? (
-                        <>
-                          <Button
-                            icon="pi pi-heart-fill"
-                            className="button__save_listing_global_single_listing"
-                            onClick={handleSave}
-                          />
-                        </>
-                      ) : (
-                        <Button
-                          icon="pi pi-heart"
-                          className="button__save_listing_non_user"
-                          onClick={handleNonUserClick}
-                        />
-                      )}
-                    </div>
+               
+                    <div className="list__action_inns">{saveListingBtn(business._id)}</div>
 
                  
                </div>

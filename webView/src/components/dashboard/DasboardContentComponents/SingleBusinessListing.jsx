@@ -53,6 +53,17 @@ export default function SingleBusinessListing() {
   
 
 
+const renderMoney = (value) => {
+  if (value === "" || value === null || value === undefined || value === 0) return "-";
+  return `$${value}`;
+};
+
+const renderYesNo = (value) => {
+  if (value === "" || value === null || value === undefined) return "-";
+  if (value === true || value === "true") return "Yes";
+  if (value === false || value === "false") return "No";
+  return "-";
+};
 
 
   useEffect(() => {
@@ -227,16 +238,16 @@ export default function SingleBusinessListing() {
 
           <div className="busines_lisiting_highLevelSummary_list">
             <strong>Asking Price:</strong> $
-            {business?.askingPrice.toLocaleString() }
+            {business?.askingPrice }
           </div>
           <div className="busines_lisiting_highLevelSummary_list">
-            <strong>Cash Flow:</strong> ${business?.cashFlow.toLocaleString()}
+            <strong>Cash Flow:</strong> ${business?.cashFlow}
           </div>
           <div className="busines_lisiting_highLevelSummary_list">
-            <strong>Revenue:</strong> ${business?.revenue.toLocaleString()}
+            <strong>Revenue:</strong> ${business?.revenue}
           </div>
           <div className="busines_lisiting_highLevelSummary_list">
-            <strong>Rent:</strong> ${business?.monthlyRentAmount.toLocaleString()}
+            <strong>Rent:</strong> ${business?.monthlyRentAmount}
           </div>
           <div className="busines_lisiting_highLevelSummary_list">
             <strong>SDE:</strong> {business?.latestSDE ? (<>{business.latestSDE}</>) : "-"}
@@ -260,9 +271,9 @@ export default function SingleBusinessListing() {
 />
 
           <div className="about_listing_toggle">
-            <div className="about_listing_toggle_item"><strong>Franchies:</strong> {business?.isFranchise ? "Yes" : "No"}</div>
-            <div className="about_listing_toggle_item"><strong>Relocate:</strong>{business?.isRelocatable ? "Yes" : "No"}</div>
-            <div className="about_listing_toggle_item"><strong>Startup:</strong>{business?.isStartup ? "Yes" : "No"}</div>
+            <div className="about_listing_toggle_item"><strong>Franchies:</strong> {business?.isFranchise? business?.isFranchise : "-" }</div>
+            <div className="about_listing_toggle_item"><strong>Relocate:</strong>{business?.isRelocatable? business?.isRelocatable : "-"}</div>
+            <div className="about_listing_toggle_item"><strong>Startup:</strong>{business?.isStartup? business?.isStartup : "-"}</div>
           </div>
         </div>
 
@@ -270,13 +281,31 @@ export default function SingleBusinessListing() {
          <div className="business__list_single_description_row">
           <h3>Addtiional Financial Details</h3>
           <div className="about_listing_toggle">
-            <div className="about_listing_toggle_item"><strong>Real Estate:</strong> {business?.realEstateValue ? (<>${business?.realEstateValue}</>) : "-"}</div>
-            <div className="about_listing_toggle_item"><strong>Real Estate Included:</strong>{business?.propertyIncludedinAskingPrice ? "Yes" : "No"}</div>
-            <div className="about_listing_toggle_item"><strong>ffEValue:</strong>{business?.ffEValue ? (<>${business?.ffEValue}</>) : "-"}</div>
-            <div className="about_listing_toggle_item"><strong>FFE Include:</strong>{business?.ffEValueIncludeinAskingPrice ? "Yes" : "No"}</div>
-            <div className="about_listing_toggle_item"><strong>Inventory Value:</strong>{business?.inventoryValue ? (<>${business?.inventoryValue}</>) : "-"}</div>
-            <div className="about_listing_toggle_item"><strong>Inventory Included: </strong>{business?.inventoryIncludedinAskingPrice ? "Yes" : "No"}</div>
-          </div>  
+              <div className="about_listing_toggle_item">
+                <strong>Real Estate:</strong> {renderMoney(business?.realEstateValue)}
+              </div>
+
+              <div className="about_listing_toggle_item">
+                <strong>Real Estate Included:</strong> {renderYesNo(business?.propertyIncludedinAskingPrice)}
+              </div>
+
+              <div className="about_listing_toggle_item">
+                <strong>FFE Value:</strong> {renderMoney(business?.ffEValue)}
+              </div>
+
+              <div className="about_listing_toggle_item">
+                <strong>FFE Include:</strong> {renderYesNo(business?.ffEValueIncludeinAskingPrice)}
+              </div>
+
+              <div className="about_listing_toggle_item">
+                <strong>Inventory Value:</strong> {renderMoney(business?.inventoryValue)}
+              </div>
+
+              <div className="about_listing_toggle_item">
+                <strong>Inventory Included:</strong> {renderYesNo(business?.inventoryIncludedinAskingPrice)}
+              </div>
+            </div>
+ 
         </div>
 
 
@@ -296,19 +325,19 @@ export default function SingleBusinessListing() {
                     )}
                   </div>
              <div className="business_list_single_overview_list">
-              <strong>Support and Training:</strong> {business?.postCloseSupport ? (<>{business.postCloseSupport}</>) : "-" }
+              <strong>Support and Training:</strong> {business?.postCloseSupport ? (<>{business?.postCloseSupport}</>) : "-" }
               </div>
              <div className="business_list_single_overview_list">
-              <strong>Management Will Stay:</strong>{business?.managementWillingToStay ? (<>{business.managementWillingToStay}</>) : "-" } 
+              <strong>Management Will Stay:</strong>{business?.managementWillingToStay ? (<>{business?.managementWillingToStay}</>) : "-" } 
             </div>
              <div className="business_list_single_overview_list">
-              <strong>Number of Employees:</strong>{business?.numberOfEmployees ? (<>{business.numberOfEmployees}</>) : "-" } 
+              <strong>Number of Employees:</strong>{business?.numberOfEmployees ? (<>{business?.numberOfEmployees}</>) : "-" } 
             </div>
             <div className="business_list_single_overview_list">
-              <strong>Lease Expiration:</strong>{business?.leaseExpiration ? (<>{business.leaseExpiration}</>) : "-" } 
+              <strong>Lease Expiration:</strong>{business?.leaseExpiration ? (<>{new Date(business?.leaseExpiration).toLocaleDateString()}</>) : "-" } 
             </div>
             <div className="business_list_single_overview_list">
-              <strong>Building SF:</strong>{business?.buildingSF ? (<>{business.buildingSF}</>) : "-" } 
+              <strong>Building SF:</strong>{business?.buildingSF ? (<>{business?.buildingSF}</>) : "-" } 
             </div>
             
           </div>
@@ -321,7 +350,7 @@ export default function SingleBusinessListing() {
           <div className="business__list_single_business_overview">
             <h3 className="m-b-10">Growth and Expansion</h3>
             <div className="business_list_single_overview_list">
-              {business?.growthExpansion ? (<> {JSON.parse(business.growthExpansion)}</>) : "-"}   
+              {business?.growthExpansion ? (<> {JSON.parse(business?.growthExpansion)}</>) : "-"}   
             </div>
            
           </div>
@@ -332,7 +361,7 @@ export default function SingleBusinessListing() {
           <div className="business__list_single_business_overview">
             <h3 className="m-b-10">Facility</h3>
             <div className="business_list_single_overview_list">
-              {business?.facilityAndLocationDetails ? (<> {business.facilityAndLocationDetails}</>) : "-"}   
+              {business?.facilityAndLocationDetails ? (<> {business?.facilityAndLocationDetails}</>) : "-"}   
             </div>
            
           </div>

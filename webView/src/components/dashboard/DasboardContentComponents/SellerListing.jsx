@@ -170,7 +170,7 @@ businessCity: "",
 businessState: "",
 businessCountry: "",
 businessZipCode: "",
-yearStablished: 1900,
+yearStablished: "",
 reasonForSelling: "",
 isFranchise: "",
 isRelocatable:"" ,
@@ -186,6 +186,7 @@ propertyIncludedinSale:"",
 propertyValue: 0,
 leaseExpiration:"",
 buildingSF: "", 
+monthlyRentAmount:0,
 ffEValue: 0,
 ffEValueIncludeinAskingPrice: "",
 inventoryValue: 0,
@@ -237,7 +238,16 @@ const createCIMList = (id, cimUrl) => {
 }
 
 
-
+const editorHeader = (
+  <span className="ql-formats">
+    <button className="ql-bold" />
+    <button className="ql-italic" />
+    <button className="ql-underline" />
+    <button className="ql-list" value="ordered" />
+    <button className="ql-list" value="bullet" />
+   
+  </span>
+);
 
 
   // Fetch Listings
@@ -347,6 +357,7 @@ propertyIncludedinSale:"",
 propertyValue: 0,
 leaseExpiration:"",
 buildingSF: "", 
+monthlyRentAmount:0,
 ffEValue: 0,
 ffEValueIncludeinAskingPrice: "",
 inventoryValue: 0,
@@ -358,7 +369,7 @@ annualRevenue: {
     },
 latestEBITDA:"",
 latestSDE: "",
-cashFlow: "",
+cashFlow: 0,
 latestNetProfit: 0,
 listingReferenceNumber: Math.random().toString(16).substring(2, 10),
     });
@@ -808,6 +819,7 @@ const isMainImageInvalid =
         <label>Listing Description </label>
          <Editor
             value={newListing.listingDescription || ""}
+            headerTemplate={editorHeader}
             onTextChange={(e) =>
               setNewListing({
                 ...newListing,
@@ -1097,6 +1109,7 @@ const isMainImageInvalid =
 
  <Editor
             value={newListing.reasonForSelling || ""}
+            headerTemplate={editorHeader}
             onTextChange={(e) =>
               setNewListing({
                 ...newListing,
@@ -1630,6 +1643,9 @@ impact the confidentiality of your sale.</em>
     currency="USD"
     minFractionDigits={0}
   maxFractionDigits={0}
+   className={
+    checkingError && newListing.cashFlow === 0 ? "p-invalid" : ""
+  }
         />
       </div>
 
