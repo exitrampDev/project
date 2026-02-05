@@ -28,7 +28,7 @@ async function bootstrap() {
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
 
    app.enableCors({
-    origin: ['http://localhost:5173','http://localhost:3000', 'http://3.87.119.123:5173', 'http://test.exitramp.co'], 
+    origin: ['http://localhost:5173','http://localhost:3000', 'http://test.exitramp.co', 'https://exitramp.co', 'https://www.exitramp.co'], 
     credentials: true,
   });
 
@@ -38,7 +38,7 @@ async function bootstrap() {
   app.use(bodyParser.json({ limit: '16mb' }));
   app.use(bodyParser.urlencoded({ limit: '16mb', extended: true }));
    
-  const port = 3000;
+  const port = 5000;
   await app.listen(port,'0.0.0.0');
   Logger.log(`🚀 Application is running on http://localhost:${port}`);
 }
