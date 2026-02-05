@@ -459,9 +459,9 @@ async attachFile(businessId: string, fileUrl: string, fileType: string = 'profit
     const ownerId = user.userId;
 
     const totalBusinesses = await this.businessModel.countDocuments({ ownerId, isDeleted: false });
-    const liveBusinesses = await this.businessModel.countDocuments({ ownerId, status: 'live', isDeleted: false });
-    const pendingBusinesses = await this.businessModel.countDocuments({ ownerId, status: 'pending', isDeleted: false });
-    const blockedBusinesses = await this.businessModel.countDocuments({ ownerId, status: 'blocked', isDeleted: false });
+    const liveBusinesses = await this.businessModel.countDocuments({ ownerId, status: BusinessStatus.LIVE, isDeleted: false });
+    const pendingBusinesses = await this.businessModel.countDocuments({ ownerId, status: BusinessStatus.PENDING_FOR_PAYMENT, isDeleted: false });
+    const blockedBusinesses = await this.businessModel.countDocuments({ ownerId, status: BusinessStatus.BLOCK, isDeleted: false });
     const pendingNdaSubmiaaions = await this.ndaModel.countDocuments({ businessOwnerId:ownerId, ndaStatus: 'pending' });
     
     return {
