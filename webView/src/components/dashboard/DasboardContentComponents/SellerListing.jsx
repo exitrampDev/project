@@ -1643,9 +1643,7 @@ impact the confidentiality of your sale.</em>
     currency="USD"
     minFractionDigits={0}
   maxFractionDigits={0}
-   className={
-    checkingError && newListing.cashFlow === 0 ? "p-invalid" : ""
-  }
+  
         />
       </div>
 
