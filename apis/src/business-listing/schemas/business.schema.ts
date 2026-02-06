@@ -134,7 +134,7 @@ export class Business {
   businessType?: string;
 
   @Prop({ default: null })
-  listingTitle?: string;
+  listingTitle: string;
 
   @Prop({ default: null })
   listingDescription?: string;
