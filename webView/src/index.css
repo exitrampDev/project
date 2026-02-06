@@ -1941,6 +1941,7 @@ li.list__row_item span.list_content_col p.location__item_list {
 
 li.list__row_item span.list_content_col p.list__item_industry {
   display: flex;
+      flex-wrap: wrap;
   gap: 10px;
   align-items: center;
 }
@@ -1948,7 +1949,7 @@ li.list__row_item span.list_content_col p.list__item_industry {
 li.list__row_item span.list_content_col p.list__item_industry span {
   color: #ffb100;
   border: 1px solid;
-  padding: 8px 25px;
+  padding: 8px 15px;
   border-radius: 30px;
   line-height: 1;
   font-size: 13px;
@@ -2521,7 +2522,35 @@ button.button__remove_listing_fav .pi-heart-fill:before {
 .complete_buyer_form_wrap.seller__form_profile .field.form__field_col.team__summary_doc_wrap .team__summary_doc_wrap_field_block  .p-fileupload.p-fileupload-basic.p-component {
     max-width: 250px;
 }
+.action__recent_view {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
 
+.action__recent_view button.button__remove_listing_fav.p-button.p-component.p-button-icon-only {
+    font-size: 9px;
+    border: 1px solid;
+    padding: 4px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.action__recent_view a.flex.gap-4 {
+    font-size: 11px;
+    border: 1px solid;
+    padding: 4px;
+    border-radius: 5px;
+    color: #6380a4;
+    cursor: pointer;
+}
+
+.action__recent_view a.flex.gap-4 i.pi {
+    align-items: center;
+    border: none;
+    position: relative;
+    top: 1px;
+}
 .complete_buyer_form_wrap.seller__form_profile .field.form__field_col.team__summary_doc_wrap .team__summary_doc_wrap_field_block  .p-fileupload.p-fileupload-basic.p-component span.p-button.p-component.p-fileupload-choose {
     padding: 10px 16px;
     background: #fff;
