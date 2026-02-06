@@ -27,6 +27,7 @@ export class CreateBusinessDto {
   businessType?: string;
 
   // @IsOptional()
+  @IsNotEmpty()
   @IsString()
   listingTitle: string;
 
