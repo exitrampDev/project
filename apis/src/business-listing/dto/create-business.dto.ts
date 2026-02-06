@@ -27,8 +27,8 @@ export class CreateBusinessDto {
   businessType?: string;
 
   // @IsOptional()
-  @IsNotEmpty()
   @IsString()
+  @Matches(/.{3,}/, { message: 'Listing title must be at least 3 characters long' })
   listingTitle: string;
 
   @IsOptional()
