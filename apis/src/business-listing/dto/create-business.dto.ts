@@ -43,7 +43,7 @@ export class CreateBusinessDto {
   entityType?: string;
 
   @IsOptional()
-  @IsNumber()
+  // @IsNumber()
   @Transform(({ value }) => parseInt(value, 10))
   yearStablished?: number;
 
