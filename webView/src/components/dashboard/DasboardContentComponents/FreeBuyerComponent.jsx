@@ -12,6 +12,7 @@ const SellerCentralDashboard = () => {
   const { user, access_token } = useRecoilValue(authState) ?? {};
   const API_BASE = useRecoilValue(apiBaseUrlState);
 const [ndaSubmittedCount, setNdaSubmittedCount] = useState(0);
+const [ndaData, setNdaData] = useState([]);
 const [approvedNdaCount, setApprovedNdaCount] = useState(0);
   const [counts, setCounts] = useState(null);
   const [listings, setListings] = useState([]);
@@ -57,6 +58,10 @@ const [approvedNdaCount, setApprovedNdaCount] = useState(0);
         },
       });
 
+      if (Array.isArray(data?.data)) {
+        setNdaData(data.data);
+        console.log("NDA Data:", ndaData);
+      }
       // If API returns array
       if (Array.isArray(data)) {
         setNdaSubmittedCount(data.length);
@@ -164,6 +169,23 @@ if (Array.isArray(data?.data)) {
     );
   }
 
+
+
+  const ndaStatusCounts = ndaData?.reduce(
+  (acc, nda) => {
+    const status = (nda?.ndaStatus || "").toLowerCase();
+
+    if (status === "approved") acc.approved += 1;
+    else if (status === "pending") acc.pending += 1;
+    else if (status === "rejected") acc.rejected += 1;
+    else acc.other += 1;
+
+    return acc;
+  },
+  { approved: 0, pending: 0, rejected: 0, other: 0 }
+);
+
+
   /* ---------------- UI ---------------- */
   return (
     <>
@@ -188,7 +210,7 @@ if (Array.isArray(data?.data)) {
           </div>
 
           <div className="dashboard__free_buyer_count_block_nda_submit">
-            <h3>NDAs Submitted</h3>
+            <h3>NDA Requested</h3>
             <p>{ndaSubmittedCount}</p>
           </div>
 
@@ -201,23 +223,25 @@ if (Array.isArray(data?.data)) {
         {/* ---------- Chart + Recently Viewed ---------- */}
         <div className="listing__dashboard_data_table_widget_wrap">
           <div className="listing__dashboard_nda_chart_widget">
-            <h3>Listings by Status</h3>
+            <h3>NDA Status</h3>
             <Chart
-              type="doughnut"
-              data={{
-                labels: ["Live", "Pending", "Blocked"],
-                datasets: [
-                  {
-                    data: [
-                      counts?.liveBusinesses ?? 0,
-                      counts?.pendingBusinesses ?? 0,
-                      counts?.blockedBusinesses ?? 0,
-                    ],
-                    backgroundColor: ["#42A5F5", "#FFA726", "#EF5350"],
-                  },
-                ],
-              }}
-            />
+                type="doughnut"
+                data={{
+                  labels: ["Approved", "Pending", "Rejected", "Other"],
+                  datasets: [
+                    {
+                      data: [
+                        ndaStatusCounts?.approved ?? 0,
+                        ndaStatusCounts?.pending ?? 0,
+                        ndaStatusCounts?.rejected ?? 0,
+                        ndaStatusCounts?.other ?? 0,
+                      ],
+                      backgroundColor: ["#66BB6A", "#FFA726", "#EF5350", "#9E9E9E"],
+                    },
+                  ],
+                }}
+              />
+
           </div>
 
           <div className="listing__dashboard_listing_widget lisiting_recent_view_widget">

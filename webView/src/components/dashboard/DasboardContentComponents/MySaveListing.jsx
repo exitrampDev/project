@@ -15,7 +15,6 @@ import { Link } from "react-router-dom";
 import DashboardHeader from "./DashboardHeaderBlock";
 
 
-
 const FavoriteListings = () => {
   const { user, access_token } = useRecoilValue(authState) ?? {};
   const API_BASE = useRecoilValue(apiBaseUrlState);
@@ -208,9 +207,20 @@ const cimTemplate = (rowData) => (
 
         {/* <Column field="revenue" header="Revenue" /> */}
         <Column field="askingPrice" header="Asking Price" />
-        <Column header="Action" body={(row)=> (<> <div className="action__listing_btns"><Link to={`/user/single-listing/${row?._id}`} className="flex gap-4 "><i
-        className="pi pi-eye cursor-pointer text-blue-500 hover:text-blue-700"
-      ></i></Link></div></>)} />
+        <Column header="Action" body={(row)=> (<> <div className="action__recent_view">
+               <Link to={`/user/single-listing/${row._id}`} className="flex gap-4">
+                  <i
+                    className="pi pi-eye cursor-pointer text-blue-500 hover:text-blue-700"
+                  ></i>
+                  </Link>
+              <Button
+                icon="pi pi-trash"
+                className="button__remove_listing_fav"
+                onClick={() => removeFavorite(row._favId)}
+                data-pr-tooltip="Remove" // tooltip text
+              />
+              <Tooltip target=".button__remove_listing_fav" position="top" />
+             </div></>)} />
       </DataTable>
           </div>
    </>

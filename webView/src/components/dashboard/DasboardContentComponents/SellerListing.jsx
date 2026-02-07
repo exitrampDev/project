@@ -170,7 +170,7 @@ businessCity: "",
 businessState: "",
 businessCountry: "",
 businessZipCode: "",
-yearStablished: "",
+yearStablished: 0,
 reasonForSelling: "",
 isFranchise: "",
 isRelocatable:"" ,
@@ -341,7 +341,7 @@ businessCity: "",
 businessState: "",
 businessCountry: "",
 businessZipCode:"",
-yearStablished: 1900,
+yearStablished: 0,
 reasonForSelling: "",
 isFranchise: "",
 isRelocatable: "",
@@ -1643,9 +1643,7 @@ impact the confidentiality of your sale.</em>
     currency="USD"
     minFractionDigits={0}
   maxFractionDigits={0}
-   className={
-    checkingError && newListing.cashFlow === 0 ? "p-invalid" : ""
-  }
+  
         />
       </div>
 

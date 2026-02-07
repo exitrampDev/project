@@ -9,6 +9,7 @@ import { authState,apiBaseUrlState } from "../../../recoil/ctaState";
 import { useRecoilValue } from "recoil";
 import { Tooltip } from "primereact/tooltip";
 import DashboardHeader from "./DashboardHeaderBlock";
+import { Link } from "react-router-dom";
 
 const RecentViewListing = () => {
   const { user, access_token } = useRecoilValue(authState) ?? {};
@@ -89,6 +90,12 @@ const RecentViewListing = () => {
   const cimTemplate = () => <button className="cim-btn">View CIM</button>;
   const actionTemplate = (rowData) => (
     <>
+     <div className="action__recent_view">
+       <Link to={`/user/single-listing/${rowData._id}`} className="flex gap-4">
+          <i
+            className="pi pi-eye cursor-pointer text-blue-500 hover:text-blue-700"
+          ></i>
+          </Link>
       <Button
         icon="pi pi-trash"
         className="button__remove_listing_fav"
@@ -96,6 +103,7 @@ const RecentViewListing = () => {
         data-pr-tooltip="Remove" // tooltip text
       />
       <Tooltip target=".button__remove_listing_fav" position="top" />
+     </div>
     </>
   );
   const moneyTemplate = (value) =>
