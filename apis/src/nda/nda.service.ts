@@ -243,7 +243,7 @@ export class NdaService {
     const sortOrder = order === 'desc' ? -1 : 1;
 
     // Sirf current user ka data
-    const matchFilter: any = { businessOwnerId: userId, businessId: businessId };
+    const matchFilter: any = { businessOwnerId: userId };
 
     if (ndaStatus) matchFilter.status = ndaStatus;
     if (cimStatus) matchFilter.cimAccess = cimStatus;
