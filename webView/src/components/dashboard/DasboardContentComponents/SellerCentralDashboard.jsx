@@ -177,8 +177,7 @@ const saveIndustryTemplate = (indusValue) => (JSON.parse(Object(indusValue?.indu
           👋 Welcome, {user?.first_name} {user?.last_name}
         </h4>
         <p>
-          You're browsing as a Free Buyer. Save listings, submit NDAs, and explore
-          Exit Ramp deals.
+          Let’s get your business listing published and connect with qualified buyers.
         </p>
       </div>
 

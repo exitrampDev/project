@@ -93,9 +93,7 @@ const FreeSellerDashboard = () => {
           👋 Welcome, {user.first_name} {user.last_name}
         </h4> 
         <p>
-          You're browsing as a Free Buyer. Save listings, submit NDAs, and
-          explore Exit Ramp deals. To unlock CIMs and direct seller access,
-          upgrade anytime.
+          Let’s get your business listing published and connect with qualified buyers.
         </p>
       </div>
       <div className="dashboard__container_main_buyer_free">
