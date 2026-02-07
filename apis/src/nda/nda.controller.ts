@@ -33,7 +33,8 @@ export class NdaController {
   }
   ///////
   @UseGuards(JwtAuthGuard)
-  @Get('owner-submissions/:businessId')
+  // @Get('owner-submissions/:businessId')
+  @Get('owner-submissions')
   async findAllForOwner(
     @Query() query: QueryNdaDto,
     @Req() req: any,
