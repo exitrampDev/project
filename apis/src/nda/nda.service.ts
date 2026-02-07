@@ -287,7 +287,7 @@ export class NdaService {
           let: { businessIdObj: { $toObjectId: "$businessId" } },
           pipeline: [
             { $match: { $expr: { $eq: ["$_id", "$$businessIdObj"] } } },
-            { $project: { businessName: 1, businessType: 1 } }
+            { $project: { listingTitle: 1, businessType: 1 } }
           ],
           as: 'business'
         }
