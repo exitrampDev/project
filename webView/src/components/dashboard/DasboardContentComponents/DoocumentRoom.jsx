@@ -79,7 +79,7 @@ const DocumentRoom = () => {
     const fetchSubmissions = async () => {
       if (!access_token) return;
       try {
-        const res = await axios.get(`${API_BASE}/nda/owner-submissions/${id}`, {
+        const res = await axios.get(`${API_BASE}/nda/owner-submissions-doc-room/${id}`, {
           headers: { Authorization: `Bearer ${access_token}` },
         });
         setSubmissions(res?.data?.data || []);
@@ -219,6 +219,9 @@ const DocumentRoom = () => {
       });
   }, [files, searchText, category, uploadedOn, size]);
 
+
+
+
   // -------------------------------------------------------------------
   // TABLE RENDERERS
   // -------------------------------------------------------------------
@@ -308,6 +311,8 @@ const DocumentRoom = () => {
       </div>
 
       {/* ACCESS CONTROL */}
+      {user.user_type !== "buyer_basic" && (
+        
       <div className="docRoom_data_table_access_files_wrap">
         <h3 className="docRoom_data_table_access_files_title">File Access Control</h3>
 
@@ -330,6 +335,8 @@ const DocumentRoom = () => {
           </DataTable>
         </div>
       </div>
+
+      )}
     </div>
   );
 };
