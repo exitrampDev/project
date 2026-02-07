@@ -330,7 +330,7 @@ export class NdaService {
           docRoomAccess:1,
           buyerSignature:1,
           sellerSignature:1,
-          businessName: { $ifNull: ['$business.businessName', 'N/A'] },
+          listingTitle: { $ifNull: ['$business.listingTitle', 'N/A'] },
           businessType: { $ifNull: ['$business.businessType', 'N/A'] },
           ndaStatus: '$status',
           cimAccess: 1,
