@@ -45,6 +45,19 @@ export class NdaController {
   return this.ndaService.findAllForOwner(query, ownerId, businessId);
   }
 
+    @UseGuards(JwtAuthGuard)
+  // @Get('owner-submissions/:businessId')
+  @Get('owner-submissions-doc-room/:businessId')
+  async findAllForOwnerDoc(
+    @Query() query: QueryNdaDto,
+    @Req() req: any,
+    @Param('businessId') businessId: string
+  ) {
+    
+  const ownerId: string = req.user.userId;
+  return this.ndaService.findAllForOwnerDoc(query, ownerId, businessId);
+  }
+
   //reject ka kaam hai 
    @UseGuards(JwtAuthGuard) // JWT guard add karein
     @Patch('reject')
