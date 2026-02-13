@@ -10,6 +10,12 @@ export enum PaymentStatus {
   REFUNDED = 'REFUNDED',
 }
 
+export enum RefundStatus {
+  PENDING = 'PENDING',
+  APPROVED = 'APPROVED',
+  REJECTED = 'REJECTED',
+}
+
 export enum PaymentPurpose {
   BUSINESS_CREATION = 'BUSINESS_CREATION',
   BUSINESS_RENEWAL = 'BUSINESS_RENEWAL',
@@ -48,6 +54,23 @@ export class Payment {
 
   @Prop({ type: Date })
   paidAt?: Date;
+
+  // -----------------------------------------Refund Fields-----------------------------------------
+  @Prop({ required: true, default: "" })
+  refundReason: string;
+
+  @Prop({ type: String, enum: RefundStatus, default: null })
+  refundStatus: RefundStatus;
+
+  @Prop({ type: Date })
+  refundRequestedAt: Date;
+
+  @Prop({ type: Date })
+  refundResolvedAt?: Date;
+
+  @Prop({ type: String })
+  refundRejectionReason?: string;
+
 }
 
 export const PaymentSchema = SchemaFactory.createForClass(Payment);

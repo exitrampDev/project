@@ -8,15 +8,17 @@ import { PaymentWebhookService } from './payment-webhook.service';
 import { BusinessListingService } from 'src/business-listing/business-listing.service';
 import { BusinessListingModule } from 'src/business-listing/business-listing.module';
 import { UsersModule } from 'src/users/users.module';
+import { SharedModule } from 'src/common/shared.module';
 
 @Module({
   imports:[
      MongooseModule.forFeature([{ name : Payment.name, schema : PaymentSchema }]),
      BusinessListingModule,
-     UsersModule
+     UsersModule,
+     SharedModule
   ],
   controllers: [PaymentController],
   providers: [PaymentService, PaymentWebhookService, BusinessListingService],
-  exports:[ PaymentService ],
+  exports:[ PaymentService, MongooseModule ],
 })
 export class PaymentModule {}

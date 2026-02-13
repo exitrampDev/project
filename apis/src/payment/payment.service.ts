@@ -1,10 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import axios from 'axios';
 import * as qs from 'qs';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { Model, Types } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
-import { Payment, PaymentDocument } from './schemas/payment.schema';
+import { Payment, PaymentDocument, RefundStatus } from './schemas/payment.schema';
 import { ApiFeatures } from 'src/common/utils/api-features';
 import { QuerySellerDto } from 'src/free-seller/dto/query-seller.dto';
 import { QueryPaymentDto } from './dto/query-payment.dto';
@@ -266,6 +266,53 @@ async chargeUserOffSessionREST(
 
     throw new Error(stripeError?.message || 'Stripe charge failed');
   }
+}
+
+async createRefundRequest(
+  paymentId: string,
+  userId: Types.ObjectId,
+  reason: string,
+) {
+  console.log('Creating refund request for paymentId:', paymentId, 'userId:', userId);
+  const payment = await this.paymentModel.findOne({
+    _id: paymentId,
+    userId,
+  });
+
+  if (!payment) {
+    throw new NotFoundException('Payment not found or access denied');
+  }
+
+  
+  if (payment.refundStatus != null) {
+    throw new ConflictException(
+      `A refund request for this payment already exists with status "${payment.refundStatus}"`,
+    );
+  }
+
+  // prevent duplicate refund requests
+  // const existingRequest = await this.paymentModel.findOne({
+  //   _id: payment._id,
+  //   refundStatus: { $ne: RefundStatus.REJECTED },
+  // });
+
+  // if (existingRequest) {
+  //   throw new ConflictException(
+  //     'A refund request for this payment already exists',
+  //   );
+  // }
+
+  const refundRequest = await this.paymentModel.findByIdAndUpdate(
+    payment._id,
+    {
+      refundReason: reason,
+      refundStatus: RefundStatus.PENDING,
+      refundRequestedAt: new Date(),
+    },
+    { new: true }
+  );
+  
+  return refundRequest;
 }
 
 

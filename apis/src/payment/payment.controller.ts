@@ -10,6 +10,7 @@ import { User } from 'src/common/decorators/user.decorator';
 import { QueryPaymentDto } from './dto/query-payment.dto';
 import { BusinessListingService } from 'src/business-listing/business-listing.service';
 import { UsersService } from 'src/users/users.service';
+import { RefundRequestDto } from './dto/refund-request.dto';
 @Controller('payment')
 export class PaymentController {
   private readonly webhookSecret = <string> process.env.STRIPE_WEBHOOK_SECRET;
@@ -291,4 +292,14 @@ export class PaymentController {
   // Use timing-safe comparison
   return crypto.timingSafeEqual(Buffer.from(computedSig), Buffer.from(v1));
 }
+// -------------------------------------
+@Post('refund-request')
+@UseGuards(JwtAuthGuard)
+async requestRefund(@Body() dto: RefundRequestDto, @User() user: any) {
+  const userId = new Types.ObjectId(user.userId);
+  const paymentId = dto.paymentId;
+  const reason = dto.reason;
+  return this.paymentsService.createRefundRequest(paymentId, userId, reason);
+}
+
 }
