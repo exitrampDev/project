@@ -11,6 +11,7 @@ import { QueryPaymentDto } from './dto/query-payment.dto';
 import { BusinessListingService } from 'src/business-listing/business-listing.service';
 import { UsersService } from 'src/users/users.service';
 import { RefundRequestDto } from './dto/refund-request.dto';
+import { RefundApproveDto } from './dto/refund-approve.dto';
 @Controller('payment')
 export class PaymentController {
   private readonly webhookSecret = <string> process.env.STRIPE_WEBHOOK_SECRET;
@@ -254,6 +255,15 @@ export class PaymentController {
     return this.paymentsService.findAll(query);
   }
 
+  @Get('all-refund-requests')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  async getAllRefundRequests(@Req() req: any, @Query() query: any) {
+    console.log("JWT payload:", req.user);  // ab show hoga
+
+    return this.paymentsService.findAllRefundRequests(query);
+  }
+
   //get id
   @Get(':id')
   @UseGuards(JwtAuthGuard)
@@ -300,6 +310,26 @@ async requestRefund(@Body() dto: RefundRequestDto, @User() user: any) {
   const paymentId = dto.paymentId;
   const reason = dto.reason;
   return this.paymentsService.createRefundRequest(paymentId, userId, reason);
+}
+
+@Post('refund-approve')
+@UseGuards(JwtAuthGuard)
+async approveRefund(@Body() dto: RefundApproveDto, @User() user: any) {
+  const userId = new Types.ObjectId(user.userId);
+  const paymentId = dto.paymentId;
+  const commentByAdmin  = dto.commentByAdmin;
+  
+  return this.paymentsService.approveRefund(paymentId, userId, commentByAdmin);
+}
+
+@Post('refund-reject')
+@UseGuards(JwtAuthGuard)
+async rejectRefund(@Body() dto: RefundApproveDto, @User() user: any) {
+  const userId = new Types.ObjectId(user.userId);
+  const paymentId = dto.paymentId;
+  const commentByAdmin  = dto.commentByAdmin;
+  
+  return this.paymentsService.rejectRefund(paymentId, userId, commentByAdmin);
 }
 
 }

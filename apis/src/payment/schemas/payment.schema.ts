@@ -69,7 +69,7 @@ export class Payment {
   refundResolvedAt?: Date;
 
   @Prop({ type: String })
-  refundRejectionReason?: string;
+  refundCommentByAdmin?: string;
 
 }
 

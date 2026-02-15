@@ -223,6 +223,41 @@ export class PaymentService {
   };
 }
 
+  //admin get all apyments
+  async findAllRefundRequests(query: QueryPaymentDto, user?: any) {
+  const { page = 1, limit = 10000, search } = query;
+  const skip = (page - 1) * limit;
+
+  const baseFilter: any = {"refundStatus": { $ne: null } };
+
+  if (search) {
+    baseFilter['$or'] = [
+      { transactionId: new RegExp(search, 'i') },
+      { message: new RegExp(search, 'i') },
+    ];
+  }
+
+  const payments = await this.paymentModel.find(baseFilter)
+    .populate('userId')       
+    .populate({ 
+      path: 'referenceId',       
+      model: 'Business',
+      select: 'businessName businessType listingTitle listingDescription'
+    })
+    .skip(skip)
+    .limit(limit)
+    .sort({ createdAt: -1 });
+
+  const total = await this.paymentModel.countDocuments(baseFilter);
+
+  return {
+    total,
+    page,
+    limit,
+    data: payments
+  };
+}
+
 // -----------------------------------------
 async chargeUserOffSessionREST(
   stripe_customer_id: string,
@@ -290,17 +325,6 @@ async createRefundRequest(
     );
   }
 
-  // prevent duplicate refund requests
-  // const existingRequest = await this.paymentModel.findOne({
-  //   _id: payment._id,
-  //   refundStatus: { $ne: RefundStatus.REJECTED },
-  // });
-
-  // if (existingRequest) {
-  //   throw new ConflictException(
-  //     'A refund request for this payment already exists',
-  //   );
-  // }
 
   const refundRequest = await this.paymentModel.findByIdAndUpdate(
     payment._id,
@@ -315,5 +339,65 @@ async createRefundRequest(
   return refundRequest;
 }
 
+async approveRefund(
+  paymentId: string,
+  userId: Types.ObjectId,
+  commentByAdmin: string,
+) {
+  console.log('Approving refund for paymentId:', paymentId, 'userId:', userId);
+  const payment = await this.paymentModel.findOne({
+    _id: paymentId,    
+  });
 
+  if (!payment) {
+    throw new NotFoundException('Payment not found or access denied');
+  }
+
+  if (payment.refundStatus !== RefundStatus.PENDING) {
+    throw new ConflictException(
+      `This payment's refund status is "${payment.refundStatus}", not "PENDING"`,
+    );
+  }
+
+  return this.paymentModel.findByIdAndUpdate(
+    payment._id,
+    {
+      refundStatus: RefundStatus.APPROVED,
+      refundResolvedAt: new Date(),
+      refundCommentByAdmin: commentByAdmin,
+    },
+    { new: true }
+  );
+}
+
+async rejectRefund(
+  paymentId: string,
+  userId: Types.ObjectId,
+  commentByAdmin: string,
+) {
+  console.log('Rejecting refund for paymentId:', paymentId, 'userId:', userId);
+  const payment = await this.paymentModel.findOne({
+    _id: paymentId,    
+  });
+
+  if (!payment) {
+    throw new NotFoundException('Payment not found or access denied');
+  }
+
+  if (payment.refundStatus !== RefundStatus.PENDING) {
+    throw new ConflictException(
+      `This payment's refund status is "${payment.refundStatus}", not "PENDING"`,
+    );
+  }
+
+  return this.paymentModel.findByIdAndUpdate(
+    payment._id,
+    {
+      refundStatus: RefundStatus.REJECTED,
+      refundResolvedAt: new Date(),
+      refundCommentByAdmin: commentByAdmin,
+    },
+    { new: true }
+  );
+}
 }

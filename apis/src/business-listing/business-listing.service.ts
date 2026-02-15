@@ -484,4 +484,7 @@ async attachFile(businessId: string, fileUrl: string, fileType: string = 'profit
   async getAllBusinessesTotal() {
     return await this.businessModel.countDocuments({ isDeleted: false });
   }
+   async getAllLiveBusinessesTotal() {
+    return await this.businessModel.countDocuments({ isDeleted: false, status: BusinessStatus.LIVE });
+  }
 }
