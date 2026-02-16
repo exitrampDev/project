@@ -5,6 +5,7 @@ const FileUploader = ({
   label = "Upload File",
   accept = "image/*,.pdf",
   maxSizeMB = 5,
+  fileName = "file",
   onFileSelect,
   existingFileUrl, // new prop
 }) => {
@@ -54,7 +55,6 @@ const FileUploader = ({
     setFile(null);
     inputRef.current.value = "";
   };
-
   return (
     <div className="file-uploader">
 
@@ -78,19 +78,31 @@ const FileUploader = ({
           </div>
         ) : (
           <div className="file-preview">
-            {file ? (
-              file.type.startsWith("image") ? (
-                <img src={URL.createObjectURL(file)} alt="preview" />
-              ) : (
-                <span>{file.name}</span>
-              )
-            ) : (
-              // Show existing file link or preview
-              <img src={existingFileUrl} />
-              
-            )}
-            <button onClick={removeFile}>✕</button>
-          </div>
+  {file ? (
+    file.type.startsWith("image/") ? (
+      <img src={URL.createObjectURL(file)} alt="preview" />
+    ) : file.type === "application/pdf" ? (
+      <>
+        📄 {file.name}
+      </>
+    ) : (
+      <span>{file.name}</span>
+    )
+  ) : existingFileUrl ? (
+    existingFileUrl.startsWith("data:application/pdf") ? (
+      <>
+        📄 {fileName}
+      </>
+    ) : (
+      <img src={existingFileUrl} alt={fileName} />
+    )
+  ) : null}
+
+  <button type="button" onClick={removeFile}>
+    ✕
+  </button>
+</div>
+
         )}
       </div>
 

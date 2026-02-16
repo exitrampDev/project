@@ -16,6 +16,7 @@ import {
 } from "../../../recoil/ctaState";
 
 import DashboardHeader from "./DashboardHeaderBlock";
+import FileUploader from "../../customcomponent/FileUploader";
 
 const FreeBuyerForm = () => {
   const toast = useRef(null);
@@ -72,7 +73,7 @@ const FreeBuyerForm = () => {
      FETCH PROFILE
   ============================ */
    useEffect(() => {
-    console.log("Form Data Updated:", formData);
+   
 
    }, [formData]);
   useEffect(() => {
@@ -109,8 +110,8 @@ const FreeBuyerForm = () => {
               data.profile?.financial_verification || "",
             background: data.profile?.background || "",
             nda_willing: data.profile?.nda_willing || "",
+            verification_file: data?.profile?.verification_file || "",
           },
-          verification_file: null,
         });
       } catch (err) {
         console.error("Failed to fetch buyer profile", err);
@@ -131,7 +132,6 @@ const FreeBuyerForm = () => {
   };
 
   const updateProfile = (key, value) => {
-    console.log("Updating profile key:", key, "with value:", value);
     setFormData((prev) => ({
       ...prev,
       profile: { ...prev.profile, [key]: value },
@@ -153,10 +153,9 @@ const FreeBuyerForm = () => {
     Object.entries(formData.profile).forEach(([key, value]) => {
       fd.append(`profile[${key}]`, value ?? "");
     });
-
-    if (formData.verification_file) {
-      fd.append("verification_file", formData.verification_file);
-    }
+    // if (formData.verification_file) {
+    //   fd.append("verification_file", formData.verification_file);
+    // }
 
     return fd;
   };
@@ -165,6 +164,7 @@ const FreeBuyerForm = () => {
      SUBMIT
   ============================ */
   const handleSubmit = async (e) => {
+
     e.preventDefault();
 
     try {
@@ -198,7 +198,31 @@ const FreeBuyerForm = () => {
     }
   };
 
+  
+
   if (loading) return <p>Loading...</p>;
+
+const handleImageSelect = (file) => {
+  const reader = new FileReader();
+
+  reader.onloadend = () => {
+    const base64 = reader.result;
+
+    setFormData((prev) => ({
+      ...prev,
+      profile: {
+        ...prev.profile,
+        verification_file: base64,
+      },
+    }));
+
+    setDirty(true);
+  };
+
+  reader.readAsDataURL(file);
+};
+
+
 
   /* ===========================
      RENDER
@@ -250,7 +274,7 @@ const FreeBuyerForm = () => {
             <label>Phone</label>
             <InputMask
               mask="(999) 999-9999"
-              value={formData.profile.phone}
+              value={formData.profile?.phone}
               onChange={(e) =>
                 updateProfile("phone", e.target.value)
               }
@@ -262,7 +286,7 @@ const FreeBuyerForm = () => {
             <label>Investment Budget</label>
             <InputText
               keyfilter="int"
-              value={formData.profile.investment_budget}
+              value={formData.profile?.investment_budget}
               onChange={(e) =>
                 updateProfile("investment_budget", e.target.value)
               }
@@ -273,7 +297,7 @@ const FreeBuyerForm = () => {
           <div className="field form__field_col">
             <label>Industry of Interest</label>
             <Dropdown
-              value={formData.profile.industry}
+              value={formData.profile?.industry}
               options={industryList}
               optionLabel="label"
               optionValue="value"
@@ -287,7 +311,7 @@ const FreeBuyerForm = () => {
           <div className="field form__field_col">
             <label>Region of Interest</label>
             <Dropdown
-              value={formData.profile.region}
+              value={formData.profile?.region}
               options={usStatesList}
               optionLabel="label"
               optionValue="value"
@@ -301,7 +325,7 @@ const FreeBuyerForm = () => {
           <div className="field form__field_col">
             <label>Business Type Preferred</label>
             <InputText
-              value={formData.profile.business_type_preferred}
+              value={formData.profile?.business_type_preferred}
               onChange={(e) =>
                 updateProfile(
                   "business_type_preferred",
@@ -315,7 +339,7 @@ const FreeBuyerForm = () => {
           <div className="field form__field_col">
             <label>Acquisition Timeframe</label>
             <Dropdown
-              value={formData.profile.timeline}
+              value={formData.profile?.timeline}
               options={acquisitionOptions}
               onChange={(e) =>
                 updateProfile("timeline", e.value)
@@ -327,7 +351,7 @@ const FreeBuyerForm = () => {
           <div className="field form__field_col">
             <label>Financial Verification</label>
             <Dropdown
-              value={formData.profile.financial_verification}
+              value={formData.profile?.financial_verification}
               options={yesNoOptions}
               onChange={(e) =>
                 updateProfile(
@@ -339,10 +363,17 @@ const FreeBuyerForm = () => {
           </div>
 
           {/* Upload */}
-          {formData.profile.financial_verification === "yes" && (
+          {formData.profile?.financial_verification === "yes" && (
             <div className="field form__field_col">
               <label>Upload Verification (PDF)</label>
-              <input
+              <FileUploader
+              accept=".pdf"
+              fileName="Verification file"
+              maxSizeMB={0.5}
+              existingFileUrl={formData.profile?.verification_file || "dss"}
+              onFileSelect={handleImageSelect}
+            />
+              {/* <input
                 type="file"
                 accept="application/pdf"
                 onChange={(e) =>
@@ -351,7 +382,7 @@ const FreeBuyerForm = () => {
                     verification_file: e.target.files[0],
                   }))
                 }
-              />
+              /> */}
             </div>
           )}
 
@@ -361,7 +392,7 @@ const FreeBuyerForm = () => {
             <InputTextarea
               rows={3}
               autoResize
-              value={formData.profile.background}
+              value={formData.profile?.background}
               onChange={(e) =>
                 updateProfile("background", e.target.value)
               }

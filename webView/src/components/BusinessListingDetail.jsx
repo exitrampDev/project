@@ -129,8 +129,18 @@ useEffect(() => {
   if (loading) return <ProgressSpinner />;
   if (!business) return <p>Business not found</p>;
 
+const renderMoney = (value) => {
+  if (value === "" || value === null || value === undefined || value === 0) return "-";
+  return `$${value}`;
+};
 
-
+const renderYesNo = (value) => {
+  if (value === "" || value === null || value === undefined) return "-";
+  if (value === true || value === "true") return "Yes";
+  if (value === false || value === "false") return "No";
+  return "-";
+};
+console.log("Business owner data>>>>>", business?.ownerId);
 const allowedImages = [
   "listingImage1",
   "listingImage2",
@@ -447,25 +457,44 @@ const markFlag = async () => {
     __html: business.listingDescription,
   }}
 />
-                 <div className="about_listing_toggle">
-                   <div className="about_listing_toggle_item"><strong>Franchies:</strong> {business?.isFranchise ? "Yes" : "No"}</div>
-                   <div className="about_listing_toggle_item"><strong>Relocate:</strong>{business?.isRelocatable ? "Yes" : "No"}</div>
-                   <div className="about_listing_toggle_item"><strong>Startup:</strong>{business?.isStartup ? "Yes" : "No"}</div>
-                 </div>
-               </div>
+                    <div className="about_listing_toggle">
+                      <div className="about_listing_toggle_item"><strong>Franchise:</strong> {business?.isFranchise? business?.isFranchise : "-" }</div>
+                      <div className="about_listing_toggle_item"><strong>Relocate:</strong>{business?.isRelocatable? business?.isRelocatable : "-"}</div>
+                      <div className="about_listing_toggle_item"><strong>Startup:</strong>{business?.isStartup? business?.isStartup : "-"}</div>
+                    </div>
+                  </div>
        
        
-                <div className="business__list_single_description_row">
-                 <h3>Addtiional Financial Details</h3>
-                 <div className="about_listing_toggle">
-                   <div className="about_listing_toggle_item"><strong>Real Estate:</strong> {business?.realEstateValue ? (<>${business?.realEstateValue}</>) : "-"}</div>
-                   <div className="about_listing_toggle_item"><strong>Real Estate Included:</strong>{business?.propertyIncludedinAskingPrice ? "Yes" : "No"}</div>
-                   <div className="about_listing_toggle_item"><strong>ffEValue:</strong>{business?.ffEValue ? (<>${business?.ffEValue}</>) : "-"}</div>
-                   <div className="about_listing_toggle_item"><strong>FFE Include:</strong>{business?.ffEValueIncludeinAskingPrice ? "Yes" : "No"}</div>
-                   <div className="about_listing_toggle_item"><strong>Inventory Value:</strong>{business?.inventoryValue ? (<>${business?.inventoryValue}</>) : "-"}</div>
-                   <div className="about_listing_toggle_item"><strong>Inventory Included: </strong>{business?.inventoryIncludedinAskingPrice ? "Yes" : "No"}</div>
-                 </div>  
-               </div>
+                  <div className="business__list_single_description_row">
+          <h3>Additional Financial Details</h3>
+          <div className="about_listing_toggle">
+              <div className="about_listing_toggle_item">
+                <strong>Real Estate:</strong> {renderMoney(business?.realEstateValue)}
+              </div>
+
+              <div className="about_listing_toggle_item">
+                <strong>Real Estate Included:</strong> {renderYesNo(business?.propertyIncludedinAskingPrice)}
+              </div>
+
+              <div className="about_listing_toggle_item">
+                <strong>FFE Value:</strong> {renderMoney(business?.ffEValue)}
+              </div>
+
+              <div className="about_listing_toggle_item">
+                <strong>FFE Include:</strong> {renderYesNo(business?.ffEValueIncludeinAskingPrice)}
+              </div>
+
+              <div className="about_listing_toggle_item">
+                <strong>Inventory Value:</strong> {renderMoney(business?.inventoryValue)}
+              </div>
+
+              <div className="about_listing_toggle_item">
+                <strong>Inventory Included:</strong> {renderYesNo(business?.inventoryIncluded)}
+              </div>
+            </div>
+ 
+        </div>
+
        
        
                <div className="business__list_single_key_highlights_Business_overview">
@@ -494,7 +523,7 @@ const markFlag = async () => {
                      <strong>Number of Employees:</strong>{business?.numberOfEmployees ? (<>{business.numberOfEmployees}</>) : "-" } 
                    </div>
                    <div className="business_list_single_overview_list">
-                     <strong>Lease Expiration:</strong>{business?.leaseExpiration ? (<>{business.leaseExpiration}</>) : "-" } 
+                     <strong>Lease Expiration:</strong>{business?.leaseExpiration ? (<>{new Date(business?.leaseExpiration).toLocaleDateString()}</>) : "-" } 
                    </div>
                    <div className="business_list_single_overview_list">
                      <strong>Building SF:</strong>{business?.buildingSF ? (<>{business.buildingSF}</>) : "-" } 
@@ -528,26 +557,55 @@ const markFlag = async () => {
                </div>
 
 
-              <div className="business__list_single_key_highlights_Business_overview">
+{business?.showContactOnListing && (<>
+
+              <div className="business__list_single_key_highlights_Business_overview_owner_details">
               <div className="business__list_single_business_overview">
                 <h3 className="m-b-10">Owner Contact Details</h3>
+                {business?.ownerId?.profile?.brokerProfileImage && (
+
+                  <>
+                  <div className="business_list_single_overview_list"><img src={business?.ownerId?.profile?.brokerProfileImage? business?.ownerId?.profile?.brokerProfileImage : ""} alt="Broker Profile Image" className="broker_profile_image" /></div>
+                  <br />
+                  </>
+                )}
+                    
                       <div className="business_list_single_overview_list"><strong>Name:</strong> {business?.ownerId?.first_name || "-"} {business?.ownerId?.last_name || "-"}</div>
                       <div className="business_list_single_overview_list"><strong>Email:</strong> {business?.ownerId?.email || "-"}</div>
+                        <div className="business_list_single_overview_list"><strong>Phone:</strong> {business?.ownerId?.profile?.phone_number || "-"}</div>
                       <div className="business_list_single_overview_list"><strong>Company:</strong> {business?.ownerId?.profile?.company || "-"}</div>
-                      <div className="business_list_single_overview_list"><strong>Website:</strong>{" "}
+
+                    {business?.ownerId?.profile?.logo && (
+
+                      <>
+                      <div className="business_list_single_overview_list"><strong>Logo:</strong>  <img src={business?.ownerId?.profile?.logo? business?.ownerId?.profile?.logo : ""} alt="Broker Profile Image" className="broker_logo_image" /></div>
+                      <br />
+                      </>
+
+                    )}
+                      
+
+                      {/* <div className="business_list_single_overview_list">
                         {business?.ownerId?.profile?.website ? (
                           <a href={business?.ownerId?.profile?.website} target="_blank" rel="noopener noreferrer">
                             {business?.ownerId?.profile?.website}
                           </a>
                         ) : "-"}
-                      </div>
-                      <div className="business_list_single_overview_list"><strong>Overview:</strong> {business?.ownerId?.profile?.overview || "-"}</div>
-                      <div className="business_list_single_overview_list"><strong>Phone:</strong> {business?.ownerId?.profile?.phone_number || "-"}</div>
-                      <div className="business_list_single_overview_list"><strong>State:</strong> {business?.ownerId?.profile?.state || "-"}</div>
-                      <div className="business_list_single_overview_list"><strong>Zip Code:</strong> {business?.ownerId?.profile?.zip_code || business?.ownerId?.profile?.zipCode || "-"}</div>
+                      </div> */}
+                      <div className="business_list_single_overview_list overview__about_user_wrap">
+                            <strong>Overview:</strong>{" "}
+                            <span className="overview__about_user"
+                              dangerouslySetInnerHTML={{
+                                __html: business?.ownerId?.profile?.overview || "-",
+                              }}
+                            />
+                          </div>
+
                     </div>
               
             </div>
+</>)}
+
 
 
 

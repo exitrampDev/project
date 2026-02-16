@@ -583,7 +583,7 @@ useEffect(() => {
             currentPageData.map((listing) => (
               <li key={listing._id} className="list__row_item">
                 <span className="listing__info_left_content">
-                  <Link to={`/listing/${listing._id}`} className="flex gap-4">
+                  <Link to={`/listing/${listing._id}`} className="listing__info_left_content_name_link">
                   <span className="list__image_col">
                     <img
                       alt={listing.listingTitle}
@@ -628,7 +628,24 @@ useEffect(() => {
                       })()}
                     </p>
 
-                    <div className="list__content_prices">
+                   
+                  </span>
+                </Link>
+                 <Link to={`/listing/${listing._id}`} className="list_content_col_listing_des_text_wrap">
+                 <h2 className="listing__main_des">Listing Description:</h2>
+                     <span className="list_content_col_listing_des_text">
+                              {(
+                                listing?.listingDescription?.replace(/<[^>]*>/g, "") || "-"
+                              ).slice(0, 200)}
+                              {((listing?.listingDescription?.replace(/<[^>]*>/g, "") || "").length > 3)
+                                ? "..."
+                                : ""}
+                            </span>
+</Link>
+                </span>
+                <span  className="list_content_col_listing_des">
+                
+ <div className="list__content_prices">
                       <span>
                         <b>Asking Price</b>: ${listing.askingPrice}
                       </span>
@@ -639,22 +656,6 @@ useEffect(() => {
                         <b>Cash Flow</b>: ${listing.cashFlow}
                       </span>
                     </div>
-                  </span>
-                </Link>
-                </span>
-                <span  className="list_content_col_listing_des">
-                 <Link to={`/listing/${listing._id}`} className="list_content_col_listing_des_text_wrap">
-                 <h2>Listing Description:</h2>
-                     <span className="list_content_col_listing_des_text">
-                              {(
-                                listing?.listingDescription?.replace(/<[^>]*>/g, "") || "-"
-                              ).slice(0, 200)}
-                              {((listing?.listingDescription?.replace(/<[^>]*>/g, "") || "").length > 3)
-                                ? "..."
-                                : ""}
-                            </span>
-</Link>
-
                 </span>
 
                 <div className="list__actions">{saveListingBtn(listing._id)}</div>

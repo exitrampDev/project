@@ -12,10 +12,18 @@ import SellerCentralDasboard from "./DasboardContentComponents/SellerCentralDash
 
 const DashboardContent = () => {
   const user = useRecoilValue(authState).user;
-
+const dashboardHeadingMap = {
+  buyer_basic: "Buyer Dashboard",
+  seller_basic: "Seller Dashboard",
+  seller_listing: "Seller Dashboard",
+  seller_central: "Seller Dashboard",
+  seller_broker: "Broker Dashboard",
+  seller_individual: "Individual Seller Dashboard",
+  admin: "Admin Dashboard",
+};
   return (
     <>
-      <DashboardHeader headingData={`${user.user_type} Dashboard`}/>
+      <DashboardHeader headingData={dashboardHeadingMap[user?.user_type] || "Dashboard"} />
       {user?.user_type === "buyer_basic" ? <FreeBuyerDashboard /> : " "}
       {user?.user_type === "seller_basic" ? <FreeSellerDashboard /> : " "}
       {user?.user_type === "seller_listing" ? <SellerCentralDasboard /> : " "}

@@ -130,7 +130,7 @@ const renderYesNo = (value) => {
     };
 
     fetchData();
-  }, [id]);
+  }, [id,showNDA]);
 
   if (loading) return <ProgressSpinner />;
   if (!business) return <p>Business not found</p>;
@@ -271,7 +271,7 @@ const renderYesNo = (value) => {
 />
 
           <div className="about_listing_toggle">
-            <div className="about_listing_toggle_item"><strong>Franchies:</strong> {business?.isFranchise? business?.isFranchise : "-" }</div>
+            <div className="about_listing_toggle_item"><strong>Franchise:</strong> {business?.isFranchise? business?.isFranchise : "-" }</div>
             <div className="about_listing_toggle_item"><strong>Relocate:</strong>{business?.isRelocatable? business?.isRelocatable : "-"}</div>
             <div className="about_listing_toggle_item"><strong>Startup:</strong>{business?.isStartup? business?.isStartup : "-"}</div>
           </div>
@@ -279,7 +279,7 @@ const renderYesNo = (value) => {
 
 
          <div className="business__list_single_description_row">
-          <h3>Addtiional Financial Details</h3>
+          <h3>Additional Financial Details</h3>
           <div className="about_listing_toggle">
               <div className="about_listing_toggle_item">
                 <strong>Real Estate:</strong> {renderMoney(business?.realEstateValue)}
@@ -302,7 +302,7 @@ const renderYesNo = (value) => {
               </div>
 
               <div className="about_listing_toggle_item">
-                <strong>Inventory Included:</strong> {renderYesNo(business?.inventoryIncludedinAskingPrice)}
+                <strong>Inventory Included:</strong> {renderYesNo(business?.inventoryIncluded)}
               </div>
             </div>
  

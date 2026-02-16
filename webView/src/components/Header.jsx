@@ -51,28 +51,28 @@ const roleOptions = {
     title: "Choose Buyer Plan",
     subtitle: "Select the right plan to begin your buyer journey on Exit Ramp.",
     subOptions: [
-      // {
-      //   icon: icon5,
-      //   title: "Free Buyer Account",
-      //   description:
-      //     "Browse listings, submit NDA requests, and save favorites — all with full confidentiality and no cost.",
-      //   button: {
-      //     text: "Continue with Free Account",
-      //     link: "/register",
-      //     roleOptionValue: "buyer_basic",
-      //   },
-      // },
       {
-        icon: icon6,
-        title: "Buyer ",
+        icon: icon5,
+        title: "Free Buyer Account",
         description:
-          "Get direct access to sellers, unlock CIMs after NDA approval, and use advanced tools built for buyers.",
+          "Browse listings, submit NDA requests, and save favorites — all with full confidentiality and no cost.",
         button: {
-          text: "Register as Buyer",
+          text: "Continue with Free Account",
           link: "/register",
-          roleOptionValue: "buyer_premium",
+          roleOptionValue: "buyer_basic",
         },
       },
+      // {
+      //   icon: icon6,
+      //   title: "Buyer ",
+      //   description:
+      //     "Get direct access to sellers, unlock CIMs after NDA approval, and use advanced tools built for buyers.",
+      //   button: {
+      //     text: "Register as Buyer",
+      //     link: "/register",
+      //     roleOptionValue: "buyer_premium",
+      //   },
+      // },
     ],
   },
   seller: {
