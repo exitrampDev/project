@@ -140,7 +140,7 @@ const renderYesNo = (value) => {
   if (value === false || value === "false") return "No";
   return "-";
 };
-console.log("Business owner data>>>>>", business?.ownerId);
+// console.log("Business owner data>>>>>", business?.ownerId);
 const allowedImages = [
   "listingImage1",
   "listingImage2",

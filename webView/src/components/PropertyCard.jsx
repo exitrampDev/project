@@ -140,7 +140,7 @@ const removeFavorite = async (favoriteIdsCurrent, businessId) => {
   }, [page]);
 
   const fetchListing = () => {
-    console.log("Fetching listings with filters:", filters);
+    // console.log("Fetching listings with filters:", filters);
     const params = new URLSearchParams(
       Object.entries({
         page,

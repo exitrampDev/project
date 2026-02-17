@@ -1843,6 +1843,9 @@ button.logout-btn {
 .status__nda_submit_block.approved__nda {
     background: #22c55e;
 }
+.business__list_single_intro_block_content_col {
+    width: 100%;
+}
 .listing__filter_col .p-slider.p-component.p-slider-horizontal {
   margin-top: 10px;
   margin-bottom: 10px;
