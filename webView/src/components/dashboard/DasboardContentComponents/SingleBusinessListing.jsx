@@ -166,9 +166,14 @@ const renderYesNo = (value) => {
 
        {business?.ndas?.[0]?.status? <>
        
-       <div className="status__nda_submit_block">
+       <div
+        className={`status__nda_submit_block ${
+          business?.ndas?.[0]?.status === "approved" ? "approved__nda" : ""
+        }`}
+      >
         {business?.ndas?.[0]?.status}
-       </div>
+      </div>
+
        </>: 
 
         <Button

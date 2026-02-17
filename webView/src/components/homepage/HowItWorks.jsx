@@ -38,7 +38,7 @@ Buyers and Sellers keep your data Protected and Confidential.
               Browse & Inquire
             </div>
             <div className="HowItWorks__section_body_card_para">
-Find your connection or create a confidential listing so everyone knows about your sale or intent to aquira.              </div>
+Find your connection or create a confidential listing so everyone knows about your sale or intent to acquire.              </div>
           </div>
           <div className="HowItWorks__section_body_card step3">
             <div className="HowItWorks__section_body_card_step_tag">

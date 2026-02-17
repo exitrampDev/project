@@ -8,8 +8,7 @@ export default function HeroSec() {
         <div className="contentSecLeft">
           <h3>Confidential M&A Listings. Curated Buyers. Trusted Experts.</h3>
           <p>
-            Exit Ramp is where serious buyers and sellers connect—with private
-            listings, secure NDAs, and pre-screened profiles.
+             Exit Ramp is where serious buyers and sellers connect with private listings, secure NDAs and confidential profiles.
           </p>
           <div className="listing__filter_wrap_hero">
             <ListingQuickFilter/>

@@ -23,6 +23,7 @@ const states = useRecoilValue(usStatesState);
 const [selectedState, setSelectedState] = useRecoilState(selectedStateAtom);
 const [counties, setCounties] = useRecoilState(countiesState);
   const [favoriteIds, setFavoriteIds] = useState([]);
+  const [favoriteIdsCurrent, setFavoriteIdsCurrent] = useState([]);
   const { access_token } = useRecoilValue(authState) ?? {};
   const [allListings, setAllListings] = useState([]);
   const [listings, setListings] = useState([]);
@@ -36,9 +37,9 @@ const [counties, setCounties] = useRecoilState(countiesState);
     industry: searchParams.get("industry") || "",
     state: searchParams.get("state") || "",
     county: searchParams.get("county") || "",
-    askingPrice: [0, 5000000],
-    annualRevenue: [0, 5000000],
-    cashFlow: [0, 5000000],
+    askingPrice: [ ],
+    annualRevenue: [ ],
+    cashFlow: [ ],
     businessType: [],
   });
 
@@ -50,8 +51,6 @@ const [counties, setCounties] = useRecoilState(countiesState);
 
   useEffect(() => {
     setSearchParams(serializeFiltersToParams(filters), { replace: true });
-
-
   }, [filters, setSearchParams]);
 
 
@@ -80,6 +79,59 @@ const [counties, setCounties] = useRecoilState(countiesState);
 
     return params;
   };
+const removeFavorite = async (favoriteIdsCurrent, businessId) => {
+  // console.log("Current favorites in state:", favoriteIdsCurrent);
+  // console.log("Business ID to remove:", businessId);
+  const favoriteObj = favoriteIdsCurrent.find(
+    (fav) => fav?.businessId?._id === businessId
+  );
+
+  const favoriteId = favoriteObj?._id;
+// console.log("Attempting to remove favorite with ID:", favoriteId);
+  if (!favoriteId){
+     toast.current.show({
+      severity: "error",
+      summary: "Multiple Attempts Detected ",
+      detail: "Multiple attempts were made to add or remove this listing from favorites.",
+      life: 2500,
+    });
+    return;
+  } 
+
+  try {
+    const res = await fetch(`${API_BASE}/favorite/${favoriteId}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${access_token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!res.ok) throw new Error("Failed to remove favorite");
+
+    // ✅ REMOVE FROM LOCAL STATES (this triggers re-render)
+    setFavoriteIds((prev) => prev.filter((id) => id !== businessId));
+    setFavoriteIdsCurrent((prev) =>
+      prev.filter((fav) => fav?._id !== favoriteId)
+    );
+
+    toast.current.show({
+      severity: "info",
+      summary: "Removed",
+      detail: "Listing removed from favorites.",
+      life: 2500,
+    });
+  } catch (err) {
+    console.error("Error removing favorite:", err);
+
+    toast.current.show({
+      severity: "error",
+      summary: "Error",
+      detail: "Failed to remove favorite.",
+      life: 3000,
+    });
+  }
+};
 
 
   // Fetch Data
@@ -203,15 +255,32 @@ const saveListingBtn = (businessId) => {
       }
     };
     const isFavorite = favoriteIds.includes(businessId);
-    // console.log("isFavorite>>>>>", businessId);
+   
     return (
       <>
+      {isFavorite ? 
+      
+      
+      <Button
+      icon="pi pi-heart-fill"
+      className="button__save_listing_global active"
+      onClick={() => removeFavorite(favoriteIdsCurrent,businessId)}
+      />
+      
+      : 
+      
+      <Button
+      icon="pi pi-heart"
+      className="button__save_listing_global"
+      onClick={handleSave}
+      />
+      }
       <Toast ref={toast} position="top-right" />
-        <Button
+        {/* <Button
           icon={isFavorite ? "pi pi-heart-fill" : "pi pi-heart"}
           className={`button__save_listing_global ${isFavorite ? "active" : ""}`}
           onClick={ isFavorite ? "" : handleSave}
-        />
+        /> */}
        
       </>
     );
@@ -353,6 +422,8 @@ useEffect(() => {
       // assuming result.data = [{ businessId: "..." }]
       const ids = result.data.map(fav => fav.businessId._id);
       setFavoriteIds(ids);
+      const idsCurrent = result.data.map(fav => fav);
+      setFavoriteIdsCurrent(idsCurrent);
     } catch (err) {
       console.error("Failed to fetch favorites", err);
     }

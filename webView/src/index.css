@@ -1811,14 +1811,38 @@ button.logout-btn {
 }
 
 .listing__filter_col .p-field input.p-inputtext.p-component {
-  border-radius: 30px;
+     border-radius: 30px;
+    width: 100%;
 }
 
 .listing__filter_col .p-dropdown.p-component.p-inputwrapper {
   border-radius: 30px;
       width: 100%;
 }
+.whouse_sec_wrap_container .whouse_sec_content_wrap .whouse_sec_content_third.man-expert {
+    position: relative;
+}
 
+.whouse_sec_wrap_container .whouse_sec_content_wrap .whouse_sec_content_third.man-expert .coming__soon {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    display: flex;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    font-size: 48px;
+    text-transform: capitalize;
+    color: #fff;
+    background: #00000087;
+    border-radius: 25px;
+}
+.status__nda_submit_block.approved__nda {
+    background: #22c55e;
+}
 .listing__filter_col .p-slider.p-component.p-slider-horizontal {
   margin-top: 10px;
   margin-bottom: 10px;
