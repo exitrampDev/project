@@ -319,7 +319,7 @@ async createRefundRequest(
   }
 
   
-  if (payment.refundStatus != null) {
+  if (payment.refundStatus != RefundStatus.NOT_REQUESTED) {
     throw new ConflictException(
       `A refund request for this payment already exists with status "${payment.refundStatus}"`,
     );
