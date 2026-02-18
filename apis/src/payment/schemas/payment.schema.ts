@@ -56,19 +56,19 @@ export class Payment {
   paidAt?: Date;
 
   // -----------------------------------------Refund Fields-----------------------------------------
-  @Prop({ required: true, default: "" })
+  @Prop({ required: false, default: "" })
   refundReason: string;
 
-  @Prop({ type: String, enum: RefundStatus, default: null })
+  @Prop({ required: false, type: String, enum: RefundStatus, default: "" })
   refundStatus: RefundStatus;
 
-  @Prop({ type: Date })
+  @Prop({required: false, type: Date, default: null })
   refundRequestedAt: Date;
 
-  @Prop({ type: Date })
+  @Prop({required: false, type: Date, default: null })
   refundResolvedAt?: Date;
 
-  @Prop({ type: String })
+  @Prop({ required: false, type: String, default: "" })
   refundCommentByAdmin?: string;
 
 }
