@@ -228,7 +228,7 @@ export class PaymentService {
   const { page = 1, limit = 10000, search } = query;
   const skip = (page - 1) * limit;
 
-  const baseFilter: any = {"refundStatus": { $ne: null } };
+  const baseFilter: any = {"refundStatus": { $ne: RefundStatus.NOT_REQUESTED } };
 
   if (search) {
     baseFilter['$or'] = [
