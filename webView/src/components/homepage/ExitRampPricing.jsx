@@ -32,9 +32,8 @@ export default function ExitRampPricing() {
               <div className="ExitRampPricing__pricing_table_body_freature">
                 <ul>
                   <li>
-                    For Sellers and Buyers:<span> Save Favorites | View Previous Listings | Confidential Profile | Connect with Listers</span> </li>
-                  <li>
-                    Buyer Extensions: <span>Submit NDAs | View CIMs  | Due Diligence List | Engage with Sellers</span> </li>
+                    For Buyers:<span> Save Favorites | View Previous Listings | Confidential Profile | Connect with Listers</span> 
+                     <span>Submit NDAs | View CIMs  | Due Diligence List | Engage with Sellers</span> </li>
                   
                 </ul>
               </div>
@@ -53,18 +52,19 @@ export default function ExitRampPricing() {
               </div>
               <div className="ExitRampPricing__pricing_table_body_freature">
                   <ul>
-                  <li>
+                  {/* <li>
                     For Sellers:<span> Everything in Basic
 Includes One Public Listing
 Add More Listings for Cost
-Cancel Anytime</span> </li>
+Cancel Anytime</span> </li> */}
                   <li>
                     Buyer: <span>Coming Soon</span> </li>
                   
                 </ul>
               </div>
               <div className="ExitRampPricing__pricing_table_body_price">
-                $30/month/Listing
+                {/* $30/month/Listing */}
+                Coming Soon
               </div>
             </div>
             <div className="ExitRampPricing__pricing_table_list">
@@ -75,16 +75,14 @@ Cancel Anytime</span> </li>
               <div className="ExitRampPricing__pricing_table_body_freature">
                  <ul>
                   <li>
-                    For Sellers:<span> Everything in Standard</span> </li>
-                  <li>
-                    Seller Central : <span>Manage NDA Request | Analyze Buyers  | Document Room | Due Diligence List | Private Messages | Marketing Enablement | Upgrade Listings to Seller Central</span> </li>
+                    For Sellers: <span>List Publicly | Manage NDAs | Analyze Buyers | Document Room | Due Diligence List Management | Access Controls.  </span> </li>
                     <li>
                     Buyer: <span>Coming Soon</span> </li>
                 </ul>
               </div>
               <div className="ExitRampPricing__pricing_table_body_price">
                 <div>
-                  <span>$60 / Month / Listing</span>
+                  <span>- / Month / Listing</span>
                 </div>
               </div>
             </div>

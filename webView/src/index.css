@@ -1811,14 +1811,41 @@ button.logout-btn {
 }
 
 .listing__filter_col .p-field input.p-inputtext.p-component {
-  border-radius: 30px;
+     border-radius: 30px;
+    width: 100%;
 }
 
 .listing__filter_col .p-dropdown.p-component.p-inputwrapper {
   border-radius: 30px;
       width: 100%;
 }
+.whouse_sec_wrap_container .whouse_sec_content_wrap .whouse_sec_content_third.man-expert {
+    position: relative;
+}
 
+.whouse_sec_wrap_container .whouse_sec_content_wrap .whouse_sec_content_third.man-expert .coming__soon {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    display: flex;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    font-size: 48px;
+    text-transform: capitalize;
+    color: #fff;
+    background: #00000087;
+    border-radius: 25px;
+}
+.status__nda_submit_block.approved__nda {
+    background: #22c55e;
+}
+.business__list_single_intro_block_content_col {
+    width: 100%;
+}
 .listing__filter_col .p-slider.p-component.p-slider-horizontal {
   margin-top: 10px;
   margin-bottom: 10px;
@@ -1871,16 +1898,19 @@ li.list__row_item {
   margin-bottom: 30px;
 }
 span.listing__info_left_content {
-    width: 50%;
+       width: 100%;
     display: flex;
-    align-items: center;
+    flex-wrap: wrap;
         border-right: 1px solid #eaeaea;
 }
 a.list_content_col_listing_des_text_wrap {
-    display: flex;
+   display: flex;
     flex-wrap: wrap;
     text-decoration: none;
-    color: inherit;
+    width: 100%;
+    color: #002f68;
+    font-size: 13px;
+    padding: 0 10px 0 0;
 }
 .list__action_inns button.button__save_listing_global.active.p-button.p-component.p-button-icon-only {
     position: absolute;
@@ -1914,7 +1944,9 @@ span.list_content_col_listing_des a.list_content_col_listing_des_text_wrap>h2 {
     width: 100%;
 }
 span.list_content_col_listing_des {
-    width: 50%;
+   width: 20%;
+    display: flex;
+    flex-wrap: wrap;
 }
 li.list__row_item span.list__image_col img{
      width: 160px;
@@ -1956,10 +1988,10 @@ li.list__row_item span.list_content_col p.list__item_industry span {
 }
 .list__content_prices {
   display: flex;
-  gap: 20px;
+  flex-wrap: wrap;
+  gap: 5px;
   color: #002f68;
-  font-size: 16px;
-  margin-top: 20px;
+  font-size: 14px;
 }
 .listing__pagination_btn {
   display: flex;
@@ -2193,6 +2225,7 @@ button.button__save_listing.p-button.p-component.p-button-icon-only {
 
 .main__listing_grid ul.list__ul_container li.list__row_item {
   position: relative;
+    align-items: center;
 }
 .flag__hit_list {
     cursor: pointer;
@@ -2453,11 +2486,51 @@ button.button__remove_listing_fav .pi-heart-fill:before {
   width: calc(50% - 15px);
   align-items: center;
 }
-.main__listing_grid ul.list__ul_container li.list__row_item a.flex.gap-4 {
+.main__listing_grid ul.list__ul_container li.list__row_item a.listing__info_left_content_name_link {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     text-decoration: none;
     gap: 16px;
+    width: 100%;
+}
+.main__listing_grid ul.list__ul_container li.list__row_item a.list_content_col_listing_des_text_wrap h2.listing__main_des {
+    margin: 15px 0 5px 0;
+    font-weight: 500;
+    font-size: 18px;
+    width: 100%;
+}
+.complete_buyer_form_wrap.seller__form_profile .field.form__field_col.col_overvice_textarea [data-pc-name="editor"] {
+    background: #fff;
+    border: 1px solid #d1d5db;
+    border-radius: 9px;
+}
+.business__list_single_key_highlights_Business_overview_owner_details .business__list_single_business_overview {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2%;
+    border: 1px solid #E5E8F6;
+    border-radius: 24px;
+    padding: 24px;
+    margin-top: 30px;
+    margin-bottom: 50px;
+    background: #fff;
+}
+.business__list_single_key_highlights_Business_overview_owner_details .business__list_single_business_overview .business_list_single_overview_list span.overview__about_user {
+    font-size: 11px;
+}
+.business__list_single_key_highlights_Business_overview_owner_details .business__list_single_business_overview .business_list_single_overview_list img.broker_logo_image {
+    max-width: 100px;
+    object-fit: cover;
+    padding: 5px;
+}
+.business__list_single_key_highlights_Business_overview_owner_details .business__list_single_business_overview .business_list_single_overview_list img.broker_profile_image {
+    max-width: 180px;
+    object-fit: cover;
+}
+.business__list_single_key_highlights_Business_overview_owner_details .business__list_single_business_overview .business_list_single_overview_list {
+    flex-wrap: wrap;
 }
 .complete_buyer_form_wrap.seller__form_profile  .field.form__field_col {
     max-width: 440px;

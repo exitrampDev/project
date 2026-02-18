@@ -106,20 +106,48 @@ const FavoriteListings = () => {
   }, [listingType, keyword, industry, ndaStatus, priceRange, cashFlowRange, listings]);
 
   // Templates
-  const listingNameTemplate = (rowData) => (
+  // const listingNameTemplate = (rowData) => (
+  //   <div className="flex items-center gap-2 img_my_save_lisiting">
+  //     <img
+  //       src={rowData?.image || "https://via.placeholder.com/40"}
+  //       alt={rowData?.listingTitle}
+  //       className=" rounded"
+  //     />
+  //     <span>{rowData?.listingTitle}</span>
+  //   </div>
+  // );
+const listingNameTemplate = (rowData) => {
+  const title = rowData?.listingTitle || "";
+  const words = title.split(" ");
+  const truncatedTitle =
+    words.length > 7 ? words.slice(0, 7).join(" ") + "..." : title;
+
+  return (
     <div className="flex items-center gap-2 img_my_save_lisiting">
       <img
-        src={rowData?.image || "https://via.placeholder.com/40"}
-        alt={rowData?.listingTitle}
-        className=" rounded"
+        src={rowData.image || "https://via.placeholder.com/40"}
+        alt={title}
+        className="w-10 h-10 rounded"
       />
-      <span>{rowData?.listingTitle}</span>
+      <span>{truncatedTitle}</span>
     </div>
   );
-
+};
+const moneyTemplate = (rowData) => {
+  return rowData.askingPrice?.toLocaleString("en-US", {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: 0,
+  });
+};
 
   const actionTemplate = (rowData) => (
-    <>
+    <div className="action__recent_view">
+     <Link to={`/user/single-listing/${rowData._id}`} className="flex gap-4">
+                  <i
+                    className="pi pi-eye cursor-pointer text-blue-500 hover:text-blue-700"
+                  ></i>
+                  </Link>
       <Button
         icon="pi pi-trash"
         className="button__remove_listing_fav"
@@ -127,7 +155,7 @@ const FavoriteListings = () => {
         data-pr-tooltip="Remove"
       />
       
-    </>
+    </div>
   );
 const cimTemplate = (rowData) => (
   <>
@@ -161,9 +189,9 @@ const cimTemplate = (rowData) => (
         <Column header="Listing Name" body={listingNameTemplate} />
         <Column header="Industry" body={saveIndustryTemplate}/>
         <Column header="NDA Status" body={ndaStatusTemplate} />
-        <Column field="entityType" header="Type" />
+        {/* <Column field="entityType" header="Type" /> */}
         {/* <Column field="revenue" header="Revenue" /> */}
-        <Column field="askingPrice" header="Asking Price" />
+<Column header="Asking Price" body={moneyTemplate} />
         <Column header="View Listing" body={cimTemplate} />
         <Column header="Action" body={actionTemplate} />
       </DataTable>
@@ -206,7 +234,7 @@ const cimTemplate = (rowData) => (
         />
 
         {/* <Column field="revenue" header="Revenue" /> */}
-        <Column field="askingPrice" header="Asking Price" />
+<Column header="Asking Price" body={moneyTemplate} />
         <Column header="Action" body={(row)=> (<> <div className="action__recent_view">
                <Link to={`/user/single-listing/${row._id}`} className="flex gap-4">
                   <i

@@ -27,12 +27,12 @@ export default function Footer() {
             <li>
               <Link to="/listings">Seller Listing</Link>
             </li>
-            <li>
+            {/* <li>
               <Link to="/listings">Buyer Listing</Link>
             </li>
             <li>
               <Link to="/listings">M&A Experts Listing</Link>
-            </li>
+            </li> */}
             <li>
               <Link to="/aboutus">About Us</Link>
             </li>
@@ -64,7 +64,7 @@ export default function Footer() {
         </div>
       </div>
       <div className="footer__content_copyright">
-        <p>© Exit Ramp 2025. All Rights Reserved.</p>
+        <p>© Exit Ramp {new Date().getFullYear()} . All Rights Reserved.</p>
         <p>
           Built for serious business buyers, sellers, and M&A professionals.
         </p>

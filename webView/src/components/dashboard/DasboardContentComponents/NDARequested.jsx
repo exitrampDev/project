@@ -76,12 +76,19 @@ const CIMAccessNDASubmit = (ndaStatus) => {
 const CIMAccessLink = (ndaStatus,cimUrl) => {
   if (ndaStatus === "approved") {
     return (
+     <>
+      {cimUrl? 
       <div className="">
         <Link to={`${API_BASE}${cimUrl}`} className="cim__view_CIMAccessLink">
          <i className="pi pi-file"></i> 
           View CIM
         </Link>
       </div>
+       : <div className="cim__view_CIMAccessLink CIMAccessLink__notAvailable">
+         <i className="pi pi-file"></i> 
+           CIM Not Created
+      </div>}
+     </>
     );
   } else if (ndaStatus === "pending") {
     return (
@@ -159,19 +166,29 @@ const DueDiligenceAction = (statusNDA, Id) => {
         stripedRows
         emptyMessage="No NDA requests found."
       >
-        <Column field="listingTitle" header="Listing Name" sortable />
+       <Column
+  header="Listing Name"
+  sortable
+  body={(rowData) => {
+    const text = rowData?.listingTitle || "";
+    const words = text.split(" ");
+    return words.length > 6 ? words.slice(0, 6).join(" ") + "..." : text;
+  }}
+/>
+
        <Column
           field="ndaStatus"
           header="NDA Status"
           body={ndaStatusTemplate}
           sortable
         />
-        <Column body={(rowData) => CIMAccessNDASubmit(rowData.ndaStatus)} header="CIM Access" />
-        <Column body={(rowData) =>  rowData.submittedOn ? new Date(rowData.submittedOn).toLocaleDateString() : "-"} header="Submitted On" />
-        <Column body={(rowData) =>  rowData.sellerResponseOn ? new Date(rowData.sellerResponseOn).toLocaleDateString() : "-"} header="Seller Response" />
-        <Column body={(rowData) =>  rowData.docRoomAccess === "approved" ? (<><Link to={`/user/document-room/${rowData.businessId}`} className="cim__view_CIMAccessLink">  <i className="pi pi-file"></i> View Doc Room</Link></>) : (<><div className="CIMAccessLink__accessDenied"> <i className="pi pi-lock"></i> View After Approval</div></>)} header="Document Room" />
-       <Column body={(rowData) => DueDiligenceAction(rowData.ndaStatus, rowData.businessId)} header="Due Diligence" />
-        <Column body={(rowData) => CIMAccessLink(rowData.ndaStatus,rowData.cimUrl)} header="Actions" />
+        <Column body={(rowData) => CIMAccessNDASubmit(rowData?.ndaStatus)} header="CIM Access" />
+        <Column body={(rowData) =>  rowData?.submittedOn ? new Date(rowData?.submittedOn).toLocaleDateString() : "-"} header="Submitted On" />
+        <Column body={(rowData) =>  rowData?.sellerResponseOn ? new Date(rowData?.sellerResponseOn).toLocaleDateString() : "-"} header="Seller Response" />
+        <Column body={(rowData) =>  rowData?.docRoomAccess === "approved" ? (<><Link to={`/user/document-room/${rowData?.businessId}`} className="cim__view_CIMAccessLink">  <i className="pi pi-file"></i> View Doc Room</Link></>) : (<><div className="CIMAccessLink__accessDenied"> <i className="pi pi-lock"></i> View After Approval</div></>)} header="Document Room" />
+       <Column body={(rowData) => DueDiligenceAction(rowData?.ndaStatus, rowData?.businessId)} header="Due Diligence" />
+      
+      <Column body={(rowData) =>  CIMAccessLink(rowData?.ndaStatus,rowData?.cimUrl)} header="Actions" />
       </DataTable>
         </div>   
         

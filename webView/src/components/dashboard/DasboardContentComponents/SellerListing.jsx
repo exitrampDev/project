@@ -487,16 +487,24 @@ window.location.href = `/user/payment-process/${businessId}`;
 
 
   // ==== Templates ====
-  const listingNameTemplate = (row) => (
-    <div className="flex align-items-center">
+const listingNameTemplate = (rowData) => {
+  const title = rowData?.listingTitle || "";
+  const words = title.split(" ");
+  const truncatedTitle =
+    words.length > 7 ? words.slice(0, 7).join(" ") + "..." : title;
+
+  return (
+    <div className="flex items-center gap-2 img_my_save_lisiting">
       <img
-        src={row.image || "https://via.placeholder.com/40"}
-        alt={row.listingTitle}
-        style={{ width: "40px", borderRadius: "6px", marginRight: "10px" }}
+        src={rowData.image || "https://via.placeholder.com/40"}
+        alt={title}
+        className="w-10 h-10 rounded"
       />
-      <span>{row.listingTitle?.replace(/^"|"$/g, '')}</span>
+      <span>{truncatedTitle}</span>
     </div>
   );
+};
+
 
   const industryTemplate = (row) => {
   try {
@@ -1934,13 +1942,13 @@ impact the confidentiality of your sale.</em>
                 placeholder="Status"
               />
 
-              <InputText
+              {/* <InputText
                 value={filters.year || ""}
                 onChange={(e) =>
                   setFilters((f) => ({ ...f, year: e.target.value }))
                 }
                 placeholder="Year"
-              />
+              /> */}
 
               <InputText
                 value={filters.location || ""}
@@ -1992,18 +2000,18 @@ impact the confidentiality of your sale.</em>
   }}
 >
   <Column header="Listing Name" body={listingNameTemplate} />
-  <Column header="Industry" body={industryTemplate} />
-  <Column field="yearStablished" header="Year" />
-  <Column header="Location" body={locationTemplate} />
-  <Column field="revenue" header="Revenue" body={moneyTemplate} />
-  <Column field="monthlyRentAmount" header="Rent"  />
   <Column field="askingPrice" header="Asking Price" body={moneyTemplate} />
-  <Column header="Last Edited" body={dateTemplate} />
+  <Column field="status" header="Listing Status"  body={lisitngStatus}/>
   <Column field="cimStatus" header="CIM Status" body={cimTemplate} />
-<Column field="status" header="Listing Status"  body={lisitngStatus}/>
-
-  <Column body={(row) => documentRoomLink(row._id)} header="Document Room" />
   <Column body={(row) => createCIMList(row._id, row.cimUrl)} header="CIM View" />
+  <Column body={(row) => documentRoomLink(row._id)} header="Document Room" />
+  {/* <Column field="yearStablished" header="Year" /> */}
+  <Column header="Location" body={locationTemplate} />
+  <Column header="Industry" body={industryTemplate} />
+  {/* <Column field="revenue" header="Revenue" body={moneyTemplate} />
+  <Column field="monthlyRentAmount" header="Rent"  /> */}
+  <Column header="Last Edited" body={dateTemplate} />
+
   <Column header="Action" body={actionTemplate} />
 </DataTable>
 

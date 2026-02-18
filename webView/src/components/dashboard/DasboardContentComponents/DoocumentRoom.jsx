@@ -236,9 +236,11 @@ const DocumentRoom = () => {
       >
         Preview
       </a>
+      {user.user_type !== "buyer_basic" && (
       <div onClick={() => deleteFile(row._id)} className="renderActionDocRoomList_dlt_btn">
         Delete
       </div>
+      )}
     </div>
   );
 
@@ -253,11 +255,17 @@ const DocumentRoom = () => {
       </span>
     );
 
+const title = listingData?.listingTitle || "";
+const words = title.split(" ");
+const truncatedTitle =
+  words.length > 3 ? words.slice(0, 3).join(" ") + "..." : title;
+
+
   return (
     <div className="dashboard__header">
       <Toast ref={toast} />
 
-      <DashboardHeader headingData={`Document Room  | ${listingData.listingTitle}`} />
+     <DashboardHeader headingData={`Document Room | ${truncatedTitle}`} />
 
       <div className="brief__infor_content">
         <p>
@@ -281,19 +289,21 @@ const DocumentRoom = () => {
           <Dropdown value={uploadedOn} options={uploadedOnOptions} onChange={(e) => setUploadedOn(e.value)} placeholder="Uploaded On" />
           <Dropdown value={size} options={sizeOptions} onChange={(e) => setSize(e.value)} placeholder="Size" />
         </div>
-
+ {user.user_type !== "buyer_basic" && (
         <label className="p-button p-component cursor-pointer filterBar__mian_list_file_upload_content">
           <i className="pi pi-file mr-2"></i> Upload File
           <span>(PDF/JPEG/PNG)</span>
           <input type="file" hidden onChange={handleFileUpload} />
         </label>
+ )}
       </div>
 
       {/* FILE LIST */}
       <div className="my__save_listing_wrap my__listing_table docRoom_data_table">
         <DataTable value={filteredFiles} emptyMessage="No files found.">
           <Column field="displayName" header="File Name" />
-          <Column header="Listing" body={() => listingData.listingTitle} />
+          {/* <Column header="Listing" body={() => listingData.listingTitle} /> */}
+
           <Column header="Category" body={(row) => row.typeName.toUpperCase()} />
           <Column
             header="Uploaded On"
@@ -318,7 +328,15 @@ const DocumentRoom = () => {
 
         <div className="my__save_listing_wrap my__listing_table docRoom_data_table">
           <DataTable value={submissions} emptyMessage="No data">
-            <Column field="listingTitle" header="Listing Name" />
+                <Column
+                header="Listing Name"
+                sortable
+                body={(rowData) => {
+                  const text = rowData?.listingTitle || "";
+                  const words = text.split(" ");
+                  return words.length > 6 ? words.slice(0, 6).join(" ") + "..." : text;
+                }}
+              />
             <Column field="buyerName" header="Buyer Name" />
             <Column header="NDA Status" body={() => ndaStatusUI("approved")} />
             <Column header="CIM Shared" body={(row) => ndaStatusUI(row.ndaStatus)} />

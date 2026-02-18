@@ -154,10 +154,21 @@ pdf.save(
           dataKey="_id"
           emptyMessage="No payments found."
         >
-          <Column
-            header="Business Name"
+          {/* <Column
+            header="Listing Name"
             body={(row) => row?.referenceId?.listingTitle || "-"}
-          />
+          /> */}
+
+    <Column
+  header="Listing Name"
+  sortable
+  body={(rowData) => {
+    const text = rowData?.referenceId?.listingTitle  || "";
+    const words = text.split(" ");
+    return words.length > 6 ? words.slice(0, 6).join(" ") + "..." : text;
+  }}
+/>
+
           <Column field="_id" header="Payment ID" style={{ width: "260px" }} />
           <Column field="amount" header="Amount ($)" />
           <Column

@@ -138,16 +138,38 @@ if (Array.isArray(data?.data)) {
   }, [API_BASE, access_token]);
 
   /* ---------------- Templates ---------------- */
-  const listingNameTemplate = (rowData) => (
+  // const listingNameTemplate = (rowData) => (
+  //   <div className="flex items-center gap-2 img_my_save_lisiting">
+  //     <img
+  //       src={rowData.image || "https://via.placeholder.com/40"}
+  //       alt={rowData.listingTitle}
+  //       className="w-10 h-10 rounded"
+  //     />
+  //     <span>{rowData.listingTitle}</span>
+  //   </div>
+  // );
+
+
+
+const listingNameTemplate = (rowData) => {
+  const title = rowData?.listingTitle || "";
+  const words = title.split(" ");
+  const truncatedTitle =
+    words.length > 7 ? words.slice(0, 7).join(" ") + "..." : title;
+
+  return (
     <div className="flex items-center gap-2 img_my_save_lisiting">
       <img
         src={rowData.image || "https://via.placeholder.com/40"}
-        alt={rowData.listingTitle}
+        alt={title}
         className="w-10 h-10 rounded"
       />
-      <span>{rowData.listingTitle}</span>
+      <span>{truncatedTitle}</span>
     </div>
   );
+};
+
+
 
   const industryTemplate = (row) =>
     row?.industry ? JSON.parse(String(row.industry)) : "—";

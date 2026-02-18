@@ -53,25 +53,40 @@ const DueDiligence = () => {
   // Fetch Due Diligence List
   // =========================
   const fetchDueDiligence = async () => {
-    if (!access_token) return;
-    try {
-      setListLoading(true);
-      const res = await axios.get(`${API_BASE}/due-diligence/nda/${id}`, {
-        headers: { Authorization: `Bearer ${access_token}` },
-      });
-      setDueDiligenceList(res.data || []);
-    } catch (err) {
-      console.error("Error fetching due diligence list:", err.response?.data || err.message);
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Failed to fetch due diligence items.",
-        life: 3000,
-      });
-    } finally {
-      setListLoading(false);
-    }
-  };
+  if (!access_token) return;
+
+  try {
+    setListLoading(true);
+
+    const res = await axios.get(`${API_BASE}/due-diligence/nda/${id}`, {
+      headers: { Authorization: `Bearer ${access_token}` },
+    });
+
+    setDueDiligenceList(res.data || []);
+  } catch (err) {
+    if (err?.response?.status === 404) {
+    setDueDiligenceList([]);
+    return;
+  }
+
+    const msg =
+      err?.response?.data?.message ||
+      "Failed to fetch due diligence items.";
+
+    toast.current?.show({
+      severity: "error",
+      summary: "Error",
+      detail: msg,
+      life: 4000,
+    });
+
+    // optional: clear list when 404 happens
+    setDueDiligenceList([]);
+  } finally {
+    setListLoading(false);
+  }
+};
+
 
   useEffect(() => {
     fetchDueDiligence();
@@ -305,7 +320,7 @@ setVisible(false)
 
       {/* ---------- Header ---------- */}
       
-        <DashboardHeader headingData="Seller Central Due Diligence List"/>
+        <DashboardHeader headingData="Due Diligence List"/>
       {/* ---------- Info ---------- */}
       <div className="brief__infor_content">
         <p>

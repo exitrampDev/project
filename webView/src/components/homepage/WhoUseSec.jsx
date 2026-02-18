@@ -35,7 +35,8 @@ export default function WhoUseSec() {
               <img src={SellerControl} alt="SellerControl" />
             </div>
           </div>
-          <div className="whouse_sec_content_third">
+          <div className="whouse_sec_content_third man-expert">
+            <div className="coming__soon">coming soon</div>
             <div className="whouse_sec_content_text_box">
               <h3>Stand Out as an M&A Expert</h3>
               <p>

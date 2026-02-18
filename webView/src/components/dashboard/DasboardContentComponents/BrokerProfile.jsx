@@ -11,6 +11,7 @@ import DashboardHeader from "./DashboardHeaderBlock";
 import FileUploader from "../../customcomponent/FileUploader";
 import { Dropdown } from "primereact/dropdown";
 import { InputMask } from "primereact/inputmask";
+import { Editor } from 'primereact/editor';
 
 const BrokerProfile = () => {
   const toast = useRef(null);
@@ -34,7 +35,16 @@ const usStates = useRecoilValue(usStatesState);
     companyOverview: "",
     companyLogo: "",
   });
-
+const editorHeader = (
+  <span className="ql-formats">
+    <button className="ql-bold" />
+    <button className="ql-italic" />
+    <button className="ql-underline" />
+    <button className="ql-list" value="ordered" />
+    <button className="ql-list" value="bullet" />
+    
+  </span>
+);
   /* ===========================
      FETCH EXISTING PROFILE
   ============================ */
@@ -324,14 +334,22 @@ const usStates = useRecoilValue(usStatesState);
 
           <div className="field form__field_col col_overvice_textarea">
             <label>Broker Overview</label>
-            <InputTextarea
+              <Editor
+                value={formData.companyOverview || ""}
+                headerTemplate={editorHeader}
+                onTextChange={(e) => handleChange("companyOverview", e.htmlValue)}
+                style={{ height: "200px" }}
+              />
+
+
+            {/* <InputTextarea
               rows={4}
               autoResize
               value={formData.companyOverview}
               onChange={(e) =>
                 handleChange("companyOverview", e.target.value)
               }
-            />
+            /> */}
           </div>
 
           <div className="submit__btn_block">

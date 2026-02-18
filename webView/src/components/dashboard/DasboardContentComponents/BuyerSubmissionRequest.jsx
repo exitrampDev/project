@@ -201,13 +201,15 @@ const openBuyerInfoModal = (row) => {
           emptyMessage="No Buyer Submission"
           responsiveLayout="scroll"
         >
-          <Column
-            body={(rowData) =>
-              listingBuyerName(rowData.businessId, rowData.listingTitle)
-            }
-            header="Name"
-            sortable
-          />
+            <Column
+              header="Listing Name"
+              sortable
+              body={(rowData) => {
+                const text = rowData?.listingTitle || "";
+                const words = text.split(" ");
+                return words.length > 4 ? words.slice(0, 4).join(" ") + "..." : text;
+              }}
+            />
           <Column
             header="Buyer Name"
             sortable
