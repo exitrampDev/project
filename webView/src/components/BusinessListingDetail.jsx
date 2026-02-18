@@ -32,6 +32,7 @@ export default function BusinessListingDetail() {
   const [loading, setLoading] = useState(true);
    const toast = useRef(null);
     const [favoriteIds, setFavoriteIds] = useState([]);
+    const [favoriteIdsCurrent, setFavoriteIdsCurrent] = useState([]);
   const [showImagesPopup, setShowImagesPopup] = useState(false);
   const API_BASE = useRecoilValue(apiBaseUrlState);
   const [showContactModal, setShowContactModal] = useState(false);
@@ -119,6 +120,8 @@ useEffect(() => {
       // assuming result.data = [{ businessId: "..." }]
       const ids = result.data.map(fav => fav.businessId._id);
       setFavoriteIds(ids);
+      const idsCurrent = result.data.map(fav => fav);
+      setFavoriteIdsCurrent(idsCurrent);
     } catch (err) {
       console.error("Failed to fetch favorites", err);
     }
@@ -148,6 +151,59 @@ const allowedImages = [
   "listingImage4",
   "listingImage5",
 ];
+const removeFavorite = async (favoriteIdsCurrent, businessId) => {
+  // console.log("Current favorites in state:", favoriteIdsCurrent);
+  // console.log("Business ID to remove:", businessId);
+  const favoriteObj = favoriteIdsCurrent.find(
+    (fav) => fav?.businessId?._id === businessId
+  );
+
+  const favoriteId = favoriteObj?._id;
+// console.log("Attempting to remove favorite with ID:", favoriteId);
+  if (!favoriteId){
+     toast.current.show({
+      severity: "error",
+      summary: "Multiple Attempts Detected ",
+      detail: "Multiple attempts were made to add or remove this listing from favorites.",
+      life: 2500,
+    });
+    return;
+  } 
+
+  try {
+    const res = await fetch(`${API_BASE}/favorite/${favoriteId}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${access_token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!res.ok) throw new Error("Failed to remove favorite");
+
+    // ✅ REMOVE FROM LOCAL STATES (this triggers re-render)
+    setFavoriteIds((prev) => prev.filter((id) => id !== businessId));
+    setFavoriteIdsCurrent((prev) =>
+      prev.filter((fav) => fav?._id !== favoriteId)
+    );
+
+    toast.current.show({
+      severity: "info",
+      summary: "Removed",
+      detail: "Listing removed from favorites.",
+      life: 2500,
+    });
+  } catch (err) {
+    console.error("Error removing favorite:", err);
+
+    toast.current.show({
+      severity: "error",
+      summary: "Error",
+      detail: "Failed to remove favorite.",
+      life: 3000,
+    });
+  }
+};
   const handleContactSeller = async (e) => {
   e.preventDefault();
 
@@ -209,7 +265,7 @@ const saveListingBtn = (businessId) => {
     });
 
     const data = await response.json();
-console.log("Favorite response:", data);
+// console.log("Favorite response:", data);
     // ✅ add to local state instantly
     setFavoriteIds(prev => [...prev, businessId]);
     toast.current.show({
@@ -280,11 +336,23 @@ const markFlag = async () => {
     return (
       <>
       <Toast ref={toast} position="top-right" />
-        <Button
-          icon={isFavorite ? "pi pi-heart-fill" : "pi pi-heart"}
-          className={`button__save_listing_global ${isFavorite ? "active" : ""}`}
-          onClick={ isFavorite ? "" : handleSave}
-        />
+        {isFavorite ? 
+              
+              
+              <Button
+              icon="pi pi-heart-fill"
+              className="button__save_listing_global active"
+              onClick={() => removeFavorite(favoriteIdsCurrent,businessId)}
+              />
+              
+              : 
+              
+              <Button
+              icon="pi pi-heart"
+              className="button__save_listing_global"
+              onClick={handleSave}
+              />
+              }
        <div className="flag__hit_list_inner_listing" onClick={markFlag}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
