@@ -11,6 +11,7 @@ export enum PaymentStatus {
 }
 
 export enum RefundStatus {
+  NOT_REQUESTED = 'NOT_REQUESTED',
   PENDING = 'PENDING',
   APPROVED = 'APPROVED',
   REJECTED = 'REJECTED',
@@ -59,7 +60,7 @@ export class Payment {
   @Prop({ required: false, default: "" })
   refundReason: string;
 
-  @Prop({ required: false, type: String, enum: RefundStatus, default: "" })
+  @Prop({ required: false, type: String, enum: RefundStatus, default: RefundStatus.NOT_REQUESTED })
   refundStatus: RefundStatus;
 
   @Prop({required: false, type: Date, default: null })
