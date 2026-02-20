@@ -1846,6 +1846,111 @@ button.logout-btn {
 .business__list_single_intro_block_content_col {
     width: 100%;
 }
+.userPaymentHistoryTable__wrapper table.p-datatable-table {
+    min-width: max-content;
+}
+.refund__popup_admin textarea.w-full.p-2.border.rounded {
+    width: 100%;
+    font-family: inherit;
+    padding: 8px;
+    min-height: 130px;
+}
+
+.refund__popup_admin .flex.gap-2.justify-end.mt-4 {
+    display: flex;
+    justify-content: space-between;
+    padding: 30px 0 10px 0;
+}
+
+.refund__popup_admin label.block.font-semibold.mb-2 {
+    font-weight: 700;
+    margin-bottom: 7px;
+    display: block;
+}
+
+.refund__popup_admin button.p-button-danger-admin.p-button.p-component {background:#ef4444}
+.invoice__box_admin_pop .p-dialog-header {
+       padding: 12px 10px 0px 0;
+    position: absolute;
+    right: 0;
+}
+.invoice__box_admin_pop div.p-dialog-content {
+    border-radius: 6px;
+}
+
+.invoice__box_admin_pop .invoice__box_admin__wrapper h2.invoice__header_haeding {
+    font-size: 54px;
+    margin: 15px 0 50px 0;
+    color: #002f68;
+}
+
+.invoice__box_admin_pop .invoice__box_admin__wrapper .invoice__box_admin_preview {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    width: 100%;
+    padding: 6px 0 20px 0;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.invoice__box_admin_pop .invoice__box_admin__wrapper .invoice__box_admin_preview .listing__data_admin_invoice {
+    width: 30.3%;
+    font-size: 16px;
+    font-weight: 500;
+    margin: 0;
+    border-bottom: 2px dashed #bababa;
+    padding-bottom: 15px;
+}
+.invoice__box_admin_pop .invoice__box_admin__wrapper .invoice__box_admin_preview .listing__data_admin_invoice.refund_reason_invoice {
+    width: 49%;
+}
+.refund__popup_content_user .refund__popup_user_actions button.p-button-text.p-button.p-component {
+    background: #ccc;
+    color: #000;
+}
+
+.refund__popup_content_user .refund__popup_user_field {
+    font-size: 16px;
+    margin: 0 0 10px 0;
+}
+
+.refund__popup_content_user .refund__popup_user_field strong {
+    display: block;
+    font-size: 14px;
+    color: #002f68;
+    margin: 0;
+}
+
+.refund__popup_content_user .refund__popup_user_field label {
+    display: block;
+    font-size: 14px;
+    color: #002f68;
+    margin: 0;
+    font-weight: 700;
+}
+
+.refund__popup_content_user .refund__popup_user_field textarea.p-inputtextarea.p-inputtext.p-component {
+    width: 100%;
+}
+
+.refund__popup_content_user .refund__popup_user_actions {
+    display: flex;
+    justify-content: space-between;
+}
+.invoice__box_admin_pop .invoice__box_admin__wrapper .invoice__box_admin_preview .listing__data_admin_invoice.refund_comment_by_admin_invoice {
+    width: 48%;
+}
+.invoice__box_admin_pop .invoice__box_admin__wrapper .invoice__box_admin_preview .listing__data_admin_invoice strong {
+    display: block;
+    font-size: 14px;
+    color: #002f68;
+    margin: 0;
+}
+
+.refund__popup_admin  button.p-button-success-admin.p-button.p-component {
+    background: #22c55e;
+}
 .listing__filter_col .p-slider.p-component.p-slider-horizontal {
   margin-top: 10px;
   margin-bottom: 10px;

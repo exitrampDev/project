@@ -28,6 +28,14 @@ const PaymentHistory = () => {
   const [singlePayment, setSinglePayment] = useState(null);
   const [loadingSingle, setLoadingSingle] = useState(false);
 
+  const [refundVisible, setRefundVisible] = useState(false);
+const [selectedPayment, setSelectedPayment] = useState(null);
+const [adminComment, setAdminComment] = useState("");
+const [refundLoading, setRefundLoading] = useState(false);
+
+
+
+// console.log("singlePayment data:", singlePayment);
   // Fetch payments list
   const fetchPayments = async (pageNumber = 1) => {
     try {
@@ -58,6 +66,52 @@ const PaymentHistory = () => {
     setPage(newPage);
   };
 
+
+const handleRefundAction = async (type) => {
+  if (!selectedPayment?._id) return;
+
+  if (!adminComment.trim()) {
+    alert("Please enter a comment.");
+    return;
+  }
+
+  const endpoint =
+    type === "approve"
+      ? `${API_BASE}/payment/refund-approve`
+      : `${API_BASE}/payment/refund-reject`;
+
+  try {
+    setRefundLoading(true);
+
+    await axios.post(
+      endpoint,
+      {
+        paymentId: selectedPayment._id,
+        commentByAdmin: adminComment,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+        },
+      }
+    );
+
+    alert(`Refund ${type === "approve" ? "approved" : "rejected"} successfully!`);
+
+    setRefundVisible(false);
+    setSelectedPayment(null);
+
+    // Refresh list
+    fetchPayments(page);
+  } catch (err) {
+    console.error("Refund action error:", err);
+    alert("Something went wrong. Please try again.");
+  } finally {
+    setRefundLoading(false);
+  }
+};
+
+
   // Format date
   const dateTemplate = (row) => {
     return new Date(row.updatedAt).toLocaleString();
@@ -76,31 +130,77 @@ const PaymentHistory = () => {
   };
 
   // Fetch single payment details
-  const fetchSinglePayment = async (id) => {
-    try {
-      setLoadingSingle(true);
-      const res = await axios.get(`${API_BASE}/payment/${id}`, {
-        headers: {
-          Authorization: `Bearer ${access_token}`,
-        },
-      });
+  const fetchSinglePayment = async (data) => {
+    setSinglePayment(data);
+    setVisible(true);
+    // try {
+    //   setLoadingSingle(true);
+    //   const res = await axios.get(`${API_BASE}/payment/${id}`, {
+    //     headers: {
+    //       Authorization: `Bearer ${access_token}`,
+    //     },
+    //   });
 
-      setSinglePayment(res.data);
-      setVisible(true);
-    } catch (error) {
-      console.error("Error loading single payment:", error);
-    } finally {
-      setLoadingSingle(false);
-    }
+    //   setVisible(true);
+    // } catch (error) {
+    //   console.error("Error loading single payment:", error);
+    // } finally {
+    //   setLoadingSingle(false);
+    // }
   };
 
   // Action btn
   const actionTemplate = (row) => (
-    <div className="action__listing_btns">
+    <div className="action__listing_btns inv_poup">
+      {row.paymentStatus === "SUCCEEDED" ? (<>
+
+
+      {row?.refundStatus === "NOT_REQUESTED" ? (
+  <Button
+    label="Request Not Received "
+    icon="pi pi-money-bill"
+    className="p-button-text p-button-sm btn-invoice"
+    tooltip="Request for refund"
+    tooltipOptions={{ position: "top" }}
+  />
+) : (
+  
+<>
+{row?.refundStatus === "PENDING" ? 
+  <Button
+  label="Take Action"
+  icon="pi pi-money-bill"
+  className="p-button-text p-button-sm btn-invoice"
+  onClick={() => {
+    setSelectedPayment(row);
+    setAdminComment("");
+    setRefundVisible(true);
+  }}
+  tooltip="Refund already requested"
+  tooltipOptions={{ position: "top" }}
+/>
+  : <><Tag value={row?.refundStatus} severity={row?.refundStatus === "APPROVED" ? "success" : "danger"} /></>}
+</>
+)}
+
+      
+
+     <Button
+    icon="pi pi-eye "
+    className="p-button-text p-button-sm btn-invoice"
+    onClick={() => fetchSinglePayment(row)}
+    tooltip="View  listings"
+    tooltipOptions={{ position: "top" }}
+  />
+        </>
+      ) : (
+        <div className="action__listing_btns">
       <i
         className="pi pi-eye cursor-pointer text-blue-500 hover:text-blue-700"
         onClick={() => fetchSinglePayment(row._id)}
       ></i>
+    </div>
+      )}
     </div>
   );
 
@@ -112,8 +212,14 @@ const PaymentHistory = () => {
 
   const emailTemplate = (row) => row?.userId?.email || "-";
 
-  const listingTitleTemplate = (row) =>
-    row?.referenceId?.listingTitle || "-";
+const listingTitleTemplate = (row) => {
+  const title = row?.referenceId?.listingTitle || "-";
+  if (title === "-") return title;
+
+  const words = title.trim().split(/\s+/);
+  return words.length > 6 ? words.slice(0, 6).join(" ") + "..." : title;
+};
+
 
   const businessNameTemplate = (row) =>
     row?.referenceId?.businessName || "-";
@@ -146,7 +252,7 @@ const formatUserType = (value) => {
           onPage={onPageChange}
           dataKey="_id"
           emptyMessage="No payments found."
-          className="p-datatable-gridlines"
+          className="userPaymentHistoryTable__wrapper"
         >
           <Column header="Listing Title" body={listingTitleTemplate} />
           <Column
@@ -165,6 +271,12 @@ const formatUserType = (value) => {
   }
 />
 
+{/* <Column header="Stripe Customer ID" body={(row) => row?.userId?.stripe_customer_id || "-"} />
+    <Column header="Stripe Customer ID" body={(row) => row?.userId?.stripe_customer_id || "-"} />
+<Column header="Stripe Payment ID" body={(row) => row?.paymentIntentId || "-"} /> */}
+{/* <Column header="User Refund Reason" body={(row) => row?.refundReason || "-"} />
+<Column header="Admin Comment" body={(row) => row?.refundCommentByAdmin || "-"} /> */}
+
           
   <Column
   header="Amount ($)"
@@ -174,78 +286,153 @@ const formatUserType = (value) => {
       : "-"
   }
 />
-
-          <Column header="User" body={userNameTemplate} />
-          <Column header="Email" body={emailTemplate} />
-          <Column header="Stripe Customer ID" body={(row) => row?.userId?.stripe_customer_id || "-"} />
 <Column
   header="Listing Owner Type"
   body={(row) => formatUserType(row?.userId?.user_type)}
 />
 
+          {/* <Column header="User" body={userNameTemplate} />
+          <Column header="Email" body={emailTemplate} /> */}
 
-        
-
-        
-
-          <Column
+          {/* <Column
             field="transactionDateTime"
             header="Date"
             body={dateTemplate}
             style={{ width: "200px" }}
-          />
+          /> */}
 
-          {/* <Column header="Action" body={actionTemplate} /> */}
+          <Column header="Refund Requests" body={actionTemplate} />
         </DataTable>
       </div>
 
       {/* Invoice Popup */}
       <Dialog
-        header="Payment Invoice"
         visible={visible}
-        style={{ width: "600px" }}
-        modal
+        style={{ width: "900px" }}
+        className="invoice__box_admin_pop"
         onHide={() => setVisible(false)}
       >
         {loadingSingle ? (
           <p>Loading...</p>
         ) : singlePayment ? (
-          <div className="invoice__wrapper">
-            <div className="invoice__box">
-              <p><strong>Transaction ID:</strong> {singlePayment._id}</p>
+          <>
+          <div className="invoice__box_admin__wrapper">
+            <h2 className="invoice__header_haeding">Payment Invoice</h2>
+            <div className="invoice__box_admin_preview">
 
-              <p><strong>User:</strong> 
+              <div className="listing__data_admin_invoice"><strong>User:</strong> 
                 {singlePayment?.userId?.first_name}{" "}
                 {singlePayment?.userId?.last_name}
-              </p>
+              </div>
+              <div className="listing__data_admin_invoice"><strong>Email:</strong> {singlePayment?.userId?.email}</div>
+              <div className="listing__data_admin_invoice"><strong>Amount:</strong>               
+              {singlePayment?.amount ? `$${(singlePayment.amount / 100).toLocaleString()}` : "-"}
+             </div>
+              <div className="listing__data_admin_invoice"><strong>Customer Strip ID:</strong> {singlePayment?.userId?.stripe_customer_id}</div>
+              <div className="listing__data_admin_invoice"><strong>App Transaction ID:</strong> {singlePayment._id}</div>
+              <div className="listing__data_admin_invoice">
+                <strong>Stripe Payment ID:</strong>{" "}
+                {singlePayment?.paymentIntentId}
+              </div>
+             <div className="listing__data_admin_invoice">
+                <strong>Payment For:</strong>{" "}
+                {singlePayment?.paymentFor
+                  ?.toLowerCase()
+                  .split("_")
+                  .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                  .join(" ") || "-"}
+              </div>
 
-              <p><strong>Email:</strong> {singlePayment?.userId?.email}</p>
 
-              <p>
-                <strong>Listing:</strong>{" "}
-                {singlePayment?.objectId?.listingTitle}
-              </p>
+              <div className="listing__data_admin_invoice">
+                <strong>Listing Created Data:</strong>{" "}
+                {new Date(singlePayment.createdAt).toLocaleString()}
+              </div>
+              <div className="listing__data_admin_invoice"><strong>Payment Status:</strong> {singlePayment?.paymentStatus}</div>
+              <div className="listing__data_admin_invoice"><strong>Refund Status:</strong> {singlePayment?.refundStatus}</div>
 
-              <p>
-                <strong>Business:</strong>{" "}
-                {singlePayment?.objectId?.businessName}
-              </p>
+              <div className="listing__data_admin_invoice">
+                <strong>Refund Requested At:</strong>{" "}
+                {new Date(singlePayment.refundRequestedAt).toLocaleString()}
+              </div>
 
-              <p><strong>Amount:</strong> ${singlePayment.amount}</p>
+              <div className="listing__data_admin_invoice">
+                <strong>Refund Resolved At:</strong>{" "}
+                {singlePayment?.refundResolvedAt ? new Date(singlePayment.refundResolvedAt).toLocaleString() : "-"}
+              </div>
+              <div className="listing__data_admin_invoice refund_reason_invoice">
+                <strong>Refund Reason User:</strong>{" "}
+                {singlePayment?.refundReason ? singlePayment?.refundReason : "-"}
+              </div>
 
-              {/* <p><strong>Payment For:</strong> {singlePayment.paymentFor}</p> */}
-
-
-              <p>
-                <strong>Date:</strong>{" "}
-                {new Date(singlePayment.transactionDateTime).toLocaleString()}
-              </p>
+              <div className="listing__data_admin_invoice refund_comment_by_admin_invoice">
+                <strong>Admin Comment:</strong>{" "}
+                {singlePayment?.refundCommentByAdmin ? singlePayment?.refundCommentByAdmin : "-"}
+              </div>
             </div>
+            <div className="inv__footer"><div className="copyright__content_footer_inv">© {new Date().getFullYear()} ExitRamp. All rights reserved.</div></div>
           </div>
+          </>
         ) : (
           <p>No data available</p>
         )}
       </Dialog>
+      <Dialog
+  header="Refund Action"
+  visible={refundVisible}
+  style={{ width: "600px" }}
+  modal
+  onHide={() => setRefundVisible(false)}
+>
+  <div className="refund__popup_admin">
+    <p>
+      <strong>Payment ID:</strong> {selectedPayment?._id || "-"}
+    </p>
+
+    <p>
+      <strong>User:</strong>{" "}
+      {selectedPayment?.userId
+        ? `${selectedPayment.userId.first_name} ${selectedPayment.userId.last_name}`
+        : "-"}
+    </p>
+
+    <p>
+      <strong>Amount:</strong>{" "}
+      {selectedPayment?.amount ? `$${(selectedPayment.amount / 100).toLocaleString()}` : "-"}
+    </p>
+
+    <div className="mt-3">
+      <label className="block font-semibold mb-2">Admin Comment</label>
+
+      <textarea
+        value={adminComment}
+        onChange={(e) => setAdminComment(e.target.value)}
+        rows={4}
+        placeholder="Write comment..."
+        className="w-full p-2 border rounded"
+      />
+    </div>
+
+    <div className="flex gap-2 justify-end mt-4">
+      <Button
+        label="Reject"
+        icon="pi pi-times"
+        className="p-button-danger-admin"
+        loading={refundLoading}
+        onClick={() => handleRefundAction("reject")}
+      />
+
+      <Button
+        label="Approve"
+        icon="pi pi-check"
+        className="p-button-success-admin"
+        loading={refundLoading}
+        onClick={() => handleRefundAction("approve")}
+      />
+    </div>
+  </div>
+</Dialog>
+
     </>
   );
 };

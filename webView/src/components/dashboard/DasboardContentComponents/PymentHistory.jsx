@@ -12,11 +12,17 @@ import { Tag } from "primereact/tag";
 import { Dialog } from "primereact/dialog";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
+import { InputTextarea } from "primereact/inputtextarea";
 
 const PaymentHistory = () => {
   const navigate = useNavigate();
   const API_BASE = useRecoilValue(apiBaseUrlState);
   const { access_token } = useRecoilValue(authState) ?? {};
+// Refund dialog state
+const [refundVisible, setRefundVisible] = useState(false);
+const [refundPayment, setRefundPayment] = useState(null);
+const [refundReason, setRefundReason] = useState("");
+const [refundLoading, setRefundLoading] = useState(false);
 
   const [payments, setPayments] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -31,6 +37,50 @@ const PaymentHistory = () => {
 
   const invoiceRef = useRef(null);
 const [isPdf, setIsPdf] = useState(false);
+
+
+
+const openRefundDialog = (row) => {
+  setRefundPayment(row);
+  setRefundReason("");
+  setRefundVisible(true);
+};
+const submitRefundRequest = async () => {
+  if (!refundPayment?._id) return;
+
+  if (!refundReason.trim()) {
+    alert("Please enter refund reason.");
+    return;
+  }
+
+  try {
+    setRefundLoading(true);
+
+    await axios.post(
+      `${API_BASE}/payment/refund-request`,
+      {
+        paymentId: refundPayment._id,
+        reason: refundReason.trim(),
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    setRefundVisible(false);
+
+    alert("Refund request submitted successfully.");
+  } catch (error) {
+    console.error("Refund request error:", error);
+    alert("Failed to submit refund request.");
+  } finally {
+    setRefundLoading(false);
+  }
+};
+
 
   /* ===========================
      Fetch Payments List
@@ -115,16 +165,47 @@ pdf.save(
   ============================ */
   const actionTemplate = (row) => (
     <div className="action__listing_btns inv_poup">
-      {row.paymentStatus === "SUCCEEDED" ? (
+      {row.paymentStatus === "SUCCEEDED" ? (<>
+
+
+      {row?.refundStatus === "NOT_REQUESTED" ? (
+  <Button
+    label="Refund"
+    icon="pi pi-money-bill"
+    className="p-button-text p-button-sm btn-invoice"
+    onClick={() => openRefundDialog(row)}
+    tooltip="Request for refund"
+    tooltipOptions={{ position: "top" }}
+  />
+) : (
+  <>
+  {row?.refundStatus === "PENDING" ? 
+   <Button
+    label="Requested"
+    icon="pi pi-money-bill"
+    className="p-button-text p-button-sm btn-invoice"
+    
+    tooltip="Refund already requested"
+    tooltipOptions={{ position: "top" }}
+  />
+    : <><Tag value={row?.refundStatus} severity={row?.refundStatus === "APPROVED" ? "success" : "danger"} /></>}
+  </>
+  
+)}
+
         <Button
-          label="Invoice"
+
           icon="pi pi-file-pdf"
            className="p-button-text p-button-sm btn-invoice"
           onClick={() => openInvoice(row)}
            tooltip="View Invoice"
       tooltipOptions={{ position: "top" }}
         />
-        
+
+
+      
+
+        </>
       ) : (
         <Button
           label="Pay Now"
@@ -170,7 +251,18 @@ pdf.save(
 />
 
           <Column field="_id" header="Payment ID" style={{ width: "260px" }} />
-          <Column field="amount" header="Amount ($)" />
+          <Column field="paymentIntentId" header="Stripe ID" />
+          <Column body={(row) => `$${row?.amount || 0}`} header="Amount ($)" />
+<Column
+  header="Refund Reason"
+  body={(row) =>
+    row?.refundStatus !== "NOT_REQUESTED" ? row?.refundReason || "-" : "-"
+  }
+/>
+
+<Column header="Admin Comment" body={(row) => row?.refundCommentByAdmin || "-"} />
+
+
           <Column
             header="Status"
             body={statusTemplate}
@@ -181,7 +273,7 @@ pdf.save(
             body={formatDate}
             style={{ width: "200px" }}
           />
-          <Column header="Action" body={actionTemplate} />
+          <Column header="Refund Requests" body={actionTemplate} />
         </DataTable>
       </div>
 
@@ -284,6 +376,52 @@ pdf.save(
           </>
         )}
       </Dialog>
+      <Dialog
+  visible={refundVisible}
+  modal
+  style={{ width: "600px" }}
+  header="Request Refund"
+  onHide={() => setRefundVisible(false)}
+>
+  <div className="refund__popup_content_user">
+    <div className="refund__popup_user_field" >
+      <strong>Payment ID:</strong>
+      <div>{refundPayment?._id}</div>
+    </div>
+
+    <div className="refund__popup_user_field" >
+      <strong>Amount:</strong>
+      <div>${refundPayment?.amount || 0}</div>
+    </div>
+
+    <div className="refund__popup_user_field">
+      <label>Reason</label>
+      <InputTextarea
+        value={refundReason}
+        onChange={(e) => setRefundReason(e.target.value)}
+        rows={5}
+        placeholder="Write your reason..."
+      />
+    </div>
+
+    <div className="refund__popup_user_actions">
+      <Button
+        label="Cancel"
+        className="p-button-text"
+        onClick={() => setRefundVisible(false)}
+        disabled={refundLoading}
+      />
+
+      <Button
+        label={refundLoading ? "Submitting..." : "Submit Request"}
+        icon="pi pi-send"
+        onClick={submitRefundRequest}
+        disabled={refundLoading}
+      />
+    </div>
+  </div>
+</Dialog>
+
     </>
   );
 };
