@@ -13,7 +13,7 @@ export class QueryUsersDto {
   @Transform(({ value }) => parseInt(value, 10))
   @IsInt()
   @Min(1)
-  limit?: number = 10;
+  limit?: number = 10000;
 
   @IsOptional()
   @IsString()
