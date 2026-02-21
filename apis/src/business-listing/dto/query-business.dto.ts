@@ -13,7 +13,7 @@ export class QueryBusinessDto {
   @Transform(({ value }) => parseInt(value, 10))
   @IsInt()
   @Min(1)
-  limit?: number = 100;
+  limit?: number = 1000;
 
   @IsOptional()
   @IsString()
