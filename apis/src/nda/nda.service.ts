@@ -148,9 +148,10 @@ export class NdaService {
           businessType: { $ifNull: ['$business.businessType', 'N/A'] },
           ndaStatus: '$status',
           // cimUrl: { $ifNull: ['$business.cimUrl', 'N/A'] },
+          cimAccess: 1,
           cimUrl: {
                     $cond: {
-                      if: { $eq: ['$status', 'approved'] },
+                      if: { $eq: ['$cimAccess', 'approved'] },
                       then: { $ifNull: ['$business.cimUrl', 'N/A'] },
                       else: null
                     }

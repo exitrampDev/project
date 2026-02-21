@@ -33,5 +33,25 @@ export class AdminController {
     }
     
     
+    @UseGuards(JwtAuthGuard)
+    @Get('seller-dashboard-counts')
+    async getSellerDashboardCount() {
+        let userBrokerCount = await this.usersService.getAllUsersBrokerTotal();
+        let userIndividulaSellerCount = await this.usersService.getIndividulaSellerTotal();
+        let userBuyerCount = await this.usersService.getBuyerTotal();
+        let userCount = await this.usersService.getAllUsersTotal();
+        let businessCount = await this.businessService.getAllBusinessesTotal();
+        let businessLiveCount = await this.businessService.getAllLiveBusinessesTotal();
+        let ndaCount = await this.ndaService.getAllNdaTotal();
+        return {
+            users: userCount,
+            sellers: userIndividulaSellerCount,
+            brokers: userBrokerCount,
+            buyers: userBuyerCount,
+            businesses: businessCount,
+            businessLiveCount: businessLiveCount,
+            ndas: ndaCount
+        };
+    }
     
 }
