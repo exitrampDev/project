@@ -137,12 +137,7 @@ const saveIndustryTemplate = (indusValue) => (JSON.parse(Object(indusValue?.indu
       <div className="dashboard__container_main_buyer_free admin__dashboard_main_container">
         {/* ---------- Count Boxes ---------- */}
         <div className="dashboard__free_buyer_count_block">
-          <div className="dashboard__free_buyer_count_block_sav_listing">
-            <h3>Total Users</h3>
-            <p>{counts?.users ?? 0}</p>
-          </div>
-
-          <div className="dashboard__free_buyer_count_block_nda_submit">
+             <div className="dashboard__free_buyer_count_block_nda_submit">
             <h3>Total Sellers</h3>
             <p>{counts?.sellers ?? 0}</p>
           </div>
@@ -155,14 +150,24 @@ const saveIndustryTemplate = (indusValue) => (JSON.parse(Object(indusValue?.indu
             <h3>Total Buyers</h3>
             <p>{counts?.buyers ?? 0}</p>
           </div>
-          <div className="dashboard__free_buyer_count_block_profile_completion">
+          <div className="dashboard__free_buyer_count_block_sav_listing uesr__data_quarterly_activity">
+            <h3>Total Users</h3>
+            <p>{counts?.users ?? 0}</p>
+          </div>
+ <div className="dashboard__free_buyer_count_block_profile_completion uesr__data_quarterly_activity">
             <h3>Total Businesses</h3>
             <p>{counts?.businesses ?? 0}</p>
           </div>
-          <div className="dashboard__free_buyer_count_block_profile_completion">
+          <div className="dashboard__free_buyer_count_block_profile_completion  uesr__data_quarterly_activity">
             <h3>Total NDAs</h3>
             <p>{counts?.ndas ?? 0}</p>
           </div>
+          <div className="dashboard__free_buyer_count_block_profile_completion uesr__data_quarterly_activity">
+            <h3>Total Live Businesses</h3>
+            <p>{counts?.businessLiveCount ?? 0}</p>
+          </div>
+       
+         
         </div>
 
      

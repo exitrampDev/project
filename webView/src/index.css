@@ -1914,7 +1914,9 @@ button.logout-btn {
     font-size: 16px;
     margin: 0 0 10px 0;
 }
-
+.dashboard__container_main_buyer_free.admin__dashboard_main_container .dashboard__free_buyer_count_block_profile_completion.uesr__data_quarterly_activity,  .dashboard__container_main_buyer_free.admin__dashboard_main_container .dashboard__free_buyer_count_block_sav_listing.uesr__data_quarterly_activity {
+        width: calc(25% - 23px);
+}
 .refund__popup_content_user .refund__popup_user_field strong {
     display: block;
     font-size: 14px;
