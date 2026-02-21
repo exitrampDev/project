@@ -213,15 +213,12 @@ export class PaymentController {
         amount = 30; //30 USD for basic sellers
       }else if(user.role == 'seller_listing'){
         amount = 30; //60 USD for premium sellers
-      }
-      else if(user.role == 'seller_central'){
-        amount = 60; //60 USD for premium sellers
-      }
-      else if(user.role == 'seller_individual'){
+      }else if(user.role == 'seller_central'){
         amount = 30; //60 USD for premium sellers
-      }
-      else if(user.role == 'seller_broker'){
-        amount = 60; //60 USD for premium sellers
+      }else if(user.role == 'seller_individual'){
+        amount = 30; //60 USD for premium sellers
+      } else if(user.role == 'seller_broker'){
+        amount = 30; //60 USD for premium sellers
       }
     
     const session = await this.paymentsService.createPaymentIntent(

@@ -388,7 +388,7 @@ async attachFile(businessId: string, fileUrl: string, fileType: string = 'profit
     }
 
     // Update status
-    business.status = BusinessStatus.PENDING_FOR_PAYMENT;
+    business.status = BusinessStatus.BLOCK;
     await business.save();
 
   

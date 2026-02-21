@@ -448,7 +448,7 @@ BusinessSchema.virtual('cim', {
   justOne: true, // agar ek hi Cim per business hai
 });
 
-// ✅ VIRTUAL RELATION TO NDA
+//  VIRTUAL RELATION TO NDA
 BusinessSchema.virtual('ndas', {
   ref: 'Nda',
   localField: '_id',
