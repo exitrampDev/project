@@ -252,7 +252,7 @@ pdf.save(
 
           <Column field="_id" header="Payment ID"  />
           <Column field="referenceId._id" header="Listing ID"  />
-          <Column field="paymentIntentId" header="Stripe ID" />
+          {/* <Column field="paymentIntentId" header="Stripe ID" /> */}
           <Column body={(row) => `$${row?.amount || 0}`} header="Amount ($)" />
 <Column
   header="Refund Reason"
