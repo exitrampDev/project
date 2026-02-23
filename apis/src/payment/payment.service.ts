@@ -207,7 +207,7 @@ export class PaymentService {
     .populate({ 
       path: 'referenceId',       
       model: 'Business',
-      select: 'businessName businessType listingTitle listingDescription'
+      select: 'businessName businessType listingTitle listingDescription status'
     })
     .skip(skip)
     .limit(limit)
