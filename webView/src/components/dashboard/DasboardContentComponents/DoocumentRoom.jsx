@@ -338,7 +338,7 @@ const truncatedTitle =
                 }}
               />
             <Column field="buyerName" header="Buyer Name" />
-            <Column header="NDA Status" body={() => ndaStatusUI("approved")} />
+            <Column header="NDA Status" body={(row) => ndaStatusUI(row.ndaStatus)} />
             <Column header="CIM Shared" body={(row) => ndaStatusUI(row.ndaStatus)} />
             <Column header="Doc Room Access" body={(row) => ndaStatusUI(row.docRoomAccess)} />
             <Column

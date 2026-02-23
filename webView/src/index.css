@@ -1923,7 +1923,15 @@ button.logout-btn {
     color: #002f68;
     margin: 0;
 }
+.listing__dashboard_weakly_activity.listing__dashboard_save_listing.buyer__dashboard {
+    flex-wrap: wrap;
+}
 
+.listing__dashboard_weakly_activity.listing__dashboard_save_listing.buyer__dashboard .listing__dashboard_listing_widget_header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
 .refund__popup_content_user .refund__popup_user_field label {
     display: block;
     font-size: 14px;
