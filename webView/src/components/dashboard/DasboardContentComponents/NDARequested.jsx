@@ -74,6 +74,8 @@ const CIMAccessNDASubmit = (ndaStatus) => {
 
 
 const CIMAccessLink = (ndaStatus,cimUrl) => {
+  console.log("CIM URL:", cimUrl);
+  console.log("NDA Status:", ndaStatus);
   if (ndaStatus === "approved") {
     return (
      <>

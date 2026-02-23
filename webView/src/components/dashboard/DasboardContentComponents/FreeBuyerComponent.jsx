@@ -6,6 +6,8 @@ import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { useRecoilValue } from "recoil";
+import { Link } from "react-router-dom";
+import { Tag } from "primereact/tag";
 import { authState, apiBaseUrlState } from "../../../recoil/ctaState";
 
 const SellerCentralDashboard = () => {
@@ -20,6 +22,7 @@ const [approvedNdaCount, setApprovedNdaCount] = useState(0);
   const [listingSavedCount, setListingSavedCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [ndaList, setNdaList] = useState([]);
 
   const axiosConfig = {
     headers: {
@@ -134,8 +137,31 @@ if (Array.isArray(data?.data)) {
       }
     };
 
+    
+  const fetchNdaList = async () => {
+      try {
+        const { data } = await axios.get(`${API_BASE}/nda`, {
+          headers: {
+            Authorization: `Bearer ${access_token}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        // Ensure data is an array
+        setNdaList(data.data);
+
+        console.log("NDA List:", ndaList);
+      } catch (error) {
+        console.error("Error fetching NDA list:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+fetchNdaList();
     fetchCounts();
   }, [API_BASE, access_token]);
+
+
 
   /* ---------------- Templates ---------------- */
   // const listingNameTemplate = (rowData) => (
@@ -169,6 +195,93 @@ const listingNameTemplate = (rowData) => {
   );
 };
 
+const CIMAccessNDASubmit = (ndaStatus) => {
+  if (ndaStatus === "approved") {
+    return (
+      <span className="cimAccessNDAsubmit__fields_datatable field__unlock_NDA">
+        <i className="pi pi-unlock"></i> CIM Unlocked
+      </span>
+    );
+  } else if (ndaStatus === "pending") {
+    return (
+      <span className="cimAccessNDAsubmit__fields_datatable field__approve_NDA">
+        <i className="pi pi-clock"></i> Waiting for Approval
+      </span>
+    );
+  } else if (ndaStatus === "rejected") {
+    return (
+      <span className="cimAccessNDAsubmit__fields_datatable field__denied_NDA">
+        <i className="pi pi-times"></i> Access Denied
+      </span>
+    );
+  } else {
+    return (
+      <span className="cimAccessNDAsubmit__fields_datatable field__notAvailable_NDA">
+        <i className="pi pi-lock"></i> Not Available
+      </span>
+    );
+  }
+};
+
+const CIMAccessLink = (ndaStatus,cimUrl) => {
+  console.log("CIM URL:", cimUrl);
+  console.log("NDA Status:", ndaStatus);
+  if (ndaStatus === "approved") {
+    return (
+     <>
+      {cimUrl? 
+      <div className="">
+        <Link to={`${API_BASE}${cimUrl}`} className="cim__view_CIMAccessLink">
+         <i className="pi pi-file"></i> 
+          View CIM
+        </Link>
+      </div>
+       : <div className="cim__view_CIMAccessLink CIMAccessLink__notAvailable">
+         <i className="pi pi-file"></i> 
+           CIM Not Created
+      </div>}
+     </>
+    );
+  } else if (ndaStatus === "pending") {
+    return (
+      <div className="CIMAccessLink__approval">
+        <i className="pi pi-clock"></i> Waiting for Approval
+      </div>
+    );
+  } else if (ndaStatus === "rejected") {
+    return (
+      <div className="CIMAccessLink__accessDenied">
+        <i className="pi pi-lock"></i> 
+          CIM Available After Approval
+      </div>
+    );
+  } else {
+    return (
+      <div className="CIMAccessLink__notAvailable">
+        <i className="pi pi-lock"></i> Not Available
+      </div>
+    );
+  }
+};
+  const ndaStatusTemplate = (row) => {
+    const status = row.ndaStatus?.toLowerCase();
+    const severity =
+      status === "approved"
+        ? "success"
+        : status === "pending"
+        ? "warning"
+        : "danger";
+    return <Tag value={row.ndaStatus} severity={severity} />;
+  };
+
+
+const DueDiligenceAction = (statusNDA, Id) => { 
+  return (
+    <>
+ {statusNDA === "approved" ? (<><Link to={`/user/due-diligence/${Id}`}> view</Link></>) : statusNDA === "pending" ? (<><Tag value={statusNDA} severity="warning" /></>) : (<><Tag value={statusNDA} severity="danger" /></>)}
+    </>
+  );
+}
 
 
   const industryTemplate = (row) =>
@@ -267,7 +380,71 @@ const listingNameTemplate = (rowData) => {
           </div>
 
           <div className="listing__dashboard_listing_widget lisiting_recent_view_widget">
-            <div className="listing__dashboard_listing_widget_header">
+           <div className="listing__dashboard_listing_widget_header">
+              <h3>NDA Requests</h3>
+              <NavLink
+                to="/user/nda-requested"
+                className="view_all"
+              >
+                View All
+              </NavLink>
+            </div>
+
+              <DataTable
+        value={ndaList}
+        loading={loading}
+        paginator
+        rows={10}
+        stripedRows
+        emptyMessage="No NDA requests found."
+      >
+       <Column
+  header="Listing Name"
+  sortable
+  body={(rowData) => {
+    const text = rowData?.listingTitle || "";
+    const words = text.split(" ");
+    return words.length > 6 ? words.slice(0, 6).join(" ") + "..." : text;
+  }}
+/>
+
+<Column
+          field="ndaStatus"
+          header="NDA Status"
+          body={ndaStatusTemplate}
+          sortable
+        />
+        <Column body={(rowData) => CIMAccessNDASubmit(rowData?.ndaStatus)} header="CIM Access" />
+        <Column body={(rowData) =>  rowData?.submittedOn ? new Date(rowData?.submittedOn).toLocaleDateString() : "-"} header="Submitted On" />
+        <Column body={(rowData) =>  rowData?.sellerResponseOn ? new Date(rowData?.sellerResponseOn).toLocaleDateString() : "-"} header="Seller Response" />
+        {/* <Column body={(rowData) =>  rowData?.docRoomAccess === "approved" ? (<><Link to={`/user/document-room/${rowData?.businessId}`} className="cim__view_CIMAccessLink">  <i className="pi pi-file"></i> View Doc Room</Link></>) : (<><div className="CIMAccessLink__accessDenied"> <i className="pi pi-lock"></i> View After Approval</div></>)} header="Document Room" />
+       <Column body={(rowData) => DueDiligenceAction(rowData?.ndaStatus, rowData?.businessId)} header="Due Diligence" />
+
+        */}
+      </DataTable>
+          </div>
+        </div>
+
+        {/* ---------- Saved Listings ---------- */}
+        <div className="listing__dashboard_weakly_activity listing__dashboard_save_listing buyer__dashboard">
+          <div className="listing__dashboard_nda_request_data_tables width__full">
+            <h3>Saved Listings</h3>
+
+            <DataTable value={saveListing} emptyMessage="No saved listings">
+              <Column header="Listing Name" body={listingNameTemplate} />
+              <Column header="Industry" body={industryTemplate} />
+              <Column header="Business State" field="businessState" />
+              <Column header="Cash Flow" field="cashFlow" />
+              <Column
+                header="Asking Price"
+                body={(row) => moneyTemplate(row.askingPrice)}
+              />
+              <Column header="Created Date" body={dateTemplate} />
+            </DataTable>
+          </div>
+<div className="listing__dashboard_nda_request_data_tables width__full">
+
+           <div className="listing__dashboard_listing_widget_header">
               <h3>Recently Viewed</h3>
               <NavLink
                 to="/user/recent-view-listing"
@@ -287,26 +464,7 @@ const listingNameTemplate = (rowData) => {
               />
               <Column header="Created Date" body={dateTemplate} />
             </DataTable>
-          </div>
-        </div>
-
-        {/* ---------- Saved Listings ---------- */}
-        <div className="listing__dashboard_weakly_activity listing__dashboard_save_listing">
-          <div className="listing__dashboard_nda_request_data_tables width__full">
-            <h3>Saved Listings</h3>
-
-            <DataTable value={saveListing} emptyMessage="No saved listings">
-              <Column header="Listing Name" body={listingNameTemplate} />
-              <Column header="Industry" body={industryTemplate} />
-              <Column header="Business State" field="businessState" />
-              <Column header="Cash Flow" field="cashFlow" />
-              <Column
-                header="Asking Price"
-                body={(row) => moneyTemplate(row.askingPrice)}
-              />
-              <Column header="Created Date" body={dateTemplate} />
-            </DataTable>
-          </div>
+</div>
         </div>
 
         {error && <p className="error_text">{error}</p>}

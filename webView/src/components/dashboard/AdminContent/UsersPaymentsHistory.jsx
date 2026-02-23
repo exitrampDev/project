@@ -1,9 +1,9 @@
 // UserPaymentHistory.jsx
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { useRecoilValue } from "recoil";
 import { apiBaseUrlState, authState } from "../../../recoil/ctaState";
-
+import { Toast } from "primereact/toast";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Tag } from "primereact/tag";
@@ -13,6 +13,7 @@ import DashboardHeader from "../DasboardContentComponents/DashboardHeaderBlock";
 import { Link } from "react-router-dom";
 
 const PaymentHistory = () => {
+  const toast = useRef(null);
   const API_BASE = useRecoilValue(apiBaseUrlState);
   const { access_token } = useRecoilValue(authState) ?? {};
 
@@ -148,7 +149,31 @@ const handleRefundAction = async (type) => {
     //   setLoadingSingle(false);
     // }
   };
+const handleBlockListing = async (listingId,statusGet) => {
+  // console.log("handleBlockListing called with:", listingId, statusGet);
+  if (!listingId) return;
+  try {
+   
+    await axios.patch(
+      `${API_BASE}/business-listing/${listingId}/update-business-status`,
+      { status: statusGet },
+      {
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+        },
+      }
+    );
 
+    toast.current.show({
+      severity: "success",
+      detail: `Listing has been ${statusGet} successfully.`,
+      life: 4000,
+    });
+  } catch (err) {
+    console.error("❌ Error blocking listing:", err);
+    alert("Failed to block listing. Please try again.");
+  }
+};
   // Action btn
   const actionTemplate = (row) => (
     <div className="action__listing_btns inv_poup">
@@ -156,32 +181,45 @@ const handleRefundAction = async (type) => {
 
 
       {row?.refundStatus === "NOT_REQUESTED" ? (
-  <Button
-    label="Request Not Received "
-    icon="pi pi-money-bill"
-    className="p-button-text p-button-sm btn-invoice"
-    tooltip="Request for refund"
-    tooltipOptions={{ position: "top" }}
-  />
-) : (
-  
-<>
-{row?.refundStatus === "PENDING" ? 
-  <Button
-  label="Take Action"
-  icon="pi pi-money-bill"
-  className="p-button-text p-button-sm btn-invoice"
-  onClick={() => {
-    setSelectedPayment(row);
-    setAdminComment("");
-    setRefundVisible(true);
-  }}
-  tooltip="Refund already requested"
-  tooltipOptions={{ position: "top" }}
-/>
-  : <><Tag value={row?.refundStatus} severity={row?.refundStatus === "APPROVED" ? "success" : "danger"} /></>}
-</>
-)}
+        <Button
+          label="Request Not Received "
+          icon="pi pi-money-bill"
+          className="p-button-text p-button-sm btn-invoice"
+          tooltip="Request for refund"
+          tooltipOptions={{ position: "top" }}
+        />
+      ) : (
+        
+      <>
+      {row?.refundStatus === "PENDING" ? 
+        <Button
+        label="Take Action"
+        icon="pi pi-money-bill"
+        className="p-button-text p-button-sm btn-invoice"
+        onClick={() => {
+          setSelectedPayment(row);
+          setAdminComment("");
+          setRefundVisible(true);
+        }}
+        tooltip="Refund already requested"
+        tooltipOptions={{ position: "top" }}
+      />
+        : <>
+        
+          <Tag value={row?.refundStatus} severity={row?.refundStatus === "APPROVED" ? "success" : "danger"} />
+         <Button
+        label="Block Listing"
+        className="p-button-text p-button-sm btn-invoice"
+        onClick={() => {
+          handleBlockListing(row?.referenceId?._id,"block");
+        }}
+        tooltip="Block Listing"
+        tooltipOptions={{ position: "top" }}
+      />
+        </>}
+      </>
+      )
+    }
 
       
 
@@ -240,6 +278,7 @@ const formatUserType = (value) => {
 
   return (
     <>
+     <Toast ref={toast} />
       <DashboardHeader headingData="Payment History" />
 
       <div className="my__save_listing_wrap my__payment_history_table">
