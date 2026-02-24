@@ -318,7 +318,7 @@ export class NdaService {
           sellerResponseOn: 1,
           message: 1,
           submittedByEmail: '$user.email',
-          // buyer_data: '$buyer', //for all buyers in array
+          buyer_data: '$user', //for all buyers in array
           buyer: { $ifNull: [{ $arrayElemAt: ['$user', 0] }, {}] },
           buyerName: {
             $let: {
