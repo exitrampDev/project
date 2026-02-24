@@ -262,47 +262,26 @@ export class NdaService {
     // {
     //   $unwind: { path: '$buyer', preserveNullAndEmptyArrays: true }
     // },
-
-   {
+ {
     $lookup: {
-      from: 'users',
-      let: { buyerIdObj: "$submittedBy" },
-      pipeline: [
-        {
-          $match: {  $expr: {
-              $eq: [
-                { $toObjectId: "$userId" }, 
-                "$$buyerIdObj"             
-              ]
-            }
-          }
-        }
-      ],
-      as: 'buyer'
+      from: 'businesses',
+      localField: 'businessId',
+      foreignField: '_id',
+      as: 'business'
     }
   },
-     
-      {
-        $lookup: {
-          from: 'businesses',
-          let: { businessIdObj: { $toObjectId: "$businessId" } },
-          pipeline: [
-            { $match: { $expr: { $eq: ["$_id", "$$businessIdObj"] } } },
-            { $project: { listingTitle: 1, businessType: 1 } }
-          ],
-          as: 'business'
-        }
-      },
-      { $unwind: { path: '$business', preserveNullAndEmptyArrays: true } },
-      {
-        $lookup: {
-          from: 'users',
-          localField: 'submittedBy',
-          foreignField: '_id',
-          as: 'user',
-        },
-      },
-      { $unwind: { path: '$user', preserveNullAndEmptyArrays: true } },
+  { $unwind: { path: '$business', preserveNullAndEmptyArrays: true } },
+
+  // 🔹 Join User (Buyer)
+  {
+    $lookup: {
+      from: 'users',
+      localField: 'submittedBy',
+      foreignField: '_id',
+      as: 'user'
+    }
+  },
+  { $unwind: { path: '$user', preserveNullAndEmptyArrays: true } },
     ];
 
     // 👉 Search ko lookup ke baad lagana hai (businessName ke liye)
@@ -340,7 +319,7 @@ export class NdaService {
           message: 1,
           submittedByEmail: '$user.email',
           // buyer_data: '$buyer', //for all buyers in array
-          buyer: { $ifNull: [{ $arrayElemAt: ['$buyer', 0] }, {}] },
+          buyer: { $ifNull: [{ $arrayElemAt: ['$user', 0] }, {}] },
           buyerName: {
             $let: {
               vars: {
