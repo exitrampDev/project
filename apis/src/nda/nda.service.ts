@@ -230,164 +230,145 @@ export class NdaService {
     };
   }
 
-  async findAllForOwner(query: QueryNdaDto, userId: string, businessId: string) {
-    const {
-      search = '',
-      page = 1,
-      limit = 10,
-      sortBy = 'createdAt',
-      order = 'desc',
-      ndaStatus,
-      cimStatus,
-    } = query;
+  async findAllForOwner(query: QueryNdaDto, userId: string) {
+  const {
+    search = '',
+    page = 1,
+    limit = 10,
+    sortBy = 'createdAt',
+    order = 'desc',
+    ndaStatus,
+    cimStatus,
+  } = query;
 
-    const sortOrder = order === 'desc' ? -1 : 1;
+  const sortOrder = order === 'desc' ? -1 : 1;
 
-    // Sirf current user ka data
-    const matchFilter: any = { businessOwnerId: userId };
+  // 🔐 Sort whitelist (important)
+  const allowedSortFields = [
+    'createdAt',
+    'status',
+    'cimAccess',
+    'sellerResponseOn'
+  ];
+  const safeSortBy = allowedSortFields.includes(sortBy)
+    ? sortBy
+    : 'createdAt';
 
-    if (ndaStatus) matchFilter.status = ndaStatus;
-    if (cimStatus) matchFilter.cimAccess = cimStatus;
+  const matchFilter: any = { businessOwnerId: userId };
 
-    const aggregationPipeline: PipelineStage[] = [
-      { $match: matchFilter },
-    //  {
-    //   $lookup: {
-    //     from: 'buyers',
-    //     localField: 'submittedBy',
-    //     foreignField: 'userId',
-    //     as: 'buyer',
-    //   }
-    // },
-    // {
-    //   $unwind: { path: '$buyer', preserveNullAndEmptyArrays: true }
-    // },
- {
-    $lookup: {
-      from: 'businesses',
-      localField: 'businessId',
-      foreignField: '_id',
-      as: 'business'
-    }
-  },
-  { $unwind: { path: '$business', preserveNullAndEmptyArrays: true } },
+  if (ndaStatus) matchFilter.status = ndaStatus;
+  if (cimStatus) matchFilter.cimAccess = cimStatus;
 
-  // 🔹 Join User (Buyer)
-  {
-    $lookup: {
-      from: 'users',
-      localField: 'submittedBy',
-      foreignField: '_id',
-      as: 'user'
-    }
-  },
-  { $unwind: { path: '$user', preserveNullAndEmptyArrays: true } },
-    ];
+  const aggregationPipeline: PipelineStage[] = [
+    { $match: matchFilter },
 
-    // 👉 Search ko lookup ke baad lagana hai (businessName ke liye)
-    if (search) {
-      aggregationPipeline.push({
-        $match: {
-          $or: [
-            { message: { $regex: search, $options: 'i' } },
-            { cimAccess: { $regex: search, $options: 'i' } },
-            { status: { $regex: search, $options: 'i' } },
-            { 'business.listingTitle': { $regex: search, $options: 'i' } }, // 👈 new
-          ],
-        },
-      });
-    }
-
-    aggregationPipeline.push(
-      { $sort: { [sortBy]: sortOrder } },
-      { $skip: (page - 1) * limit },
-      { $limit: limit },
-      {
-        $project: {
-          _id: 1,
-          businessId:1,
-          submittedBy:1,
-          docRoomAccess:1,
-          buyerSignature:1,
-          sellerSignature:1,
-          listingTitle: { $ifNull: ['$business.listingTitle', 'N/A'] },
-          businessType: { $ifNull: ['$business.businessType', 'N/A'] },
-          ndaStatus: '$status',
-          cimAccess: 1,
-          submittedOn: '$createdAt',
-          sellerResponseOn: 1,
-          message: 1,
-          submittedByEmail: '$user.email',
-          buyer_data: '$user', //for all buyers in array
-          buyer: { $ifNull: [{ $arrayElemAt: ['$user', 0] }, {}] },
-          buyerName: {
-            $let: {
-              vars: {
-                full: {
-                  $trim: {
-                    input: {
-                      $concat: [
-                        { $ifNull: ['$user.first_name', ''] },
-                        ' ',
-                        { $ifNull: ['$user.last_name', ''] }
-                      ]
-                    }
-                  }
-                }
-              },
-              in: { $cond: [{ $eq: ['$$full', ''] }, 'N/A', '$$full'] }
-            }
-          },
-          submittedByRole: { $ifNull: ['$user.role', 'N/A'] },
-        },
+    // 🔹 Business Lookup
+    {
+      $lookup: {
+        from: 'businesses',
+        localField: 'businessId',
+        foreignField: '_id',
+        as: 'business'
       }
-    );
+    },
+    { $unwind: { path: '$business', preserveNullAndEmptyArrays: true } },
 
-    const data = await this.ndaModel.aggregate(aggregationPipeline).exec();
+    // 🔹 User Lookup
+    {
+      $lookup: {
+        from: 'users',
+        localField: 'submittedBy',
+        foreignField: '_id',
+        as: 'user'
+      }
+    },
+    { $unwind: { path: '$user', preserveNullAndEmptyArrays: true } },
+  ];
 
-    // Count pipeline bhi search ko consider karega
-    const countPipeline: PipelineStage[] = [
-      { $match: matchFilter },
-      {
-        $lookup: {
-          from: 'businesses',
-          let: { businessIdObj: { $toObjectId: "$businessId" } },
-          pipeline: [
-            { $match: { $expr: { $eq: ["$_id", "$$businessIdObj"] } } },
-            { $project: { businessName: 1 } }
-          ],
-          as: 'business'
-        }
+  // 🔍 Search (after lookup)
+  if (search) {
+    aggregationPipeline.push({
+      $match: {
+        $or: [
+          { message: { $regex: search, $options: 'i' } },
+          { cimAccess: { $regex: search, $options: 'i' } },
+          { status: { $regex: search, $options: 'i' } },
+          { 'business.listingTitle': { $regex: search, $options: 'i' } },
+        ],
       },
-      { $unwind: { path: '$business', preserveNullAndEmptyArrays: true } },
-    ];
-
-    if (search) {
-      countPipeline.push({
-        $match: {
-          $or: [
-            { message: { $regex: search, $options: 'i' } },
-            { cimAccess: { $regex: search, $options: 'i' } },
-            { status: { $regex: search, $options: 'i' } },
-            { 'business.businessName': { $regex: search, $options: 'i' } },
-          ],
-        },
-      });
-    }
-
-    countPipeline.push({ $count: 'total' });
-
-    const countResult = await this.ndaModel.aggregate(countPipeline).exec();
-    const total = countResult[0]?.total || 0;
-
-    return {
-      data,
-      total,
-      page,
-      limit,
-      totalPages: Math.ceil(total / limit),
-    };
+    });
   }
+
+  aggregationPipeline.push(
+    { $sort: { [safeSortBy]: sortOrder } },
+    { $skip: (page - 1) * limit },
+    { $limit: limit },
+    {
+      $project: {
+        _id: 1,
+        businessId: 1,
+        submittedBy: 1,
+        docRoomAccess: 1,
+        buyerSignature: 1,
+        sellerSignature: 1,
+        listingTitle: { $ifNull: ['$business.listingTitle', 'N/A'] },
+        businessType: { $ifNull: ['$business.businessType', 'N/A'] },
+        ndaStatus: '$status',
+        cimAccess: 1,
+        submittedOn: '$createdAt',
+        sellerResponseOn: 1,
+        message: 1,
+        submittedByEmail: { $ifNull: ['$user.email', 'N/A'] },
+        buyer_data: '$user', // full user object
+        submittedByRole: { $ifNull: ['$user.role', 'N/A'] },
+      },
+    }
+  );
+
+  const data = await this.ndaModel.aggregate(aggregationPipeline).exec();
+
+  // ---------------- COUNT PIPELINE ----------------
+
+  const countPipeline: PipelineStage[] = [
+    { $match: matchFilter },
+
+    {
+      $lookup: {
+        from: 'businesses',
+        localField: 'businessId',
+        foreignField: '_id',
+        as: 'business'
+      }
+    },
+    { $unwind: { path: '$business', preserveNullAndEmptyArrays: true } },
+  ];
+
+  if (search) {
+    countPipeline.push({
+      $match: {
+        $or: [
+          { message: { $regex: search, $options: 'i' } },
+          { cimAccess: { $regex: search, $options: 'i' } },
+          { status: { $regex: search, $options: 'i' } },
+          { 'business.listingTitle': { $regex: search, $options: 'i' } },
+        ],
+      },
+    });
+  }
+
+  countPipeline.push({ $count: 'total' });
+
+  const countResult = await this.ndaModel.aggregate(countPipeline).exec();
+  const total = countResult[0]?.total || 0;
+
+  return {
+    data,
+    total,
+    page,
+    limit,
+    totalPages: Math.ceil(total / limit),
+  };
+}
 
     async findAllForOwnerDoc(query: QueryNdaDto, userId: string, businessId: string) {
     const {
