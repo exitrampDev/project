@@ -207,6 +207,7 @@ const handleBlockListing = async (listingId,statusGet) => {
         : <>
         
           <Tag value={row?.refundStatus} severity={row?.refundStatus === "APPROVED" ? "success" : "danger"} />
+          {row?.referenceId?.status !== "block" ? (
          <Button
         label="Block Listing"
         className="p-button-text p-button-sm btn-invoice"
@@ -215,7 +216,8 @@ const handleBlockListing = async (listingId,statusGet) => {
         }}
         tooltip="Block Listing"
         tooltipOptions={{ position: "top" }}
-      />
+      />)
+    : <Tag value="Listing Blocked" severity={row?.referenceId?.status === "block" ? "danger" : "success"} />}
         </>}
       </>
       )
