@@ -265,7 +265,7 @@ export class NdaService {
 
    {
     $lookup: {
-      from: 'buyers',
+      from: 'users',
       let: { buyerIdObj: "$submittedBy" },
       pipeline: [
         {
@@ -339,7 +339,7 @@ export class NdaService {
           sellerResponseOn: 1,
           message: 1,
           submittedByEmail: '$user.email',
-          buyer_data: '$buyer', //for all buyers in array
+          // buyer_data: '$buyer', //for all buyers in array
           buyer: { $ifNull: [{ $arrayElemAt: ['$buyer', 0] }, {}] },
           buyerName: {
             $let: {
