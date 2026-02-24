@@ -230,7 +230,12 @@ export class NdaService {
     };
   }
 
-  async findAllForOwner(query: QueryNdaDto, userId: string) {
+  
+  async findAllForOwner(
+  query: QueryNdaDto,
+  userId: string,
+  businessId?: string
+) {
   const {
     search = '',
     page = 1,
@@ -243,21 +248,32 @@ export class NdaService {
 
   const sortOrder = order === 'desc' ? -1 : 1;
 
-  // 🔐 Sort whitelist (important)
+  // 🔐 Sort whitelist (security best practice)
   const allowedSortFields = [
     'createdAt',
     'status',
     'cimAccess',
-    'sellerResponseOn'
+    'sellerResponseOn',
   ];
+
   const safeSortBy = allowedSortFields.includes(sortBy)
     ? sortBy
     : 'createdAt';
 
-  const matchFilter: any = { businessOwnerId: userId };
+  // ---------------- MATCH FILTER ----------------
+
+  const matchFilter: any = {
+    businessOwnerId: new Types.ObjectId(userId),
+  };
+
+  if (businessId) {
+    matchFilter.businessId = new Types.ObjectId(businessId);
+  }
 
   if (ndaStatus) matchFilter.status = ndaStatus;
   if (cimStatus) matchFilter.cimAccess = cimStatus;
+
+  // ---------------- MAIN PIPELINE ----------------
 
   const aggregationPipeline: PipelineStage[] = [
     { $match: matchFilter },
@@ -268,8 +284,8 @@ export class NdaService {
         from: 'businesses',
         localField: 'businessId',
         foreignField: '_id',
-        as: 'business'
-      }
+        as: 'business',
+      },
     },
     { $unwind: { path: '$business', preserveNullAndEmptyArrays: true } },
 
@@ -279,13 +295,13 @@ export class NdaService {
         from: 'users',
         localField: 'submittedBy',
         foreignField: '_id',
-        as: 'user'
-      }
+        as: 'user',
+      },
     },
     { $unwind: { path: '$user', preserveNullAndEmptyArrays: true } },
   ];
 
-  // 🔍 Search (after lookup)
+  // 🔍 Search after lookup
   if (search) {
     aggregationPipeline.push({
       $match: {
@@ -311,13 +327,16 @@ export class NdaService {
         docRoomAccess: 1,
         buyerSignature: 1,
         sellerSignature: 1,
+
         listingTitle: { $ifNull: ['$business.listingTitle', 'N/A'] },
         businessType: { $ifNull: ['$business.businessType', 'N/A'] },
+
         ndaStatus: '$status',
         cimAccess: 1,
         submittedOn: '$createdAt',
         sellerResponseOn: 1,
         message: 1,
+
         submittedByEmail: { $ifNull: ['$user.email', 'N/A'] },
         buyer_data: '$user', // full user object
         submittedByRole: { $ifNull: ['$user.role', 'N/A'] },
@@ -337,8 +356,8 @@ export class NdaService {
         from: 'businesses',
         localField: 'businessId',
         foreignField: '_id',
-        as: 'business'
-      }
+        as: 'business',
+      },
     },
     { $unwind: { path: '$business', preserveNullAndEmptyArrays: true } },
   ];
