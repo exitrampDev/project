@@ -316,7 +316,7 @@ export class NdaService {
           sellerResponseOn: 1,
           message: 1,
           submittedByEmail: '$buyer.email',        
-          // buyer: { $ifNull: [{ $arrayElemAt: ['$user', 0] }, {}] },         
+          buyer: '$buyer',         
           submittedByRole: { $ifNull: ['$buyer.role', 'N/A'] },
         },
       }
