@@ -271,7 +271,7 @@ export class NdaService {
           let: { submittedByObj: { $toObjectId: "$submittedBy" } },
           pipeline: [
             { $match: { $expr: { $eq: ["$_id", "$$submittedByObj"] } } },
-            { $project: { firstName: 1, lastName: 1, email: 1 } }
+            // { $project: { firstName: 1, lastName: 1, email: 1 } }
           ],
           as: 'buyer'
         }
