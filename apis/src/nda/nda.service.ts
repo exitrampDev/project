@@ -263,24 +263,24 @@ export class NdaService {
     //   $unwind: { path: '$buyer', preserveNullAndEmptyArrays: true }
     // },
 
-   {
-    $lookup: {
-      from: 'buyers',
-      let: { buyerIdObj: "$submittedBy" },
-      pipeline: [
-        {
-          $match: {  $expr: {
-              $eq: [
-                { $toObjectId: "$userId" }, 
-                "$$buyerIdObj"             
-              ]
-            }
-          }
-        }
-      ],
-      as: 'buyer'
-    }
-  },
+  //  {
+  //   $lookup: {
+  //     from: 'buyers',
+  //     let: { buyerIdObj: "$submittedBy" },
+  //     pipeline: [
+  //       {
+  //         $match: {  $expr: {
+  //             $eq: [
+  //               { $toObjectId: "$userId" }, 
+  //               "$$buyerIdObj"             
+  //             ]
+  //           }
+  //         }
+  //       }
+  //     ],
+  //     as: 'buyer'
+  //   }
+  // },
      
       {
         $lookup: {
@@ -340,7 +340,7 @@ export class NdaService {
           message: 1,
           submittedByEmail: '$user.email',
           // buyer_data: '$buyer', //for all buyers in array
-          buyer: { $ifNull: [{ $arrayElemAt: ['$buyer', 0] }, {}] },
+          buyer: { $ifNull: [{ $arrayElemAt: ['$user', 0] }, {}] },
           buyerName: {
             $let: {
               vars: {
