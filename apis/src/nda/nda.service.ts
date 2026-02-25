@@ -251,36 +251,6 @@ export class NdaService {
 
     const aggregationPipeline: PipelineStage[] = [
       { $match: matchFilter },
-    //  {
-    //   $lookup: {
-    //     from: 'buyers',
-    //     localField: 'submittedBy',
-    //     foreignField: 'userId',
-    //     as: 'buyer',
-    //   }
-    // },
-    // {
-    //   $unwind: { path: '$buyer', preserveNullAndEmptyArrays: true }
-    // },
-
-  //  {
-  //   $lookup: {
-  //     from: 'buyers',
-  //     let: { buyerIdObj: "$submittedBy" },
-  //     pipeline: [
-  //       {
-  //         $match: {  $expr: {
-  //             $eq: [
-  //               { $toObjectId: "$userId" }, 
-  //               "$$buyerIdObj"             
-  //             ]
-  //           }
-  //         }
-  //       }
-  //     ],
-  //     as: 'buyer'
-  //   }
-  // },
      
       {
         $lookup: {
@@ -294,15 +264,7 @@ export class NdaService {
         }
       },
       { $unwind: { path: '$business', preserveNullAndEmptyArrays: true } },
-      {
-        $lookup: {
-          from: 'users',
-          localField: 'submittedBy',
-          foreignField: '_id',
-          as: 'user',
-        },
-      },
-      { $unwind: { path: '$user', preserveNullAndEmptyArrays: true } },
+      
     ];
 
     // 👉 Search ko lookup ke baad lagana hai (businessName ke liye)
@@ -338,28 +300,9 @@ export class NdaService {
           submittedOn: '$createdAt',
           sellerResponseOn: 1,
           message: 1,
-          submittedByEmail: '$user.email',
-          // buyer_data: '$buyer', //for all buyers in array
-          buyer: { $ifNull: [{ $arrayElemAt: ['$user', 0] }, {}] },
-          buyerName: {
-            $let: {
-              vars: {
-                full: {
-                  $trim: {
-                    input: {
-                      $concat: [
-                        { $ifNull: ['$user.first_name', ''] },
-                        ' ',
-                        { $ifNull: ['$user.last_name', ''] }
-                      ]
-                    }
-                  }
-                }
-              },
-              in: { $cond: [{ $eq: ['$$full', ''] }, 'N/A', '$$full'] }
-            }
-          },
-          submittedByRole: { $ifNull: ['$user.role', 'N/A'] },
+          // submittedByEmail: '$user.email',        
+          // buyer: { $ifNull: [{ $arrayElemAt: ['$user', 0] }, {}] },         
+          // submittedByRole: { $ifNull: ['$user.role', 'N/A'] },
         },
       }
     );
