@@ -264,8 +264,23 @@ export class NdaService {
         }
       },
       { $unwind: { path: '$business', preserveNullAndEmptyArrays: true } },
+
+       {
+        $lookup: {
+          from: 'users',
+          let: { submittedByObj: { $toObjectId: "$submittedBy" } },
+          pipeline: [
+            { $match: { $expr: { $eq: ["$_id", "$$submittedByObj"] } } },
+            { $project: { firstName: 1, lastName: 1, email: 1 } }
+          ],
+          as: 'buyer'
+        }
+      },
+      { $unwind: { path: '$buyer', preserveNullAndEmptyArrays: true } },
       
     ];
+
+    
 
     // 👉 Search ko lookup ke baad lagana hai (businessName ke liye)
     if (search) {
@@ -300,9 +315,9 @@ export class NdaService {
           submittedOn: '$createdAt',
           sellerResponseOn: 1,
           message: 1,
-          // submittedByEmail: '$user.email',        
+          submittedByEmail: '$buyer.email',        
           // buyer: { $ifNull: [{ $arrayElemAt: ['$user', 0] }, {}] },         
-          // submittedByRole: { $ifNull: ['$user.role', 'N/A'] },
+          submittedByRole: { $ifNull: ['$buyer.role', 'N/A'] },
         },
       }
     );
