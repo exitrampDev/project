@@ -9,12 +9,14 @@ import { NotificationHelper } from 'src/common/helpers/notification.helper';
 import { BusinessStatus, CreateBusinessDto } from './dto/create-business.dto';
 import { UpdateBusinessDto } from './dto/update-business.dto';
 import { Nda, NdaDocument } from 'src/nda/schemas/nda.schema';
+import { RecentlyDocument, Recently } from 'src/recently-listing/schema/recently.schema';
 
 @Injectable()
 export class BusinessListingService {
   constructor(
     @InjectModel(Business.name) private businessModel: Model<BusinessDocument>,
      @InjectModel(Nda.name) private readonly ndaModel: Model<NdaDocument>,
+     @InjectModel(Recently.name) private readonly recentlyModel: Model<RecentlyDocument>,
     private readonly notificationHelper: NotificationHelper,
   ) {}
 
@@ -487,4 +489,16 @@ async attachFile(businessId: string, fileUrl: string, fileType: string = 'profit
    async getAllLiveBusinessesTotal() {
     return await this.businessModel.countDocuments({ isDeleted: false, status: BusinessStatus.LIVE });
   }
+
+   async getAllMyBusinessesTotal(ownerId: string) {
+    return await this.businessModel.countDocuments({ ownerId, isDeleted: false });
+  }
+
+   async getAllBuyerViewsOnMyListing(ownerId: string) {
+     let myBusinesses = await this.businessModel.find({ ownerId: ownerId }).select('_id').exec();
+    let myBusinessIds = myBusinesses.map(b => b._id);
+    return await this.recentlyModel.countDocuments({ businessId: { $in: myBusinessIds } });
+  }
+
+ 
 }

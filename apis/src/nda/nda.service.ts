@@ -652,10 +652,21 @@ export class NdaService {
      return nda;
   }
 
-    async getAllNdaTotal() {
+  async getAllNdaTotal() {
     return await this.ndaModel.countDocuments({});
   }
-  
+
+  async getAllNdaTotalOnMyListing(ownerId: string) {
+    let myBusinesses = await this.businessModel.find({ ownerId: ownerId }).select('_id').exec();
+    let myBusinessIds = myBusinesses.map(b => b._id);
+    return await this.ndaModel.countDocuments({ businessId: { $in: myBusinessIds } });
+  }
+
+   async getAllApprovedNdaTotal(ownerId: string) {
+    let myBusinesses = await this.businessModel.find({ ownerId: ownerId }).select('_id').exec();
+    let myBusinessIds = myBusinesses.map(b => b._id);
+    return await this.ndaModel.countDocuments({ businessId: { $in: myBusinessIds }, status: 'approved', cimAccess: 'approved' });
+  }
 
   async getCimUrl(ndaId: string, userId: string): Promise<string> {
     const nda = await this.ndaModel.findById(ndaId);

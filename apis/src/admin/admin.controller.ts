@@ -35,22 +35,21 @@ export class AdminController {
     
     @UseGuards(JwtAuthGuard)
     @Get('seller-dashboard-counts')
-    async getSellerDashboardCount() {
-        let userBrokerCount = await this.usersService.getAllUsersBrokerTotal();
-        let userIndividulaSellerCount = await this.usersService.getIndividulaSellerTotal();
-        let userBuyerCount = await this.usersService.getBuyerTotal();
-        let userCount = await this.usersService.getAllUsersTotal();
-        let businessCount = await this.businessService.getAllBusinessesTotal();
-        let businessLiveCount = await this.businessService.getAllLiveBusinessesTotal();
-        let ndaCount = await this.ndaService.getAllNdaTotal();
+    async getSellerDashboardCount(@User() user: any) {
+        //listing total count
+        //nda total count
+        //cim shared
+        //buyer views count
+     
+        let listinCount = await this.businessService.getAllMyBusinessesTotal(user.userId);
+        let ndaCount = await this.ndaService.getAllNdaTotalOnMyListing(user.userId);
+        let cimSharedCount = await this.ndaService.getAllApprovedNdaTotal(user.userId);
+        let buyerViewsCount = await this.businessService.getAllBuyerViewsOnMyListing(user.userId);
         return {
-            users: userCount,
-            sellers: userIndividulaSellerCount,
-            brokers: userBrokerCount,
-            buyers: userBuyerCount,
-            businesses: businessCount,
-            businessLiveCount: businessLiveCount,
-            ndas: ndaCount
+            listinCount: listinCount,
+            ndas: ndaCount,
+            cimSharedCount: cimSharedCount,
+            buyerViewsCount: buyerViewsCount
         };
     }
     
