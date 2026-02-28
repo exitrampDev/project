@@ -73,10 +73,8 @@ const CIMAccessNDASubmit = (ndaStatus) => {
 };
 
 
-const CIMAccessLink = (ndaStatus,cimUrl) => {
-  console.log("CIM URL:", cimUrl);
-  console.log("NDA Status:", ndaStatus);
-  if (ndaStatus === "approved") {
+const CIMAccessLink = (cimAccess,cimUrl) => {
+  if (cimAccess === "approved") {
     return (
      <>
       {cimUrl? 
@@ -190,7 +188,7 @@ const DueDiligenceAction = (statusNDA, Id) => {
         <Column body={(rowData) =>  rowData?.docRoomAccess === "approved" ? (<><Link to={`/user/document-room/${rowData?.businessId}`} className="cim__view_CIMAccessLink">  <i className="pi pi-file"></i> View Doc Room</Link></>) : (<><div className="CIMAccessLink__accessDenied"> <i className="pi pi-lock"></i> View After Approval</div></>)} header="Document Room" />
        <Column body={(rowData) => DueDiligenceAction(rowData?.ndaStatus, rowData?.businessId)} header="Due Diligence" />
       
-      <Column body={(rowData) =>  CIMAccessLink(rowData?.ndaStatus,rowData?.cimUrl)} header="Actions" />
+      <Column body={(rowData) =>  CIMAccessLink(rowData?.cimAccess,rowData?.cimUrl)} header="Actions" />
       </DataTable>
         </div>   
         
