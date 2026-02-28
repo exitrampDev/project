@@ -102,7 +102,7 @@ export class CronService {
  /**
    * Runs every day at midnight
    */
- @Cron(CronExpression.EVERY_10_SECONDS)
+ @Cron(CronExpression.EVERY_30_MINUTES)
 async handleDailyJob() {
   this.logger.log('Running payment check cron');
 

@@ -589,6 +589,7 @@ export class NdaService {
      
      nda.sellerResponseOn = new Date();
      nda.status = 'approved';
+     nda.cimAccess = 'approved';
      nda.sellerSignature = data.sellerSignature;
      await nda.save();
 
