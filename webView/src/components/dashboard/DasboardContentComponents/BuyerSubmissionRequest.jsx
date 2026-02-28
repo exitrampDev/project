@@ -164,8 +164,41 @@ const handleSignatureSave = () => {
       className="viewBuyer__button"
     />
   );
+const openPdf = () => {
+  let file = selectedBuyer.buyer?.profile?.verification_file;
+  if (!file) return;
 
+  try {
+    // Remove data URL prefix if exists
+    const base64 = file.includes("base64,")
+      ? file.split("base64,")[1]
+      : file;
 
+    // Clean base64 (important fix)
+    const cleanedBase64 = base64.replace(/\s/g, "");
+
+    // Convert to binary
+    const byteCharacters = atob(cleanedBase64);
+    const byteNumbers = new Array(byteCharacters.length);
+
+    for (let i = 0; i < byteCharacters.length; i++) {
+      byteNumbers[i] = byteCharacters.charCodeAt(i);
+    }
+
+    const byteArray = new Uint8Array(byteNumbers);
+
+    // Create Blob
+    const blob = new Blob([byteArray], { type: "application/pdf" });
+
+    // Open in new tab
+    const url = URL.createObjectURL(blob);
+    window.open(url, "_blank");
+
+  } catch (err) {
+    console.error("Invalid base64:", err);
+    alert("File is corrupted or not valid PDF");
+  }
+};
 const DueDiligenceAction = (statusNDA, Id) => { 
   return (
     <>
@@ -223,7 +256,7 @@ const openBuyerInfoModal = (row) => {
                   textDecoration: "underline"
                 }}
               >
-                {rowData.buyerName}
+                {rowData?.buyer?.first_name} {rowData?.buyer?.last_name}
               </span>
             )}
           />
@@ -279,7 +312,7 @@ const openBuyerInfoModal = (row) => {
   )}  
         </strong>, is between{" "}
 
-        <strong>{selectedSubmission.buyerName}</strong>, hereinafter known as{" "}
+        <strong>{selectedSubmission.buyer?.first_name} {selectedSubmission.buyer?.last_name}</strong>, hereinafter known as{" "}
         <strong>“Party A”</strong>, and the listing owner of{" "}
         <strong>
           {selectedSubmission.listingTitle}  (Listing ID: #{selectedSubmission.businessId.toString().slice(-6)})
@@ -403,7 +436,7 @@ const openBuyerInfoModal = (row) => {
              <div className="sign__sec_nda">
               <div className="sign__sec_buyer">
                 <label className="font-medium mb-2 block">Buyer Signature</label>
-                  <p><strong>Name:</strong>  {selectedSubmission.buyerName}</p>
+                  <p><strong>Name:</strong>  {selectedSubmission.buyer?.first_name} {selectedSubmission.buyer?.last_name}</p>
                   <p><strong>Date:</strong> {formatDate(selectedSubmission.submittedOn)}</p>
                   <p><strong>Email:</strong> {selectedSubmission.submittedByEmail}</p>
                   
@@ -486,7 +519,7 @@ const openBuyerInfoModal = (row) => {
     <div className="buyer__info_modal">
       <div className="buyer__modal_fields">
         <strong>Name:</strong>{" "}
-        {selectedBuyer.buyer.firstName} {selectedBuyer.buyer.lastName}
+        {selectedBuyer?.buyer?.first_name} {selectedBuyer?.buyer?.last_name}
       </div>
 
 
@@ -496,59 +529,58 @@ const openBuyerInfoModal = (row) => {
       </div>
 
       <div className="buyer__modal_fields">
-        <strong>Phone:</strong> {selectedBuyer.buyer.phone}
+        <strong>Phone:</strong> {selectedBuyer?.buyer?.profile?.phone}
       </div>
-
+   <div className="buyer__modal_fields">
+        <strong>Buyer Background:</strong>{" "}
+        {selectedBuyer.buyer?.profile?.background ? selectedBuyer.buyer?.profile?.background : "-"}
+      </div>
       <div className="buyer__modal_fields">
-        <strong>Industry of Interest:</strong>{" "}
-        {selectedBuyer.buyer.industryOfInterest}
+        <strong>Business Type Preferred:</strong>{" "}
+        {selectedBuyer.buyer?.profile?.business_type_preferred ? selectedBuyer.buyer?.profile?.business_type_preferred : "-"}
       </div>
-
-      <div className="buyer__modal_fields">
-        <strong>Region of Interest:</strong>{" "}
-        {selectedBuyer.buyer.regionOfInterest}
-      </div>
-
       <div className="buyer__modal_fields">
         <strong>Investment Budget:</strong>{" "}
-        {selectedBuyer.buyer.investmentBudget}
+        {selectedBuyer.buyer?.profile?.investment_budget
+        ? new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: 'USD',
+            maximumFractionDigits: 0
+          }).format(selectedBuyer.buyer?.profile?.investment_budget? selectedBuyer.buyer?.profile?.investment_budget : "-")
+        : "N/A"}
       </div>
+
 
       <div className="buyer__modal_fields">
         <strong>Liquid Assets:</strong>{" "}
-        {selectedBuyer.buyer.liquidAssetToSupporPurchase}
+        {selectedBuyer.buyer?.profile?.liquid_assets ? selectedBuyer.buyer?.profile?.liquid_assets + "%" : "-"}
       </div>
 
       <div className="buyer__modal_fields">
-        <strong>Financing Placed:</strong>{" "}
-        {selectedBuyer.buyer.financingIsPlaced}
+        <strong>Financing:</strong>{" "}
+        {selectedBuyer.buyer?.profile?.financing ? selectedBuyer.buyer?.profile?.financing : "-"}
       </div>
 
       <div className="buyer__modal_fields">
-        <strong>Previous Acquisition Experience:</strong>{" "}
-        {selectedBuyer.buyer.previousAcquisitionExperience}
-      </div>
-
-      <div className="buyer__modal_fields">
-        <strong>Background:</strong>{" "}
-        {selectedBuyer.buyer.briefBackground}
-      </div>
-
-      <div className="buyer__modal_fields">
-        <strong>Business Type Preferrd:</strong>{" "}
-        {selectedBuyer.buyer.businessTypePreferrd}
-      </div>
-
-
-        <div className="buyer__modal_fields">
         <strong>How Do You Plan To Fund Your Purchase:</strong>{" "}
-        {selectedBuyer.buyer.howDoYouPlanToFundYourPurchase}
+        {selectedBuyer.buyer?.profile?.funding_plan ? selectedBuyer.buyer?.profile?.funding_plan : "-"}
       </div>
+
+      <div className="buyer__modal_fields">
+        <strong>Area of interest:</strong>{" "}
+        {selectedBuyer.buyer?.profile?.industry ? selectedBuyer.buyer?.profile?.industry : "-"}
+      </div>
+
+      <div className="buyer__modal_fields">
+        <strong>Previous Experience:</strong>{" "}
+        {selectedBuyer.buyer?.profile?.previous_experience ? selectedBuyer.buyer?.profile?.previous_experience : "-"}
+      </div>
+
 
 
  <div className="buyer__modal_fields">
         <strong>How Soon Look in To Acquire:</strong>{" "}
-        {selectedBuyer.buyer.howSoonLookinToAcquire}
+        {selectedBuyer.buyer?.profile?.timeline ? selectedBuyer.buyer?.profile?.timeline : "-"}
       </div>
       
 
@@ -570,6 +602,40 @@ const openBuyerInfoModal = (row) => {
           }
         />
       </div>
+      <div className="buyer__modal_fields">
+        <strong>Financial Verification:</strong>{" "}
+        <Tag
+          value={selectedBuyer.buyer?.profile?.financial_verification}
+          severity={
+            selectedBuyer.buyer?.profile?.financial_verification === "yes"
+              ? "success"
+              : selectedBuyer.buyer?.profile?.financial_verification === "no"
+              ? "warning"
+              : "danger"
+          }
+        />
+      </div>
+
+      
+<div className="buyer__modal_fields">
+  <strong>Financial Verification File:</strong>{" "}
+  
+  {selectedBuyer.buyer?.profile?.financial_verification === "yes" &&
+   selectedBuyer.buyer?.profile?.verification_file ? (
+    
+    <div
+      className="buyer__modal_fields_link"
+      onClick={openPdf}
+    >
+      View Files
+    </div>
+
+  ) : (
+    "-"
+  )}
+</div>
+
+
     </div>
   )}
 </Dialog>

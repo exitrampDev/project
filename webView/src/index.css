@@ -4373,9 +4373,15 @@ img.buyerSig {max-width: 100%;}
     gap: 14px;
         margin-top: 20px;
 }
-
+.buyer__modal_fields_link {
+    color: #0718f5;
+    text-decoration: underline;
+    cursor: pointer;
+}
 .buyer__modal_fields {
-    width: calc(50% - 7px);
+        width: calc(50% - 7px);
+    justify-content: space-between;
+    display: inline-flex;
 }
 .buyer__info_pop .p-dialog-header {border-bottom: 1px solid #d4d4d4;
 }
