@@ -8,6 +8,10 @@ import { QueryNdaDto } from './dto/query-nda.dto';
 import { RejectNdaDto } from './dto/reject-nda.dto';
 import { ApproveNdaDto } from './dto/approve-nda.dto';
 import { AllowDocRoomDto } from './dto/allow-doc-room.dto';
+import { StreamableFile, NotFoundException } from '@nestjs/common';
+import { createReadStream, existsSync } from 'fs';
+import { join, basename } from 'path';
+import { User } from 'src/common/decorators/user.decorator';
 
 @Controller('nda')
 export class NdaController {
@@ -90,5 +94,31 @@ export class NdaController {
         const userId = req.user.userId; 
         return await this.ndaService.rejectDocRoom(ApproveDto.ndaId, userId);
     }
+
+    // ---------------------------------------------------------
+  // @UseGuards(JwtAuthGuard)
+
+  @Get('cim-url/:ndaId')
+  async openFile(
+    @Param('ndaId') ndaId: string,
+    @User() user: any,
+  ): Promise<StreamableFile> {
+    console.log('Received request to open CIM URL for NDA ID:', ndaId, 'by user:', user);
+    const cimUrl = await this.ndaService.getCimUrl(ndaId, user.id);
+
+    const safeFilename = basename(cimUrl);
+    const filePath = join(process.cwd(), 'uploads', safeFilename);
+
+    if (!existsSync(filePath)) {
+      throw new NotFoundException('File not found');
+    }
+
+    const file = createReadStream(filePath);
+
+    return new StreamableFile(file, {
+      type: 'application/pdf',
+      disposition: `inline; filename="${safeFilename}"`,
+    });
+  }
 
 }

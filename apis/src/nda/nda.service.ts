@@ -657,5 +657,19 @@ export class NdaService {
   }
   
 
+  async getCimUrl(ndaId: string, userId: string): Promise<string> {
+    const nda = await this.ndaModel.findById(ndaId);
+    if (!nda) throw new NotFoundException('NDA not found');
+
+    if (nda.submittedBy.toString() !== userId && nda.status !== 'approved' && nda.cimAccess !== 'approved') {
+      throw new ForbiddenException('You are not authorized to access this file');
+    }
+
+    // Check property owner
+    const business = await this.businessModel.findById(nda.businessId);
+    if (!business) throw new NotFoundException('Business not found');
+      
+    return business.cimUrl??'N/A';
+  }
 
 }
