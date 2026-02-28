@@ -94,7 +94,7 @@ const CIMAccessLink = (cimAccess,cimUrl, id) => {
       {cimUrl? 
       <div onClick={() => OpenCim(id)}  className="cim__view_CIMAccessLink">
          <i className="pi pi-file"></i> 
-          open cim
+          Open CIM
       </div>
        : <div className="cim__view_CIMAccessLink CIMAccessLink__notAvailable">
          <i className="pi pi-file"></i> 

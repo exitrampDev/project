@@ -3359,6 +3359,14 @@ a.cim__view_CIMAccessLink {
     display: flex;
     gap: 3px;
     color: #002F68;
+    cursor: pointer;
+}
+.cim__view_CIMAccessLink {
+    cursor: pointer;
+}
+section.PricingCards__wrapper .PricingCards__container .PricingCard button.PricingCard__cta[disabled] {
+    cursor: not-allowed;
+    background: #ccc;
 }
 button.viewBuyer__button {
     padding: 0;
