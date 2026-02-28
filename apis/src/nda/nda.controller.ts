@@ -96,8 +96,7 @@ export class NdaController {
     }
 
     // ---------------------------------------------------------
-  // @UseGuards(JwtAuthGuard)
-
+  @UseGuards(JwtAuthGuard)
   @Get('cim-url/:ndaId')
   async openFile(
     @Param('ndaId') ndaId: string,

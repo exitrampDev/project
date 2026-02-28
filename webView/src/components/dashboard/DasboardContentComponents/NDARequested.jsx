@@ -44,6 +44,20 @@ const API_BASE = useRecoilValue(apiBaseUrlState);
 
     fetchNdaList();
   }, [apiBaseUrl, access_token]);
+
+  const OpenCim = (nfaId) => {
+    console.log("Opening CIM for NFA ID:", nfaId);
+   fetch(`${apiBaseUrl}/nda/cim-url/${nfaId}`, {
+  headers: {
+    Authorization: `Bearer ${access_token}`,
+  },
+})
+  .then(res => res.blob())
+  .then(blob => {
+    const url = window.URL.createObjectURL(blob);
+    window.open(url);
+  });
+  }
 const CIMAccessNDASubmit = (ndaStatus) => {
   if (ndaStatus === "approved") {
     return (
@@ -73,16 +87,14 @@ const CIMAccessNDASubmit = (ndaStatus) => {
 };
 
 
-const CIMAccessLink = (cimAccess,cimUrl) => {
+const CIMAccessLink = (cimAccess,cimUrl, id) => {
   if (cimAccess === "approved") {
     return (
      <>
       {cimUrl? 
-      <div className="">
-        <Link to={`${API_BASE}${cimUrl}`} className="cim__view_CIMAccessLink">
+      <div onClick={() => OpenCim(id)}  className="cim__view_CIMAccessLink">
          <i className="pi pi-file"></i> 
-          View CIM
-        </Link>
+          open cim
       </div>
        : <div className="cim__view_CIMAccessLink CIMAccessLink__notAvailable">
          <i className="pi pi-file"></i> 
@@ -188,7 +200,7 @@ const DueDiligenceAction = (statusNDA, Id) => {
         <Column body={(rowData) =>  rowData?.docRoomAccess === "approved" ? (<><Link to={`/user/document-room/${rowData?.businessId}`} className="cim__view_CIMAccessLink">  <i className="pi pi-file"></i> View Doc Room</Link></>) : (<><div className="CIMAccessLink__accessDenied"> <i className="pi pi-lock"></i> View After Approval</div></>)} header="Document Room" />
        <Column body={(rowData) => DueDiligenceAction(rowData?.ndaStatus, rowData?.businessId)} header="Due Diligence" />
       
-      <Column body={(rowData) =>  CIMAccessLink(rowData?.cimAccess,rowData?.cimUrl)} header="Actions" />
+      <Column body={(rowData) =>  CIMAccessLink(rowData?.cimAccess,rowData?.cimUrl, rowData?._id)} header="Actions" />
       </DataTable>
         </div>   
         
