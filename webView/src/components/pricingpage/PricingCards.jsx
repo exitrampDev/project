@@ -3,53 +3,64 @@ import React from "react";
 const plans = [
   {
     name: "Basic",
-    price: "Free",
-    description: "For sellers and buyers getting started",
+    subtitle: "Launch Offer (Limited Time)",
+    price: "$10",
+    discountedPrice: "$0",
+    period: " / month / listing",
+    description: "For buyers getting started",
     features: [
-      "Save Favorites",
-      "Previously Viewed Listings",
-      "Confidential Profile",
-      "Profile Connection",
-      "Dashboard Statistics",
-      "Listing Suggestions",
+          "Save Favorites",
+          "View Previous Listings",
+          "Maintain Confidential Profile",
+          "Connect with Listers",
+          "Dashboard Statistics",
+          "Submit NDAs",
+          "View CIMs",
+          "Due Diligence List",
+          "Engage with Sellers"
+
     ],
     cta: "Sign Up",
   },
   {
     name: "Standard",
+    subtitle: "Coming Soon ",
     price: "$30",
-    period: "/ month / listing",
-    description: "For sellers preparing to engage buyers",
+    period: " / month / listing",
+    description: "For buyers and sellers ready to list. ",
     features: [
       "Everything in Basic",
       "One Public Listing",
       "Confidential Listing",
-      "Manage Listings",
+      "Manage Listing",
       "Listing Statistics",
-      "Add Listings at Fee",
-      "Submit NDAs",
-      "View CIMs",
-      "Due Diligence List",
-      "Engage with Sellers",
+      "Add Listing at Fee",
+      "Listing Notifications",
+      "Cancel Anytime"
+
     ],
-    badge: "Most Popular",
-    cta: "Sign Up",
+    pricestatus: "coming-soon",
+    cta: "Coming Soon",
   },
   {
     name: "Premium",
+    subtitle: "Launch Offer (Limited Time)",
     price: "$60",
-    period: "/ month / listing",
-    description: "For active deals and serious sellers",
+    discountedPrice: "$30",
+    period: " / month / listing",
+    description: "For active deals and serious sellers. ",
     features: [
-      "Everything in Standard",
-      "Seller Central",
-      "NDA Management",
-      "Buyer Profile Reviews",
-      "Document Room",
-      "Due Diligence List",
-      "Private Messaging",
-      "Marketing Enablement",
-      "Manage Buyer Access Per Listing",
+        "Everything in Basic",
+        "Includes One Public Listing",
+        "Manage NDA Request",
+        "Analyze Buyers",
+        "Document Room",
+        "Due Diligence List",
+        "Manage Multiple Listings",
+        "Monthly Listing Renewals",
+        "(no 6 month term)",
+        "No Success Fees. Just a simple monthly listing fee(s). "
+
     ],
     cta: "Sign Up",
   },
@@ -69,9 +80,22 @@ export default function PricingCards() {
           <div className="PricingCard" key={index}>
             {plan.badge && <span className="PricingCard__badge">{plan.badge}</span>}
             <h3>{plan.name}</h3>
+            <p className="PricingCard__subtitle">{plan.subtitle}</p>
             <div className="PricingCard__price">
-              <strong>{plan.price}</strong>
-              {plan.period && <span>{plan.period}</span>}
+              {plan.discountedPrice ? (
+                <>
+                  <strike className="PricingCard__original-price">{plan.price} </strike>
+                  <strong className="PricingCard__discounted-price">{plan.discountedPrice}</strong>
+                   {plan.period && <span>{plan.period}</span>} 
+                </>
+              ) : (
+                <>
+                <strong>{plan.price}   </strong> 
+                {plan.period && <span>{plan.period}</span>}
+                </>
+              )}
+              {/* <strong>{plan.price}</strong> <em>{plan.discountedPrice}</em>
+              {plan.period && <span>{plan.period}</span>} */}
             </div>
             <p className="PricingCard__description">{plan.description}</p>
             <ul className="PricingCard__features">
@@ -79,12 +103,18 @@ export default function PricingCards() {
                 <li key={i}><span>✔</span> {feature}</li>
               ))}
             </ul>
+            {plan.pricestatus === "coming-soon" ? (
+              <button className="PricingCard__cta coming-soon" disabled>
+                {plan.cta}
+              </button>
+            ) : ( 
               <button
               className="PricingCard__cta"
               onClick={handleSignupClick}
             >
               {plan.cta}
             </button>
+            )}
           </div>
         ))}
       </div>
