@@ -43,12 +43,14 @@ export class AdminController {
      
         let listinCount = await this.businessService.getAllMyBusinessesTotal(user.userId);
         let ndaCount = await this.ndaService.getAllNdaTotalOnMyListing(user.userId);
+        let ndaRejected = await this.ndaService.getAllMyRejectedNdaTotal(user.userId);
         let cimSharedCount = await this.ndaService.getAllApprovedNdaTotal(user.userId);
         let buyerViewsCount = await this.businessService.getAllBuyerViewsOnMyListing(user.userId);
         return {
             listinCount: listinCount,
             ndas: ndaCount,
             cimSharedCount: cimSharedCount,
+            ndaRejected: ndaRejected,
             buyerViewsCount: buyerViewsCount
         };
     }
