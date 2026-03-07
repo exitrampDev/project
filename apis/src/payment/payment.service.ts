@@ -10,12 +10,14 @@ import { QuerySellerDto } from 'src/free-seller/dto/query-seller.dto';
 import { QueryPaymentDto } from './dto/query-payment.dto';
 import { User, UserDocument } from 'src/users/schemas/user.schema';
 import { UsersService } from 'src/users/users.service';
+import { MailService } from 'src/common/mail/mail.service';
 
 @Injectable()
 export class PaymentService {
      constructor(
         @InjectModel(Payment.name) private readonly paymentModel: Model<PaymentDocument>,
         private readonly usersService: UsersService,
+         private readonly mailService: MailService,
      ){}
 
     async createCheckoutSession(amount: number, userId: Types.ObjectId|string) {
@@ -335,6 +337,7 @@ async createRefundRequest(
     },
     { new: true }
   );
+
   
   return refundRequest;
 }
@@ -356,6 +359,20 @@ async approveRefund(
   if (payment.refundStatus !== RefundStatus.PENDING) {
     throw new ConflictException(
       `This payment's refund status is "${payment.refundStatus}", not "PENDING"`,
+    );
+  }
+
+  // -------------------------Email notification to user about refund approval-------------------------
+  const user = await this.usersService.findById(payment.userId.toString());
+  if (user) {
+    await this.mailService.sendMail(
+      user.email,
+      'Refund Approved',
+      'generalMessage',
+      {
+        receiverName: user.first_name ? user.first_name : 'User',
+        message: `Your refund request has been approved.`,
+      }
     );
   }
 
@@ -387,6 +404,20 @@ async rejectRefund(
   if (payment.refundStatus !== RefundStatus.PENDING) {
     throw new ConflictException(
       `This payment's refund status is "${payment.refundStatus}", not "PENDING"`,
+    );
+  }
+
+  // ---------------------------------Email notification to user about refund rejection--------------------------
+  const user = await this.usersService.findById(payment.userId.toString());
+  if (user) {
+    await this.mailService.sendMail(
+      user.email,
+      'Refund Rejected',
+      'generalMessage',
+      {
+        receiverName: user.first_name ? user.first_name : 'User',
+        message: `Your refund request has been rejected.`,
+      }
     );
   }
 

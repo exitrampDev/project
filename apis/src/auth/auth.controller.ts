@@ -44,7 +44,17 @@ export class AuthController {
 
   @Post('register')
   async register(@Body() registerDto: RegisterDto) {
-    return this.authService.register(registerDto);
+    let user = await this.authService.register(registerDto);
+
+      await this.mailService.sendMail(
+      user.data.email,
+      'Welcome to Exit Ramp',
+      'welcomeEmail',
+      {
+        message: ``,
+      });
+    
+    return user
   }
 
  @Post('send-password-reset-email')

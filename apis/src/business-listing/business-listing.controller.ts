@@ -17,6 +17,7 @@ import { BusinessOwnerGuard } from 'src/auth/businessOwner.guards';
 import { ContactFormSellerDto } from './dto/contact-form-seller.dto';
 import { MailService } from 'src/common/mail/mail.service';
 import { send } from 'process';
+import { console } from 'inspector';
 
 @Controller('business-listing')
 export class BusinessListingController {
@@ -26,9 +27,20 @@ export class BusinessListingController {
 
     @UseGuards(JwtAuthGuard)
     @Post()
-    create(@Body() dto: CreateBusinessDto, @User() user: any) {
+    async create(@Body() dto: CreateBusinessDto, @User() user: any) {
         dto['userId'] = user.id;
-        return this.businessService.create(dto, user);
+        console.log('Creating business listing with data:', user);
+        let data = this.businessService.create(dto, user);
+         await this.mailService.sendMail(
+            user.email,
+            'Exit Ramp - New Listing Created',
+            'generalMessage',
+            {
+            receiverName:`Taha`,
+            message: `New Listing has been created with title: ${dto.listingTitle}.`,
+            });
+
+        return data;
     }
 
    

@@ -571,6 +571,21 @@ export class NdaService {
         title: 'Reject Nda',
         message: `Your request has been rejected`,
       });
+
+       // ----------------------- Email Notification
+      let buyer = await this.userService.findById(nda.submittedBy.toString());
+      if(buyer){
+        await this.mailService.sendMail(
+          buyer.email,
+          'NDA Rejected',
+          'generalMessage',
+          {
+            receiverName: buyer.first_name ? buyer.first_name : 'User',
+            message: `Your NDA request has been rejected.`,
+          }
+        );
+      }
+      // -----------------------
     return nda;
   }
 
@@ -599,6 +614,20 @@ export class NdaService {
         title: 'Flag Submitted',
         message: `Your request has been approved.`,
       });
+      // ----------------------- Email Notification
+      let buyer = await this.userService.findById(nda.submittedBy.toString());
+      if(buyer){
+        await this.mailService.sendMail(
+          buyer.email,
+          'NDA Approved',
+          'generalMessage',
+          {
+            receiverName: buyer.first_name ? buyer.first_name : 'User',
+            message: `Your NDA request has been approved.`,
+          }
+        );
+      }
+      // -----------------------
      return nda;
   }
 
@@ -624,6 +653,21 @@ export class NdaService {
         title: 'Flag Submitted',
         message: `Your request has been Allow.`,
       });
+      // ----------------------- Email Notification
+      let buyer = await this.userService.findById(nda.submittedBy.toString());
+      if(buyer){
+        await this.mailService.sendMail(
+          buyer.email,
+          'Doc Room Access Granted',
+          'generalMessage',
+          {
+            receiverName: buyer.first_name ? buyer.first_name : 'User',
+            message: `Your request for Doc Room access has been granted.`,
+          }
+        );
+      }
+      // -----------------------
+
      return nda;
   }
 
@@ -649,6 +693,20 @@ export class NdaService {
         title: 'Flag Submitted',
         message: `Your request has been rejected.`,
       });
+
+      // ------------------------------- Email Notification
+      let buyer = await this.userService.findById(nda.submittedBy.toString());
+      if(buyer){
+        await this.mailService.sendMail(
+          buyer.email,
+          'Doc Room Access Revoked',
+          'generalMessage',
+          {
+            receiverName: buyer.first_name ? buyer.first_name : 'User',
+            message: `Your Doc Room access has been revoked.`,
+          }
+        );
+      }
      return nda;
   }
 
