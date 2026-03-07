@@ -7,6 +7,7 @@ import * as bcrypt from 'bcrypt';
 import { ConflictException } from '@nestjs/common';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { NotificationHelper } from 'src/common/helpers/notification.helper';
+import { MailService } from 'src/common/mail/mail.service';
 import * as mongoose from 'mongoose';
 @Injectable()
 export class AuthService {
@@ -14,6 +15,7 @@ export class AuthService {
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
     private readonly notificationHelper: NotificationHelper,
+     private readonly mailService: MailService,
   ) {}
 
   async validateUser(email: string, password: string) {
@@ -58,6 +60,20 @@ export class AuthService {
     title: 'Login Successful',
     message: `Hi ${user.first_name || user.email}, you have successfully logged in.`,
   });
+
+  // ---------------------Email Notification----------------------
+  if (user) {
+    await this.mailService.sendMail(
+      user.email,
+      'Login Successful',
+      'generalMessage',
+      {
+        receiverName: user.first_name ? user.first_name : 'User',
+        message: `You have successfully logged in to your Exit Ramp account.`,
+      }
+    );
+  }
+
 
     return {
       access_token: token,
