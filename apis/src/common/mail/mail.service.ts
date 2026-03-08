@@ -31,6 +31,20 @@ export class MailService {
     });
   }
 
+     async contactUsForm(subscriber: NewsLetterSubscription) {
+
+ 
+     return this.mailerService.sendMail({
+      to: process.env.EMAIL_FOR_ADMIN,
+      from: process.env.EMAIL_FROM ,
+      subject: 'Contact Us Form Submission',
+      template: './someone-subscript-for-newsletters', // looks for templates/newslettersubsscrition.hbs
+      context: {
+       email: subscriber.email,
+      },
+    });
+  }
+
   async sendUserConfirmation(to: string, token: string) {
     const appUrl = process.env.APP_URL;
     const confirmUrl = `${appUrl}/verify-email?token=${token}`;

@@ -11,6 +11,7 @@ import { JwtService } from '@nestjs/jwt';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { User } from 'src/common/decorators/user.decorator';
 import { NewsLetterSubscription } from './dto/newsletter-subscription.dto';
+import { ContactUsDto } from './dto/contact-us.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -84,6 +85,21 @@ export class AuthController {
   @Post('newsletter-subscription')
   async newsLetterSubscription(@Body() registerDto: NewsLetterSubscription) {
     return this.mailService.newsletterSubscription(registerDto);
+  }
+
+    @Post('contact-us-form')
+  async contactUsForm(@Body() registerDto: ContactUsDto) {
+     
+        await this.mailService.sendMail(
+          process.env.EMAIL_FOR_ADMIN || '',
+          'Contact Us Form Submission',
+          'generalMessage',
+          {
+            receiverName:  'Exit Ramp Admin',
+            message:"contact us form submission : " + registerDto.message + ", form email : " + registerDto.email+", from name : " + registerDto.first_name + " " + registerDto.last_name,
+          }
+        );
+        return true;
   }
   
 }
