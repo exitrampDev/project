@@ -1,10 +1,19 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import ArrowIcon from "../assets/arrowIcon.png";
-
+import axios from "axios";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+import { useRecoilValue } from "recoil";
+import { apiBaseUrlState } from "../recoil/ctaState";
+import { Toast } from "primereact/toast";
 
 export default function ContactUs() {
+  const API_BASE = useRecoilValue(apiBaseUrlState);
+
+  const toast = useRef(null);
+
+  const [loading, setLoading] = useState(false);
+
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -20,23 +29,63 @@ export default function ContactUs() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Contact form submitted:", formData);
 
-    // You can replace this with an API call or Recoil state handling if needed
-    alert("Thanks for contacting us!");
-    setFormData({
-      firstName: "",
-      lastName: "",
-      email: "",
-      subject: "",
-      message: "",
-    });
+    const payload = {
+      first_name: formData.firstName,
+      last_name: formData.lastName,
+      email: formData.email,
+      subject: formData.subject,
+      message: formData.message,
+    };
+
+    try {
+      setLoading(true);
+
+      await axios.post(`${API_BASE}/auth/contact-us-form`, payload);
+
+      toast.current.show({
+        severity: "success",
+        summary: "Success",
+        detail: "Your message has been sent successfully.",
+        life: 3000,
+      });
+
+      setFormData({
+        firstName: "",
+        lastName: "",
+        email: "",
+        subject: "",
+        message: "",
+      });
+
+    } catch (error) {
+      const errMsg =
+        error?.response?.data?.message || "Something went wrong";
+
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail:
+          typeof errMsg === "string"
+            ? errMsg
+            : "Failed to send message. Please try again.",
+        life: 3000,
+      });
+
+      console.error("API Error:", error?.response?.data);
+    } finally {
+      setLoading(false);
+    }
   };
+
   return (
     <>
       <Header />
+
+      <Toast ref={toast} />
+
       <div className="ContactUs__main_wrap">
         <div className="ContactUs__container">
           <div className="ContactUs__heading_row">
@@ -46,8 +95,10 @@ export default function ContactUs() {
               platform use, or partnerships.
             </p>
           </div>
+
           <div className="ContactUs_form_row">
             <form onSubmit={handleSubmit} className="contact__form">
+
               <div className="contact__form_firstName">
                 <input
                   name="firstName"
@@ -98,15 +149,19 @@ export default function ContactUs() {
                   placeholder="Your Message"
                 />
               </div>
+
               <div className="contact__form_submit_btn">
-                <button type="submit">
-                  Send Message Securely <img src={ArrowIcon} alt="ArrowIcon" />
+                <button type="submit" disabled={loading}>
+                  {loading ? "Sending..." : "Send Message Securely"}
+                  <img src={ArrowIcon} alt="ArrowIcon" />
                 </button>
               </div>
+
             </form>
           </div>
         </div>
       </div>
+
       <Footer />
     </>
   );
