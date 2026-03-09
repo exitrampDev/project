@@ -19,6 +19,8 @@ export class MailService {
        email: subscriber.email,
       },
     });
+    
+  await new Promise(resolve => setTimeout(resolve, 1000)); // 1 second delay
 
      return this.mailerService.sendMail({
       to: process.env.EMAIL_FOR_ADMIN,
