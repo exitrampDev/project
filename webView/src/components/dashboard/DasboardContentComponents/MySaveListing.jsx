@@ -187,7 +187,7 @@ const cimTemplate = (rowData) => (
         emptyMessage={error ? `Error: ${error}` : "No business listings found."}
       >
         <Column header="Listing Name" body={listingNameTemplate} />
-        <Column header="Industry" body={saveIndustryTemplate}/>
+        {/* <Column header="Industry" body={saveIndustryTemplate}/> */}
         <Column header="NDA Status" body={ndaStatusTemplate} />
         {/* <Column field="entityType" header="Type" /> */}
         {/* <Column field="revenue" header="Revenue" /> */}
@@ -217,7 +217,7 @@ const cimTemplate = (rowData) => (
       >
         <Column header="Listing Name" body={listingNameTemplate}/>
         
-        <Column header="Industry" body={saveIndustryTemplate} />
+        {/* <Column header="Industry" body={saveIndustryTemplate} /> */}
         <Column field="yearStablished" header="Year" />
           <Column header="Location" body={locationTemplate} />
         <Column header="NDA Status" body={ndaStatusTemplate} />
