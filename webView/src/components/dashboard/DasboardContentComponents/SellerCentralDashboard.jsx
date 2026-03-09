@@ -7,6 +7,7 @@ import { ProgressSpinner } from "primereact/progressspinner";
 import { useRecoilValue } from "recoil";
 import { authState, apiBaseUrlState } from "../../../recoil/ctaState";
 import axios from "axios";
+import BuyerSubmissionForSeller from "./BuyerSubmissionForSeller";
 
 const SellerCentralDashboard = () => {
   const { user, access_token } = useRecoilValue(authState) ?? {};
@@ -146,7 +147,7 @@ const saveIndustryTemplate = (indusValue) => (JSON.parse(Object(indusValue?.indu
     const fetchCounts = async () => {
       try {
         const response = await fetch(
-          `${API_BASE}/business-listing/user-dashboard-counts`,
+          `${API_BASE}/admin/seller-dashboard-counts`,
           {
             headers: {
               Authorization: `Bearer ${access_token}`,
@@ -196,36 +197,40 @@ const saveIndustryTemplate = (indusValue) => (JSON.parse(Object(indusValue?.indu
         <div className="dashboard__free_buyer_count_block">
           <div className="dashboard__free_buyer_count_block_sav_listing">
             <h3>Total Listings</h3>
-            <p>{counts?.totalBusinesses ?? 0}</p>
+            <p>{counts?.listinCount ?? 0} Active</p>
           </div>
 
           <div className="dashboard__free_buyer_count_block_nda_submit">
-            <h3>Pending NDAs</h3>
-            <p>{pendingNdaCount}</p>
+            <h3>NDA Requests</h3>
+            <p>{counts?.ndas ?? 0} Pending</p>
           </div>
 
           <div className="dashboard__free_buyer_count_block_profile_completion">
-            <h3>Live Businesses</h3>
-            <p>{counts?.liveBusinesses ?? 0}</p>
+            <h3>CIMs Shared</h3>
+            <p>{counts?.cimSharedCount ?? 0} Buyers</p>
+          </div>
+           <div className="dashboard__free_buyer_count_block_profile_completion">
+            <h3>Buyer Viewss</h3>
+            <p>{counts?.buyerViewsCount ?? 0} This Week</p>
           </div>
         </div>
 
         {/* ---------- Chart + Table ---------- */}
         <div className="listing__dashboard_data_table_widget_wrap">
           <div className="listing__dashboard_nda_chart_widget">
-            <h3>Listings by Status</h3>
+            <h3>NDA Requests Breakdown</h3>
             <Chart
               type="doughnut"
               data={{
-                labels: ["Live", "Pending", "Blocked"],
+                labels: ["Approved", "Pending", "Rejected"],
                 datasets: [
                   {
                     data: [
-                      counts?.liveBusinesses ?? 0,
-                      counts?.pendingBusinesses ?? 0,
-                      counts?.blockedBusinesses ?? 0,
+                      counts?.ndas ?? 0,
+                      (counts?.ndas ?? 0) - (counts?.cimSharedCount ?? 0),
+                      counts?.ndaRejected ?? 0,
                     ],
-                    backgroundColor: ["#42A5F5", "#FFA726", "#EF5350"],
+                    backgroundColor: ["#42A5F5", "#FFA726", "#FF5353"],
                   },
                 ],
               }}
@@ -251,16 +256,16 @@ const saveIndustryTemplate = (indusValue) => (JSON.parse(Object(indusValue?.indu
         {/* ---------- Saved Listings Table ---------- */}
         <div className="listing__dashboard_weakly_activity listing__dashboard_save_listing">
           <div className="listing__dashboard_nda_request_data_tables width__full">
-            <h3>Saved Listings</h3>
-
-          <DataTable value={saveListing}>
+            <h3>Recent Buyer Submissions</h3>
+              <BuyerSubmissionForSeller />
+          {/* <DataTable value={saveListing}>
                         <Column header="Listing Name" body={listingNameTemplate} />
                         <Column header="Industry" body={industryTemplate} />
                        <Column  header="Business State" body={(listingData) => { return listingData.businessState;}}/>
                         <Column header="Cash Flow" body={(listingData) => { return listingData.cashFlow}} />
                         <Column header="Asking Price"  body={(rowData) => moneyTemplate(rowData.askingPrice)} />
                         <Column body={(listingData)=>{return new Date(listingData.createdAt).toLocaleDateString()}} header="Created Date" />
-            </DataTable>
+            </DataTable> */}
           </div>
         </div>
 

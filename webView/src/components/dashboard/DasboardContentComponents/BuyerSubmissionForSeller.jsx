@@ -110,7 +110,7 @@ const handleSignatureSave = () => {
   };
 
   // Approve / Reject handlers
- const handleNDAAction = async (actionType, sellerSignatureApproved) => {
+ const handleNDAAction = async (actionType, signatureData = "") => {
   if (!selectedSubmission?._id) return;
 
   const url =
@@ -125,7 +125,7 @@ const handleSignatureSave = () => {
       ndaId: selectedSubmission._id,
       status: actionType === "approve" ? "approved" : "rejected",
       // Include the base64 signature string if approving
-      sellerSignature: actionType === "approve" ? sellerSignatureApproved : null
+      sellerSignature: actionType === "approve" ? buyerSignature : null 
     };
 
     await axios.patch(
@@ -215,14 +215,14 @@ const openBuyerInfoModal = (row) => {
   return (
     <>
       <Toast ref={toast} />
-      <DashboardHeader headingData="Buyer Submissions"/>
-      <div className="brief__infor_content">
+      {/* <DashboardHeader headingData="Buyer Submissions"/> */}
+      {/* <div className="brief__infor_content">
         <p>
           These buyers have shown interest in your listing by submitting a
           completed buyer profile and NDA. Review their information and
           determine if they’re a potential fit.
         </p>
-      </div>
+      </div> */}
 
       <div className="my__save_listing_wrap my__listing_table nda__request_block">
         <DataTable
@@ -451,11 +451,6 @@ const openBuyerInfoModal = (row) => {
         <p><strong>Date:</strong> {today}</p>
         <p><strong>Email:</strong> {user.email || "Seller Email"}</p>
           <div className="signature__canvas">
-
-            {selectedSubmission?.sellerSignature ? <img src={selectedSubmission?.sellerSignature} alt="Seller Sig" className="sellerSig" /> :            
-            
-         <>
-         
             <SignatureCanvas
               ref={sigCanvasRef}
               penColor="black"
@@ -467,36 +462,27 @@ const openBuyerInfoModal = (row) => {
                 onTouchEnd: handleSignatureSave,
               }}
             />
-         </>
-}
           </div>
 
-{selectedSubmission.sellerSignature ? "" : 
+          <div className="flex justify-content-end mt-2">
+            <Button
+              type="button"
+              label="Clear"
+              icon="pi pi-refresh"
+              className="p-button-text p-button-sm"
+              onClick={clearSignature}
+            />
+          </div>
+        </div>
 
-<>
-
-<div className="flex justify-content-end mt-2">
-  <Button
-    type="button"
-    label="Clear"
-    icon="pi pi-refresh"
-    className="p-button-text p-button-sm"
-    onClick={clearSignature}
-  />
-</div>
-
-{!buyerSignature && (
-  <Message
-  severity="warn"
-  text="Please provide your signature before submitting."
-/>
-)}
-        
-
-</>
-}
+        {!buyerSignature && (
+          <Message
+            severity="warn"
+            text="Please provide your signature before submitting."
+          />
+        )}
+                  
      
-</div>
        
 
               </div>
@@ -507,17 +493,16 @@ const openBuyerInfoModal = (row) => {
             <div className="nda__modal_actions" >
               <Button
                 label="Approve NDA"
-                onClick={() => handleNDAAction("approve", selectedSubmission?.sellerSignature ? selectedSubmission?.sellerSignature : buyerSignature)}
+                onClick={() => handleNDAAction("approve")}
                 loading={submitting}
                 className="btn__NDARequest_shareCIM"
-                disabled={  selectedSubmission.ndaStatus === "approved"}
+                disabled={ !buyerSignature || selectedSubmission.ndaStatus === "approved"}
               />
               <Button
                 label="Decline Access"
                 onClick={() => handleNDAAction("reject")}
                 loading={submitting}
                 className="btn__NDARequest_decline"
-                disabled={  selectedSubmission.ndaStatus === "rejected"}
               />
             </div>
           </div>
