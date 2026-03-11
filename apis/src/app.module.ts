@@ -57,7 +57,7 @@ import { AdminModule } from './admin/admin.module';
           },
         },
         defaults: {
-          from: '"Exit Ramp" <noreply@yourapp.com>',
+          from: '"Exit Ramp" <noreply@exitramp.co>',
         },
         template: {
           dir: join(__dirname, 'common', 'templates'),
