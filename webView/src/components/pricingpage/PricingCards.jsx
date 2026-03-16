@@ -74,7 +74,7 @@ const plans = [
   
 export default function PricingCards() {
   return (
-    <section className="PricingCards__wrapper">
+    <section className="PricingCards__wrapper" id="pricingCard">
       <div className="PricingCards__container">
         {plans.map((plan, index) => (
           <div className="PricingCard" key={index}>
