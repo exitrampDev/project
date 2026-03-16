@@ -10,6 +10,7 @@ import { NotificationHelper } from 'src/common/helpers/notification.helper';
 import { ApproveNdaDto } from './dto/approve-nda.dto';
 import { MailService } from 'src/common/mail/mail.service';
 import { UsersService } from 'src/users/users.service';
+import { PdfService } from 'src/common/pdf/pdf.service';
 
 @Injectable()
 export class NdaService {
@@ -18,7 +19,8 @@ export class NdaService {
      @InjectModel(Business.name) private readonly businessModel: Model<BusinessDocument>,
      private readonly notificationHelper: NotificationHelper,
        private readonly mailService: MailService,
-       private readonly userService: UsersService
+       private readonly userService: UsersService,
+       private readonly pdfService: PdfService,
   ) {}
 
   // User submits NDA
@@ -628,6 +630,14 @@ export class NdaService {
         );
       }
       // -----------------------
+      // ------------------------------
+      this.pdfService.generateNda().then((pdfUrl) => {
+        console.log('PDF generated and saved at:', pdfUrl);
+        nda.agreedDocument = pdfUrl;}).catch((err) => {
+          console.error('Error generating PDF:', err);
+        });
+      // ------------------------------
+
      return nda;
   }
 

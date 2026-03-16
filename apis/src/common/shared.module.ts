@@ -12,6 +12,7 @@ import { NotificationHelper } from './helpers/notification.helper';
 import { PaymentExistsValidator } from './decorators/payment-exists.validator';
 import { Payment, PaymentSchema } from 'src/payment/schemas/payment.schema';
 import { PaymentModule } from 'src/payment/payment.module';
+import { PdfService } from './pdf/pdf.service';
 
 @Global()
 @Module({
@@ -23,7 +24,7 @@ import { PaymentModule } from 'src/payment/payment.module';
     { name : Payment.name, schema : PaymentSchema }
   ]),
   ],
-  providers: [MailService, BusinessExistsConstraint, PaymentExistsValidator, UniqueInCollectionConstraint, NotificationHelper], 
-  exports: [HttpModule,MongooseModule, MailService, BusinessExistsConstraint, PaymentExistsValidator, UniqueInCollectionConstraint, NotificationHelper],
+  providers: [PdfService, MailService, BusinessExistsConstraint, PaymentExistsValidator, UniqueInCollectionConstraint, NotificationHelper], 
+  exports: [PdfService, HttpModule,MongooseModule, MailService, BusinessExistsConstraint, PaymentExistsValidator, UniqueInCollectionConstraint, NotificationHelper],
 })  
 export class SharedModule {}
