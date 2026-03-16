@@ -5764,3 +5764,406 @@ li.list__row_item span.list_content_col h4 {
     font-size: 16px;
 }
 }
+
+
+
+
+/*Broker page styling*/
+
+
+section.hero-section-container {
+    background-size: cover;
+    background-position: bottom;
+    background-repeat: no-repeat;
+}
+section.hero-section-container button.get-started-button-header.p-button.p-component {
+    display: flex;
+    align-items: center;
+    border: none;
+    background: #ffb100;
+    color: #fff;
+    font-size: 17px;
+    padding: 12px 30px;
+    gap: 10px;
+    border-radius: 100px;
+    cursor: pointer;
+    text-decoration: none;
+}
+section.hero-section-container section.hero-header-section {
+    max-width: 1300px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    padding: 30px 15px;
+}
+
+section.hero-section-container section.hero-section {
+    max-width: 880px;
+    margin: 0 auto;
+    display: flex;
+    padding: 80px 15px 140px 15px;
+    flex-wrap: wrap;
+    justify-content: center;
+    text-align: center;
+}
+
+section.hero-section-container section.hero-section h2 {
+        margin: 0;
+    font-size: 46px;
+    color: #fff;
+    font-family: 'Poppins';
+    font-weight: 400;
+}
+section.hero-section-container section.hero-section p{
+    font-size: 20px;
+    color: #fff;
+    font-family: 'Poppins';
+    margin: 40px 0 60px 0;
+}
+
+ section.hero-section button.get-started-button-banner.p-button.p-component {display: flex;align-items: center;border: none;background: #ffb100;color: #fff;font-size: 17px;padding: 12px 30px;gap: 10px;border-radius: 100px;cursor: pointer;text-decoration: none;margin: 0 auto 80px auto;}
+
+
+
+ section.users__section_broker_page_container {
+    max-width: 1170px;
+    margin: 120px auto;
+}
+
+section.users__section_broker_page_container h2 {
+    color: #002f68;
+    font-size: 35px;
+    font-weight: 600;
+    text-transform: capitalize;
+    text-align: center;
+    margin: 0;
+}
+
+section.users__section_broker_page_container p {
+    color: #111;
+    font-size: 25px;
+    font-weight: 500;
+    text-transform: capitalize;
+    text-align: center;
+    margin: 0;
+}
+
+.users__section_broker_page_cards_container {
+    display: flex;
+    gap: 30px;
+    margin: 60px 0;
+}
+
+.users__section_broker_page_cards_container  .users__section_broker_page_card {
+    width: 33%;
+    border: 1px solid #E5E8F6;
+    border-radius: 24px;
+    padding: 40px;
+    text-align: center;
+}
+
+.users__section_broker_page_cards_container .users__section_broker_page_card h3 {
+    font-family: 'Poppins';
+    font-size: 22px;
+    font-weight: 500;
+    color: #111;
+    margin:15px 0 0 0;
+}
+
+
+.users__section_broker_page_cards_container .users__section_broker_page_card.user_business_broker{
+    background-image: linear-gradient(90deg, #4f93ff4f, #4f93ff05);
+}
+.users__section_broker_page_cards_container .users__section_broker_page_card.user_business_owner{
+     background-image: linear-gradient(0deg, #28c76f20, #28c76f00);
+}
+.users__section_broker_page_cards_container .users__section_broker_page_card.user_investor{
+     background-image: linear-gradient(-90deg, #ffb10020, #ffb10000);
+}
+section.problem__section_broker_page_container {
+    background: #F3F7FF;
+}
+
+section.problem__section_broker_page_container .problem__container {
+    max-width: 1170px;
+    margin: 0 auto;
+    display: flex;
+    padding: 100px 0;
+    align-items: center;
+}
+
+section.problem__section_broker_page_container .problem__container  .problem__left_section {
+    width: 50%;
+}
+
+section.problem__section_broker_page_container .problem__container .problem__right_section {
+    width: 50%;
+}
+
+section.problem__section_broker_page_container .problem__container .problem__right_section img {
+    max-width: 100%;
+    border-right: 8px solid #ffffff;
+}
+
+section.problem__section_broker_page_container .problem__container .problem__left_section>h2 {
+    margin: 0;
+    font-size: 40px;
+    color: #002F68;
+}
+
+section.problem__section_broker_page_container .problem__container .problem__left_section>p {
+    font-size: 18px;
+}
+
+section.problem__section_broker_page_container .problem__container .problem__left_section>ul {
+    padding: 0;
+}
+
+section.problem__section_broker_page_container .problem__container .problem__left_section>ul li {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    font-size: 24px;
+    color: #111;
+    font-weight: 500;
+    margin-bottom: 10px;
+}
+section.features__section_broker_page_container {
+    max-width: 1170px;
+    margin: 120px auto;
+}
+
+section.features__section_broker_page_container>h2 {
+    color: #002f68;
+    font-size: 35px;
+    font-weight: 600;
+    text-transform: capitalize;
+    text-align: center;
+    margin: 0;
+}
+
+section.features__section_broker_page_container>h4 {
+    color: #111;
+    font-size: 25px;
+    font-weight: 500;
+    text-transform: capitalize;
+    text-align: center;
+    margin: 0;
+}
+
+section.features__section_broker_page_container>p {
+    font-size: 20px;
+    text-align: center;
+    margin: 0;
+}
+
+section.features__section_broker_page_container .features__section_card_wrap {
+    display: flex;
+    gap: 30px;
+    margin: 60px 0;
+}
+
+section.features__section_broker_page_container .features__section_card_wrap .features__section_card {
+    width: 33%;
+    border: 1px solid #E5E8F6;
+    border-radius: 24px;
+    padding: 20px;
+    text-align: center;
+}
+section.features__section_broker_page_container .features__section_card_wrap .features__section_card:nth-child(1) {
+    background-image: linear-gradient(90deg, #4f93ff4f, #4f93ff05);
+}
+section.features__section_broker_page_container .features__section_card_wrap .features__section_card:nth-child(2) {
+    background-image: linear-gradient(0deg, #28c76f20, #28c76f00);
+}
+section.features__section_broker_page_container .features__section_card_wrap .features__section_card:nth-child(3) {
+    background-image: linear-gradient(-90deg, #ffb10020, #ffb10000);
+}
+
+section.features__section_broker_page_container .features__section_card_wrap .features__section_card img {
+    width: 100%;
+}
+section.features__section_broker_page_container .features__section_card_wrap .features__section_card h3 {
+        font-family: 'Poppins';
+    font-size: 22px;
+    font-weight: 500;
+    color: #111;
+    max-width: 210px;
+    margin: 30px auto 0 auto;
+}
+section.why-brokers__section_broker_page_container {background: #F3F7FF;}
+section.why-brokers__section_broker_page_container .why__broker_left_col {
+    width: 50%;
+}
+
+section.why-brokers__section_broker_page_container .why__broker_right_col {
+    width: 50%;
+}
+
+section.why-brokers__section_broker_page_container .why__broker_right_col>h3 {
+    margin: 0 0 30px 0;
+    font-size: 37px;
+    color: #002F68;
+}
+
+section.why-brokers__section_broker_page_container .why__broker_right_col>ul {
+    padding: 0;
+}
+
+section.why-brokers__section_broker_page_container .why__broker_right_col>ul li {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    font-size: 21px;
+    color: #111;
+    font-weight: 500;
+    margin-bottom: 10px;
+}
+
+section.why-brokers__section_broker_page_container  .why__broker_wrap {
+    max-width: 1170px;
+    margin: 0 auto;
+    display: flex;
+    padding: 100px 0;
+    align-items: center;
+    gap: 60px;
+}
+
+section.why-brokers__section_broker_page_container .why__broker_left_col img {
+    width: 100%;
+}
+section.philosophy__section_broker_page_container {
+    padding: 120px 0;
+    text-align: center;
+}
+
+section.philosophy__section_broker_page_container h2 {
+    font-size: 45px;
+    margin: 0;
+    color: #fff;
+    font-weight: 600;
+}
+
+section.philosophy__section_broker_page_container p {
+    color: #fff;
+    font-size: 24px;
+}
+
+
+section.philosophy__section_broker_page_container h4 {
+    font-size: 36px;
+    color: #fff;
+    font-weight: 600;
+    max-width: 1130px;
+    margin: 0 auto;
+}
+section.founder__section_broker_page_container {
+    display: flex;
+    max-width: 1170px;
+    margin: 90px auto 0px auto;
+    align-items: center;
+    gap: 40px;
+    margin-bottom: -6px;
+}
+
+.founder__section_left_col {
+    width: 50%;
+}
+
+.founder__section_right_col {
+    width: 50%;
+}
+
+.founder__section_right_col img {
+    max-width: 100%;
+}
+
+.founder__section_left_col>h2 {
+    font-size: 50px;
+    color: #002F68;
+    font-weight: 600;
+    margin: 0 0 30px 0;
+}
+
+.founder__section_left_col>.intro__founder_Sec {
+    font-size: 20px;
+    color: #002F68;
+    font-weight: 300;
+    font-style: italic;
+    margin-bottom: 20px;
+}
+
+.founder__section_left_col>.conclusion__founder_Sec {
+    font-size: 20px;
+    color: #002F68;
+    font-weight: 300;
+    font-style: italic;
+    margin-bottom: 20px;
+}
+
+.founder__section_left_col button.get-started-button-header.p-button.p-component {
+    display: flex;
+    align-items: center;
+    border: none;
+    background: #ffb100;
+    color: #fff;
+    font-size: 17px;
+    padding: 9px 38px;
+    gap: 10px;
+    border-radius: 100px;
+    cursor: pointer;
+    text-decoration: none;
+    margin: 30px 0 30px 0;
+}
+
+
+.leaning__founder_Sec {
+    font-size: 20px;
+    color: #002F68;
+    font-weight: 300;
+    font-style: italic;
+    margin-bottom: 20px;
+}
+
+.leaning__founder_Sec strong {
+    font-weight: 600;
+}
+
+.founder__section_left_col>.conclusion__founder_Sec strong {
+    font-weight: 600;
+}
+
+.founder__section_left_col>.conclusion__founder_Sec em {
+    display: block;
+}
+footer.footer__section_broker_page_container {
+    background: #F3F7FF;
+    padding: 140px 0 50px 0;
+}
+
+.footer__logo_box {
+    max-width: 1170px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 40px;
+    margin-bottom: 40px;
+    border-bottom: 1px solid #002F68;
+}
+
+.footer__logo_box ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    gap: 15px;
+}
+
+.footer__content {
+    max-width: 1170px;
+    margin: 0 auto;
+    text-align: center;
+}

@@ -7,6 +7,7 @@ import Register from "./components/register";
 import Login from "./components/login";
 import BusinessListingDetail from "./components/BusinessListingDetail";
 import AboutUS from "./pages/AboutUs";
+import Broker from "./pages/Broker";
 import ContactUs from "./pages/ContactUs";
 import TermsCondition from "./pages/TermsCondition";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
@@ -50,6 +51,7 @@ const App = () => {
         <Route path="/listings" element={<Listings />} />
         <Route path="/aboutus" element={<AboutUS />} />
         <Route path="/pricing" element={<Pricing/>} />
+        <Route path="/broker" element={<Broker />} />
         <Route path="/contactus" element={<ContactUs />} />
         <Route path="/termscondition" element={<TermsCondition />} />
         <Route path="/privacypolicy" element={<PrivacyPolicy />} />
