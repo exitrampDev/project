@@ -30,7 +30,7 @@ export class PdfService {
     return `/uploads/nds/${fileName}`;
   }
 
-async generateNda(): Promise<string> {
+async generateNda(nda: any): Promise<string> {
 
     // path to template
     const templatePath = path.join(process.cwd(), 'src','common','templates','nda', 'nda.hbs');
@@ -42,10 +42,22 @@ async generateNda(): Promise<string> {
     const template = Handlebars.compile(templateHtml);
 
     // dynamic data
+    console.log('NDA Data:====>', nda.createdAt);
+    console.log('NDA Data:====>', nda.businessOwnerId.first_name);
+    console.log('NDA Data:====>', nda.submittedBy.first_name);
     const html = template({
-      company: 'ABC Technologies',
-      client: 'John Doe',
-      date: new Date().toLocaleDateString(),
+      ndaDate: nda.createdAt.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+      listingTitle: nda.businessId.listingTitle,
+      listingId: nda.businessId._id,
+      partyA: nda.businessOwnerId.first_name,
+      ownerEmail: nda.businessOwnerId.email,
+      ownerResponseOn: nda.sellerResponseOn ? nda.sellerResponseOn.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'N/A',
+      ownerSignature: nda.sellerSignature || '',
+      
+      partyB: nda.submittedBy.first_name,
+      buyerEmail: nda.submittedBy.email,
+      buyerSignature: nda.buyerSignature || '',
+
     });
 
     const options = { format: 'A4' };

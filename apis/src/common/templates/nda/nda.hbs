@@ -53,9 +53,9 @@ This Non-Disclosure Agreement, hereinafter known as the
 <strong>"Agreement"</strong>, created on this day
 <strong>{{agreementDate}}</strong>,
 is between <strong>{{partyA}}</strong>,
-hereinafter known as <strong>"Party A"</strong>, and the listing owner of
-<strong>{{listingName}}</strong> (Listing ID: <strong>{{listingId}}</strong>),
-hereinafter known as <strong>"Party B"</strong>, and collectively known as the
+ known as <strong>"Party A"</strong>, and the listing owner of
+<strong>{{listingTitle}}</strong> (Listing ID: <strong>{{listingId}}</strong>),
+{{partyB}} known as <strong>"Party B"</strong>, and collectively known as the
 <strong>"Parties"</strong>.
 </p>
 
@@ -130,68 +130,102 @@ Confidential Information does <strong>not</strong> include:
 
 <div class="section">
 
+
 <h2>V. OBLIGATIONS</h2>
 
 <p>
-The receiving Party shall hold and maintain the Confidential Information in
-strictest confidence for the sole and exclusive benefit of the disclosing
+The Parties shall hold and maintain all Confidential Information in strict
+confidence and disclose it only to individuals on a "need-to-know" basis.
+Any unauthorized disclosure shall result in full liability for the disclosing
 Party.
 </p>
 
 <p>
-The receiving Party shall carefully restrict access to Confidential Information
-to employees, contractors, and third parties as is reasonably required.
+Neither Party shall, without written approval, publish, copy, or use
+Confidential Information for personal benefit. Upon request, all materials
+shall be returned within 30 days.
 </p>
 
 </div>
 
 <div class="section">
 
-<h2>VI. TERM</h2>
+<h2>VI. TIME PERIOD</h2>
 
 <p>
-This Agreement shall remain in effect for a period of
-<strong>{{agreementTerm}}</strong> years from the date of signing.
+The duty to maintain confidentiality shall remain in effect until such
+information no longer qualifies as a trade secret or written release is
+provided.
 </p>
 
 </div>
 
 <div class="section">
 
-<h2>VII. GOVERNING LAW</h2>
+<h2>VII. INTEGRATION</h2>
 
 <p>
-This Agreement shall be governed by and construed in accordance with the laws
-of <strong>{{governingLaw}}</strong>.
+This Agreement constitutes the complete understanding between the Parties
+and supersedes all prior agreements. Amendments must be in writing and
+acknowledged by both Parties.
 </p>
 
 </div>
 
 <div class="section">
 
-<h2>VIII. SIGNATURES</h2>
+<h2>VIII. SEVERABILITY</h2>
 
 <p>
-The Parties agree to the terms and conditions of this Agreement and execute
-this Agreement as of the date first written above.
+If any provision is found unenforceable, the remainder shall continue in full
+force and effect.
 </p>
 
+</div>
+<br><br><br><br>
+<div class="section">
+
+<h2>IX. ENFORCEMENT</h2>
+
+<p>
+The Parties acknowledge that breach of this Agreement may cause irreparable
+harm and that equitable and legal remedies may be pursued.
+</p>
+
+</div>
+
+<div class="section">
+
+<h2>X. GOVERNING LAW</h2>
+
+<p>
+This Agreement shall be governed under the laws of the State of
+<strong>{{governingLaw}}</strong>.
+</p>
+
+<p>
+By typing your name below, you acknowledge and agree to all terms and
+conditions outlined in this Agreement and provide your electronic signature.
+</p>
 <br><br>
 
 <table width="100%">
 <tr>
 <td>
-<strong>Party A</strong><br><br>
-Name: {{partyA}}<br>
-Signature: __________________________<br>
-Date: {{agreementDate}}
+<strong>Buyer Signature</strong><br><br>
+Name: {{partyB}}<br>
+Date: {{ndaDate}}
+Email: {{buyerEmail}}<br>
+Signature: <image src="{{buyerSignature}}" alt="Party B Signature" /><br>
+
 </td>
 
 <td>
-<strong>Party B</strong><br><br>
-Name: {{partyB}}<br>
-Signature: __________________________<br>
-Date: {{agreementDate}}
+<strong>Seller Signature</strong><br><br>
+Name: {{partyA}}<br>
+Date: {{ownerResponseOn}}
+Email: {{ownerEmail}}<br>
+Signature: <image src="{{ownerSignature}}" alt="Party A Signature" /><br>
 </td>
 </tr>
 </table>

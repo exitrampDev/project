@@ -595,11 +595,11 @@ export class NdaService {
   async approveNda(ndaId: string, userId: string, data: ApproveNdaDto): Promise<Nda>{
      const nda = await this.ndaModel.findById(ndaId);
      if(!nda) throw new NotFoundException("Nda Not Found");
-
+      console.log('NDA found:', nda); 
+      
      //property owmer ko check kar raha hun
      const business = await this.businessModel.findById(nda.businessId);
      if(!business) throw new NotFoundException("Business Not Found");
-     
      if(business.ownerId.toString() !== userId){
       throw new ForbiddenException("You Are Not Authorized To Approve This Nda")
      }
@@ -609,7 +609,7 @@ export class NdaService {
      nda.cimAccess = 'approved';
      nda.sellerSignature = data.sellerSignature;
      await nda.save();
-
+    const ndaData = await this.ndaModel.findById(ndaId).populate(['businessId','submittedBy', 'businessOwnerId']);
      await this.notificationHelper.createNotification({
         // new Types.ObjectId(commentDto.createdBy),
         userId: nda.submittedBy,    
@@ -618,7 +618,7 @@ export class NdaService {
       });
        // ------------------------------
        let ndaUrl:any = null;
-      ndaUrl =  await this.pdfService.generateNda()
+      ndaUrl =  await this.pdfService.generateNda(ndaData)
     //  .then((pdfUrl) => {
       //   ndaUrl = pdfUrl;
       //   console.log('PDF generated and saved at:', pdfUrl);
@@ -641,7 +641,7 @@ export class NdaService {
           },
           [ {
           filename: 'nda.pdf',
-          path: [],
+          path: ndaUrl,
         },]
         );
       }
