@@ -616,27 +616,37 @@ export class NdaService {
         title: 'Flag Submitted',
         message: `Your request has been approved.`,
       });
+       // ------------------------------
+       let ndaUrl:any = null;
+      ndaUrl =  await this.pdfService.generateNda()
+    //  .then((pdfUrl) => {
+      //   ndaUrl = pdfUrl;
+      //   console.log('PDF generated and saved at:', pdfUrl);
+        
+      // }).catch((err) => {
+      //     console.error('Error generating PDF:', err);
+      //   });
+      // // ------------------------------
       // ----------------------- Email Notification
       let buyer = await this.userService.findById(nda.submittedBy.toString());
       if(buyer){
-        await this.mailService.sendMail(
+        await this.mailService.sendMailWithFiles(
           buyer.email,
           'NDA Approved',
           'generalMessage',
           {
             receiverName: buyer.first_name ? buyer.first_name : 'User',
             message: `Your NDA request has been approved.`,
-          }
+            
+          },
+          [ {
+          filename: 'nda.pdf',
+          path: [],
+        },]
         );
       }
       // -----------------------
-      // ------------------------------
-      this.pdfService.generateNda().then((pdfUrl) => {
-        console.log('PDF generated and saved at:', pdfUrl);
-        nda.agreedDocument = pdfUrl;}).catch((err) => {
-          console.error('Error generating PDF:', err);
-        });
-      // ------------------------------
+     
 
      return nda;
   }

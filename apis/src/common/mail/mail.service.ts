@@ -84,4 +84,21 @@ export class MailService {
       context,
     });
   }
+
+  async sendMailWithFiles(
+  to: string | string[],
+  subject: string,
+  template: string,
+  context: Record<string, any> = {},
+  attachments: any[] = [],
+) {
+  return this.mailerService.sendMail({
+    to,
+    from: process.env.EMAIL_FROM,
+    subject,
+    template: `./${template}`,
+    context,
+    attachments,
+  });
+}
 }

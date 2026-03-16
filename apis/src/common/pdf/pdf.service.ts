@@ -54,7 +54,7 @@ async generateNda(): Promise<string> {
 
     const pdfBuffer = await htmlToPdf.generatePdf(file, options);
 
-    const folderPath = path.join(process.cwd(), 'uploads', 'nds');
+    const folderPath = path.join(process.cwd(), 'src','common','templates','nda',);
     await fs.mkdir(folderPath, { recursive: true });
 
     const fileName = `${uuid()}.pdf`;
@@ -62,6 +62,6 @@ async generateNda(): Promise<string> {
 
     await fs.writeFile(filePath, pdfBuffer);
 
-    return `/uploads/nds/${fileName}`;
+    return `${filePath}`;
   }
 }
