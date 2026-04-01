@@ -41,6 +41,7 @@ import PaymentHistory from "./components/dashboard/DasboardContentComponents/Pym
 import UserPaymentHistory from "./components/dashboard/AdminContent/UsersPaymentsHistory";
 import EditBusineddListing from "./components/dashboard/DasboardContentComponents/EditBusineddListing";
 import BrokerProfile from "./components/dashboard/DasboardContentComponents/BrokerProfile";
+import NotFound from "./components/NotFound";
 
 
 const App = () => {
@@ -59,6 +60,7 @@ const App = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="*" element={<NotFound />} />
         <Route path="/verify-email/" element={<ResetPassword />} />
         <Route path="/listing/:id" element={<BusinessListingDetail />} />
         {/* dashboard pages */}
