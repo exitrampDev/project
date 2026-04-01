@@ -2007,7 +2007,7 @@ impact the confidentiality of your sale.</em>
   <Column body={(row) => documentRoomLink(row._id)} header="Document Room" />
   {/* <Column field="yearStablished" header="Year" /> */}
   <Column header="Location" body={locationTemplate} />
-  <Column header="Industry" body={industryTemplate} />
+  <Column header="Industry" body={industryTemplate} style={{ maxWidth: '200px' }}/>
   {/* <Column field="revenue" header="Revenue" body={moneyTemplate} />
   <Column field="monthlyRentAmount" header="Rent"  /> */}
   <Column header="Last Edited" body={dateTemplate} />

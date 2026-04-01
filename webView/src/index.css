@@ -3590,7 +3590,14 @@ h3.docRoom_data_table_access_files_title {
 }
 
 .cim__file_exchange_wrap .cim__file_exchange_download_wrap a {
-    color: #505050;
+   color: #ffffff;
+    background: #ffb100;
+    border: 1px solid #ffb100;
+    padding: 0.60rem 1.25rem;
+    font-size: 1rem;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
+    border-radius: 6px;
+    text-decoration: none;
 }
 .form__for_cim_intro_content {
     display: flex;

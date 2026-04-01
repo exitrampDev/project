@@ -202,7 +202,7 @@ const saveIndustryTemplate = (indusValue) => (JSON.parse(Object(indusValue?.indu
 
           <div className="dashboard__free_buyer_count_block_nda_submit">
             <h3>NDA Requests</h3>
-            <p>{counts?.ndas ?? 0} Pending</p>
+            <p>{(counts?.ndas ?? 0) - ((counts?.cimSharedCount ?? 0) + (counts?.ndaRejected ?? 0))} Pending</p>
           </div>
 
           <div className="dashboard__free_buyer_count_block_profile_completion">
@@ -219,6 +219,7 @@ const saveIndustryTemplate = (indusValue) => (JSON.parse(Object(indusValue?.indu
         <div className="listing__dashboard_data_table_widget_wrap">
           <div className="listing__dashboard_nda_chart_widget">
             <h3>NDA Requests Breakdown</h3>
+
             <Chart
               type="doughnut"
               data={{
@@ -226,9 +227,9 @@ const saveIndustryTemplate = (indusValue) => (JSON.parse(Object(indusValue?.indu
                 datasets: [
                   {
                     data: [
-                      counts?.ndas ?? 0,
-                      (counts?.ndas ?? 0) - (counts?.cimSharedCount ?? 0),
-                      counts?.ndaRejected ?? 0,
+                      (counts?.cimSharedCount ?? 0) ,
+                       (counts?.ndas ?? 0) - ((counts?.cimSharedCount ?? 0) + (counts?.ndaRejected ?? 0)),
+                      (counts?.ndaRejected ?? 0),
                     ],
                     backgroundColor: ["#42A5F5", "#FFA726", "#FF5353"],
                   },

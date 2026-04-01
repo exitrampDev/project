@@ -34,7 +34,7 @@ export const activePageAtom = atom({
 });
 export const apiBaseUrlState = atom({
   key: "apiBaseUrlState",
-  default: import.meta.env.VITE_API_BASE_URL || "http://localhost:3000",
+  default: import.meta.env.VITE_API_BASE_URL || "http://localhost:5000",
 });
 
 

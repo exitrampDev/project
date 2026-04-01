@@ -6,7 +6,7 @@ import { Toast } from "primereact/toast";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { FileUpload } from "primereact/fileupload";
-
+import instructionsPdf from "../../../assets/Exit-Ramp-CIM-Prep-Instructions.pdf";
 import DashboardHeader from "./DashboardHeaderBlock";
 import { apiBaseUrlState, authState } from "../../../recoil/ctaState";
 
@@ -158,13 +158,13 @@ const isDocumentUploaded = (label) => {
         {cimFiles.length === 0 && (
           <div className="cim__file_exchange_wrap">
             <div className="cim__file_exchange_download_wrap">
-              <Link to="/" className="cim__file_exchange_ins_btn">
+              <Link to={instructionsPdf} className="cim__file_exchange_ins_btn" target="_blank" download>
                 Download Instructions
               </Link>
-              <span>|</span>
+              {/* <span>|</span>
               <Link to="/" className="cim__file_exchange_temp_btn">
                 Download Template
-              </Link>
+              </Link> */}
             </div>
 
             <label className="p-button p-component cursor-pointer cim__file_exchange_upload_btn">
