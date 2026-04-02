@@ -235,6 +235,11 @@ const Header = () => {
       className: currentPath === "/pricing" ? "p-menuitem-active" : "",
     },
     {
+      label: "How To Use",
+      command: () => navigate("/page/how-to-use"),
+      className: currentPath === "/page/how-to-use" ? "p-menuitem-active" : "",
+    },
+    {
       label: "Contact Us",
       command: () => navigate("/contactus"),
       className: currentPath === "/contactus" ? "p-menuitem-active" : "",
