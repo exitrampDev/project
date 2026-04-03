@@ -1,8 +1,9 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Types, Schema as MongooseSchema } from 'mongoose';
+import { Document, Types, Schema as MongooseSchema, HydratedDocument } from 'mongoose';
 import { UserType } from '../enums/user-type.enum';
 
 export type UserDocument = User & Document;
+// export type UserDocument = HydratedDocument<User>;
 
 @Schema({ timestamps: true })
 export class User {

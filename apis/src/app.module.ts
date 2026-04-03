@@ -30,6 +30,7 @@ import { PaymentModule } from './payment/payment.module';
 import { CronModule } from './cron/cron.module';
 import { AdminModule } from './admin/admin.module';
 import { PageModule } from './page/page.module';
+import { InviteModule } from './invite/invite.module';
 
 
 @Module({
@@ -80,7 +81,7 @@ import { PageModule } from './page/page.module';
     CimModule,
     SharedModule,
     DueDiligenceModule,  
-    NotificationModule, PaymentModule, CronModule, AdminModule, PageModule 
+    NotificationModule, PaymentModule, CronModule, AdminModule, PageModule, InviteModule 
   ],
 
  
