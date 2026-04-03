@@ -42,6 +42,9 @@ import UserPaymentHistory from "./components/dashboard/AdminContent/UsersPayment
 import EditBusineddListing from "./components/dashboard/DasboardContentComponents/EditBusineddListing";
 import BrokerProfile from "./components/dashboard/DasboardContentComponents/BrokerProfile";
 import NotFound from "./components/NotFound";
+import PagesList from "./components/dashboard/AdminContent/PagesList";
+import PageBuilder from "./components/dashboard/AdminContent/PageBuilder";
+import RenderPages from "./pages/RenderPages";
 
 
 const App = () => {
@@ -60,6 +63,7 @@ const App = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/page/:slug" element={<RenderPages />} />
         <Route path="*" element={<NotFound />} />
         <Route path="/verify-email/" element={<ResetPassword />} />
         <Route path="/listing/:id" element={<BusinessListingDetail />} />
@@ -117,6 +121,9 @@ const App = () => {
           <Route path="users" element={<AdminUsersShow />} />
            <Route path="users-payments" element={<UserPaymentHistory />} />
           <Route path="inquiries" element={<FlaggedListing/>} />
+           <Route path="pages" element={<PagesList />} />
+          <Route path="pages/create" element={<PageBuilder />} />
+          <Route path="pages/:slug" element={<PageBuilder />} />
         </Route>
         <Route path="payment" element={<Dashboard />}>
           <Route path="success" element={<SuccessPayment />} />

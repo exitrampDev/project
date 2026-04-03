@@ -34,6 +34,14 @@ export default function AdminNav() {
         </li>
         <li>
           <NavLink
+            to="/admin/pages"
+            className={({ isActive }) => (isActive ? "active" : "")}
+          >
+            <img src={icon1} alt="Dashboard" /> Pages Management
+          </NavLink>
+        </li>
+        <li>
+          <NavLink
             to="/admin/users"
             className={({ isActive }) => (isActive ? "active" : "")}
           >

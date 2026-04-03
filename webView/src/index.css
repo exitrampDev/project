@@ -4594,6 +4594,85 @@ form.p-fluid.contact__form_listin_seller button.btn__crt_listing.p-button.p-comp
     border-color:#e24c4c;
         color:#e24c4c;
 }
+.actionBtnPagesList{
+  display: flex;
+  gap: 10px;
+}
+.editor__box_slug_wrap {
+    display: flex;
+    gap: 10px;
+}
+
+.editor__box_slug_wrap p {
+    margin: 0;
+    font-size: 14px;
+}
+
+.editor__box_slug_wrap p span {
+    color: #6f6f6f;
+}
+
+.editor__box_slug_wrap label {
+    font-size: 14px;
+    margin: 0;
+    color: #002f68;
+    font-weight: 600;
+}
+
+.editor__box_slug_wrap {
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.editor__box_wrap_container {
+    background: #fff;
+    padding: 24px;
+    border-radius: 16px;
+    box-shadow: 0 2px 3px 0px #00000021;
+    margin-top: 20px;
+}
+
+.editor__box_slug_wrap  input.w-full.p-inputtext.p-component {
+    width: calc(100% - 90px);
+    padding: 9px 5px;
+}
+
+.dasboard__content_container_wrap .editor__box_content_wrap {
+    margin-bottom: 20px;
+}
+
+.dasboard__content_container_wrap .editor__box_content_wrap label {
+     font-size: 14px;
+     margin: 0;
+     color: #002f68;
+     font-weight: 600;
+     margin-bottom:10px;
+     display: block;
+}
+
+.dasboard__content_container_wrap .editor__box_content_wrap div {
+    border-radius: 7px;
+}
+
+a.viewPageLink {
+    margin-left: 20px;
+    display: flex;
+    align-items: center;
+    border: none;
+    background: #ffb100;
+    color: #fff;
+    font-size: 13px;
+    padding: 7px 16px;
+    gap: 10px;
+    border-radius: 10px;
+    cursor: pointer;
+    text-decoration: none;
+}
+.page__builder_wrapper {
+    max-width: 1180px;
+    padding: 0 15px;
+    margin: 60px auto auto;
+}
 @media screen and (min-width: 1024px) and (max-width: 2500px) {
   .header_container nav.nav_col a {
     font-size: 18px;
