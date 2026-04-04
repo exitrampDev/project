@@ -19,6 +19,14 @@ export class Invite {
 @Prop({ type: Types.ObjectId, ref: 'Business', required: true })
   businessId!: Types.ObjectId;
 
+
+@Prop({ type: String, default: ''})
+ role!: string;
+
+
+@Prop({ type: Object, default: ''})
+ accuisitionType!: Record<string, any>;
+
 @Prop({
   type: String,
   enum: ['pending', 'accepted', 'rejected'],

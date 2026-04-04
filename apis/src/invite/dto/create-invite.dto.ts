@@ -1,6 +1,6 @@
 // dto/create-invite.dto.ts
 
-import { IsEmail, IsMongoId, IsNotEmpty, IsOptional } from 'class-validator';
+import { IsEmail, IsMongoId, IsNotEmpty, IsObject, IsOptional, IsString } from 'class-validator';
 
 export class CreateInviteDto {
   @IsMongoId()
@@ -19,4 +19,13 @@ export class CreateInviteDto {
   @IsMongoId()
   @IsNotEmpty()
   businessId!: string;
+
+
+  @IsString()
+  @IsNotEmpty()
+  role!: string;
+
+@IsObject()
+@IsNotEmpty()
+accuisitionType!: Record<string, any>;
 }

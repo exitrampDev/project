@@ -31,6 +31,16 @@ export class InviteService {
     }
 
     try {
+
+      let existingInvite = await this.inviteModel.find({
+        invitedEmail: dto.invitedEmail,
+        businessId: dto.businessId,
+      });
+      if (existingInvite.length > 0) {
+        throw new ConflictException('An active invite already exists for this email and business');
+      }
+
+
       const invite = await this.inviteModel.create(dto);
       return invite;
     } catch (error) {
@@ -65,7 +75,7 @@ export class InviteService {
       .find(filter)
       .populate('invitedUserId', 'name email')
       .populate('invitedByUserId', 'name email')
-      .populate('businessId', 'name')
+      .populate('businessId', 'listingTitle')
       .sort({ createdAt: -1 });
   }
 

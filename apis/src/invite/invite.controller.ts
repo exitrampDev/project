@@ -27,6 +27,15 @@ export class InviteController {
 }
 
 @UseGuards(JwtAuthGuard)
+@Get()
+findAll(@Query() query: QueryInviteDto, @User() user: any) {
+  if (user?.userId) {
+      query.invitedByUserId = user.userId;
+    }
+  return this.inviteService.findAll(query);
+}
+
+@UseGuards(JwtAuthGuard)
 @Patch(':id/status')
 updateStatus(
   @Param('id') id: string,
@@ -35,10 +44,6 @@ updateStatus(
   return this.inviteService.updateStatus(id, dto);
 }
 
-@UseGuards(JwtAuthGuard)
-@Get()
-findAll(@Query() query: QueryInviteDto) {
-  return this.inviteService.findAll(query);
-}
+
 
 }
