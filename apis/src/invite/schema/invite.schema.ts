@@ -19,6 +19,9 @@ export class Invite {
 @Prop({ type: Types.ObjectId, ref: 'Business', required: true })
   businessId!: Types.ObjectId;
 
+@Prop({ type: String, default: ''})
+ name!: string;
+
 
 @Prop({ type: String, default: ''})
  role!: string;

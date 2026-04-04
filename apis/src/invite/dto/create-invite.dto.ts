@@ -20,6 +20,9 @@ export class CreateInviteDto {
   @IsNotEmpty()
   businessId!: string;
 
+  @IsString()
+  @IsNotEmpty()
+  name!: string;
 
   @IsString()
   @IsNotEmpty()
