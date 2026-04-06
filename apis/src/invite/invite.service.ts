@@ -7,7 +7,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 
 import { Invite, InviteDocument } from './schema/invite.schema';
 import { CreateInviteDto } from './dto/create-invite.dto';
@@ -16,12 +16,15 @@ import {
   InviteStatus,
 } from './dto/update-invite-status.dto';
 import { QueryInviteDto } from './dto/query-invite.dto';
+import { UsersService } from 'src/users/users.service';
+import { UserDocument } from 'src/users/schemas/user.schema';
 
 @Injectable()
 export class InviteService {
   constructor(
     @InjectModel(Invite.name)
     private readonly inviteModel: Model<InviteDocument>,
+    private readonly userService: UsersService
   ) {}
 
   //  Create Invite
@@ -135,5 +138,37 @@ export class InviteService {
       .populate('invitedByUserId', 'name email')
       .populate('businessId', 'name')
       .sort({ createdAt: -1 });
+  }
+
+
+   async acceptInvite(body: any, user: any) {
+    console.log('Accepting invite with body:', body, 'for user:', user);
+      const userDoc: UserDocument | null = await this.userService.findByEmail(user.email);
+      if (!userDoc) {
+        throw new NotFoundException('User not found');
+      }
+
+
+      const invite: InviteDocument | null  = await this.inviteModel.findOne({
+      invitationHash: body.invitationHash,
+      invitedEmail: user.email,
+      
+    });
+
+    if (!invite) {
+      throw new NotFoundException('Invite not found');
+    }
+
+    if (invite.status !== InviteStatus.PENDING) {
+      throw new BadRequestException(
+        'Already responded to this invite',
+      );
+    }
+
+    invite.status = InviteStatus.ACCEPTED;
+    invite.invitedUserId = userDoc._id as Types.ObjectId;
+    await invite.save();
+
+    return invite;
   }
 }

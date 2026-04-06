@@ -26,6 +26,9 @@ export class Invite {
 @Prop({ type: String, default: ''})
  role!: string;
 
+@Prop({ type: String, default: ''})
+ invitationHash!: string;
+
 
 @Prop({ type: Object, default: ''})
  accuisitionType!: Record<string, any>;

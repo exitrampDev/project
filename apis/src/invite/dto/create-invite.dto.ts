@@ -28,6 +28,10 @@ export class CreateInviteDto {
   @IsNotEmpty()
   role!: string;
 
+  @IsString()
+  @IsOptional()
+  invitationHash!: string;
+
 @IsObject()
 @IsNotEmpty()
 accuisitionType!: Record<string, any>;

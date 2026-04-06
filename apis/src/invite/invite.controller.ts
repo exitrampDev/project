@@ -6,6 +6,8 @@ import { QueryInviteDto } from './dto/query-invite.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { User } from 'src/common/decorators/user.decorator';
 import { UsersService } from 'src/users/users.service';
+import { v4 as uuid } from 'uuid';
+import { AcceptInviteDto } from './dto/accept-invite.dto';
 
 @Controller('invite')
 export class InviteController {
@@ -15,7 +17,7 @@ export class InviteController {
 
 @UseGuards(JwtAuthGuard)
 @Post()
-    async create(@Body() dto: CreateInviteDto, @User() user: any) {
+  async create(@Body() dto: CreateInviteDto, @User() user: any) {
      if (user?.userId) {
       dto.invitedByUserId = user.userId;
     }
@@ -23,6 +25,7 @@ export class InviteController {
    if (invitedUser) {
      dto.invitedUserId = String(invitedUser._id);
    }
+    dto.invitationHash = uuid();
   return this.inviteService.create(dto);
 }
 
@@ -42,6 +45,15 @@ updateStatus(
   @Body() dto: UpdateInviteStatusDto,
 ) {
   return this.inviteService.updateStatus(id, dto);
+}
+
+
+
+@UseGuards(JwtAuthGuard)
+@Post('accept')
+AcceptInvite(@Body() body: AcceptInviteDto, @User() user: any) {
+ 
+  return this.inviteService.acceptInvite(body, user);
 }
 
 
