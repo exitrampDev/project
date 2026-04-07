@@ -18,6 +18,7 @@ import {
 import { QueryInviteDto } from './dto/query-invite.dto';
 import { UsersService } from 'src/users/users.service';
 import { UserDocument } from 'src/users/schemas/user.schema';
+import { UpdateInviteAccessDto } from './dto/update-invitation-access.dto';
 
 @Injectable()
 export class InviteService {
@@ -171,4 +172,25 @@ export class InviteService {
 
     return invite;
   }
+
+
+  async updateInviteAccess(body: UpdateInviteAccessDto, user: any) {
+    console.log('Updating invite access with body:', body, 'for user:', user);
+    const invite: InviteDocument | null  = await this.inviteModel.findOne({
+      _id: body.id,
+      invitedByUserId: user.userId,
+    });
+
+    if (!invite) {
+      throw new NotFoundException('Invitation not found');
+    }
+
+  
+    invite.access = body.access;
+    await invite.save();
+
+    return invite;
+  }
+
+
 }

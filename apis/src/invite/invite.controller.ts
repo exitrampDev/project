@@ -8,6 +8,7 @@ import { User } from 'src/common/decorators/user.decorator';
 import { UsersService } from 'src/users/users.service';
 import { v4 as uuid } from 'uuid';
 import { AcceptInviteDto } from './dto/accept-invite.dto';
+import { UpdateInviteAccessDto } from './dto/update-invitation-access.dto';
 
 @Controller('invite')
 export class InviteController {
@@ -55,6 +56,15 @@ AcceptInvite(@Body() body: AcceptInviteDto, @User() user: any) {
  
   return this.inviteService.acceptInvite(body, user);
 }
+
+// ---------------------------GRANT and REVOKE ACCESS---------------------------
+@UseGuards(JwtAuthGuard)
+@Post('access')
+UpdateInviteAccess(@Body() body: UpdateInviteAccessDto, @User() user: any) {
+ 
+  return this.inviteService.updateInviteAccess(body, user);
+}
+
 
 
 

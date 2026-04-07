@@ -1,7 +1,7 @@
 // src/users/enums/user-type.enum.ts
 export enum UserType {
 
-  ADMIN = 'admin',
+ 
   SUBSCRIBER = 'subscriber',
   
   Buyer_PREMIUM = 'buyer_premium',
@@ -11,6 +11,9 @@ export enum UserType {
   MA_EXPERT_BASIC = 'm&a_expert_basic', // underscore instead of space (recommended)
   MA_EXPERT_PREMIUM = 'm&a_expert_premium', // underscore instead of space (recommended)
 
+
+  ADMIN = 'admin',
+  INVITED_MEMBER = 'invited_member',
   BUYER_BASIC = 'buyer_basic',
   SELLER_BROKER = 'seller_broker',
   SELLER_INDIVIDUAL = 'seller_individual',
