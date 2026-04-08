@@ -40,6 +40,15 @@ findAll(@Query() query: QueryInviteDto, @User() user: any) {
 }
 
 @UseGuards(JwtAuthGuard)
+@Get('received')
+findAllReceived(@Query() query: QueryInviteDto, @User() user: any) {
+  if (user?.userId) {
+      query.invitedUserId = user.userId;
+    }
+  return this.inviteService.findAll(query);
+}
+
+@UseGuards(JwtAuthGuard)
 @Patch(':id/status')
 updateStatus(
   @Param('id') id: string,
