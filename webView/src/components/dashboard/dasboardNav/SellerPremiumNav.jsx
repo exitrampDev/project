@@ -6,6 +6,7 @@ import icon3 from "../../../assets/d-icon2.png";
 import icon21 from "../../../assets/icon21.png";
 import icon22 from "../../../assets/icon22.png";
 import icon23 from "../../../assets/icon23.png";
+import invite from "../../../assets/invite.png";
 import icon24 from "../../../assets/icon24.png";
 import icon25 from "../../../assets/icon25.png";
 import icon26 from "../../../assets/icon26.png";
@@ -46,6 +47,14 @@ const { user, access_token } = useRecoilValue(authState) ?? {};
                 className={({ isActive }) => (isActive ? "active" : "")}
               >
                 <img src={icon23} alt="Saved Listing" /> Saved Listing
+              </NavLink>
+            </li>
+             <li>
+              <NavLink
+                to="/user/invite-team"
+                className={({ isActive }) => (isActive ? "active" : "")}
+              >
+                <img src={invite} alt="Invite Team" /> Invite Team
               </NavLink>
             </li>
   <li>

@@ -4673,6 +4673,121 @@ a.viewPageLink {
     padding: 0 15px;
     margin: 60px auto auto;
 }
+.main__invite-form-wrap {
+    margin-top: 20px;
+    padding: 25px 30px;
+    background: #fff;
+    border-radius: 16px;
+}
+.main__invite-form-wrap .invite__form_grid {
+    display: flex;
+    gap: 20px;
+}
+
+.main__invite-form-wrap .permissions__grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    padding: 18px 0;
+    margin-bottom: 20px;
+}
+
+.main__invite-form-wrap .permissions__grid .checkbox__item {
+    font-size: 13px;
+    color: #818A98;
+    display: flex;
+    gap: 7px;
+    align-items: center;
+        width: 32%;
+}
+.view__edit_buttons_action {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+a.view__edit_buttons_action_view_btn {
+    font-size: 11px;
+    border: 1px solid;
+    padding: 4px;
+    border-radius: 5px;
+    color: #6380a4;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+}
+
+a.view__edit_buttons_action_edit_btn {
+    font-size: 11px;
+    border: 1px solid;
+    padding: 4px;
+    border-radius: 5px;
+    color: #6380a4;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+}
+
+.view__edit_buttons_action i {
+    font-size: 11px;
+}
+
+.permissions__badges_wrap span.permissions__badges_wrap_badge {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.permissions__badges_wrap span.permissions__badges_wrap_badge em {font-style: normal;font-weight: 600;}
+
+.permissions__badges_wrap {
+    display: flex;
+    flex-wrap: wrap;
+    max-width: 210px;
+    gap: 3px;
+}
+
+.permissions__badges_wrap i {
+    width: calc(100% - 15px);
+    font-style: normal;
+}
+td.invited__list_title {
+    max-width: 160px;
+}
+.main__invite-form-wrap .invite__form_grid .invite__form_field {
+    width: 25%;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.main__invite-form-wrap .invite__form_grid .invite__form_field .p-component {
+    width: 100%;
+}
+
+.main__invite-form-wrap .invite__form_grid .invite__form_field label {
+    color: #002F67;
+    font-size: 15px;
+    font-weight: 400;
+    margin-bottom: 4px;
+}
+
+.main__invite-form-wrap  h3 { color: #002F67;
+    font-size: 15px;
+    font-weight: 400;
+    margin: 30px 0 0 0;}
+    button.btn__remove_invite.p-button.p-component {
+    font-size: 12px;
+    background: red;
+    padding: 6px 10px;
+    display: flex;
+    align-items: center;
+}
+
+button.btn__remove_invite.p-button.p-component span.p-button-icon.p-c.p-button-icon-left.pi.pi-times {
+    font-size: 11px;
+}
 @media screen and (min-width: 1024px) and (max-width: 2500px) {
   .header_container nav.nav_col a {
     font-size: 18px;

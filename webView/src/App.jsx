@@ -45,6 +45,9 @@ import NotFound from "./components/NotFound";
 import PagesList from "./components/dashboard/AdminContent/PagesList";
 import PageBuilder from "./components/dashboard/AdminContent/PageBuilder";
 import RenderPages from "./pages/RenderPages";
+import InviteTeam from "./components/dashboard/DasboardContentComponents/InviteTeam";
+import RegisterInvitedPerson from "./components/registerInvitedPerson";
+import InvitedDataListing from "./components/dashboard/DasboardContentComponents/invitedDataListing";
 
 
 const App = () => {
@@ -60,6 +63,7 @@ const App = () => {
         <Route path="/termscondition" element={<TermsCondition />} />
         <Route path="/privacypolicy" element={<PrivacyPolicy />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/register-invited" element={<RegisterInvitedPerson />} />
         <Route path="/login" element={<Login />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/dashboard" element={<Dashboard />} />
@@ -77,6 +81,8 @@ const App = () => {
           <Route path="dashboard" element={<DashboardContent />} />
           <Route path="saved-listing" element={<div>Saved Listing</div>} />
           <Route path="my-listing" element={<SellerListing />} />
+          <Route path="invite-team" element={<InviteTeam />} />
+          <Route path="my-invited-listing" element={<InvitedDataListing />} />
           <Route path="document-room/:id" element={<DocumentRoom/>} />
           <Route path="document-room-buyer/:id" element={<DocumentRoomBuyer/>} />
           <Route path="single-listing/:id" element={<SingleBusinessListing />} />
