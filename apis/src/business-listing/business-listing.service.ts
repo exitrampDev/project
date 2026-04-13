@@ -232,7 +232,7 @@ if (industry) {
     const filter: any = { isDeleted: false , status: BusinessStatus.PENDING_FOR_PAYMENT };
  
 
-    // ✅ data fetch with
+    //  data fetch with
     const data = await this.businessModel
       .find(filter)
       .sort({ [sortBy]: sortOrder })
@@ -252,12 +252,16 @@ if (industry) {
 
 
   async create(dto: CreateBusinessDto, user: any): Promise<Business> {
-     let imageBase64 = dto.image;
+  let imageBase64 = dto.image;
     if (imageBase64 && !imageBase64.startsWith("data:image")) {
     imageBase64 = `data:image/png;base64,${imageBase64}`;
   }
+  let isFirstListing = await this.businessModel.find({ ownerId: user.userId }).countDocuments() == 0;
+  // console.log(dto); 
+  // return new Business(); // TODO: remove for debugging
     const business = new this.businessModel({
                       ...dto,
+                      isFirstListing,
                       createdBy: user.userId,
                       ownerId: user.userId,
                       isDeleted: false,

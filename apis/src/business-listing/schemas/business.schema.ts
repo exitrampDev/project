@@ -424,6 +424,9 @@ export class Business {
   @Prop({ type: String, default: "" })
   cimUrl?: string;
 
+   @Prop({type: Boolean, default: false })
+  isFirstListing!: boolean;
+
   //---------------------Payment Info-----------------
   @Prop({ type: Date, default: null })
   paymentDate?: Date;

@@ -213,9 +213,9 @@ export class CreateBusinessDto {
   cashFlow?: number;
 
   // ----------------- Status -----------------
-  @IsOptional()
-  @IsEnum(BusinessStatus)
-  status?: BusinessStatus;
+  // @IsOptional()
+  // @IsEnum(BusinessStatus)
+  // status?: BusinessStatus;
 
   @IsOptional()
   @IsEnum(CimStatus)
