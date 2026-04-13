@@ -257,9 +257,12 @@ if (industry) {
     imageBase64 = `data:image/png;base64,${imageBase64}`;
   }
   let isFirstListing = await this.businessModel.find({ ownerId: user.userId }).countDocuments() == 0;
-  // console.log(dto); 
-  // return new Business(); // TODO: remove for debugging
-    const business = new this.businessModel({
+
+if(isFirstListing) {
+  dto.status = BusinessStatus.LIVE;
+}
+
+  const business = new this.businessModel({
                       ...dto,
                       isFirstListing,
                       createdBy: user.userId,
