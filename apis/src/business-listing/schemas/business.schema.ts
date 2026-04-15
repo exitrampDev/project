@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
-import { BusinessStatus } from '../dto/create-business.dto';
+import { BusinessStatus, ListingTypes } from '../dto/create-business.dto';
 
 export type BusinessDocument = Business & Document & { createdAt: Date; updatedAt: Date };
 
@@ -263,6 +263,9 @@ export class Business {
 
   @Prop({ type: Number, default: 0 })
   cashFlow: number;
+
+  @Prop({ default: ListingTypes.NORMAL })
+  listingType!: string;
 
   @Prop({ default: BusinessStatus.PENDING_FOR_PAYMENT })
   status: string;
