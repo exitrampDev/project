@@ -36,7 +36,7 @@ export class BusinessListingController {
             'Exit Ramp - New Listing Created',
             'generalMessage',
             {
-            receiverName:`Taha`,
+            receiverName:``,
             message: `New Listing has been created with title: ${dto.listingTitle}.`,
             });
 

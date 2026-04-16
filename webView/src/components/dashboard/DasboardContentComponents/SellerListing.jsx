@@ -83,6 +83,7 @@ const assetsIncludedOptions = [
   });
   const [listingStep, setListingStep] = useState(0);
    const [fileListingUploadId, setFileListingUploadId] = useState(0);
+   const [fileListingUploadIsFirst, setFileListingUploadIsFirst] = useState(0);
   const { user, access_token } = useRecoilValue(authState) ?? {};
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -322,6 +323,7 @@ const handleCreateListing = async () => {
     );
     // If you only want the response data:
     setFileListingUploadId(response.data._id);
+    setFileListingUploadIsFirst(response.data.isFirstListing);
 
     // reset form
     setNewListing({
@@ -448,6 +450,7 @@ const handleFileUpload = async (file, type) => {
 const handleSubmit = async () => {
   const uploadUrl = `${API_BASE}/files/${fileListingUploadId}/upload`;
   const businessId = `${fileListingUploadId}`;
+  const isFirst = fileListingUploadIsFirst;
 
   try {
     for (const [key, fileObj] of Object.entries(files)) {
@@ -472,9 +475,17 @@ const handleSubmit = async () => {
       });
     }
 
+
+    if (isFirst) {
+    window.location.href = `/user/my-listing`;
+} else {
+    window.location.href = `/user/payment-process/${businessId}`;
+}
+ 
+
     // Optional: navigate after upload
     // window.location.href = `/user/single-listing/${fileListingUploadId}`;
-window.location.href = `/user/payment-process/${businessId}`;
+// window.location.href = `/user/payment-process/${businessId}`;
 
   } catch (error) {
     toast.current.show({
@@ -620,8 +631,8 @@ const moneyTemplate = (row, { field }) => {
   };
   const actionTemplate = (row) => (
     <div className="action__listing_btns">
-        {row.status === "pending_for_payment" ? (<>
-        
+    {row.isFirstListing ? "" : <> 
+        {row?.status === "pending_for_payment" ? (<>
         <Tooltip target=".button__delete_action_lisitng_seller" position="top" />
          <Button
                 label=""
@@ -639,6 +650,8 @@ const moneyTemplate = (row, { field }) => {
 />
         </div>
 </>)}
+</>
+ }
       <Link to={`/user/single-listing/${row._id}`} className="flex gap-4">
       <i
         className="pi pi-eye cursor-pointer text-blue-500 hover:text-blue-700"

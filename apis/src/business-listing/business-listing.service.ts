@@ -211,12 +211,16 @@ if (industry) {
 
 
   async findLastPaymentOlderThan(date: Date) {
-  return this.businessModel.find({
-    lastPaymentDate: { $lt: date },
-    status: BusinessStatus.LIVE,
-    isDeleted: false,
-  });
-}
+    try {
+      return await this.businessModel.find({
+        paymentDate: { $lt: date },
+        status: BusinessStatus.LIVE,
+        isDeleted: false,
+      }).lean();
+    } catch (error: any) {
+      throw new Error(`Failed to find businesses: ${error.message}`);
+    }
+  }
 
   async getAllPendingForPaymentBusiness(query: QueryBusinessDto, user?: any) {
     const {
@@ -232,7 +236,7 @@ if (industry) {
     const filter: any = { isDeleted: false , status: BusinessStatus.PENDING_FOR_PAYMENT };
  
 
-    // ✅ data fetch with
+    //  data fetch with
     const data = await this.businessModel
       .find(filter)
       .sort({ [sortBy]: sortOrder })
@@ -252,12 +256,19 @@ if (industry) {
 
 
   async create(dto: CreateBusinessDto, user: any): Promise<Business> {
-     let imageBase64 = dto.image;
+  let imageBase64 = dto.image;
     if (imageBase64 && !imageBase64.startsWith("data:image")) {
     imageBase64 = `data:image/png;base64,${imageBase64}`;
   }
-    const business = new this.businessModel({
+  let isFirstListing = await this.businessModel.find({ ownerId: user.userId }).countDocuments() == 0;
+
+if(isFirstListing) {
+  dto.status = BusinessStatus.LIVE;
+}
+
+  const business = new this.businessModel({
                       ...dto,
+                      isFirstListing,
                       createdBy: user.userId,
                       ownerId: user.userId,
                       isDeleted: false,

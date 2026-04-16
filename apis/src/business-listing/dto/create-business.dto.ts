@@ -11,6 +11,12 @@ export enum BusinessStatus {
   BLOCK = 'block',
 }
 
+// Business types allowed values
+export enum ListingTypes {
+  NORMAL = 'normal',
+  PREMIUM = 'premium',
+}
+
 // CIM status allowed values
 export enum CimStatus {
   READY_TO_SHARE = 'ready_to_share',
@@ -211,6 +217,11 @@ export class CreateBusinessDto {
   @IsInt()
   @Transform(({ value }) => parseInt(value))
   cashFlow?: number;
+
+  // ----------------- Litsting Type -----------------
+  @IsOptional()
+  @IsEnum(ListingTypes)
+  listingType?: ListingTypes;
 
   // ----------------- Status -----------------
   @IsOptional()

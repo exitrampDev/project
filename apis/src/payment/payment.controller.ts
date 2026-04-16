@@ -125,7 +125,7 @@ export class PaymentController {
       paymentIntentId: intent.id,
       paymentStatus: 'SUCCEEDED',
       referenceId: new Types.ObjectId(businessId),
-      paymentFor: 'BUSINESS_CREATION',
+      paymentFor: intent.metadata.purpose?? 'BUSINESS_CREATION',
     }, new Types.ObjectId(userId));
 
     // 2. Activate business
