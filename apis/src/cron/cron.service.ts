@@ -11,10 +11,9 @@ import { PaymentService } from 'src/payment/payment.service';
 @Injectable()
 export class CronService {
   private readonly logger = new Logger(CronService.name);
-  private readonly businessListingService: BusinessListingService;
 
   constructor(
-   businessListingService: BusinessListingService,
+   private readonly  businessListingService: BusinessListingService,
     private readonly usersService: UsersService,
     private readonly httpService: HttpService,
     private readonly paymentsService: PaymentService, 
@@ -102,33 +101,58 @@ export class CronService {
  /**
    * Runs every day at midnight
    */
- @Cron(CronExpression.EVERY_30_MINUTES)
+ @Cron(CronExpression.EVERY_10_SECONDS)
 async handleDailyJob() {
-  this.logger.log('Running payment check cron');
+  this.logger.log('Running payment check cron----');
 
   try {
-    // 1 Calculate date 1 month ago
-   const oneMonthAgo = subMonths(new Date(), 1);
+  //   // 1 Calculate date 1 month ago
+  //  const oneMonthAgo = subMonths(new Date(), 1);
 
-    // 2 Fetch businesses whose lastPaymentDate < oneMonthAgo and live
+  //   // 2 Fetch businesses whose lastPaymentDate < oneMonthAgo and live
+  //   const businesses =
+  //   await this.businessListingService.findLastPaymentOlderThan(
+  //     oneMonthAgo,
+  //   );
+  //   console.log('Overdue businesses:------>', oneMonthAgo, businesses);
+
+  //   3 Log them
+  //   for (const business of businesses) {
+  //     this.logger.log(
+  //       `----->Business ${business._id} last paid on ${business.paymentDate}`,
+  //     );
+  //     this.businessListingService.markBusinessAsPendingForPayment((business._id as any).toString());
+  //   }
+
+  //   if (!businesses.length) {
+  //     this.logger.log('No overdue businesses found');
+  //   }
+  // ----------------------------------------------------------------
+    const oneMonthAgo = subMonths(new Date(), 1);
+
     const businesses =
-      await this.businessListingService.findLastPaymentOlderThan(
-        oneMonthAgo,
+      await this.businessListingService.findLastPaymentOlderThan(oneMonthAgo);
+
+    this.logger.log(`Found ${businesses.length} overdue businesses`);
+     for (const business of businesses) {
+      this.logger.log(
+        `Business ${business._id} last paid on ${business.paymentDate}`,
       );
 
-    // 3 Log them
-    for (const business of businesses) {
-      this.logger.log(
-        `----->Business ${business._id} last paid on ${business.paymentDate}`,
+      await this.businessListingService.markBusinessAsPendingForPayment(
+        business._id.toString(),
       );
-      this.businessListingService.markBusinessAsPendingForPayment((business._id as any).toString());
     }
 
     if (!businesses.length) {
       this.logger.log('No overdue businesses found');
     }
-  } catch (error) {
-    this.logger.error('Error checking overdue businesses', error);
+
+  } catch (error: any) {
+    this.logger.error(
+        'Error checking overdue businesses',
+        error?.stack || error?.message || JSON.stringify(error),
+      );
   }
 }
 
@@ -151,9 +175,10 @@ async handleDailyJob() {
   /**
    * Runs every 30 seconds
    */
-  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
+  // @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
+  @Cron(CronExpression.EVERY_30_SECONDS)
   async handleInterval() {
-    this.logger.log('Running billing cron');
+    this.logger.log('Running billing cron----------------------------------');
     const limit = 10;
         try { while (true) {
             const businesses = await this.businessListingService.getAllPendingForPaymentBusiness({ page: 1, limit: 1000 });

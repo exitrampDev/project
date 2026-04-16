@@ -276,7 +276,7 @@ async chargeUserOffSessionREST(
     confirm: true,
     'metadata[userId]': metadata.userId,
     'metadata[businessId]': metadata.businessId,
-    'metadata[purpose]': 'Subscription Charge',
+    'metadata[purpose]': 'BUSINESS_RENEWAL',
   });
 
   try {

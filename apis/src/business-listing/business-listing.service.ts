@@ -211,12 +211,16 @@ if (industry) {
 
 
   async findLastPaymentOlderThan(date: Date) {
-  return this.businessModel.find({
-    lastPaymentDate: { $lt: date },
-    status: BusinessStatus.LIVE,
-    isDeleted: false,
-  });
-}
+    try {
+      return await this.businessModel.find({
+        paymentDate: { $lt: date },
+        status: BusinessStatus.LIVE,
+        isDeleted: false,
+      }).lean();
+    } catch (error: any) {
+      throw new Error(`Failed to find businesses: ${error.message}`);
+    }
+  }
 
   async getAllPendingForPaymentBusiness(query: QueryBusinessDto, user?: any) {
     const {
