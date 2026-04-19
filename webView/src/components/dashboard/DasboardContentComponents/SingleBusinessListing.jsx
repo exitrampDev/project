@@ -141,7 +141,8 @@ const renderYesNo = (value) => {
   <DashboardHeader headingData="Business Listing"/>
              
       <div className="business__list_single_main_wrap dasb">
-
+          {business?.listingType === "premium" && (
+                <>
           {user?.user_type === "buyer_basic"  && (<>
             <div className="business__list_single_nda_submit_row">
               <div className="business__list_single_nda_submit_row_intro_head_copy">
@@ -191,6 +192,9 @@ const renderYesNo = (value) => {
                 {showNDA && <NDASubmit ndaListingIdAdd={ndaListingIdAdd} businessData={business}/>}
             </div>
           </> )}
+                
+                </>
+          )}
 
 
         <div className="business__list_single_intro_block">

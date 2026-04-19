@@ -45,8 +45,10 @@ export default function SellerListing() {
   const API_BASE = useRecoilValue(apiBaseUrlState);
 const [filteredListings, setFilteredListings] = useState([]);
 const states = useRecoilValue(usStatesState);
+const [listingType, setListingType] = useState(null);
 const [selectedState, setSelectedState] = useRecoilState(selectedStateAtom);
 const [counties, setCounties] = useRecoilState(countiesState);
+const [listingTypePopOpen, setListingTypePopOpen] = useState(false);
 const locationOptions = [
   { label: "Headquarters", value: "Headquarters" },
   { label: "Office", value: "Office" },
@@ -155,6 +157,7 @@ const assetsIncludedOptions = [
   // Create Listing Dialog
   const [showCreateDialog, setShowCreateDialog] = useState(false);
      const [newListing, setNewListing] = useState({
+      listingType: "normal",
 askingPrice: 0,
 image: "",
 listingDescription: "",
@@ -205,14 +208,14 @@ listingReferenceNumber: Math.random().toString(16).substring(2, 10),
   });
 
 
-const documentRoomLink = (id) => {
+const documentRoomLink = (id, row) => {
   return(
     <>
- {(user?.user_type === "seller_central" || user?.user_type === "seller_broker" || user?.user_type === "seller_individual") && <>
+ {(row?.listingType === "premium")  && <>
       <Link to={`/user/document-room/${id}`} className="">View Doc Room</Link>
     </>}
-     {user?.user_type === "seller_listing" && <>
-      <span className="data__locked">
+     {row?.listingType === "normal" && <>
+      <span className="data__locked" onClick={() => navigate(`/user/payment-process/${row._id}`)}>
         <i className="pi pi-lock"></i> Upgarade to unlock
       </span>
     </>}
@@ -221,15 +224,15 @@ const documentRoomLink = (id) => {
   )
 }
 
-const createCIMList = (id, cimUrl) => {
+const createCIMList = (id, cimUrl, row) => {
   return(
     <>
- {(user?.user_type === "seller_central" || user?.user_type === "seller_broker" || user?.user_type === "seller_individual") && <>
+ {(row?.listingType === "premium") && <>
  {cimUrl ? (<><Link to={`/user/create-cim/${id}`} className="">View CIM</Link></>) : (<><Link to={`/user/create-cim/${id}`} className="">Create CIM</Link></>)}
       
     </>}
-     {user?.user_type === "seller_listing" && <>
-      <span className="data__locked">
+     {(row?.listingType === "normal") && <>
+      <span className="data__locked" onClick={() => navigate(`/user/payment-process/${row._id}`)}>
         <i className="pi pi-lock"></i> Upgarade to unlock
       </span>
     </>}
@@ -550,7 +553,7 @@ const listingNameTemplate = (rowData) => {
 
   return (
    <>
-   {(user?.user_type === "seller_central" || user?.user_type === "seller_broker" || user?.user_type === "seller_individual") && <>
+   {(row?.listingType === "premium") && <>
     <Tag
       value={formattedStatus}
       severity={
@@ -562,9 +565,9 @@ const listingNameTemplate = (rowData) => {
       }
     />
     </>}
-     {user?.user_type === "seller_listing" && <>
-      <span className="data__locked">
-        <i className="pi pi-lock"></i> Locked
+     {row?.listingType === "normal" && <>
+      <span className="data__locked" onClick={() => navigate(`/user/payment-process/${row._id}`)}>
+        <i className="pi pi-lock"></i> Upgarade to unlock
       </span>
     </>}
    </>
@@ -772,7 +775,64 @@ const isMainImageInvalid =
              {listingStep === 0 && (
               
               <>
+
+ {listingTypePopOpen ? <>
+ 
+           <div className="selection__container">
+              <div className="selection__container_overlay" onClick={() => setShowCreateDialog(false)} ></div>
+       <div className="selection__box_content_container">
+             <div className="selection__content_main_heading">
+                <h2>
+                  Select Listing Type
+                </h2>
+             </div>
+        <div className="selection__listing_type_cards_wrap ">
+          <Card 
+            title="Seller Basic" 
+            className={newListing?.listingType === "premium" ? "selection__listing_type_cards_box" : "selection__listing_type_cards_box card__listing_active"} 
+            onClick={() => {
+              setListingType("normal");
+              setNewListing({ ...newListing, listingType: "normal"})
+            }}
+          >
+            <p>Standard business listing with essential features.</p>
+          </Card>
+
+          <Card 
+            title="Seller Central" 
+            className={newListing?.listingType === "premium" ? "selection__listing_type_cards_box card__listing_active" : "selection__listing_type_cards_box"} 
+            onClick={() => {
+              setListingType("premium");
+              setNewListing({ ...newListing, listingType: "premium"})
+            }}
+          >
+            <p>Premium listing with advanced CIM and data room tools.</p>
            
+          </Card>
+        </div>
+        {newListing?.listingType === "premium" ? 
+            <div className="selection__listing_type_note">
+              <p> By selecting Seller Central, you will have access to enhanced features such as a customizable CIM builder, secure data room for document sharing, and advanced analytics to track listing performance. This option is ideal for sellers looking to attract serious buyers and maximize their business's value.  </p>
+            </div>  
+            : 
+            <div className="selection__listing_type_note">
+              <p>By selecting Seller Basic, you will create a standard business listing that includes essential features to showcase your business to potential buyers. This option is perfect for sellers who want a straightforward listing without the additional tools and resources provided in the Seller Central package.</p>
+            </div>
+                  }
+            
+        <div className="slelction__btns_wrap">
+              <Button label={newListing?.listingType === "premium" ? "Create Seller Central Listing" : "Create Basic Seller Listing"} className="submit__selection_pop" onClick={() => setListingTypePopOpen(false)} />
+            <Button label="Cancel" className="cancel__selection_pop" onClick={() => setShowCreateDialog(false)} />
+        </div>
+       </div>
+         </div>
+ </> : <>
+ 
+ 
+ </>}
+
+
+     
             <DashboardHeader headingData="Create Your Business Listing"/>
             <div className="brief__infor_content">
               <p>
@@ -1992,7 +2052,7 @@ impact the confidentiality of your sale.</em>
                 label="Create Listing"
                 icon="pi pi-plus"
                 className="btn__crt_listing"
-                onClick={() => setShowCreateDialog((prev) => !prev)}
+                onClick={() => { setShowCreateDialog((prev) => !prev); setListingTypePopOpen(true); }}
               />
               </div>
             </div>
@@ -2015,9 +2075,13 @@ impact the confidentiality of your sale.</em>
   <Column header="Listing Name" body={listingNameTemplate} />
   <Column field="askingPrice" header="Asking Price" body={moneyTemplate} />
   <Column field="status" header="Listing Status"  body={lisitngStatus}/>
-  <Column field="cimStatus" header="CIM Status" body={cimTemplate} />
-  <Column body={(row) => createCIMList(row._id, row.cimUrl)} header="CIM View" />
-  <Column body={(row) => documentRoomLink(row._id)} header="Document Room" />
+
+  <Column field="cimStatus" header="CIM Status" body={(row) => cimTemplate(row)} />
+  <Column body={(row) => createCIMList(row._id, row.cimUrl, row)} header="CIM View" />
+
+
+
+  <Column body={(row) => documentRoomLink(row._id, row)} header="Document Room" />
   {/* <Column field="yearStablished" header="Year" /> */}
   <Column header="Location" body={locationTemplate} />
   <Column header="Industry" body={industryTemplate} style={{ maxWidth: '200px' }}/>
