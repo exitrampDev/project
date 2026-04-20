@@ -4788,6 +4788,96 @@ td.invited__list_title {
 button.btn__remove_invite.p-button.p-component span.p-button-icon.p-c.p-button-icon-left.pi.pi-times {
     font-size: 11px;
 }
+.selection__container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.selection__container .selection__container_overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #00000070;
+}
+
+.selection__container .selection__box_content_container {
+    position: relative;
+    background: #fff;
+    padding: 40px;
+    border-radius: 15px;
+}
+
+.selection__content_main_heading h2 {
+    color: #002f68;
+    font-size: 32px;
+    font-weight: 600;
+    margin: 0;
+    text-transform: capitalize;
+}
+
+.selection__container .selection__box_content_container .selection__listing_type_cards_wrap {
+    display: flex;
+    gap: 30px;
+    padding: 20px 0;
+}
+.selection__container .selection__box_content_container .selection__listing_type_cards_wrap .selection__listing_type_cards_box{
+    width: 50%;
+    padding: 32px;
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    background: #fafafa;
+}
+.selection__container .selection__box_content_container .slelction__btns_wrap {
+    display: flex;
+    justify-content: space-between;
+}
+
+.selection__container .selection__box_content_container .slelction__btns_wrap button.cancel__selection_pop {
+    font-weight: 500;
+    text-transform: capitalize;
+}
+
+.selection__container .selection__box_content_container .slelction__btns_wrap button.submit__selection_pop {
+    background: #ffb100;
+    color: #775506;
+}
+.selection__container .selection__box_content_container .p-card-title {
+       color: #002f68;
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0;
+    text-transform: capitalize;
+}
+
+.selection__container .selection__box_content_container  .p-card-body {
+    padding: 0;
+}
+
+.selection__container .selection__box_content_container .p-card-body .p-card-content {
+    padding: 0;
+}
+.selection__container .selection__box_content_container .selection__listing_type_cards_wrap .selection__listing_type_cards_box.card__listing_active {
+    border: 2px solid #ffb100;
+}
+.selection__listing_type_note {
+    max-width: 950px;
+    width: 100%;
+    font-size: 13px;
+    margin-bottom: 30px;
+}
+span.data__locked {
+    cursor: pointer;
+}
 @media screen and (min-width: 1024px) and (max-width: 2500px) {
   .header_container nav.nav_col a {
     font-size: 18px;
