@@ -629,6 +629,7 @@ export class NdaService {
       // // ------------------------------
       // ----------------------- Email Notification
       let buyer = await this.userService.findById(nda.submittedBy.toString());
+      // let seller = await this.userService.findById(nda.businessOwnerId.toString());
       if(buyer){
         await this.mailService.sendMailWithFiles(
           buyer.email,
