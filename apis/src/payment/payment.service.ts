@@ -134,7 +134,8 @@ export class PaymentService {
 
   return {
     clientSecret: response.data.client_secret,
-    id:response.data.id
+    id:response.data.id,
+    amount: amount
   };
 }
   //create payment 

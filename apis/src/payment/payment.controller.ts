@@ -231,7 +231,7 @@ export class PaymentController {
     // data.objectId  = new Types.ObjectId(dto.businessId);
     // this.paymentsService.create(data,userId);
  
-    return { clientSecret: session.clientSecret };
+    return { clientSecret: session.clientSecret, amount: session.amount };
     // return { message: 'In-page payment intent endpoint under construction' };
   }
 
