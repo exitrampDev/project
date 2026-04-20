@@ -11,12 +11,15 @@ import { QueryPaymentDto } from './dto/query-payment.dto';
 import { User, UserDocument } from 'src/users/schemas/user.schema';
 import { UsersService } from 'src/users/users.service';
 import { MailService } from 'src/common/mail/mail.service';
+import { BusinessListingService } from 'src/business-listing/business-listing.service';
+import { ListingTypes } from 'src/business-listing/dto/create-business.dto';
 
 @Injectable()
 export class PaymentService {
      constructor(
         @InjectModel(Payment.name) private readonly paymentModel: Model<PaymentDocument>,
         private readonly usersService: UsersService,
+        private readonly businessService: BusinessListingService,
          private readonly mailService: MailService,
      ){}
 
@@ -94,6 +97,14 @@ export class PaymentService {
   async  createPaymentIntent(amount: number, userId: any, businessId?: string) {
     let user = await this.usersService.findById(userId);
     const customerId = await this.getOrCreateStripeCustomer(user);
+
+    const business = businessId ? await this.businessService.findOne(businessId) : null;
+    if (businessId && !business) {
+      throw new BadRequestException('Invalid businessId provided');
+    }
+
+    amount = business ? business.listingType === ListingTypes.PREMIUM ? 30 : 15 : amount; // Override amount based on listing type if businessId is provided
+
     const payload = qs.stringify({
       amount: Math.round(amount * 100),
       currency: 'usd',
@@ -104,7 +115,7 @@ export class PaymentService {
       //  'automatic_payment_methods[enabled]': true,
       'metadata[userId]': userId.toString(),
       'metadata[businessId]': businessId?.toString(),
-      'metadata[purpose]': 'Business Posting',
+      'metadata[purpose]': 'BUSINESS_RENEWAL',
     
    });
 
