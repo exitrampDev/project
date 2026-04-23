@@ -9,6 +9,7 @@ export enum BusinessStatus {
   INACTIVE = 'inactive',
   DRAFT = 'draft',
   BLOCK = 'block',
+  UNSUBSCRIBE = 'unsubscribe',
 }
 
 // Business types allowed values

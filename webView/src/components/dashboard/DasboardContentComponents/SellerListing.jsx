@@ -635,7 +635,7 @@ const moneyTemplate = (row, { field }) => {
   const actionTemplate = (row) => (
     <div className="action__listing_btns">
     {row.isFirstListing ? "" : <> 
-        {row?.status === "pending_for_payment" ? (<>
+        {row?.status === "pending_for_payment"  || row?.status === "unsubscribe" ? (<>
         <Tooltip target=".button__delete_action_lisitng_seller" position="top" />
          <Button
                 label=""

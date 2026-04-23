@@ -5,8 +5,9 @@ import { BusinessListingService } from '../business-listing/business-listing.ser
 import { UsersService } from 'src/users/users.service';
 import { HttpService } from '@nestjs/axios';
 import * as qs from 'qs';
-import { subMonths } from 'date-fns'
+import { differenceInMonths, subMonths } from 'date-fns'
 import { PaymentService } from 'src/payment/payment.service';
+import { ListingTypes } from 'src/business-listing/dto/create-business.dto';
 
 @Injectable()
 export class CronService {
@@ -19,114 +20,18 @@ export class CronService {
     private readonly paymentsService: PaymentService, 
   ) {}
 
-  /**
-   * Runs every 30 seconds (example)
-   * In real systems use EVERY_DAY_AT_MIDNIGHT or hourly
-   */
-  // @Interval(10000)
-  // async handleInterval() {
-  //   this.logger.log('Running billing cron job');
 
-  //   try {
-  //     const businesses = await this.businessListingService.findAll({
-  //       page: 1,
-  //       limit: 10,
-  //     });
-
-  //     for (const business of businesses.data) {
-  //       try {
-  //         await this.chargeBusinessOwner(business);
-  //       } catch (err) {
-  //         this.logger.error(
-  //           `Failed to charge business ${business.id}`,
-  //           err?.response?.data || err.message,
-  //         );
-  //       }
-  //     }
-  //   } catch (error) {
-  //     this.logger.error('Error fetching businesses', error);
-  //   }
-  // }
-
-  /**
-   * Charges a business owner off-session using Stripe REST API
-   */
-  private async chargeBusinessOwner(business: any) {
-    console.log('Charging business owner for business:', business._id);
-    const user = await this.usersService.findById(business.ownerId);
-
-    if (!user?.stripe_customer_id || !user?.payment_method) {
-      this.logger.warn(
-        `Skipping user ${(business.ownerId)} — missing Stripe customer or payment method`,
-      );
-      return;
-    }
-
-   
-
-    const amountInCents = Math.round(30 * 100);
-
-    const payload = qs.stringify({
-      amount: amountInCents,
-      currency: 'usd',
-      customer: user?.stripe_customer_id,
-      payment_method: user?.payment_method,
-      off_session: true,
-      confirm: true,
-      'metadata[userId]': user?.id,
-      'metadata[businessId]': business._id.toString(),
-      'metadata[purpose]': 'Business Listing Renewal',
-
-    });
-
-    const response = await this.httpService.axiosRef.post(
-      'https://api.stripe.com/v1/payment_intents',
-      payload,
-      {
-        headers: {
-          Authorization: `Bearer ${process.env.STRIPE_SECRET_KEY}`,
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-      },
-    );
-
-    this.logger.log(
-      `PaymentIntent ${response.data.id} created for business ${business.id}`,
-    );
-
-    // DO NOT mark payment as successful here
-    // Webhook payment_intent.succeeded is the source of truth
-  }
 // ===============================================
  /**
-   * Runs every day at midnight
+   * Runs every day at midnight and mark business as pending for payment if last payment was more than 30 days ago
    */
- @Cron(CronExpression.EVERY_10_SECONDS)
+ @Cron(CronExpression.EVERY_30_SECONDS)
+//  @Cron(CronExpression.EVERY_DAY_AT_1AM)
 async handleDailyJob() {
   this.logger.log('Running payment check cron----');
 
   try {
-  //   // 1 Calculate date 1 month ago
-  //  const oneMonthAgo = subMonths(new Date(), 1);
-
-  //   // 2 Fetch businesses whose lastPaymentDate < oneMonthAgo and live
-  //   const businesses =
-  //   await this.businessListingService.findLastPaymentOlderThan(
-  //     oneMonthAgo,
-  //   );
-  //   console.log('Overdue businesses:------>', oneMonthAgo, businesses);
-
-  //   3 Log them
-  //   for (const business of businesses) {
-  //     this.logger.log(
-  //       `----->Business ${business._id} last paid on ${business.paymentDate}`,
-  //     );
-  //     this.businessListingService.markBusinessAsPendingForPayment((business._id as any).toString());
-  //   }
-
-  //   if (!businesses.length) {
-  //     this.logger.log('No overdue businesses found');
-  //   }
+ 
   // ----------------------------------------------------------------
     const oneMonthAgo = subMonths(new Date(), 1);
 
@@ -139,11 +44,21 @@ async handleDailyJob() {
         `Business ${business._id} last paid on ${business.paymentDate}`,
       );
 
-      await this.businessListingService.markBusinessAsPendingForPayment(
-        business._id.toString(),
-      );
-    }
+    
 
+      if(business.isFirstListing && (business.paymentDate == null || business.paymentDate == undefined) ) {
+          const pastDate = new Date(business.createdAt!); 
+          const now = new Date();
+
+          const monthDiff = differenceInMonths(now, pastDate);
+          if (monthDiff >= 6) {
+            await this.businessListingService.markBusinessAsPendingForPayment(business._id.toString());
+              }
+      }else{
+        await this.businessListingService.markBusinessAsPendingForPayment(business._id.toString());
+      }
+
+    }
     if (!businesses.length) {
       this.logger.log('No overdue businesses found');
     }
@@ -156,35 +71,22 @@ async handleDailyJob() {
   }
 }
 
-  /**
-   * Runs every 10 minutes
-//    */
-//   @Cron(CronExpression.EVERY_10_MINUTES)
-//   handleEveryTenMinutes() {
-//     this.logger.log('Running job every 10 minutes');
-//   }
 
-  /**
-   * Custom cron expression (every day at 3 AM)
-   */
-//   @Cron('0 3 * * *')
-//   handle3AMJob() {
-//     this.logger.log('Running 3 AM job');
-//   }
 
   /**
    * Runs every 30 seconds
    */
-  // @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
+  // @Cron(CronExpression.EVERY_DAY_AT_2AM)
   @Cron(CronExpression.EVERY_30_SECONDS)
   async handleInterval() {
     this.logger.log('Running billing cron----------------------------------');
-    const limit = 10;
-        try { while (true) {
+    const limit = 500;
+        try { 
+          // while (true) {
             const businesses = await this.businessListingService.getAllPendingForPaymentBusiness({ page: 1, limit: 1000 });
             if (!businesses.data.length) {
                   this.logger.log('No more businesses to process');
-                  break;
+                  return;
                 }
           for (const business of businesses.data) {
               const user = await this.usersService.findById(business.ownerId.toString());
@@ -192,18 +94,8 @@ async handleDailyJob() {
 
             // ----------------------------------------------------------------------------------
           if(user && user.stripe_customer_id && user.payment_method) {
-             let amount = 30;
+             let amount = business.listingType == ListingTypes.NORMAL ? 15 : 30; //15 USD for normal listing, 30 USD for premium listing'
   
-              // if(user.user_type == 'seller_basic'){
-              //   amount = 30; //30 USD for basic sellers
-              // }else if(user.user_type == 'seller_listing'){
-              //   amount = 30; //60 USD for premium sellers
-              // }
-              // else if(user.user_type == 'seller_central'){
-              //   amount = 60; //60 USD for premium sellers
-              // }
-
-              // await this.chargeBusinessOwner(business);
               
             await this.paymentsService.chargeUserOffSessionREST(
                         user.stripe_customer_id,
@@ -217,7 +109,7 @@ async handleDailyJob() {
             this.logger.log(`Found ${businesses.data.length} businesses`);
                     }
                     }
-                  }
+                  // }
         } catch (error) {
             this.logger.error('Error fetching businesses', error);
         }

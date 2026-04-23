@@ -213,9 +213,12 @@ if (industry) {
   async findLastPaymentOlderThan(date: Date) {
     try {
       return await this.businessModel.find({
-        paymentDate: { $lt: date },
         status: BusinessStatus.LIVE,
         isDeleted: false,
+        $or: [
+          { paymentDate: { $lt: date } },
+          { paymentDate: null }
+        ]
       }).lean();
     } catch (error: any) {
       throw new Error(`Failed to find businesses: ${error.message}`);
@@ -401,7 +404,7 @@ async attachFile(businessId: string, fileUrl: string, fileType: string = 'profit
     }
 
     // Update status
-    business.status = BusinessStatus.PENDING_FOR_PAYMENT;
+    business.status = BusinessStatus.UNSUBSCRIBE;
     await business.save();
 
   
