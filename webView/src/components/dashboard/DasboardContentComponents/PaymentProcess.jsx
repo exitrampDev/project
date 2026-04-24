@@ -14,6 +14,7 @@ const PaymentProcess = () => {
   const API_BASE = useRecoilValue(apiBaseUrlState);
   const { access_token } = useRecoilValue(authState) ?? {};
   const [clientSecret, setClientSecret] = useState(null);
+  const [clientAmount, setClientAmount] = useState(0);
   const hasCreatedIntent = useRef(false);
 
 useEffect(() => {
@@ -30,8 +31,8 @@ useEffect(() => {
         },
       }
     );
-console.log("Payment Intent Response:", response.data);
     setClientSecret(response.data.clientSecret);
+    setClientAmount(response.data.amount);
   };
 
   createPaymentIntent();
@@ -48,6 +49,9 @@ console.log("Payment Intent Response:", response.data);
         </p>
 
        <div className="payment__box_wrap">
+        <div className="payment__box_price_wrap">
+          Amount are Paying the Price of <strong>${clientAmount} </strong>
+        </div>
          {clientSecret ? (
           <StripeProvider clientSecret={clientSecret}>
             <CheckoutForm />

@@ -4878,6 +4878,24 @@ button.btn__remove_invite.p-button.p-component span.p-button-icon.p-c.p-button-i
 span.data__locked {
     cursor: pointer;
 }
+.payment__box_price_wrap {
+    padding: 12px;
+    border: 1px solid #e6e6e6;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    font-size: 14px;
+    background: #eaeaea;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.payment__box_price_wrap strong {
+    font-size: 22px;
+    font-weight: 400;
+}
+
+strong {}
 @media screen and (min-width: 1024px) and (max-width: 2500px) {
   .header_container nav.nav_col a {
     font-size: 18px;
