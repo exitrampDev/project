@@ -114,8 +114,21 @@ export class PaymentController {
     let businessId = intent.metadata.businessId;
 
     //0. Update User Payment Method Id for future use
-    if(intent.payment_method){
-      this.usersService.update(userId, { payment_method: intent.payment_method });
+    // if(intent.payment_method){
+    //   this.usersService.update(userId, { payment_method: intent.payment_method });
+    // }
+
+     //0. Update User Payment Method Id for future use 
+    const user = await this.usersService.findById(userId);
+    if (!user) {
+      // optional: log it or throw
+      console.error('User not found for payment webhook:', userId);
+      return;
+    }
+    if (!user.payment_method || user.payment_method !== intent.payment_method) {
+      await this.usersService.update(userId, {
+        payment_method: intent.payment_method,
+      });
     }
 
     
@@ -131,31 +144,7 @@ export class PaymentController {
     // 2. Activate business
     this.bunisessService.updateBusinessStatus(businessId, 'live');
     this.bunisessService.updateBusinessPaymentDate(businessId);
-
-    // const paymentRecord = await this.paymentsService.getBySessionId(intent.id);
-    // // console.log('Payment record found:', paymentRecord);
-    // if (paymentRecord) {
-    //   paymentRecord.paymentStatus = 'completed';
-    //   paymentRecord.transactionDateTime = new Date();
-    //   paymentRecord.transactionId = intent.id;
-    //   await paymentRecord.save();
-
-    //   //get business id from payment record and update business status to active
-    //   console.log('Updating business status for business ID:', paymentRecord.objectId.toString());
-      
-
-    //   //create payent record in business payment collection
-    //     // data.amount = amount;
-    //     // data.sessionId = session.id;
-    //     // data.objectId  = new Types.ObjectId(dto.businessId);
-    //     // this.paymentsService.create(data,userId);
-
-      // console.log('Payment record updated:', paymentRecord);
-    // } else {
-    //   console.log('No payment record found for session ID:', intent.id);
-    // }
-    // TODO: Update your DB here
-    // Database update
+   
   }
 
   async handlePaymentFailed(intent) {

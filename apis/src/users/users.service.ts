@@ -27,6 +27,7 @@ export class UsersService {
 
   async update(userId: string, updateData: Partial<User>): Promise<User | null> {
     return this.userModel.findByIdAndUpdate(userId, updateData, { new: true }).exec();
+    
   }
  
   async create(createUserDto: CreateUserDto): Promise<Omit<User & { _id: any }, 'password'>> {
