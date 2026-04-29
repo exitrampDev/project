@@ -138,6 +138,32 @@ export class PaymentService {
     amount: amount
   };
 }
+
+async createSetupIntent(userId: string) {
+  const user = await this.usersService.findById(userId);
+  const customerId = await this.getOrCreateStripeCustomer(user);
+
+  const payload = qs.stringify({
+    customer: customerId,
+    usage: 'off_session',
+  });
+
+  const response = await axios.post(
+    'https://api.stripe.com/v1/setup_intents',
+    payload,
+    {
+      headers: {
+        Authorization: `Bearer ${process.env.STRIPE_SECRET_KEY}`,
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+    }
+  );
+
+  return {
+    clientSecret: response.data.client_secret,
+  };
+}
+
   //create payment 
   async create(dto:any, userId: Types.ObjectId){
      const payment = new this.paymentModel({

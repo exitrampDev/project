@@ -99,6 +99,9 @@ Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
 
 ssh -i "devenvserver.pem" -N -L 27018:localhost:27017 ubuntu@ec2-3-224-66-162.compute-1.amazonaws.com
 
+staging:
+ssh -i "devenvserver.pem" -N -L 27018:localhost:27017 ubuntu@ec2-54-159-180-51.compute-1.amazonaws.com
+
 ###############################################################################
 
 nest g module users

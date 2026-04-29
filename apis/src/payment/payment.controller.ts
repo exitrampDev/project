@@ -224,6 +224,18 @@ export class PaymentController {
     // return { message: 'In-page payment intent endpoint under construction' };
   }
 
+  @Get('card-setup-intent')
+  @UseGuards(JwtAuthGuard)
+  async cardSetup(@User() user: any){
+   
+   const userId = user.userId;
+  
+    const session = await this.paymentsService.createSetupIntent(userId);
+       
+    return { clientSecret: session.clientSecret };
+    // return { message: 'In-page payment intent endpoint under construction' };
+  }
+
   @Get()
   @UseGuards(JwtAuthGuard)
   async getMyPayments(@Query() query: QueryPaymentDto, @Req() req){
