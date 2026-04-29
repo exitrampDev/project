@@ -12,6 +12,7 @@ import { authState, apiBaseUrlState } from "../../../recoil/ctaState";
 import DashboardHeader from "./DashboardHeaderBlock";
 import FileUploader from "../../customcomponent/FileUploader";
 import { InputMask } from "primereact/inputmask";
+import CardSetupProcess from "./CardSetupProcess";
 
 const FreeSellerForm = () => {
   const toast = useRef(null);
@@ -21,7 +22,7 @@ const FreeSellerForm = () => {
 
   const [loading, setLoading] = useState(true);
   const [dirty, setDirty] = useState(false);
-
+const [cardUpdatePopup, setCardUpdatePopup] = useState(false);
   const [formData, setFormData] = useState({
     fullName: "",
     phone: "",
@@ -303,6 +304,12 @@ const FreeSellerForm = () => {
 
 
           </div>
+   <div className="field form__field_col ">
+            <label>Company Overview</label>
+            <div className="button__update_card" onClick={() => { setCardUpdatePopup(true) }}>
+              Update Your Card
+            </div>
+          </div>
 
           <div className="field form__field_col col_overvice_textarea">
             <label>Company Overview</label>
@@ -321,6 +328,12 @@ const FreeSellerForm = () => {
           </div>
         </form>
       </div>
+       {cardUpdatePopup && (
+          <div className="card__update_process_popup">
+            <div className="popup__added_card_overlay" onClick={() => { setCardUpdatePopup(false) }}></div>
+            <CardSetupProcess />
+          </div>
+        )}
     </>
   );
 };

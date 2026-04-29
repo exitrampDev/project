@@ -4895,7 +4895,60 @@ span.data__locked {
     font-weight: 400;
 }
 
-strong {}
+.save__card_new_submit_btn{
+  display: flex;
+    gap: 9px;
+    align-items: center;
+}
+.card__update_process_popup {
+    position: fixed;
+    z-index: 999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+}.card__update_process_popup {
+    justify-content: center;
+    align-items: center;
+}
+
+.popup__added_card_overlay {
+    position: absolute;
+    display: block;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background: #000000a8;
+}
+
+.popup__card_update_block_wrap {
+    position: relative;
+    background: #fff;
+    padding: 35px;
+    border-radius: 15px;
+}
+
+.card__update_process_popup .payment__box_wrap {
+    padding: 0;
+}
+.complete_buyer_form_wrap.seller__form_profile .button__update_card {
+    margin-top: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background: #ffb100;
+    color: #fff;
+    font-size: 14px;
+    padding: 7px 19px;
+    gap: 10px;
+    border-radius: 100px;
+    cursor: pointer;
+    max-width: 190px;
+}
 @media screen and (min-width: 1024px) and (max-width: 2500px) {
   .header_container nav.nav_col a {
     font-size: 18px;
