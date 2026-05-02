@@ -197,31 +197,22 @@ export class PaymentController {
     let data: any = {};
     const userId = new Types.ObjectId(req.user.userId);
     let amount = 0;
-  
-      if(user.role == 'seller_basic'){
-        amount = 30; //30 USD for basic sellers
-      }else if(user.role == 'seller_listing'){
-        amount = 30; //60 USD for premium sellers
-      }else if(user.role == 'seller_central'){
-        amount = 30; //60 USD for premium sellers
-      }else if(user.role == 'seller_individual'){
-        amount = 30; //60 USD for premium sellers
-      } else if(user.role == 'seller_broker'){
-        amount = 30; //60 USD for premium sellers
-      }
-    
+          
     const session = await this.paymentsService.createPaymentIntent(
       amount, userId, dto.businessId
     );
    
+     return { clientSecret: session.clientSecret, amount: session.amount };
+  }
+
+  @Post('upgrade-plan-checkout-intent')
+  @UseGuards(JwtAuthGuard)
+  async inpagePaymentForUograde(@Body() dto:CreatePaymentDto, @Req() req:any, @User() user: any){
+    const userId = new Types.ObjectId(req.user.userId);
+          
+    const session = await this.paymentsService.createUpgradePaymentIntent( userId, dto.businessId);
    
-    // data.amount = amount;
-    // data.sessionId = session.id;
-    // data.objectId  = new Types.ObjectId(dto.businessId);
-    // this.paymentsService.create(data,userId);
- 
-    return { clientSecret: session.clientSecret, amount: session.amount };
-    // return { message: 'In-page payment intent endpoint under construction' };
+     return { clientSecret: session.clientSecret, amount: session.amount };
   }
 
   @Get('card-setup-intent')

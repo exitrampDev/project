@@ -139,6 +139,53 @@ export class PaymentService {
   };
 }
 
+
+ async  createUpgradePaymentIntent(userId: any, businessId?: string) {
+    let amount = 0;
+    let user = await this.usersService.findById(userId);
+    const customerId = await this.getOrCreateStripeCustomer(user);
+
+    const business = businessId ? await this.businessService.findOne(businessId) : null;
+    if (businessId && !business) {
+      throw new BadRequestException('Invalid businessId provided');
+    }
+
+    amount = business ? business.listingType === ListingTypes.PREMIUM ? 30 : 15 : amount; // Override amount based on listing type if businessId is provided
+
+    const payload = qs.stringify({
+      amount: Math.round(amount * 100),
+      currency: 'usd',
+      customer: customerId,
+      setup_future_usage: 'off_session',
+      // 'payment_method_types[0]': 'card',
+      automatic_payment_methods: { enabled: true },
+      //  'automatic_payment_methods[enabled]': true,
+      'metadata[userId]': userId.toString(),
+      'metadata[businessId]': businessId?.toString(),
+      'metadata[purpose]': 'BUSINESS_RENEWAL',
+    
+   });
+
+  const response = await axios.post(
+    'https://api.stripe.com/v1/payment_intents',
+    payload,
+    {
+      headers: {
+        Authorization: `Bearer ${process.env.STRIPE_SECRET_KEY}`,
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+    }
+  );
+
+  console.log('Payment Intent created:', response.data.client_secret);
+
+  return {
+    clientSecret: response.data.client_secret,
+    id:response.data.id,
+    amount: amount
+  };
+}
+
 async createSetupIntent(userId: string) {
   const user = await this.usersService.findById(userId);
   const customerId = await this.getOrCreateStripeCustomer(user);
