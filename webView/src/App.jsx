@@ -91,7 +91,7 @@ const App = () => {
           <Route path="create-cim/:id" element={<CreateCIM/>} />
           <Route path="cim/:id" element={<CimView/>} />
           <Route path="due-diligence/:id" element={<DueDiligence/>} />
-          <Route path="payment-process/:id" element={<PaymentProcess/>} />
+          <Route path="payment-process/:type/:id" element={<PaymentProcess />} />
           <Route
             path="complete-profile-buyer-free"
             element={<ProfileFormBuyer />}

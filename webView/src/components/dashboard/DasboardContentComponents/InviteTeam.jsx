@@ -44,7 +44,13 @@ const InviteTeam = () => {
         headers: { Authorization: `Bearer ${access_token}` },
       });
 
-      setListings(res.data.data || []);
+      const listings = res.data.data || [];
+
+      const filtered = listings.filter(
+        (item) => item.listingType == "premium"
+      );
+
+      setListings(filtered);
     } catch (err) {
       console.error("Listing error", err);
     }
