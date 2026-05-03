@@ -215,7 +215,7 @@ const documentRoomLink = (id, row) => {
       <Link to={`/user/document-room/${id}`} className="">View Doc Room</Link>
     </>}
      {row?.listingType === "normal" && <>
-      <span className="data__locked" onClick={() => navigate(`/user/payment-process/${row._id}`)}>
+      <span className="data__locked" onClick={() => navigate(`/user/payment-process/upgrade/${row._id}`)}>
         <i className="pi pi-lock"></i> Upgarade to unlock
       </span>
     </>}
@@ -232,7 +232,7 @@ const createCIMList = (id, cimUrl, row) => {
       
     </>}
      {(row?.listingType === "normal") && <>
-      <span className="data__locked" onClick={() => navigate(`/user/payment-process/${row._id}`)}>
+      <span className="data__locked" onClick={() => navigate(`/user/payment-process/upgrade/${row._id}`)}>
         <i className="pi pi-lock"></i> Upgarade to unlock
       </span>
     </>}
@@ -482,7 +482,7 @@ const handleSubmit = async () => {
     if (isFirst) {
     window.location.href = `/user/my-listing`;
 } else {
-    window.location.href = `/user/payment-process/${businessId}`;
+    window.location.href = `/user/payment-process/payment/${businessId}`;
 }
  
 
@@ -566,7 +566,7 @@ const listingNameTemplate = (rowData) => {
     />
     </>}
      {row?.listingType === "normal" && <>
-      <span className="data__locked" onClick={() => navigate(`/user/payment-process/${row._id}`)}>
+      <span className="data__locked" onClick={() => navigate(`/user/payment-process/upgrade/${row._id}`)}>
         <i className="pi pi-lock"></i> Upgarade to unlock
       </span>
     </>}
@@ -641,7 +641,7 @@ const moneyTemplate = (row, { field }) => {
                 label=""
                 icon="pi pi-credit-card"
                 className="p-button-text p-button-sm btn-pay"
-                onClick={() => navigate(`/user/payment-process/${row._id}`)}
+                onClick={() => navigate(`/user/payment-process/payment/${row._id}`)}
                 tooltip="Complete Payment"
                 tooltipOptions={{ position: "top" }}
               />

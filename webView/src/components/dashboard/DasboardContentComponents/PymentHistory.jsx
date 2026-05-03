@@ -211,7 +211,7 @@ pdf.save(
           label="Pay Now"
           icon="pi pi-credit-card"
           className="p-button-text p-button-sm"
-          onClick={() => navigate(`/user/payment-process/${row._id}`)}
+          onClick={() => navigate(`/user/payment-process/payment/${row._id}`)}
         />
       )}
     </div>
