@@ -3,6 +3,7 @@
 import {
   BadRequestException,
   ConflictException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -71,6 +72,26 @@ export class InviteService {
       }
       throw error;
     }
+  }
+
+  // update invitation
+  async update(id: string, dto: Partial<CreateInviteDto>, user: any) {
+    const invite = await this.inviteModel.findById(id);
+
+    if (!invite) {
+      throw new NotFoundException('Invite not found');
+    }
+
+    // Authorization check (compare with DB value, not DTO)
+    if (user?.userId !== invite.invitedByUserId) {
+      throw new ForbiddenException('You are not allowed to update this invite');
+    }
+    if(dto.invitedEmail && dto.invitedEmail !== invite.invitedEmail){
+      throw new BadRequestException('Email cannot be updated');
+    }
+
+    Object.assign(invite, dto);
+    return await invite.save();
   }
 
   //  Get All Invites (with filters)

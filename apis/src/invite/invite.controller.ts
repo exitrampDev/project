@@ -10,11 +10,12 @@ import { v4 as uuid } from 'uuid';
 import { AcceptInviteDto } from './dto/accept-invite.dto';
 import { UpdateInviteAccessDto } from './dto/update-invitation-access.dto';
 import { rejectInviteDto } from './dto/reject-invite.dto';
+import { UpdateInviteDto } from './dto/update-invite.dto';
 
 @Controller('invite')
 export class InviteController {
 
-    constructor(private readonly inviteService: InviteService,
+  constructor(private readonly inviteService: InviteService,
         private readonly userService: UsersService
      ) { 
 
@@ -32,6 +33,16 @@ export class InviteController {
    }
     dto.invitationHash = uuid();
   return this.inviteService.create(dto);
+}
+
+@UseGuards(JwtAuthGuard)
+@Patch(':id')
+  async update( @Param('id') id: string, @Body() dto: UpdateInviteDto, @User() user: any) {
+     if (user?.userId) {
+      dto.invitedByUserId = user.userId;
+    }
+  
+  return this.inviteService.update(id, dto, user);
 }
 
 @UseGuards(JwtAuthGuard)
@@ -62,7 +73,6 @@ updateStatus(
 }
 
 
-
 @UseGuards(JwtAuthGuard)
 @Post('accept')
 AcceptInvite(@Body() body: AcceptInviteDto, @User() user: any) {
@@ -83,8 +93,6 @@ UpdateInviteAccess(@Body() body: UpdateInviteAccessDto, @User() user: any) {
  
   return this.inviteService.updateInviteAccess(body, user);
 }
-
-
 
 
 }
