@@ -18,7 +18,7 @@ import {
 import { QueryInviteDto } from './dto/query-invite.dto';
 import { UsersService } from 'src/users/users.service';
 import { UserDocument } from 'src/users/schemas/user.schema';
-import { UpdateInviteAccessDto } from './dto/update-invitation-access.dto';
+import { InviteAccess, UpdateInviteAccessDto } from './dto/update-invitation-access.dto';
 import { MailService } from 'src/common/mail/mail.service';
 
 @Injectable()
@@ -78,7 +78,7 @@ export class InviteService {
     const filter: any = {};
 
     if (query.invitedUserId) {
-      filter.invitedUserId = query.invitedUserId;
+      filter.invitedUserId = new Types.ObjectId(query.invitedUserId);
     }
 
     if (query.invitedByUserId) {
@@ -210,5 +210,15 @@ export class InviteService {
     return invite;
   }
 
+  async canUpdateListing(userId, businessId: string) {
+    const invite = await this.inviteModel.findOne({
+      businessId,
+      invitedUserId:new  Types.ObjectId(userId),
+      access: InviteAccess.GRANTED,
+      status: InviteStatus.ACCEPTED,
+    });
+
+    return !!invite;
+  }
 
 }

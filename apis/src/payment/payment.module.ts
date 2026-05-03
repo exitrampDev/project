@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { PaymentController } from './payment.controller';
 import { PaymentService } from './payment.service';
 import mongoose from 'mongoose';
@@ -9,13 +9,15 @@ import { BusinessListingService } from 'src/business-listing/business-listing.se
 import { BusinessListingModule } from 'src/business-listing/business-listing.module';
 import { UsersModule } from 'src/users/users.module';
 import { SharedModule } from 'src/common/shared.module';
+import { InviteModule } from 'src/invite/invite.module';
 
 @Module({
   imports:[
      MongooseModule.forFeature([{ name : Payment.name, schema : PaymentSchema }]),
      BusinessListingModule,
      UsersModule,
-     SharedModule
+     SharedModule,
+     forwardRef(() => InviteModule),
   ],
   controllers: [PaymentController],
   providers: [PaymentService, PaymentWebhookService, BusinessListingService],

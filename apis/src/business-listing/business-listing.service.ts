@@ -1,5 +1,5 @@
 // business-listing.service.ts
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Business, BusinessDocument } from './schemas/business.schema';
@@ -10,13 +10,16 @@ import { BusinessStatus, CreateBusinessDto } from './dto/create-business.dto';
 import { UpdateBusinessDto } from './dto/update-business.dto';
 import { Nda, NdaDocument } from 'src/nda/schemas/nda.schema';
 import { RecentlyDocument, Recently } from 'src/recently-listing/schema/recently.schema';
+import { InviteService } from 'src/invite/invite.service';
 
 @Injectable()
 export class BusinessListingService {
   constructor(
-    @InjectModel(Business.name) private businessModel: Model<BusinessDocument>,
+     @InjectModel(Business.name) private businessModel: Model<BusinessDocument>,
      @InjectModel(Nda.name) private readonly ndaModel: Model<NdaDocument>,
      @InjectModel(Recently.name) private readonly recentlyModel: Model<RecentlyDocument>,
+     @Inject(forwardRef(() => InviteService))
+     private inviteService: InviteService,
     private readonly notificationHelper: NotificationHelper,
   ) {}
 
@@ -346,9 +349,12 @@ async findOneWithUserNda(
     throw new NotFoundException('Business not found');
   }
 
-  // Only owner can update
-  if (business.ownerId.toString() !== user.userId) {
-    throw new ForbiddenException('You are not allowed to update this business');
+  // Only owner can update invited user
+   if (business.ownerId.toString() !== user.userId) {
+    const canUpdate = await this.inviteService.canUpdateListing(user.userId, id);
+    if (!canUpdate) {
+      throw new ForbiddenException('You are not allowed to update this business');
+    }
   }
 
   Object.assign(business, dto, { updatedAt: new Date() });
