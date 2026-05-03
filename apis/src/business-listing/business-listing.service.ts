@@ -352,9 +352,8 @@ async findOneWithUserNda(
   // Only owner can update invited user
    if (business.ownerId.toString() !== user.userId) {
     const canUpdate = await this.inviteService.canUpdateListing(user.userId, id);
-    if (canUpdate) {
-    }else{
-            throw new ForbiddenException('You are not allowed to update this business');
+    if (!canUpdate) {
+      throw new ForbiddenException('You are not allowed to update this business');
     }
   }
 

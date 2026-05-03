@@ -267,7 +267,7 @@ export class InviteService {
   async canUpdateListing(userId, businessId: string) {
     const invite = await this.inviteModel.findOne({
       businessId,
-      invitedUserId:new  Types.ObjectId(userId),
+      invitedUserId: userId,
       access: InviteAccess.GRANTED,
       status: InviteStatus.ACCEPTED,
     });
