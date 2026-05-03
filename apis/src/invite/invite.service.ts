@@ -191,6 +191,39 @@ export class InviteService {
     return invite;
   }
 
+  
+
+   async rejectInvite(body: any, user: any) {
+    console.log('Rejecting invite with body:', body, 'for user:', user);
+      const userDoc: UserDocument | null = await this.userService.findByEmail(user.email);
+      if (!userDoc) {
+        throw new NotFoundException('User not found');
+      }
+
+
+      const invite: InviteDocument | null  = await this.inviteModel.findOne({
+      invitationHash: body.invitationHash,
+      invitedEmail: user.email,
+      
+    });
+
+    if (!invite) {
+      throw new NotFoundException('Invite not found');
+    }
+
+    if (invite.status !== InviteStatus.ACCEPTED) {
+      throw new BadRequestException(
+        'Already rejected this invite',
+      );
+    }
+
+    invite.status = InviteStatus.REJECTED;
+    invite.invitedUserId = userDoc._id as Types.ObjectId;
+    await invite.save();
+
+    return invite;
+  }
+
 
   async updateInviteAccess(body: UpdateInviteAccessDto, user: any) {
     console.log('Updating invite access with body:', body, 'for user:', user);

@@ -9,12 +9,16 @@ import { UsersService } from 'src/users/users.service';
 import { v4 as uuid } from 'uuid';
 import { AcceptInviteDto } from './dto/accept-invite.dto';
 import { UpdateInviteAccessDto } from './dto/update-invitation-access.dto';
+import { rejectInviteDto } from './dto/reject-invite.dto';
 
 @Controller('invite')
 export class InviteController {
-     constructor(private readonly inviteService: InviteService,
+
+    constructor(private readonly inviteService: InviteService,
         private readonly userService: UsersService
-     ) {}
+     ) { 
+
+     }
 
 @UseGuards(JwtAuthGuard)
 @Post()
@@ -64,6 +68,12 @@ updateStatus(
 AcceptInvite(@Body() body: AcceptInviteDto, @User() user: any) {
  
   return this.inviteService.acceptInvite(body, user);
+}
+  
+@UseGuards(JwtAuthGuard)
+@Post('reject')
+RejectInvite(@Body() body: rejectInviteDto, @User() user: any) { 
+  return this.inviteService.rejectInvite(body, user);
 }
 
 // ---------------------------GRANT and REVOKE ACCESS---------------------------
