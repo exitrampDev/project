@@ -99,7 +99,7 @@ export class InviteService {
     const filter: any = {};
 
     if (query.invitedUserId) {
-      filter.invitedUserId = new Types.ObjectId(query.invitedUserId);
+      filter.invitedUserId = query.invitedUserId;
     }
 
     if (query.invitedByUserId) {
