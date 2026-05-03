@@ -11,6 +11,7 @@ import { AcceptInviteDto } from './dto/accept-invite.dto';
 import { UpdateInviteAccessDto } from './dto/update-invitation-access.dto';
 import { rejectInviteDto } from './dto/reject-invite.dto';
 import { UpdateInviteDto } from './dto/update-invite.dto';
+import { Types } from 'mongoose';
 
 @Controller('invite')
 export class InviteController {
@@ -29,7 +30,7 @@ export class InviteController {
     }
    let invitedUser = await this.userService.findByEmail(dto.invitedEmail);
    if (invitedUser) {
-     dto.invitedUserId = String(invitedUser._id);
+     dto.invitedUserId = invitedUser.id.toString();
    }
     dto.invitationHash = uuid();
   return this.inviteService.create(dto);
