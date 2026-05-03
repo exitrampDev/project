@@ -206,7 +206,7 @@ export class InviteService {
     }
 
     invite.status = InviteStatus.ACCEPTED;
-    invite.invitedUserId = userDoc._id as Types.ObjectId;
+    invite.invitedUserId = userDoc.id.toString();
     await invite.save();
 
     return invite;
