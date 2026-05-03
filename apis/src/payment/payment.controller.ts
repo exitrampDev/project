@@ -12,6 +12,8 @@ import { BusinessListingService } from 'src/business-listing/business-listing.se
 import { UsersService } from 'src/users/users.service';
 import { RefundRequestDto } from './dto/refund-request.dto';
 import { RefundApproveDto } from './dto/refund-approve.dto';
+import { PaymentPurpose } from './schemas/payment.schema';
+import { ListingTypes } from 'src/business-listing/dto/create-business.dto';
 @Controller('payment')
 export class PaymentController {
   private readonly webhookSecret = <string> process.env.STRIPE_WEBHOOK_SECRET;
@@ -141,9 +143,15 @@ export class PaymentController {
       paymentFor: intent.metadata.purpose?? 'BUSINESS_CREATION',
     }, new Types.ObjectId(userId));
 
-    // 2. Activate business
+    if(intent.metadata.purpose == PaymentPurpose.BUSINESS_UPGRADE){
+       this.bunisessService.updateBusinessType(businessId, ListingTypes.PREMIUM);
+    }else{
+ // 2. Activate business
     this.bunisessService.updateBusinessStatus(businessId, 'live');
     this.bunisessService.updateBusinessPaymentDate(businessId);
+    }
+
+   
    
   }
 

@@ -352,8 +352,9 @@ async findOneWithUserNda(
   // Only owner can update invited user
    if (business.ownerId.toString() !== user.userId) {
     const canUpdate = await this.inviteService.canUpdateListing(user.userId, id);
-    if (!canUpdate) {
-      throw new ForbiddenException('You are not allowed to update this business');
+    if (canUpdate) {
+    }else{
+            throw new ForbiddenException('You are not allowed to update this business');
     }
   }
 
@@ -443,6 +444,32 @@ async attachFile(businessId: string, fileUrl: string, fileType: string = 'profit
 
     return {
       message: `Business ${status} successfully`,
+      business,
+    };
+  }
+
+      async updateBusinessType(businessId: string, listingType: string) {
+    // Find the business
+    const business = await this.businessModel.findById(businessId) as BusinessDocument;
+    if (!business) {
+      throw new NotFoundException('Business not found');
+    }
+
+    // Update listing type
+    business.listingType = listingType;
+    await business.save();
+
+    // Create notification for the business owner
+    await this.notificationHelper.createNotification({
+      // new Types.ObjectId(commentDto.createdBy),
+      userId: new Types.ObjectId(business.ownerId),
+      title: `Business ${listingType}`,
+      message: `Your business has been upgraded to ${listingType}.`,
+      
+    });
+
+    return {
+      message: `Business ${listingType} successfully`,
       business,
     };
   }

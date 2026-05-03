@@ -20,6 +20,7 @@ export enum RefundStatus {
 export enum PaymentPurpose {
   BUSINESS_CREATION = 'BUSINESS_CREATION',
   BUSINESS_RENEWAL = 'BUSINESS_RENEWAL',
+  BUSINESS_UPGRADE = 'BUSINESS_UPGRADE',
 }
 
 @Schema({ timestamps: true, collection: 'payments' })
@@ -31,7 +32,7 @@ export class Payment {
   @Prop({ type: Types.ObjectId, required: true, index: true })
   referenceId: Types.ObjectId;
 
-  /** BUSINESS_CREATION | BUSINESS_RENEWAL */
+  /** BUSINESS_CREATION | BUSINESS_RENEWAL | BUSINESS_UPGRADE */
   @Prop({ type: String, enum: PaymentPurpose, required: true })
   paymentFor: PaymentPurpose;
 

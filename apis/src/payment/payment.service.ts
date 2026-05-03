@@ -4,7 +4,7 @@ import * as qs from 'qs';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { Model, Types } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
-import { Payment, PaymentDocument, RefundStatus } from './schemas/payment.schema';
+import { Payment, PaymentDocument, PaymentPurpose, RefundStatus } from './schemas/payment.schema';
 import { ApiFeatures } from 'src/common/utils/api-features';
 import { QuerySellerDto } from 'src/free-seller/dto/query-seller.dto';
 import { QueryPaymentDto } from './dto/query-payment.dto';
@@ -58,18 +58,55 @@ export class PaymentService {
   }
 
   // ------------------
-  async getOrCreateStripeCustomer(user) {
+//   async getOrCreateStripeCustomer(user) {
+//   if (user.stripe_customer_id) {
+//     return user.stripe_customer_id;
+//   }
+
+//   const customerId = await this.createStripeCustomer(user);
+
+//   // Persist customerId in DB
+//   await this.usersService.update(user.id, { stripe_customer_id: customerId });
+
+//   return customerId;
+// }
+
+
+async getOrCreateStripeCustomer(user) {
   if (user.stripe_customer_id) {
-    return user.stripe_customer_id;
+    try {
+      const existing = await axios.get(
+        `https://api.stripe.com/v1/customers/${user.stripe_customer_id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${process.env.STRIPE_SECRET_KEY}`,
+          },
+        }
+      );
+
+      // Stripe returns { deleted: true } for deleted customers
+      if (!existing.data.deleted) {
+        return user.stripe_customer_id;
+      }
+    } catch (err) {
+      // If 404 or invalid, treat as non-existent
+      if (err.response?.status !== 404) {
+        throw err; // real error
+      }
+    }
   }
 
+  // If missing or deleted → create new
   const customerId = await this.createStripeCustomer(user);
 
-  // Persist customerId in DB
-  await this.usersService.update(user.id, { stripe_customer_id: customerId });
+  await this.usersService.update(user.id, {
+    stripe_customer_id: customerId,
+  });
 
   return customerId;
 }
+
+
   async createStripeCustomer(user: {
   id: string;
   email: string;
@@ -162,7 +199,7 @@ export class PaymentService {
       //  'automatic_payment_methods[enabled]': true,
       'metadata[userId]': userId.toString(),
       'metadata[businessId]': businessId?.toString(),
-      'metadata[purpose]': 'BUSINESS_RENEWAL',
+      'metadata[purpose]': PaymentPurpose.BUSINESS_UPGRADE,
     
    });
 
