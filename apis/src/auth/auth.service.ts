@@ -1,5 +1,5 @@
 // src/auth/auth.service.ts
-import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Catch, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
 import { RegisterDto } from './dto/register.dto';
@@ -23,11 +23,7 @@ export class AuthService {
     if (!user) {
       throw new UnauthorizedException('Invalid credentials1');
     }
-    // console.log('Validating user with email:', email, password, user.password);
-
-    //  console.log(' Incoming password:', password);
-    //  console.log(' Stored hash:', user.password);
-
+    
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       throw new UnauthorizedException('Invalid credentials2');
@@ -63,7 +59,8 @@ export class AuthService {
 
   // ---------------------Email Notification----------------------
   if (user) {
-    await this.mailService.sendMail(
+    try{
+      await this.mailService.sendMail(
       user.email,
       'Login Successful',
       'generalMessage',
@@ -72,6 +69,10 @@ export class AuthService {
         message: `You have successfully logged in to your Exit Ramp account.`,
       }
     );
+    } catch(e){
+      console.error('Error sending login email:', e);
+    }
+  
   }
 
 

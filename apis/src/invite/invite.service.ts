@@ -19,13 +19,15 @@ import { QueryInviteDto } from './dto/query-invite.dto';
 import { UsersService } from 'src/users/users.service';
 import { UserDocument } from 'src/users/schemas/user.schema';
 import { UpdateInviteAccessDto } from './dto/update-invitation-access.dto';
+import { MailService } from 'src/common/mail/mail.service';
 
 @Injectable()
 export class InviteService {
   constructor(
     @InjectModel(Invite.name)
     private readonly inviteModel: Model<InviteDocument>,
-    private readonly userService: UsersService
+    private readonly userService: UsersService,
+    private readonly mailService: MailService,
   ) {}
 
   //  Create Invite
@@ -46,6 +48,22 @@ export class InviteService {
 
 
       const invite = await this.inviteModel.create(dto);
+      const inviteLink = `${process.env.APP_URL}/accept-invite?hash=${invite.invitationHash}`;
+
+      await this.mailService.sendMail(
+          dto.invitedEmail,
+          'Exit Ramp Invitation',
+          'invitationForListing',
+          {
+            receiverName: dto.name ? dto.name : 'User',
+            message: `Your are invited to join the business Listing on Exit Ramp. Please log in to your account to accept or reject the invitation.`,
+            link: inviteLink
+          }
+        );
+
+
+
+
       return invite;
     } catch (error) {
       if ((error as any)?.code === 11000) {
