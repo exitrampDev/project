@@ -232,14 +232,14 @@ export class InviteService {
       throw new NotFoundException('Invite not found');
     }
 
-    if (invite.status !== InviteStatus.ACCEPTED) {
+    if (invite.status == InviteStatus.REJECTED) {
       throw new BadRequestException(
         'Already rejected this invite',
       );
     }
 
     invite.status = InviteStatus.REJECTED;
-    invite.invitedUserId = userDoc._id as Types.ObjectId;
+   
     await invite.save();
 
     return invite;
