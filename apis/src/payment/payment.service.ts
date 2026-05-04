@@ -187,7 +187,21 @@ async getOrCreateStripeCustomer(user) {
       throw new BadRequestException('Invalid businessId provided');
     }
 
-    amount = business ? business.listingType === ListingTypes.PREMIUM ? 30 : 15 : amount; // Override amount based on listing type if businessId is provided
+  //  ----------------------------------------------------
+ let currentDate = new Date();
+
+// Last day of current month
+let lastDayOfMonth = new Date(
+  currentDate.getFullYear(),
+  currentDate.getMonth() + 1,
+  0
+).getDate();
+
+let remainingDays = lastDayOfMonth - currentDate.getDate();
+
+console.log(remainingDays);
+  // -----------------------------------------------------
+    amount = remainingDays * 1; // Override amount based on listing type if businessId is provided
 
     const payload = qs.stringify({
       amount: Math.round(amount * 100),
