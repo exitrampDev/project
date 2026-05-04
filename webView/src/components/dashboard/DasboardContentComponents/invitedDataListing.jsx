@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useRecoilValue } from "recoil";
+import { NavLink, useNavigate, useLocation } from "react-router-dom";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import { apiBaseUrlState, authState } from "../../../recoil/ctaState";
 import DashboardHeader from "./DashboardHeaderBlock";
 
@@ -11,9 +12,9 @@ import { Column } from "primereact/column";
 const InvitedDataListing = () => {
   const API_BASE = useRecoilValue(apiBaseUrlState);
   const auth = useRecoilValue(authState);
-
+const setAuth = useSetRecoilState(authState);
   const access_token = auth?.access_token || localStorage.getItem("access_token");
-
+const navigate = useNavigate();
   const [invites, setInvites] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -31,7 +32,7 @@ const InvitedDataListing = () => {
       // handle different API response shapes
       setInvites(res.data?.data || res.data || []);
     } catch (error) {
-       if (err.response?.status == 403) {
+       if (error.response?.status == 403) {
             console.log("403 Forbidden: Access denied while fetching listings");
                 setAuth(null);
                 localStorage.removeItem("auth");
@@ -204,25 +205,54 @@ const actionTemplate = (row) => {
   }
 
   // ACCEPTED
-  if (invitedStatus === "accepted" && accessStatus !== "revoked") {
-    return (
-      <div className="view__edit_buttons_action">
+if (invitedStatus === "accepted" && accessStatus !== "revoked") {
+  const perms = row.accuisitionType || {};
+
+  return (
+    <div className="view__edit_buttons_action">
+      
+      {/* View / Edit */}
+      {perms.viewEditBusinessInfo === "yes" && (
+        <>
+          <a
+            href={`/user/single-listing/${id}`}
+            className="view__edit_buttons_action_view_btn"
+          >
+            <i className="pi pi-eye cursor-pointer text-blue-500 hover:text-blue-700"></i>
+          </a>
+
+          <a
+            href={`/user/edit-listing/${id}`}
+            className="view__edit_buttons_action_edit_btn"
+          >
+            <i className="pi pi-pencil cursor-pointer text-blue-500 hover:text-blue-700"></i>
+          </a>
+        </>
+      )}
+
+      {/* Due Diligence */}
+      {perms.dueDeligence === "yes" && (
         <a
-          href={`/user/single-listing/${id}`}
+          href={`/user/due-diligence/${id}`}
           className="view__edit_buttons_action_view_btn"
         >
-          <i className="pi pi-eye cursor-pointer text-blue-500 hover:text-blue-700"></i>
+          <i className="pi pi-comment cursor-pointer text-blue-500 hover:text-blue-700"></i>
         </a>
+      )}
 
+      {/* Document Room */}
+      {perms.accessDocumentRoom === "yes" && (
         <a
-          href={`/user/edit-listing/${id}`}
-          className="view__edit_buttons_action_edit_btn"
+          href={`/user/document-room/${id}`}
+          className="view__edit_buttons_action_view_btn"
         >
-          <i className="pi pi-pencil cursor-pointer text-blue-500 hover:text-blue-700"></i>
+          <i className="pi pi-file cursor-pointer text-blue-500 hover:text-blue-700"></i>
         </a>
-      </div>
-    );`z`
-  }
+      )}
+
+    </div>
+  );
+}
   
 
   // REJECTED / REVOKED
@@ -296,6 +326,11 @@ const actionTemplate = (row) => {
               return (
                 <span className="btn__revoked_invite_text">
                   Access Revoked
+                </span>
+              );
+            }else { 
+              return (<span className="text-capitalize">
+                  {row?.access }
                 </span>
               );
             }
