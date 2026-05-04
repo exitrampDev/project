@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useRecoilValue } from "recoil";
+import { NavLink, useNavigate, useLocation } from "react-router-dom";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import { apiBaseUrlState, authState } from "../../../recoil/ctaState";
 import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
@@ -13,18 +14,16 @@ import DashboardHeader from "./DashboardHeaderBlock";
 const InviteTeam = () => {
   const API_BASE = useRecoilValue(apiBaseUrlState);
   const { access_token } = useRecoilValue(authState) ?? {};
-
+    const setAuth = useSetRecoilState(authState);
+const navigate = useNavigate();
   const [form, setForm] = useState({
     name: "",
     invitedEmail: "",
     businessId: "",
     role: "",
     accuisitionType: {
-      viewBusinessInfo: false,
-      editBusinessInfo: false,
-      approveCIMAccess: false,
-      viewBuyerSubmissions: false,
-      uploadManageFiles: false,
+      viewEditBusinessInfo: false,
+      dueDeligence: false,
       accessDocumentRoom: false,
     },
   });
@@ -52,7 +51,18 @@ const InviteTeam = () => {
 
       setListings(filtered);
     } catch (err) {
-      console.error("Listing error", err);
+       if (err.response?.status == 403) {
+            console.log("403 Forbidden: Access denied while fetching listings");
+                setAuth(null);
+                localStorage.removeItem("auth");
+                localStorage.removeItem("user");
+                localStorage.removeItem("tokenLocalStorage");
+                navigate("/login");
+          } else {
+            
+         
+            console.error("Listing error", err);
+          }
     }
   };
 
@@ -66,7 +76,18 @@ const InviteTeam = () => {
       });
       setInvites(res.data || []);
     } catch (err) {
+
+       if (err.response?.status == 403) {
+            console.log("403 Forbidden: Access denied while fetching listings");
+                setAuth(null);
+                localStorage.removeItem("auth");
+                localStorage.removeItem("user");
+                localStorage.removeItem("tokenLocalStorage");
+                navigate("/login");
+          } else {
+          
       console.error("Invite error", err);
+          }
     }
   };
 
@@ -124,19 +145,29 @@ const InviteTeam = () => {
         businessId: "",
         role: "",
         accuisitionType: {
-          viewBusinessInfo: false,
-          editBusinessInfo: false,
-          approveCIMAccess: false,
-          viewBuyerSubmissions: false,
-          uploadManageFiles: false,
+          viewEditBusinessInfo: false,
+          dueDeligence: false,
           accessDocumentRoom: false,
         },
       });
 
       fetchInvites();
     } catch (err) {
+
+
+      if (err.response?.status == 403) {
+            console.log("403 Forbidden: Access denied while fetching listings");
+                setAuth(null);
+                localStorage.removeItem("auth");
+                localStorage.removeItem("user");
+                localStorage.removeItem("tokenLocalStorage");
+                navigate("/login");
+          } else {
+            
+         
       console.error(err);
       alert("Failed to send invite");
+          }
     } finally {
       setLoading(false);
     }
@@ -146,11 +177,8 @@ const InviteTeam = () => {
      Table UI Helpers
   ============================ */
   const permissionLabels = {
-  viewBusinessInfo: "View Business Info",
-  editBusinessInfo: "Edit Business Info",
-  approveCIMAccess: "Approve CIM Access",
-  viewBuyerSubmissions: "View Buyer Submissions",
-  uploadManageFiles: "Upload / Manage Files",
+  viewEditBusinessInfo: "View/Edit Business Info",
+  dueDeligence: "Due Diligence",
   accessDocumentRoom: "Access Document Room",
 };
 
@@ -164,16 +192,34 @@ const permissionTemplate = (row) => {
 };
 
   const removeInvite = async (id) => {
-    try {
-      await axios.delete(`${API_BASE}/invite/${id}`, {
-        headers: { Authorization: `Bearer ${access_token}` },
-      });
+  try {
+    await axios.post(`${API_BASE}/invite/access`,{
+        id,
+        access: "revoked",
+    }, {
+       headers: {
+          Authorization: `Bearer ${access_token}`,
+        },
+    });
 
-      fetchInvites();
-    } catch (err) {
-      alert("Failed to remove");
-    }
-  };
+    fetchInvites();
+
+  } catch (err) {
+    // if (err.response?.status === 403) {
+    //   console.log("403 Forbidden: Access denied while updating invite");
+
+    //   setAuth(null);
+    //   localStorage.removeItem("auth");
+    //   localStorage.removeItem("user");
+    //   localStorage.removeItem("tokenLocalStorage");
+
+    //   navigate("/login");
+    // } else {
+    //   console.error("Error removing invite:", err);
+    //   alert("Failed to remove");
+    // }
+  }
+};
 
   /* ===========================
      UI
@@ -258,16 +304,30 @@ const permissionTemplate = (row) => {
             }}
         />
         <Column header="Permissions" body={permissionTemplate} />
-        <Column
+       <Column
           header="Actions"
-          body={(row) => (
-            <Button
-              label="Remove"
-              icon="pi pi-times"
-              className="btn__remove_invite"
-              onClick={() => removeInvite(row._id)}
-            />
-          )}
+          body={(row) => {
+            if (row.access === "revoked") {
+              return (
+                <span className="btn__revoked_invite_text">
+                  Access Revoked
+                </span>
+              );
+            }
+
+            if (row.access === "granted") {
+              return (
+                <Button
+                  label="Revoke Access"
+                  icon="pi pi-times"
+                  className="btn__remove_invite"
+                  onClick={() => removeInvite(row._id)}
+                />
+              );
+            }
+
+            return null; // fallback
+          }}
         />
       </DataTable>
     </div>

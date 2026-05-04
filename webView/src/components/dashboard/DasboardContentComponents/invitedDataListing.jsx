@@ -31,7 +31,17 @@ const InvitedDataListing = () => {
       // handle different API response shapes
       setInvites(res.data?.data || res.data || []);
     } catch (error) {
-      console.error("Error fetching invites:", error);
+       if (err.response?.status == 403) {
+            console.log("403 Forbidden: Access denied while fetching listings");
+                setAuth(null);
+                localStorage.removeItem("auth");
+                localStorage.removeItem("user");
+                localStorage.removeItem("tokenLocalStorage");
+                navigate("/login");
+          } else {
+            
+            console.error("Error fetching invites:", error);
+          }
     } finally {
       setLoading(false);
     }
@@ -87,32 +97,157 @@ const permissionsTemplate = (row) => {
     if (!row.createdAt) return "-";
     return new Date(row.createdAt).toLocaleDateString();
   };
+
+  const handleAcceptInvite = async (row) => {
+
+  if (!access_token) return;
+console.log("Accepting invite with hash:", row.invitationHash);
+  try {
+    setLoading(true);
+
+    await axios.post(
+      `${API_BASE}/invite/accept`,
+      { invitationHash:row.invitationHash },
+      {
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+        },
+      }
+    );
+
+    // Refresh invites after accepting
+    fetchInvites();
+
+  } catch (error) {
+
+     if (err.response?.status == 403) {
+            console.log("403 Forbidden: Access denied while fetching listings");
+                setAuth(null);
+                localStorage.removeItem("auth");
+                localStorage.removeItem("user");
+                localStorage.removeItem("tokenLocalStorage");
+                navigate("/login");
+          } else {
+
+            console.error("Error accepting invite:", error);
+          }
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+  const handleRejectInvite = async (row) => {
+
+  if (!access_token) return;
+console.log("Rejecting invite with hash:", row.invitationHash);
+  try {
+    setLoading(true);
+
+    await axios.post(
+      `${API_BASE}/invite/reject`,
+      { invitationHash:row.invitationHash },
+      {
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+        },
+      }
+    );
+
+    // Refresh invites after accepting
+    fetchInvites();
+
+  } catch (error) {
+
+     if (err.response?.status == 403) {
+            console.log("403 Forbidden: Access denied while fetching listings");
+                setAuth(null);
+                localStorage.removeItem("auth");
+                localStorage.removeItem("user");
+                localStorage.removeItem("tokenLocalStorage");
+                navigate("/login");
+          } else {
+
+            console.error("Error accepting invite:", error);
+          }
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+
 const actionTemplate = (row) => {
-  const id = row.businessId._id; // adjust if needed
+  const invitedStatus = row.status;
+  const accessStatus = row.access;
+  const id = row.businessId?._id;
 
-  return (
-    <div className="view__edit_buttons_action">
-      {/* View Button */}
-      <a
-        href={`/user/single-listing/${id}`}
-        className="view__edit_buttons_action_view_btn"
-      >
-        <i
-        className="pi pi-eye cursor-pointer text-blue-500 hover:text-blue-700"
-      ></i> 
-      </a>
+  // PENDING
+  if (invitedStatus === "pending") {
+    return (
+      <div className="view__edit_buttons_action">
+        <button
+          onClick={() => handleAcceptInvite(row)}
+          className="invite__action_btn_accept"
+        >
+          Accept
+        </button>
 
-      
-      <a
-        href={`/user/edit-listing/${id}`}
-        className="view__edit_buttons_action_edit_btn"
-      >
-         <i
-        className="pi pi-pencil cursor-pointer text-blue-500 hover:text-blue-700"
-      ></i>
-      </a>
-    </div>
-  );
+        <button
+          onClick={() => handleRejectInvite(row)}
+          className="invite__action_btn_reject"
+        >
+          Reject
+        </button>
+      </div>
+    );
+  }
+
+  // ACCEPTED
+  if (invitedStatus === "accepted" && accessStatus !== "revoked") {
+    return (
+      <div className="view__edit_buttons_action">
+        <a
+          href={`/user/single-listing/${id}`}
+          className="view__edit_buttons_action_view_btn"
+        >
+          <i className="pi pi-eye cursor-pointer text-blue-500 hover:text-blue-700"></i>
+        </a>
+
+        <a
+          href={`/user/edit-listing/${id}`}
+          className="view__edit_buttons_action_edit_btn"
+        >
+          <i className="pi pi-pencil cursor-pointer text-blue-500 hover:text-blue-700"></i>
+        </a>
+      </div>
+    );`z`
+  }
+  
+
+  // REJECTED / REVOKED
+  if (invitedStatus === "rejected" || invitedStatus === "revoked") {
+    return (
+      <span className="p-tag p-component p-tag-danger text-capitalize">
+      <span className="p-tag-value">
+        {invitedStatus} by yourself
+      </span>
+      </span>
+    );
+  }
+
+    if ( accessStatus === "revoked") {
+    return (
+      <span className="p-tag p-component p-tag-danger text-capitalize">
+      <span className="p-tag-value">
+        {accessStatus} by Inviter
+      </span>
+      </span>
+    );
+  }
+
+  // FALLBACK
+  return "-";
 };
   return (
     <>
@@ -129,7 +264,7 @@ const actionTemplate = (row) => {
           className="my__save_listing_wrap my__payment_history_table"
         >
           <Column header="Name" body={(row) => row.businessId?.listingTitle || "-"}  className="invited__list_title "/>
-          <Column field="invitedEmail" header="Email"  />
+          
           <Column field="role" header="Role"  />
 
           <Column
@@ -156,6 +291,16 @@ const actionTemplate = (row) => {
             body={dateTemplate}
             
           />
+          <Column header="Access" body={(row) => {
+            if (row.access === "revoked") {
+              return (
+                <span className="btn__revoked_invite_text">
+                  Access Revoked
+                </span>
+              );
+            }
+            return null;
+          }} />
           <Column header="Actions" body={actionTemplate} />
         </DataTable>
       </div>

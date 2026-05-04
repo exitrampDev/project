@@ -4949,6 +4949,32 @@ span.data__locked {
     cursor: pointer;
     max-width: 190px;
 }
+button.invite__action_btn_accept {
+    background: transparent;
+    border: 1px solid #0b7331;
+    color: #0b7331;
+    padding: 5px 12px;
+    border-radius: 8px;
+    cursor:pointer;
+}
+
+button.invite__action_btn_reject {
+     background: transparent;
+    border: 1px solid #ef4444;
+    color: #ef4444;
+    padding: 5px 12px;
+    border-radius: 8px;
+    cursor:pointer;
+}
+
+.text-capitalize {
+    text-transform: capitalize;
+}
+.btn__revoked_invite_text{
+  color:red;
+    font-size: 13px;
+    font-weight: 500;
+}
 @media screen and (min-width: 1024px) and (max-width: 2500px) {
   .header_container nav.nav_col a {
     font-size: 18px;
