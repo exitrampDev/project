@@ -389,7 +389,7 @@ what’s still pending, and collaborate with buyers who may suggest additional c
        
       </div>
       <Dialog
-        header="Seller Central Due Diligence Notes"
+        header=" Notes"
         visible={visible}
         style={{ width: "500px" }}
         onHide={() => setVisible(false)}
@@ -397,7 +397,7 @@ what’s still pending, and collaborate with buyers who may suggest additional c
         >
         {selectedSubmission ? (
             <div className="modal__notes_commets_wrap">
-
+              <br></br>
             <div className="modal__notes_commets_discussion_block">
                 {selectedSubmission.comments && selectedSubmission.comments.length > 0 ? (
                 selectedSubmission.comments.map((comment, index) => (
@@ -409,7 +409,9 @@ what’s still pending, and collaborate with buyers who may suggest additional c
                             : ""
                         }`}>
                         <div className="modal__notes_commets_discussion_date">
-                             <strong className="modal__notes_commets_discussion_name_author">{comment.author || "Anonymous"}:</strong>{" "}
+                             <strong className="modal__notes_commets_discussion_name_author">
+                              {(comment.author || "Anonymous").charAt(0).toUpperCase()}:
+                            </strong>{" "}
                             {new Date(comment.createdAt).toLocaleString("en-US", {
                             month: "short",
                             day: "numeric",
