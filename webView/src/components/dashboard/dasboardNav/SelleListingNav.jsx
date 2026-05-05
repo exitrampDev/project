@@ -32,7 +32,14 @@ export default function SellerListingNav() {
                <img src={icon1} alt="Dashboard" /> Dashboard
              </NavLink>
            </li>
-          
+          <li>
+                    <NavLink
+                      to="/user/my-invited-listing"
+                      className={({ isActive }) => (isActive ? "active" : "")}
+                    >
+                      <img src={icon23} alt="Saved Listing" /> Invited Listing
+                    </NavLink>
+                  </li>
               <li>
              <NavLink
                to="/user/my-listing"

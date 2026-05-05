@@ -12,10 +12,11 @@ import FileUploader from "../../customcomponent/FileUploader";
 import { Dropdown } from "primereact/dropdown";
 import { InputMask } from "primereact/inputmask";
 import { Editor } from 'primereact/editor';
+import CardSetupProcess from "./CardSetupProcess";
 
 const BrokerProfile = () => {
   const toast = useRef(null);
-
+const [cardUpdatePopup, setCardUpdatePopup] = useState(false);
   const { access_token, user } = useRecoilValue(authState) ?? {};
   const API_BASE = useRecoilValue(apiBaseUrlState);
 const usStates = useRecoilValue(usStatesState);
@@ -332,6 +333,14 @@ const editorHeader = (
             />
           </div>
 
+          <div className="field form__field_col ">
+            <label>Update Your Card</label>
+            <div className="button__update_card" onClick={() => { setCardUpdatePopup(true) }}>
+              Update Your Card
+            </div>
+          </div>
+
+
           <div className="field form__field_col col_overvice_textarea">
             <label>Broker Overview</label>
               <Editor
@@ -357,6 +366,12 @@ const editorHeader = (
           </div>
         </form>
       </div>
+       {cardUpdatePopup && (
+          <div className="card__update_process_popup">
+            <div className="popup__added_card_overlay" onClick={() => { setCardUpdatePopup(false) }}></div>
+            <CardSetupProcess />
+          </div>
+        )}
     </>
   );
 };

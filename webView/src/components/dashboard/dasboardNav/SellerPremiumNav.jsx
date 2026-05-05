@@ -57,6 +57,14 @@ const { user, access_token } = useRecoilValue(authState) ?? {};
                 <img src={invite} alt="Invite Team" /> Invite Team
               </NavLink>
             </li>
+             <li>
+                <NavLink
+                  to="/user/my-invited-listing"
+                  className={({ isActive }) => (isActive ? "active" : "")}
+                >
+                  <img src={icon23} alt="Saved Listing" /> Invited Listing
+                </NavLink>
+              </li>
   <li>
                <NavLink
                  to="/user/my-listing"
@@ -120,6 +128,7 @@ const { user, access_token } = useRecoilValue(authState) ?? {};
                  <img src={icon28} alt="My Listing" /> My Profile
                </NavLink>
              </li>
+             
         
         </> )}
 

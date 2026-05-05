@@ -38,6 +38,14 @@ export default function SellerFreeNav() {
                     <img src={icon23} alt="Saved Listing" /> Saved Listing
                   </NavLink>
                 </li>
+                <li>
+                          <NavLink
+                            to="/user/my-invited-listing"
+                            className={({ isActive }) => (isActive ? "active" : "")}
+                          >
+                            <img src={icon23} alt="Saved Listing" /> Invited Listing
+                          </NavLink>
+                        </li>
         <li>
           <Link to="/listings">
             <img src={icon28} alt="-" />
