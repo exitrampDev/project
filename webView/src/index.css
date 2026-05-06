@@ -4947,7 +4947,7 @@ span.data__locked {
     gap: 10px;
     border-radius: 100px;
     cursor: pointer;
-    max-width: 190px;
+    max-width: 220px;
 }
 button.invite__action_btn_accept {
     background: transparent;

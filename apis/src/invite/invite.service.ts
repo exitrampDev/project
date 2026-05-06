@@ -272,7 +272,7 @@ export class InviteService {
       status: InviteStatus.ACCEPTED,
     });
 
-   return invite?.accuisitionType?.editBusinessInfo == 'yes' ? true : false;
+   return invite?.accuisitionType?.viewEditBusinessInfo == 'yes' ? true : false;
 
     // return !!invite;
   }

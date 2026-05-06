@@ -222,7 +222,13 @@ const handleFileUpload = async (file, displayName) => {
         life: 4000,
       });
 
-      navigate("/user/my-listing");
+      if (user?.user_type === "invited_member") {
+      navigate("/user/my-invited-listing");
+    } else {  
+      navigate("/user/my-listing"); 
+
+    }
+
     } catch (error) {
       toast.current.show({
         severity: "error",
@@ -1212,7 +1218,14 @@ impact the confidentiality of your sale.</em>
                <Button
           label="Cancel"
           className="p-button-secondary"
-          onClick={() => navigate("/user/my-listing")}
+          onClick={() => {
+               if (user?.user_type === "invited_member") {
+                  navigate("/user/my-invited-listing");
+                } else {  
+                  navigate("/user/my-listing"); 
+
+                }
+          }}
         />
                 <Button
                   label="Save & Continue"

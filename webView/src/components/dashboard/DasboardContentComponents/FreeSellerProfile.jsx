@@ -305,9 +305,9 @@ const [cardUpdatePopup, setCardUpdatePopup] = useState(false);
 
           </div>
    <div className="field form__field_col ">
-            <label>Company Overview</label>
+            <label>Update Your Card</label>
             <div className="button__update_card" onClick={() => { setCardUpdatePopup(true) }}>
-              Update Your Card
+              Request for Card Update
             </div>
           </div>
 
