@@ -147,8 +147,9 @@ async getOrCreateStripeCustomer(user) {
       currency: 'usd',
       customer: customerId,
       setup_future_usage: 'off_session',
-      // 'payment_method_types[0]': 'card',
-      automatic_payment_methods: { enabled: true },
+      'payment_method_types[0]': 'card',
+      // automatic_payment_methods: { enabled: true },
+      // 'automatic_payment_methods[enabled]': true,
       //  'automatic_payment_methods[enabled]': true,
       'metadata[userId]': userId.toString(),
       'metadata[businessId]': businessId?.toString(),
@@ -403,6 +404,11 @@ async chargeUserOffSessionREST(
   amount: number,
   metadata: Record<string, string>,
 ) {
+
+  payment_method = await this.getUsablePaymentMethod(stripe_customer_id); // Ensure we have a valid payment method before charging
+ if(!payment_method){
+  throw new Error('No valid payment method found for customer');
+ }
   const payload = qs.stringify({
     amount: Math.round(amount * 100),
     currency: 'usd',
@@ -439,6 +445,42 @@ async chargeUserOffSessionREST(
 
     throw new Error(stripeError?.message || 'Stripe charge failed');
   }
+}
+
+async  getUsablePaymentMethod(customerId: string) {
+  // 1. Get customer
+  const customer = await axios.get(
+    `https://api.stripe.com/v1/customers/${customerId}`,
+    {
+      headers: {
+        Authorization: `Bearer ${process.env.STRIPE_SECRET_KEY}`,
+      },
+    }
+  );
+
+  const defaultPM = customer.data.invoice_settings?.default_payment_method;
+
+  if (defaultPM) return defaultPM;
+
+  // 2. Fallback to list
+  const pmList = await axios.get(
+    `https://api.stripe.com/v1/payment_methods`,
+    {
+      params: {
+        customer: customerId,
+        type: 'card',
+      },
+      headers: {
+        Authorization: `Bearer ${process.env.STRIPE_SECRET_KEY}`,
+      },
+    }
+  );
+
+  if (pmList.data.data.length === 0) {
+    throw new Error('No payment methods found');
+  }
+
+  return pmList.data.data[0].id; // fallback
 }
 
 async createRefundRequest(

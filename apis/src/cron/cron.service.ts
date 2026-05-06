@@ -93,7 +93,8 @@ async handleDailyJob() {
 
 
             // ----------------------------------------------------------------------------------
-          if(user && user.stripe_customer_id && user.payment_method) {
+          // if(user && user.stripe_customer_id && user.payment_method) {
+          if(user && user.stripe_customer_id) {
              let amount = business.listingType == ListingTypes.NORMAL ? 15 : 30; //15 USD for normal listing, 30 USD for premium listing'
   
               
