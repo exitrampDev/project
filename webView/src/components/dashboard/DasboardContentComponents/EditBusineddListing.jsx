@@ -222,7 +222,7 @@ const handleFileUpload = async (file, displayName) => {
         life: 4000,
       });
 
-      if (user?.user_type === "invited_member") {
+      if (user?.user_type === "invited_member" || user?.user_type === "buyer_basic") {
       navigate("/user/my-invited-listing");
     } else {  
       navigate("/user/my-listing"); 
