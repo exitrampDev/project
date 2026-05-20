@@ -7,11 +7,25 @@ export type PageDocument = HydratedDocument<Page>;
 export class Page {
 
   @Prop({ type: String, default: '' })
-  pageSlug: string;
+  pageSlug!: string;
 
   @Prop({ type: String, default: '' })
-  pageContent: string;
+  pageContent!: string;
 
+  @Prop({ type: String, default: '' })
+  title!: string;
+
+  @Prop({ type: [String], default: [] })
+  categories!: string[];
+
+  @Prop({ type: [String], default: [] })
+  tags!: string[];
+
+  @Prop({ type: String, default: '' })
+  tool!: string;
+
+  @Prop({ type: String, default: '' })
+  summary!: string;
 
 }
 
