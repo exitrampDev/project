@@ -39,6 +39,14 @@ export default function BuyerFreeNav() {
             <img src={icon23} alt="Saved Listing" /> Saved Listing
           </NavLink>
         </li>
+         <li>
+                            <NavLink
+                              to="/user/my-invited-listing"
+                              className={({ isActive }) => (isActive ? "active" : "")}
+                            >
+                              <img src={icon23} alt="Saved Listing" /> Invited Listing
+                            </NavLink>
+                          </li>
         <li>
           <NavLink
             to="/user/complete-profile-buyer-free"
