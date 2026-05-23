@@ -29,8 +29,13 @@ export class CreateBlogDto {
   @IsString()
   summary!: string;
 
-    @IsNotEmpty()
+  @IsNotEmpty()
   @IsString()
   author!: string;
+
+   // Base64 Image
+  @IsOptional()
+  @IsString()
+  thumbnail!: string
 
 }

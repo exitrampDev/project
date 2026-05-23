@@ -30,6 +30,9 @@ export class Blog {
   @Prop({ type: String, default: '' })
   author!: string;
 
+  @Prop({ type: Buffer })
+ thumbnail!: Buffer;
+
 }
 
 export const BlogSchema = SchemaFactory.createForClass(Blog);
