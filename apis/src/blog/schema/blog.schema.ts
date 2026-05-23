@@ -27,6 +27,9 @@ export class Blog {
   @Prop({ type: String, default: '' })
   summary!: string;
 
+  @Prop({ type: String, default: '' })
+  author!: string;
+
 }
 
 export const BlogSchema = SchemaFactory.createForClass(Blog);

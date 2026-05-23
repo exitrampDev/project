@@ -29,4 +29,8 @@ export class CreateBlogDto {
   @IsString()
   summary!: string;
 
+    @IsNotEmpty()
+  @IsString()
+  author!: string;
+
 }
