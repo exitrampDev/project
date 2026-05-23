@@ -44,10 +44,14 @@ import BrokerProfile from "./components/dashboard/DasboardContentComponents/Brok
 import NotFound from "./components/NotFound";
 import PagesList from "./components/dashboard/AdminContent/PagesList";
 import PageBuilder from "./components/dashboard/AdminContent/PageBuilder";
+import BlogPostList from "./components/dashboard/AdminContent/BlogPostList";
+import BlogPostBuilder from "./components/dashboard/AdminContent/BlogPostBuilder";
 import RenderPages from "./pages/RenderPages";
 import InviteTeam from "./components/dashboard/DasboardContentComponents/InviteTeam";
 import RegisterInvitedPerson from "./components/registerInvitedPerson";
 import InvitedDataListing from "./components/dashboard/DasboardContentComponents/invitedDataListing";
+import RenderBlogPost from "./pages/RenderBlogPost";
+import RenderBlogList from "./pages/RenderBlogList";
 
 
 const App = () => {
@@ -68,6 +72,8 @@ const App = () => {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/page/:slug" element={<RenderPages />} />
+        <Route path="/insight" element={<RenderBlogList />} />
+        <Route path="/insight/:slug" element={<RenderBlogPost />} />
         <Route path="*" element={<NotFound />} />
         <Route path="/verify-email/" element={<ResetPassword />} />
         <Route path="/listing/:id" element={<BusinessListingDetail />} />
@@ -130,6 +136,9 @@ const App = () => {
            <Route path="pages" element={<PagesList />} />
           <Route path="pages/create" element={<PageBuilder />} />
           <Route path="pages/:slug" element={<PageBuilder />} />
+          <Route path="insight" element={<BlogPostList />} />
+          <Route path="insight/create" element={<BlogPostBuilder />} />
+          <Route path="insight/:slug" element={<BlogPostBuilder />} />
         </Route>
         <Route path="payment" element={<Dashboard />}>
           <Route path="success" element={<SuccessPayment />} />

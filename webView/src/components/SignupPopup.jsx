@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import ArrowIcon from "../assets/arrowIcon.png";
 
@@ -12,6 +12,22 @@ const SignupPopup = ({
   step1Options,
   onSelectPlan,
 }) => {
+  
+  // Automatically trigger the plan selection if the role is "seller"
+  useEffect(() => {
+    if (step === 2 && selectedRole === "seller" && roleOptions?.seller?.subOptions) {
+      const sellerOptions = roleOptions.seller.subOptions;
+      
+      // Check if there is at least one sub-option and it has a button configuration
+      if (sellerOptions.length > 0 && sellerOptions[0].button) {
+        const firstSubOption = sellerOptions[0];
+        
+        // This triggers the same function that className="popup_btn" calls
+        onSelectPlan(firstSubOption.button.roleOptionValue, firstSubOption);
+      }
+    }
+  }, [step, selectedRole, roleOptions, onSelectPlan]);
+
   return (
     <div className="popup_overlay" onClick={onClose}>
       <div className="popup_modal_signup" onClick={(e) => e.stopPropagation()}>
@@ -51,11 +67,11 @@ const SignupPopup = ({
         {/* STEP 2: Sub Options for Selected Role */}
         {step === 2 && selectedRole && (
           <div className="step__two_main">
-            <h3>{roleOptions[selectedRole].title}</h3>
-            <p>{roleOptions[selectedRole].subtitle}</p>
+            <h3>{roleOptions[selectedRole]?.title}</h3>
+            <p>{roleOptions[selectedRole]?.subtitle}</p>
 
             <div className="popup_options">
-              {roleOptions[selectedRole].subOptions.map((sub, index) => (
+              {roleOptions[selectedRole]?.subOptions?.map((sub, index) => (
                 <div key={index} className="popup_option">
                   <div className="popup__content_block">
                     {sub.icon && (
