@@ -30,8 +30,8 @@ export class Blog {
   @Prop({ type: String, default: '' })
   author!: string;
 
-  @Prop({ type: Buffer })
- thumbnail!: Buffer;
+  @Prop({ type: String, default: '' })
+ thumbnail!: string;
 
 }
 
