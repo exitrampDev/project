@@ -119,3 +119,6 @@ nest g service readers
 ---------------------------------
 stripe login
 stripe listen --forward-to http://localhost:5000/payment/webhook
+------------------------------------
+ node -v
+v24.13.0  

@@ -31,6 +31,7 @@ import { CronModule } from './cron/cron.module';
 import { AdminModule } from './admin/admin.module';
 import { PageModule } from './page/page.module';
 import { InviteModule } from './invite/invite.module';
+import { BlogModule } from './blog/blog.module';
 
 
 @Module({
@@ -81,7 +82,7 @@ import { InviteModule } from './invite/invite.module';
     CimModule,
     SharedModule,
     DueDiligenceModule,  
-    NotificationModule, PaymentModule, CronModule, AdminModule, PageModule, InviteModule 
+    NotificationModule, PaymentModule, CronModule, AdminModule, PageModule, InviteModule, BlogModule 
   ],
 
  
