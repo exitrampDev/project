@@ -6,7 +6,7 @@ import { AuthModule } from './auth/auth.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
 import { MailerModule } from '@nestjs-modules/mailer';
-import { HandlebarsAdapter } from '@nestjs-modules/mailer/adapters/handlebars.adapter';
+import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { join } from 'path';
 import { BusinessListingModule } from './business-listing/business-listing.module';
 import { FreeBuyerModule } from './free-buyer/free-buyer.module';

@@ -149,7 +149,7 @@ async resetPassword({ token, newPassword }: ResetPasswordDto) {
   }
 
   const hashedPassword = await bcrypt.hash(newPassword, 10);
-  await this.usersService.updatePassword(user._id.toString(), hashedPassword);
+await this.usersService.updatePassword((user as any)._id.toString(), hashedPassword);
 
   return { message: 'Password reset successfully' };
 }
