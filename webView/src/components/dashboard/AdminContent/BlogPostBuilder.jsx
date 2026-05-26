@@ -8,6 +8,7 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 import { apiBaseUrlState } from "../../../recoil/ctaState";
 import { useRecoilValue } from "recoil";
+import FileUploader from "../../customcomponent/FileUploader";
 
 const PageBuilder = () => {
   const { slug } = useParams();
@@ -19,13 +20,16 @@ const PageBuilder = () => {
   const [content, setContent] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // New Fields from Payload
+  // Payload Updated Fields
   const [category, setCategory] = useState(null);
   const [tags, setTags] = useState([]);
   const [summary, setSummary] = useState("");
   const [tool, setTool] = useState(null);
+  
+  // New schema fields
+  const [author, setAuthor] = useState("");
+  const [thumbnail, setThumbnail] = useState(""); 
 
-  // Mock Options for Dropdowns (Replace with API data if needed)
   const categoryOptions = [
     { label: "Seller Journey", value: "Seller Journey" },
     { label: "Buyer Journey", value: "Buyer Journey" },
@@ -39,14 +43,14 @@ const PageBuilder = () => {
     { label: "Experts", value: "Experts" }
   ];
 
-  // 🔹 slug generator
+  // 🔹 Slug generator
   const generateSlug = (text) => {
     return text
       .toLowerCase()
       .trim()
-      .replace(/[^a-z0-9\s-]/g, "") // remove special chars
-      .replace(/\s+/g, "-") // spaces to dash
-      .replace(/-+/g, "-"); // remove duplicate dashes
+      .replace(/[^a-z0-9\s-]/g, "") 
+      .replace(/\s+/g, "-") 
+      .replace(/-+/g, "-"); 
   };
 
   // 🔹 Fetch existing page
@@ -59,18 +63,19 @@ const PageBuilder = () => {
   const fetchPage = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(`${apiBaseUrl}/page/${slug}`);
+      const res = await axios.get(`${apiBaseUrl}/blog/${slug}`);
       const data = res.data;
 
       setPageSlug(data.pageSlug);
       setContent(data.pageContent);
       setPageTitle(data.title || ""); 
       
-      // Map incoming array data back to state hooks safely
       setCategory(data.categories && data.categories.length > 0 ? data.categories[0] : null);
       setTags(data.tags || []);
       setSummary(data.summary || "");
       setTool(data.tool || null);
+      setAuthor(data.author || "");
+      setThumbnail(data.thumbnail || ""); // Preloads existing base64 string or url string
 
     } catch (err) {
       console.error("Fetch error:", err);
@@ -79,10 +84,22 @@ const PageBuilder = () => {
     }
   };
 
+  // 🔹 Convert chosen File object to Base64 payload string
+  const handleImageSelect = (file) => {
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setThumbnail(reader.result); // sets state to data:image/png;base64,...
+      };
+      reader.readAsDataURL(file);
+    } else {
+      setThumbnail(""); // Reset if file cleared
+    }
+  };
+
   // 🔹 Handle title change → auto slug
   const handleTitleChange = (value) => {
     setPageTitle(value);
-    // Only auto-generate slug in create mode to preserve existing URLs
     if (!slug) {
       setPageSlug(generateSlug(value));
     }
@@ -96,22 +113,23 @@ const PageBuilder = () => {
     }
 
     try {
-      // Form structural payload mapping arrays correctly
       const payload = {
-        title: pageTitle,
         pageSlug: pageSlug,
         pageContent: content,
-        categories: category ? [category] : [], // backend schema expects array
+        title: pageTitle,
+        categories: category ? [category] : [], 
         tags: tags,
         summary: summary,
-        tool: tool
+        tool: tool,
+        author: author,
+        thumbnail: thumbnail // Sent exactly as your raw base64 data payload string
       };
 
       if (slug) {
-        await axios.put(`${apiBaseUrl}/page/${slug}`, payload);
+        await axios.put(`${apiBaseUrl}/blog/${slug}`, payload);
         alert("Page updated successfully");
       } else {
-        await axios.post(`${apiBaseUrl}/page`, payload);
+        await axios.post(`${apiBaseUrl}/blog`, payload);
         alert("Page created successfully");
       }
     } catch (err) {
@@ -124,7 +142,7 @@ const PageBuilder = () => {
     <div className="p-4">
       <div className="dashboard__header_block">
         <h3>{slug ? "Edit Page" : "Create Page"}</h3>
-        <a href={window.location.origin + `/page/${pageSlug}`} target="_blank" rel="noopener noreferrer" className="viewPageLink">
+        <a href={window.location.origin + `/insight/${pageSlug}`} target="_blank" rel="noopener noreferrer" className="viewPageLink">
           View Page
         </a>
       </div>
@@ -143,11 +161,33 @@ const PageBuilder = () => {
 
         {/* 🔹 Auto Generated Slug (read-only) */}
         <div className="editor__box_slug_wrap">
-          <label className="font-bold block mb-2">Page Slug</label>
-          <p><span>{window.location.origin}/page/</span>{pageSlug}</p>
+          <label className="font-bold block mb-2">Post Slug</label>
+          <p><span>{window.location.origin}/insight/</span>{pageSlug}</p>
         </div>
 
-{/* 🔹 Tags (Chips Component) */}
+        {/* 🔹 Author Block */}
+        <div className="editor__box_slug_wrap">
+          <label className="font-bold block mb-2">Author Name</label>
+          <InputText
+            value={author}
+            onChange={(e) => setAuthor(e.target.value)}
+            placeholder="Enter author name"
+            className="w-full"
+          />
+        </div>
+
+        {/* 🔹 Your Custom FileUploader Component */}
+        <div className="editor__box_slug_wrap">
+          <label className="font-bold block mb-2">Thumbnail Image</label>
+          <FileUploader
+            accept="image/png, image/jpeg,.pdf"
+            maxSizeMB={5}
+            existingFileUrl={thumbnail || "dss"} // Passes the fetched base64 string or placeholder string 
+            onFileSelect={(file) => handleImageSelect(file)}
+          />
+        </div>
+
+        {/* 🔹 Tags (Chips Component) */}
         <div className="editor__box_slug_wrap">
           <label className="font-bold block mb-2">Meta keywords</label>
           <Chips 
@@ -158,10 +198,11 @@ const PageBuilder = () => {
             style={{ width: '100%' }}
           />
         </div>
-        {/* 🔹 Category (Dropdown) & Tool Selection (Dropdown) Layout Grid */}
+
+        {/* 🔹 Category & Tool Selection Layout Grid */}
         <div className="editor__box_slug_wrap_grid_half">
           <div className="editor__box_slug_wrap half-width">
-          <label className="font-bold block mb-2">Category</label>
+            <label className="font-bold block mb-2">Category</label>
             <Dropdown
               value={category}
               options={categoryOptions}
@@ -170,8 +211,8 @@ const PageBuilder = () => {
               className="w-full"
               style={{ width: '100%' }}
             />
-        </div>
-        <div className="editor__box_slug_wrap half-width">
+          </div>
+          <div className="editor__box_slug_wrap half-width">
             <label className="font-bold block mb-2">Tool Selection</label>
             <Dropdown
               value={tool}
@@ -181,10 +222,8 @@ const PageBuilder = () => {
               className="w-full"
               style={{ width: '100%' }}
             />
+          </div>
         </div>
-
-        </div>
-        
 
         {/* 🔹 Summary (Rich Text Editor) */}
         <div className="editor__box_content_wrap">

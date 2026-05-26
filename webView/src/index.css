@@ -4975,6 +4975,43 @@ button.invite__action_btn_reject {
     font-size: 13px;
     font-weight: 500;
 }
+.editor__box_slug_wrap {
+    display: flex;
+    flex-wrap: wrap;
+    width:100%;
+}
+
+.editor__box_slug_wrap label{
+    width: 100%;
+}
+
+h1.blog__content_post {
+        text-align: center;
+    font-size: 35px;
+    color: #002f68;
+    font-weight: 600;
+}
+
+.editor__box_slug_wrap_grid_half {
+    display: flex;
+    gap: 15px;
+}
+
+.editor__box_slug_wrap.half-width {
+    width: 50%;
+}
+
+.editor__box_slug_wrap  .p-inputwrapper-filled.keywords-chips {
+    width: 100%;
+    display: block;
+}
+header.header__post_single {
+    background: #b6b6b617;
+    padding: 0;
+    margin-bottom: 40px;
+    padding: 26px;
+    border-radius: 5px;
+}
 @media screen and (min-width: 1024px) and (max-width: 2500px) {
   .header_container nav.nav_col a {
     font-size: 18px;

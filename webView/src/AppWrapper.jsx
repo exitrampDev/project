@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useSetRecoilState } from "recoil";
 import { authState } from "./recoil/ctaState";
+import { HelmetProvider } from 'react-helmet-async';
 import App from "./App";
 
 const AppWrapper = () => {
@@ -18,7 +19,7 @@ const AppWrapper = () => {
 
   if (loading) return <div>Loading app...</div>;
 
-  return <App />;
+  return <HelmetProvider><App /></HelmetProvider>;
 };
 
 export default AppWrapper;
