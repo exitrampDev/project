@@ -17,11 +17,18 @@ export class UsersController {
   async create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
   }
+
  @UseGuards(JwtAuthGuard, RolesGuard)
  @Roles('admin')
   @Get()
   async findAll(@Query() query: QueryUsersDto) {
     return this.usersService.findAll(query);
+  }
+
+ @UseGuards(JwtAuthGuard)
+  @Get('brokers')
+  async getAllBrokers(@Query() query: QueryUsersDto) {
+    return this.usersService.findAllBrokers(query);
   }
 
    // -------- Update Logged-in User Profile --------
