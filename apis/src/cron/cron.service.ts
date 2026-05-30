@@ -25,8 +25,8 @@ export class CronService {
  /**
    * Runs every day at midnight and mark business as pending for payment if last payment was more than 30 days ago
    */
- @Cron(CronExpression.EVERY_30_SECONDS)
-//  @Cron(CronExpression.EVERY_DAY_AT_1AM)
+//  @Cron(CronExpression.EVERY_30_SECONDS)
+ @Cron(CronExpression.EVERY_DAY_AT_1AM)
 async handleDailyJob() {
   this.logger.log('Running payment check cron----');
 
@@ -76,8 +76,8 @@ async handleDailyJob() {
   /**
    * Runs every 30 seconds
    */
-  // @Cron(CronExpression.EVERY_DAY_AT_2AM)
-  @Cron(CronExpression.EVERY_30_SECONDS)
+  @Cron(CronExpression.EVERY_DAY_AT_2AM)
+  // @Cron(CronExpression.EVERY_30_SECONDS)
   async handleInterval() {
     this.logger.log('Running billing cron----------------------------------');
     const limit = 500;
