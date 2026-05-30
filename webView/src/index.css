@@ -4935,7 +4935,7 @@ span.data__locked {
     padding: 0;
 }
 .complete_buyer_form_wrap.seller__form_profile .button__update_card {
-    margin-top: 30px;
+    margin-top: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -4948,6 +4948,24 @@ span.data__locked {
     border-radius: 100px;
     cursor: pointer;
     max-width: 220px;
+}
+.service_areas_section {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+.service_area_row {
+    display: flex;
+    align-items: flex-end;
+    gap: 40px;
+    width: 100%;
+}
+
+.add_service_area_btn {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
 }
 button.invite__action_btn_accept {
     background: transparent;
@@ -5011,6 +5029,75 @@ header.header__post_single {
     margin-bottom: 40px;
     padding: 26px;
     border-radius: 5px;
+}
+.complete_buyer_form_wrap form.form_wrap h2.form_section_title,.complete_buyer_form_wrap form.form_wrap  .form_subsection_title {
+    margin: 0;
+    color: #002f68;
+    font-size: 20px;
+    font-weight: 400;
+    width: 100%;
+}
+
+.business_blocks_flex_container {
+    display: flex;
+    width: 100%;
+    flex-wrap: wrap;
+}
+
+.business_blocks_flex_container .business_overview_card_tile {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: 30px;
+    row-gap: 10px;
+    margin-top: 30px;
+}
+
+.business_blocks_flex_container .business_overview_card_tile .card_tile_header {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.business_blocks_flex_container .business_overview_card_tile .tile_field_row {
+    width: 100%;
+    max-width: 418px;
+}
+
+.business_blocks_flex_container .business_overview_card_tile .tile_field_row label {
+    width: 100%;
+    display: block;
+    font-size: 14px;
+    color: #002f67;
+    margin-bottom: 5px;
+}
+.business_blocks_flex_container .business_overview_card_tile .tile_content_wrap {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: 30px;
+    row-gap: 10px;
+    background: #fff;
+    padding: 30px;
+    border-radius: 6px;
+    border: 1px solid #4b556342;
+}
+
+
+.business_blocks_flex_container .business_overview_card_tile  .tile_action_footer {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.business_blocks_flex_container .business_overview_card_tile .card_tile_header h3.tile_title {
+    margin: 0;
+    color: #002f68;
+    font-size: 20px;
+    font-weight: 400;
+    width: 100%;
 }
 @media screen and (min-width: 1024px) and (max-width: 2500px) {
   .header_container nav.nav_col a {
