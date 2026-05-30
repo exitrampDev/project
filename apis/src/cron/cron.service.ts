@@ -41,7 +41,7 @@ async handleDailyJob() {
     this.logger.log(`Found ${businesses.length} overdue businesses`);
      for (const business of businesses) {
       this.logger.log(
-        `Business ${business._id} last paid on ${business.paymentDate}`,
+        `Business ${business._id} last paid on ${business?.paymentDate}`,
       );
 
     
