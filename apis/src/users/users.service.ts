@@ -65,6 +65,26 @@ export class UsersService {
     return result;
   }
 
+
+    async findAllBrokers(query: QueryUsersDto) {
+    const features = new ApiFeatures(this.userModel);
+     
+    const result = await features.paginateAndFilter({
+      ...query,
+      searchFields: ['name', 'email'],   
+      baseFilter: { isDeleted: false,  user_type: UserType.SELLER_BROKER },  
+     
+    });
+
+    // --- password remove karna
+    result.data = (result.data as any[]).map((user: any) => {
+    const { password, ...userWithoutPassword } = user.toObject();
+    return userWithoutPassword;
+  });
+
+    return result;
+  }
+
   async findOne(id: string): Promise<Omit<User, 'password'> | null> {
     const user = await this.userModel.findById(id).exec();
     if (!user) return null;
