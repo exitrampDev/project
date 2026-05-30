@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import { Toast } from "primereact/toast";
+import { useRef } from "react";
 import { Editor } from "primereact/editor";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
@@ -12,7 +14,7 @@ import { useRecoilValue } from "recoil";
 const PageBuilder = () => {
   const { slug } = useParams();
   const apiBaseUrl = useRecoilValue(apiBaseUrlState);
-
+const toast = useRef(null);
   // Existing Fields
   const [pageTitle, setPageTitle] = useState("");
   const [pageSlug, setPageSlug] = useState("");
@@ -91,7 +93,12 @@ const PageBuilder = () => {
   // 🔹 Submit
   const handleSubmit = async () => {
     if (!pageTitle || !content) {
-      alert("Title and content required");
+      toast.current.show({
+  severity: "warn",
+  summary: "Validation Error",
+  detail: "Title and content required",
+  life: 3000,
+});
       return;
     }
 
@@ -109,18 +116,34 @@ const PageBuilder = () => {
 
       if (slug) {
         await axios.put(`${apiBaseUrl}/page/${slug}`, payload);
-        alert("Page updated successfully");
+        toast.current.show({
+          severity: "success",
+          summary: "Success",
+          detail: "Page updated successfully",
+          life: 3000,
+        });
       } else {
         await axios.post(`${apiBaseUrl}/page`, payload);
-        alert("Page created successfully");
+        toast.current.show({
+          severity: "success",
+          summary: "Success",
+          detail: "Page created successfully",
+          life: 3000,
+        });
       }
     } catch (err) {
       console.error("Error:", err);
-      alert("Something went wrong");
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Something went wrong",
+        life: 3000,
+      });
     }
   };
 
-  return (
+  return (<>
+  <Toast ref={toast} />
     <div className="p-4">
       <div className="dashboard__header_block">
         <h3>{slug ? "Edit Page" : "Create Page"}</h3>
@@ -215,6 +238,7 @@ const PageBuilder = () => {
         />
       </div>
     </div>
+  </>
   );
 };
 

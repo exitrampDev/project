@@ -218,16 +218,16 @@ const Header = () => {
       },
     });
   };
-  const navItems = [
-    {
-      label: "Home",
-      command: () => navigate("/"),
-      className: currentPath === "/" ? "p-menuitem-active" : "",
-    },
+ const navItems = [
     {
       label: "Listings",
       command: () => navigate("/listings"),
       className: currentPath.startsWith("/listings") ? "p-menuitem-active" : "",
+    },
+    {
+      label: "Find a Broker",
+      command: () => navigate("/find-broker"), // Adjust route if different
+      className: currentPath === "/find-broker" ? "p-menuitem-active" : "",
     },
     {
       label: "Pricing",
@@ -235,19 +235,46 @@ const Header = () => {
       className: currentPath === "/pricing" ? "p-menuitem-active" : "",
     },
     {
-      label: "How To Use",
-      command: () => navigate("/page/how-to-use"),
-      className: currentPath === "/page/how-to-use" ? "p-menuitem-active" : "",
+      label: "Features",
+      items: [
+        {
+          label: "Selling",
+          command: () => navigate("/page/selling"), 
+        },
+        {
+          label: "Buying",
+          command: () => navigate("/page/buying"), 
+        },
+        {
+          label: "Experts",
+          command: () => navigate("/page/experts"), 
+        },
+      ],
     },
     {
-      label: "Insights",
-      command: () => navigate("/insight"),
-      className: currentPath === "/insight" ? "p-menuitem-active" : "",
-    },
-    {
-      label: "Contact Us",
-      command: () => navigate("/contactus"),
-      className: currentPath === "/contactus" ? "p-menuitem-active" : "",
+      label: "Resources",
+      items: [
+        {
+          label: "Insights",
+          command: () => navigate("/insight"),
+          className: currentPath === "/insight" ? "p-menuitem-active" : "",
+        },
+        {
+          label: "How to Use",
+          command: () => navigate("/page/how-to-use"),
+          className: currentPath === "/page/how-to-use" ? "p-menuitem-active" : "",
+        },
+        {
+          label: "Contact Us",
+          command: () => navigate("/contactus"),
+          className: currentPath === "/contactus" ? "p-menuitem-active" : "",
+        },
+        {
+          label: "Submit Ticket",
+          command: () => navigate("/submit-ticket"), // Adjust route if different
+          className: currentPath === "/submit-ticket" ? "p-menuitem-active" : "",
+        },
+      ],
     },
   ];
   const start = (

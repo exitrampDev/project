@@ -5099,6 +5099,43 @@ header.header__post_single {
     font-weight: 400;
     width: 100%;
 }
+header .p-menuitem-content {
+    background: transparent;
+}
+
+header .p-menuitem-active .p-menuitem-content svg.p-icon.p-submenu-icon {
+    color: #ffb100 !important;
+}
+
+header ul.p-submenu-list {
+    padding: 10px 13px 0 13px;
+    border-radius: 0 0 10px  10px;
+    background: #ffb100;
+}
+
+header ul.p-submenu-list li {
+    margin-bottom: 3px;
+    border-bottom: 1px solid #c38b0d;
+}
+
+header ul.p-submenu-list li.p-menuitem  a span.p-menuitem-text{
+    font-size: 13px;
+    color: #fff;
+}
+
+header ul.p-submenu-list li:last-child {
+    border: none;
+    padding-bottom: 2px;
+}
+
+header ul.p-submenu-list li.p-menuitem a {
+    display: block;
+    padding-bottom: 9px;
+}
+
+header ul.p-menubar-root-list a.p-menuitem-link svg.p-icon.p-submenu-icon {
+    color: #fff;
+}
 @media screen and (min-width: 1024px) and (max-width: 2500px) {
   .header_container nav.nav_col a {
     font-size: 18px;
