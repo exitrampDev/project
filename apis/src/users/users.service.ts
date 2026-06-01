@@ -9,11 +9,12 @@ import { QueryUsersDto } from './dto/query-user.dto';
 import { ApiFeatures } from 'src/common/utils/api-features';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { UserType } from './enums/user-type.enum';
-
+import { Business, BusinessDocument } from 'src/business-listing/schemas/business.schema';
 @Injectable()
 export class UsersService {
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
+    @InjectModel(Business.name) private businessModel: Model<BusinessDocument>,
   ) {}
 
   async findByEmail(email: string): Promise<UserDocument | null> {
@@ -72,15 +73,20 @@ export class UsersService {
     const result = await features.paginateAndFilter({
       ...query,
       searchFields: ['name', 'email'],   
-      baseFilter: { isDeleted: false,  user_type: UserType.SELLER_BROKER },  
+      baseFilter: { isDeleted: false,  user_type: UserType.SELLER_BROKER },     
      
     });
-
+   
     // --- password remove karna
     result.data = (result.data as any[]).map((user: any) => {
-    const { password, ...userWithoutPassword } = user.toObject();
-    return userWithoutPassword;
-  });
+      const { password, ...userWithoutPassword } = user.toObject();
+      return userWithoutPassword;
+    });
+
+    result.data = await Promise.all(result.data.map(async (user: any) => {
+      const business = await this.businessModel.find({ ownerId: user._id.toString() }).select('id listingTitle businessState businessCountry cashFlow askingPrice image ').exec();
+      return { ...user, businesses: business };
+    }));
 
     return result;
   }

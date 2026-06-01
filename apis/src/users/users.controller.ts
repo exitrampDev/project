@@ -25,7 +25,7 @@ export class UsersController {
     return this.usersService.findAll(query);
   }
 
- @UseGuards(JwtAuthGuard)
+//  @UseGuards(JwtAuthGuard)
   @Get('brokers')
   async getAllBrokers(@Query() query: QueryUsersDto) {
     return this.usersService.findAllBrokers(query);
