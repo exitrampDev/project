@@ -1,5 +1,5 @@
 // src/users/users.controller.ts
-import { Controller, Post, Body, Get, Query, UseGuards, Patch, Req } from '@nestjs/common';
+import { Controller, Post, Body, Get, Query, UseGuards, Patch, Req, Param } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { QueryUsersDto } from './dto/query-user.dto';
@@ -29,6 +29,11 @@ export class UsersController {
   @Get('brokers')
   async getAllBrokers(@Query() query: QueryUsersDto) {
     return this.usersService.findAllBrokers(query);
+  }
+
+  @Get('brokers/:id')
+  async getSingleBroker(@Param('id') id: string) {
+    return this.usersService.findBrokerById(id);
   }
 
    // -------- Update Logged-in User Profile --------

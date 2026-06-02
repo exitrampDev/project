@@ -98,6 +98,17 @@ export class UsersService {
     return userWithoutPassword;
   }
 
+    async findBrokerById(id: string) {
+    const user = await this.userModel.findById(id).exec();
+    if (!user) return null;
+    const { password, ...userWithoutPassword } = user.toObject();
+    // return userWithoutPassword;
+      const business = await this.businessModel.find({ ownerId: userWithoutPassword._id.toString() }).select('id listingTitle businessState businessCountry cashFlow askingPrice image ').exec();
+      return { ...userWithoutPassword, businesses: business };
+
+    // return result;
+  }
+
   async remove(id: string): Promise<User | null> {
     return this.userModel.findByIdAndDelete(id).exec();
   }
