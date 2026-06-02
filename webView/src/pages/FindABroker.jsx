@@ -41,14 +41,14 @@ const FindABroker = () => {
       <div className="UpgradeFree_when_ready_wrap">
         <div className="UpgradeFree_when_ready_container">
           <h3>
-            <span>Interested?</span> Create a Buyer Profile to Get Started
+            Ready to Connect with a Broker?
           </h3>
           <p>
-            Create a free buyer profile to submit NDAs, unlock seller documents, and connect with businesses ready to talk.
+            Whether you're looking to buy or sell a business, our platform provides the tools and resources you need to succeed. Join our community of brokers and gain access to exclusive listings, industry insights, and a supportive network of professionals.
           </p>
-          {/* <button className="UpgradeFree_when_ready_btn" onClick={handleNonUserClick}>
-            Create Buyer Profile <img src={ArrowIcon} alt="ArrowIcon" />
-          </button> */}
+          <button className="UpgradeFree_when_ready_btn" onClick={() => window.location.href = "/broker"}>
+            Learn More <img src={ArrowIcon} alt="Arrow Icon" style={{ marginLeft: "8px" }} /> 
+          </button>
         </div>
       </div>
       <Footer />

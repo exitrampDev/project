@@ -53,7 +53,7 @@ import InvitedDataListing from "./components/dashboard/DasboardContentComponents
 import RenderBlogPost from "./pages/RenderBlogPost";
 import RenderBlogList from "./pages/RenderBlogList";
 import FindABroker from "./pages/FindABroker";
-
+import BrokerSingleView from "./pages/BrokerSignleView";
 
 const App = () => {
   return (
@@ -65,6 +65,7 @@ const App = () => {
         <Route path="/aboutus" element={<AboutUS />} />
         <Route path="/pricing" element={<Pricing/>} />
         <Route path="/broker" element={<Broker />} />
+        <Route path="/broker/:id" element={<BrokerSingleView />} />
         <Route path="/contactus" element={<ContactUs />} />
         <Route path="/termscondition" element={<TermsCondition />} />
         <Route path="/privacypolicy" element={<PrivacyPolicy />} />
