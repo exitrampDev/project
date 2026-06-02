@@ -52,6 +52,7 @@ import RegisterInvitedPerson from "./components/registerInvitedPerson";
 import InvitedDataListing from "./components/dashboard/DasboardContentComponents/invitedDataListing";
 import RenderBlogPost from "./pages/RenderBlogPost";
 import RenderBlogList from "./pages/RenderBlogList";
+import FindABroker from "./pages/FindABroker";
 
 
 const App = () => {
@@ -60,6 +61,7 @@ const App = () => {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/listings" element={<Listings />} />
+        <Route path="/find-broker" element={<FindABroker />} />
         <Route path="/aboutus" element={<AboutUS />} />
         <Route path="/pricing" element={<Pricing/>} />
         <Route path="/broker" element={<Broker />} />
