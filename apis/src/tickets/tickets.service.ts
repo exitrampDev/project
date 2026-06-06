@@ -15,12 +15,14 @@ import { UpdateTicketStatusDto } from './dto/update-ticket-status.dto';
 
 import { CreateTicketDto } from './dto/create-ticket.dto';
 import { QueryTicketDto } from './dto/query-ticket.dto';
+import { TicketMessage, TicketMessageDocument } from './schema/tocket-message.schema';
+import { CreateTicketMessageDto } from './dto/create-ticket-message.dto';
 
 @Injectable()
 export class TicketService {
   constructor(
-    @InjectModel(Ticket.name)
-    private readonly ticketModel: Model<TicketDocument>,
+    @InjectModel(Ticket.name)  private readonly ticketModel: Model<TicketDocument>,
+    @InjectModel(TicketMessage.name)  private readonly ticketMessageModel: Model<TicketMessageDocument>,
   ) {}
 
   async createTicket(
@@ -32,8 +34,49 @@ export class TicketService {
       createdBy: new Types.ObjectId(userId),
     });
 
+    await this.ticketMessageModel.create({
+    ticketId: ticket._id,
+    senderId: userId,
+    senderType: 'user',
+    message: dto.ticketDescription,
+    });
+
     return ticket;
   }
+
+    async createUserTicketMessage(
+    userId: string,
+    dto: CreateTicketMessageDto,
+    ticketId: string,
+    senderType: 'user' | 'admin' = 'user',
+  ) {
+    const ticket = await this.ticketModel.countDocuments({
+     _id: new Types.ObjectId(ticketId),    
+    }).exec();
+
+    if (!ticket) {
+      throw new NotFoundException('Ticket not found');
+    }
+
+   const data = await this.ticketMessageModel.create({
+    ticketId: new Types.ObjectId(ticketId),
+    senderId: userId,
+    senderType: senderType,
+    message: dto.message,
+    });
+
+    return data;
+  }
+
+  async getMessages(ticketId: string) {
+  return this.ticketMessageModel
+    .find({
+     ticketId: new Types.ObjectId(ticketId),
+      deletedAt: { $eq: null },
+    })
+    .populate('senderId', 'firstName lastName email')
+    .sort({ createdAt: 1 });
+}
 
   async myTickets(query: QueryTicketDto, userId: string) {
 
