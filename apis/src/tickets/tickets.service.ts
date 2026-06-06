@@ -89,6 +89,59 @@ export class TicketService {
     };
   }
 
+   async allTickets(query: QueryTicketDto, userId: string) {
+
+     const {
+      page = 1,
+      limit = 10,
+      search,
+      sortBy = 'createdAt',
+      order = 'desc',
+    } = query;
+
+    const sortOrder = order === 'desc' ? -1 : 1;
+
+    const filter: any = { deletedAt: null};
+    const andConditions: any[] = [];
+
+    const escapeRegex = (value: string) =>
+        value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+    /**
+     * Global text search (OR across multiple fields)
+     */
+    if (search) {
+    const regex = new RegExp(escapeRegex(search), 'i');
+
+    andConditions.push({
+        $or: [
+        { ticketTitle: regex },
+        { ticketDescription: regex },
+        { status: regex }
+        ],
+    });
+    }
+
+    if (andConditions.length > 0) {
+        filter.$and = andConditions;
+    }
+
+    const data = await this.ticketModel
+      .find(filter)
+      .sort({ [sortBy]: sortOrder })
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .lean();
+
+    const total = await this.ticketModel.countDocuments(filter);
+
+    return {
+      total,
+      page,
+      limit,
+      data,
+    };
+  }
   async changeStatus(
     ticketId: string,
     userId: string,

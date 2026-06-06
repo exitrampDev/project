@@ -16,6 +16,8 @@ import { User } from 'src/common/decorators/user.decorator';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { QueryBusinessDto } from 'src/business-listing/dto/query-business.dto';
 import { QueryTicketDto } from './dto/query-ticket.dto';
+import { Roles } from 'src/common/decorators/roles.decorator';
+import { RolesGuard } from 'src/auth/roles.guards';
 
 @Controller('tickets')
 export class TicketController {
@@ -54,4 +56,15 @@ export class TicketController {
       dto.status,
     );
   }
+
+//   ==============================================Admin Endpoints==============================================
+
+ @UseGuards(JwtAuthGuard, RolesGuard)
+ @Roles('admin')
+  @Get()
+  async myAllTickets(@Query() query: QueryTicketDto, @User() user: any ) {
+    return this.ticketService.allTickets(query, user.userId);
+  }
+
+
 }
