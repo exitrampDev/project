@@ -84,8 +84,8 @@ export class UsersService {
     });
 
     result.data = await Promise.all(result.data.map(async (user: any) => {
-      const business = await this.businessModel.find({ ownerId: user._id.toString() }).select('id listingTitle businessState businessCountry cashFlow askingPrice image ').exec();
-      return { ...user, businesses: business };
+      const business = await this.businessModel.countDocuments({ ownerId: user._id.toString() }).exec();
+      return { ...user, businessesCount: business };
     }));
 
     return result;
