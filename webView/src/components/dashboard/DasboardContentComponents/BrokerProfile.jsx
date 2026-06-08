@@ -437,32 +437,42 @@ const [counties, setCounties] = useRecoilState(countiesState);
            <h2 className="form_section_title" style={{ marginTop: "3rem" }}>Service Areas</h2>
           
           {formData.serviceAreas.map((area, index) => (
-            <div key={index} className="service_area_row" >
-              <div className="field form__field_col" >
-                <label>States</label>
-                <Dropdown value={area.state || null} options={usStates} optionLabel="label" optionValue="value" placeholder="Select State" onChange={(e) => {handleServiceAreaChange(index, "state", e.value); setCounties(usCountiesByState[e.value] || []);}} className="w-full" />
-              </div>
-              
-              <div className="field form__field_col" >
-                <label>County</label>
-                <Dropdown 
-                  value={area.county || null} 
-                  options={counties} 
-                  optionLabel="label" 
-                  optionValue="value" 
-                  placeholder="Select Business County" 
-                  onChange={(e) => handleServiceAreaChange(index, "county", e.value)} 
-                  className="w-full" 
-                />
-              </div>
+  <div key={index} className="service_area_row">
+    <div className="field form__field_col">
+      <label>States</label>
+      <Dropdown 
+        value={area.state || null} 
+        options={usStates} 
+        optionLabel="label" 
+        optionValue="value" 
+        placeholder="Select State" 
+        onChange={(e) => handleServiceAreaChange(index, "state", e.value)} 
+        className="w-full" 
+      />
+    </div>
+    
+    <div className="field form__field_col">
+      <label>County</label>
+      <Dropdown 
+        value={area.county || null} 
+        /* Key Fix: Derive options from the specific row's state */
+        options={usCountiesByState[area.state] || []} 
+        optionLabel="label" 
+        optionValue="value" 
+        placeholder="Select Business County" 
+        disabled={!area.state} // Disable if no state is selected
+        onChange={(e) => handleServiceAreaChange(index, "county", e.value)} 
+        className="w-full" 
+      />
+    </div>
 
-              <div style={{ marginBottom: "2px" }}>
-                {formData.serviceAreas.length > 1 && (
-                  <Button type="button" icon="pi pi-trash" className="p-button-danger p-button-text" onClick={() => removeServiceAreaRow(index)} />
-                )}
-              </div>
-            </div>
-          ))}
+    <div style={{ marginBottom: "2px" }}>
+      {formData.serviceAreas.length > 1 && (
+        <Button type="button" icon="pi pi-trash" className="p-button-danger p-button-text" onClick={() => removeServiceAreaRow(index)} />
+      )}
+    </div>
+  </div>
+))}
 
           {formData.serviceAreas.length < 5 && (
             <div className="add_service_area_btn">
