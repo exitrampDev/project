@@ -29,12 +29,12 @@ export class TicketController {
 
   //   ==============================================Admin Endpoints==============================================
 
-//  @UseGuards(JwtAuthGuard, RolesGuard)
-//  @Roles('admin')
-//   @Get()
-//   async myAllTickets(@Query() query: QueryTicketDto, @User() user: any ) {
-//     return this.ticketService.allTickets(query, user.userId);
-//   }
+ @UseGuards(JwtAuthGuard, RolesGuard)
+ @Roles('admin')
+  @Get()
+  async myAllTickets(@Query() query: QueryTicketDto, @User() user: any ) {
+    return this.ticketService.allTickets(query, user.userId);
+  }
 // ====================================================Admin Endpoints Ends===========================================
 
   @UseGuards(JwtAuthGuard)

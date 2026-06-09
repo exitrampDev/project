@@ -48,7 +48,7 @@ export class TicketService {
     userId: string,
     dto: CreateTicketMessageDto,
     ticketId: string,
-    senderType: 'user' | 'admin' = 'user',
+    senderType = 'user',
   ) {
     const ticket = await this.ticketModel.countDocuments({
      _id: new Types.ObjectId(ticketId),    
