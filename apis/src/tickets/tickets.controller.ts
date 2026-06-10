@@ -83,16 +83,15 @@ export class TicketController {
     );
   }
 
-   @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
   @Post("admin/:ticketId/reply")
   async createTicketMessageByAdmin(
     @User() user: any,
     @Body() dto: CreateTicketMessageDto,
     @Param('ticketId') ticketId: string,
   ) {
-    if(!user.roles || !user.roles.includes('admin')) {
-      throw new ForbiddenException('Only admins can reply to tickets using this endpoint');
-    }
+   
 
     return this.ticketService.createUserTicketMessage(
       user.userId,

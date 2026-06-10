@@ -74,7 +74,7 @@ export class TicketService {
      ticketId: new Types.ObjectId(ticketId),
       deletedAt: { $eq: null },
     })
-    .populate('senderId', 'firstName lastName email')
+    .populate({ path: 'senderId', select: 'first_name last_name email' })
     .sort({ createdAt: 1 });
 }
 
