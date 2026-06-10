@@ -83,6 +83,14 @@ export default function SellerListingNav() {
                <img src={icon2} alt="Recently Viewed" /> Recently Viewed
              </NavLink>
            </li>
+           <li>
+                          <NavLink
+                            to="/user/tickets"
+                            className={({ isActive }) => (isActive ? "active" : "")}
+                          >
+                            <img src={icon25} alt="My Listing" />   Support Tickets
+                          </NavLink>
+                        </li>
          </ul>
        </div>
   );

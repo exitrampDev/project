@@ -346,7 +346,7 @@ const [counties, setCounties] = useRecoilState(countiesState);
                <div className="tile_content_wrap">
                  <div className="card_tile_header">
                   <h3 className="tile_title">
-                    Business and Service Overview #{index + 1}
+                    Business and Service Overview
                   </h3>
                   {index > 0 && (
                     <Button 
@@ -415,7 +415,7 @@ const [counties, setCounties] = useRecoilState(countiesState);
                 </div>
                </div>
 
-                <div className="tile_action_footer">
+                {/* <div className="tile_action_footer">
                   {index === formData.businessBlocks.length - 1 && (
                     <Button 
                       type="button" 
@@ -424,7 +424,7 @@ const [counties, setCounties] = useRecoilState(countiesState);
                       onClick={addBusinessBlock} 
                     />
                   )}
-                </div>
+                </div> */}
 
               </div>
             ))}

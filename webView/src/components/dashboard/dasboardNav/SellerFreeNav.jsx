@@ -64,6 +64,14 @@ export default function SellerFreeNav() {
             Recently Viewed
           </Link>
         </li>
+        <li>
+                       <NavLink
+                         to="/user/tickets"
+                         className={({ isActive }) => (isActive ? "active" : "")}
+                       >
+                         <img src={icon25} alt="My Listing" />   Support Tickets
+                       </NavLink>
+                     </li>
       </ul>
     </div>
   );

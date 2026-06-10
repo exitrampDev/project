@@ -64,6 +64,14 @@ export default function AdminNav() {
             <img src={icon1} alt="Dashboard" /> Inquries
           </NavLink>
         </li>
+        <li>
+          <NavLink
+            to="/admin/tickets"
+            className={({ isActive }) => (isActive ? "active" : "")}
+          >
+            <img src={icon1} alt="Dashboard" /> Support Tickets
+          </NavLink>
+        </li>
       </ul>
     </div>
   );

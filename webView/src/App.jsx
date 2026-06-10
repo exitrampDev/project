@@ -54,6 +54,10 @@ import RenderBlogPost from "./pages/RenderBlogPost";
 import RenderBlogList from "./pages/RenderBlogList";
 import FindABroker from "./pages/FindABroker";
 import BrokerSingleView from "./pages/BrokerSignleView";
+import MyTickets from "./components/dashboard/DasboardContentComponents/MyTickets";
+import UserTickets from "./components/dashboard/AdminContent/UserTickets";
+import MyTicketView from "./components/dashboard/DasboardContentComponents/MyTicketView";
+import UserTicketviewAdmin from "./components/dashboard/AdminContent/UserTicketviewAdmin";
 
 const App = () => {
   return (
@@ -99,6 +103,8 @@ const App = () => {
           <Route path="notifications/:id" element={<UserNotifications/>} />
           <Route path="create-cim/:id" element={<CreateCIM/>} />
           <Route path="cim/:id" element={<CimView/>} />
+          <Route path="tickets" element={<MyTickets/>} />
+          <Route path="ticket/:id" element={<MyTicketView/>} />
           <Route path="due-diligence/:id" element={<DueDiligence/>} />
           <Route path="payment-process/:type/:id" element={<PaymentProcess />} />
           <Route
@@ -136,6 +142,8 @@ const App = () => {
           <Route path="users" element={<AdminUsersShow />} />
            <Route path="users-payments" element={<UserPaymentHistory />} />
           <Route path="inquiries" element={<FlaggedListing/>} />
+          <Route path="tickets" element={<UserTickets />} />
+          <Route path="ticket/:id" element={<UserTicketviewAdmin />} />
            <Route path="pages" element={<PagesList />} />
           <Route path="pages/create" element={<PageBuilder />} />
           <Route path="pages/:slug" element={<PageBuilder />} />

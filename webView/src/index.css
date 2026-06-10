@@ -5552,6 +5552,100 @@ a.view-profile-link {
     display: flex;
     justify-content: flex-end;
 }
+.my__tickets_page {
+  width: 100%;
+}
+
+.tickets__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 20px 0;
+}
+.tickets__header button.p-button.p-button-outlined {
+       background: #ffb100;
+    color: #775506;
+    padding: 8px 15px;
+    font-size: 13px;
+    display: inline-flex;
+    gap: 8px;
+}
+.action__listing_btns .view__ticket_btn.p-button.p-component {
+    font-size: 11px;
+    border: 1px solid;
+    padding: 4px;
+    border-radius: 5px;
+    color: #6380a4;
+    cursor: pointer;
+    background: transparent;
+}
+
+.status__badge{
+  padding: 0.2rem 0.55rem;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-transform: capitalize;
+}
+.status__badge.status-closed {
+    background: grey;
+    color: #ccc; 
+}
+.tickets__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.status__badge.status-opened {
+    background: #4caf50;
+    color: #fff;
+    font-size: 11px;
+}
+.ticket__card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+
+.ticket__card_header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 15px;
+}
+
+.ticket__card_header h3 {
+  margin: 0 0 5px;
+}
+
+.ticket__description {
+  margin-top: 15px;
+  line-height: 1.6;
+  color: #555;
+}
+
+.ticket__meta {
+  margin-top: 15px;
+  display: flex;
+  gap: 30px;
+  flex-wrap: wrap;
+  font-size: 14px;
+  color: #777;
+}
+
+.tickets__loading,
+.tickets__empty {
+  text-align: center;
+  padding: 50px 20px;
+}
+
+.tickets__loading i,
+.tickets__empty i {
+  font-size: 2rem;
+  margin-bottom: 10px;
+}
 @media (max-width: 768px) {
   .broker-detail-grid {
     grid-template-columns: 1fr;
