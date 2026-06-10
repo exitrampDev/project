@@ -6,7 +6,7 @@ import { Button } from "primereact/button";
 import { Toast } from "primereact/toast";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Dropdown } from "primereact/dropdown"; 
-import { useRecoilValue } from "recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil"; // <-- Added useSetRecoilState
 import { authState, apiBaseUrlState } from "../../../recoil/ctaState";
 import DashboardHeader from "./DashboardHeaderBlock";
 
@@ -15,6 +15,7 @@ const TicketTimeline = () => {
   const navigate = useNavigate();
   const API_BASE = useRecoilValue(apiBaseUrlState);
   const { access_token } = useRecoilValue(authState) ?? {};
+  const setAuth = useSetRecoilState(authState); // <-- Recoil setter for handling logout
 
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -38,6 +39,16 @@ const TicketTimeline = () => {
     }
   }, [id]);
 
+  // Unified Centralized 403 Forbidden Handler
+  const handle403Forbidden = () => {
+    console.log("403 Forbidden: Access denied. Clearing auth session.");
+    setAuth(null);
+    localStorage.removeItem("auth");
+    localStorage.removeItem("user");
+    localStorage.removeItem("tokenLocalStorage");
+    navigate("/login");
+  };
+
   const fetchTicketData = async () => {
     try {
       setLoading(true);
@@ -60,26 +71,36 @@ const TicketTimeline = () => {
         })
       ]);
 
-      // 2. Parse Messages Response
+      // 2. Explicitly handle 403 Forbidden status codes (since fetch doesn't throw on 403)
+      if (messagesRes.status === 403 || listRes.status === 403) {
+        handle403Forbidden();
+        return;
+      }
+
+      // 3. Parse Messages Response if successful
       if (messagesRes.ok) {
         const messagesResult = await messagesRes.json();
         const messageList = Array.isArray(messagesResult) ? messagesResult : messagesResult?.data || [];
         setMessages(messageList);
+      } else {
+        throw new Error("Failed to fetch messages");
       }
 
-      // 3. Parse Tickets List Response to look up the status
+      // 4. Parse Tickets List Response to look up the status
       if (listRes.ok) {
         const listResult = await listRes.json();
         const ticketList = Array.isArray(listResult) ? listResult : listResult?.data || [];
         
-        // Find this specific ticket in the user's tickets list array
         const activeTicket = ticketList.find(ticket => ticket._id === id || ticket.id === id);
         if (activeTicket && activeTicket.status) {
           setCurrentStatus(activeTicket.status.toLowerCase());
         }
+      } else {
+        throw new Error("Failed to fetch ticket metadata");
       }
 
     } catch (error) {
+      console.error("Error fetching ticket data", error);
       showToast("error", "Error", "Failed to load ticket details.");
     } finally {
       setLoading(false);
@@ -100,6 +121,12 @@ const TicketTimeline = () => {
         },
         body: JSON.stringify({ status: newStatus }),
       });
+
+      // Handle 403 if token expires while updating status
+      if (response.status === 403) {
+        handle403Forbidden();
+        return;
+      }
 
       if (!response.ok) throw new Error("Failed to update status");
 
@@ -130,11 +157,17 @@ const TicketTimeline = () => {
         body: JSON.stringify({ message: replyMessage }),
       });
 
+      // Handle 403 if token expires while posting a comment
+      if (response.status === 403) {
+        handle403Forbidden();
+        return;
+      }
+
       if (!response.ok) throw new Error("Failed to send reply");
 
       showToast("success", "Sent", "Comment added successfully.");
       setReplyMessage(""); 
-      fetchTicketData(); // Refresh to catch potential updates
+      fetchTicketData(); 
     } catch (error) {
       showToast("error", "Error", "Could not send reply.");
     } finally {
@@ -212,11 +245,8 @@ const TicketTimeline = () => {
         <Button 
           label="All Support Tickets" 
           icon="pi pi-arrow-left" 
-          className="" 
           onClick={() => navigate("/user/tickets")} 
         />
-        
-       
       </div>
 
       <div className="timeline__container" style={{ marginTop: "2rem", minHeight: "300px" }}>
