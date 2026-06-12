@@ -58,6 +58,7 @@ import MyTickets from "./components/dashboard/DasboardContentComponents/MyTicket
 import UserTickets from "./components/dashboard/AdminContent/UserTickets";
 import MyTicketView from "./components/dashboard/DasboardContentComponents/MyTicketView";
 import UserTicketviewAdmin from "./components/dashboard/AdminContent/UserTicketviewAdmin";
+import AcceptInviteComponent from "./components/dashboard/DasboardContentComponents/AcceptInviteComponent";
 
 const App = () => {
   return (
@@ -84,6 +85,8 @@ const App = () => {
         <Route path="*" element={<NotFound />} />
         <Route path="/verify-email/" element={<ResetPassword />} />
         <Route path="/listing/:id" element={<BusinessListingDetail />} />
+        
+          <Route path="/accept-invite" element={<AcceptInviteComponent />} />
         {/* dashboard pages */}
         {/* <Route path="user/dashboard" element={<Dashboard />} />
         <Route path="user/saved-listing" element={<Dashboard />} />

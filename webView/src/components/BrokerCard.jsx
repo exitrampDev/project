@@ -9,6 +9,7 @@ import {
   authState,
   apiBaseUrlState,
   usStatesState,
+  industryOptionsState,
 } from "../recoil/ctaState";
 import { Link } from "react-router-dom";
 
@@ -19,6 +20,7 @@ const BrokerCard = () => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   const API_BASE = useRecoilValue(apiBaseUrlState);
+  const industryOptions = useRecoilValue(industryOptionsState);
   const { access_token } = useRecoilValue(authState) ?? {};
   const states = useRecoilValue(usStatesState);
 
@@ -101,10 +103,7 @@ const BrokerCard = () => {
     setFilteredBrokers(allBrokers);
   };
 
-  const industryOptions = [
-    { label: "Technology", value: "technology" },
-    { label: "Real Estate", value: "real_estate" },
-  ];
+
 
   return (
     <div className="main__listing_grid">

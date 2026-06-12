@@ -5,7 +5,7 @@ import { InputText } from "primereact/inputtext";
 import { useRecoilValue, useSetRecoilState,useRecoilState } from "recoil";
 import { Button } from "primereact/button";
 import { Calendar } from "primereact/calendar";
-import { authState, apiBaseUrlState, usStatesState,countiesState,usCountiesByState } from "../../../recoil/ctaState";
+import { authState, apiBaseUrlState, usStatesState,countiesState,usCountiesByState, industryOptions } from "../../../recoil/ctaState";
 import DashboardHeader from "./DashboardHeaderBlock";
 import FileUploader from "../../customcomponent/FileUploader";
 import { Dropdown } from "primereact/dropdown";
@@ -23,11 +23,8 @@ const BrokerProfile = () => {
   const [dirty, setDirty] = useState(false);
 const [counties, setCounties] = useRecoilState(countiesState);
 
-  const industryFocusOptions = [
-    { label: "Technology", value: "technology" },
-    { label: "Real Estate", value: "real_estate" },
-    { label: "Healthcare", value: "healthcare" }
-  ];
+  const industryFocusOptions = useRecoilValue(industryOptions);
+
 
   const serviceOfferingOptions = [
     { label: "M&A Advisory", value: "ma_advisory" },
