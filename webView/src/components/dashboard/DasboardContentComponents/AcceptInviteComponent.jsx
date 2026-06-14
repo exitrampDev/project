@@ -79,19 +79,16 @@ const AcceptInviteComponent = () => {
       }
 
       // Extract tokens and user info from your backend structure
-      const authData = response.data; 
-      const token = authData?.access_token || authData?.token;
+      const token = response.data.access_token;
+      const user = response.data.data;
 
-      if (token) {
-        // Save to Recoil & Storage
-        setAuth(authData);
-        localStorage.setItem("access_token", token);
-        localStorage.setItem("auth", JSON.stringify(authData));
-        
-        setStatusMessage(authMode === "signup" ? "Account created successfully!" : "Logged in successfully!");
-      } else {
-        throw new Error("Token missing from authentication response.");
+      localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("tokenLocalStorage", token);
+      if (formData.remember) {
+        sessionStorage.setItem("tokenSessionStorage", token);
       }
+
+      setAuth({ access_token: token, user });
     } catch (error) {
       console.error("Auth Error:", error);
       setErrorMessage(
@@ -197,10 +194,10 @@ const AcceptInviteComponent = () => {
           You have been invited to join. Please review the invitation key details below to accept or decline.
         </p>
 
-        <div style={styles.hashBox}>
+        {/* <div style={styles.hashBox}>
           <span style={styles.hashLabel}>Invitation Hash:</span>
           <span style={styles.hashValue}>{invitationHash || "Not Found"}</span>
-        </div>
+        </div> */}
 
         {statusMessage && <div style={styles.alertSuccess}>{statusMessage}</div>}
         {errorMessage && <div style={styles.alertDanger}>{errorMessage}</div>}
@@ -223,7 +220,7 @@ const AcceptInviteComponent = () => {
                     value={formData.first_name}
                     onChange={handleInputChange}
                     style={styles.input}
-                    placeholder="Josh"
+                    placeholder="John"
                   />
                 </div>
                 <div style={styles.inputGroup}>
@@ -235,7 +232,7 @@ const AcceptInviteComponent = () => {
                     value={formData.last_name}
                     onChange={handleInputChange}
                     style={styles.input}
-                    placeholder="Perry"
+                    placeholder="Deo"
                   />
                 </div>
               </div>
@@ -250,7 +247,7 @@ const AcceptInviteComponent = () => {
                 value={formData.email}
                 onChange={handleInputChange}
                 style={styles.input}
-                placeholder="joshperry@gmail.com"
+                placeholder="JohnDeo@gmail.com"
               />
             </div>
 
