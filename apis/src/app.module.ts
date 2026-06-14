@@ -33,6 +33,7 @@ import { PageModule } from './page/page.module';
 import { InviteModule } from './invite/invite.module';
 import { BlogModule } from './blog/blog.module';
 import { TicketsModule } from './tickets/tickets.module';
+import { ConversationModule } from './conversation/conversation.module';
 
 
 @Module({
@@ -83,7 +84,7 @@ import { TicketsModule } from './tickets/tickets.module';
     CimModule,
     SharedModule,
     DueDiligenceModule,  
-    NotificationModule, PaymentModule, CronModule, AdminModule, PageModule, InviteModule, BlogModule, TicketsModule 
+    NotificationModule, PaymentModule, CronModule, AdminModule, PageModule, InviteModule, BlogModule, TicketsModule, ConversationModule 
   ],
 
  
