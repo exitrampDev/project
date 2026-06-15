@@ -1,4 +1,4 @@
-import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { ConversationService } from "./conversation.service";
 import { CreateMessageDto } from "./dto/create-message.dto";
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
@@ -7,6 +7,13 @@ import { User } from 'src/common/decorators/user.decorator';
 @Controller('conversation')
 export class ConversationController {
   constructor(private readonly conversationService: ConversationService) {}
+
+   @UseGuards(JwtAuthGuard)
+  @Get('my-conversations')
+    async findAll(@User() user: any) {
+      return this.conversationService.findAllMyConversations(user);
+    }
+  
 
   @UseGuards(JwtAuthGuard)
   @Post('send')

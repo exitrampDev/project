@@ -7,7 +7,6 @@ export type MessageDocument = HydratedDocument<Message>;
 export class Message {
 
 
-
   @Prop({ type: String, required: true })
   senderId!: string;
 

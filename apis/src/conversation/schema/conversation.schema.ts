@@ -7,8 +7,11 @@ export type ConversationDocument = HydratedDocument<Conversation>;
 export class Conversation {
 
 
-  @Prop({ type: [String], default: [] })
-  participants!: string[]; //user ids
+ @Prop({
+  type: [{ type: Types.ObjectId, ref: 'User' }],
+  required: true,
+})
+  participants!: Types.ObjectId[]; //user ids
 
 
 }

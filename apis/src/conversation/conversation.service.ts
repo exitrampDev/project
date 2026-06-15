@@ -12,6 +12,16 @@ export class ConversationService {
     @InjectModel(Conversation.name) private readonly conversationModel: Model<ConversationDocument>,
   ) {}
 
+
+async findAllMyConversations(user): Promise<ConversationDocument[]> {
+  return this.conversationModel
+    .find({
+      participants: { $in: [user.userId] },
+    })
+    .populate('participants')
+    .exec();
+}
+
  async sendMessage( createMessageDto: CreateMessageDto, user: any): Promise<Message> {
     let conversation = await this.conversationModel.findOne({
             participants: {
