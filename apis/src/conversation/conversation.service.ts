@@ -22,6 +22,15 @@ async findAllMyConversations(user): Promise<ConversationDocument[]> {
     .exec();
 }
 
+async findAllChatHistory(conversationId): Promise<MessageDocument[]> {
+  return this.messageModel
+    .find({
+      conversationId:conversationId,
+    })
+    .populate({ path: 'senderId', model: 'User' , select:'first_name last_name email'})
+    .exec();
+}
+
  async sendMessage( createMessageDto: CreateMessageDto, user: any): Promise<Message> {
     let conversation = await this.conversationModel.findOne({
             participants: {

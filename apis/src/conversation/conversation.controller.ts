@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards, Param } from '@nestjs/common';
 import { ConversationService } from "./conversation.service";
 import { CreateMessageDto } from "./dto/create-message.dto";
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
@@ -12,6 +12,12 @@ export class ConversationController {
   @Get('my-conversations')
     async findAll(@User() user: any) {
       return this.conversationService.findAllMyConversations(user);
+    }
+
+   @UseGuards(JwtAuthGuard)
+  @Get(':id/history')
+    async findAllChatHistory(@User() user: any, @Param('id') id: string) {
+      return this.conversationService.findAllChatHistory(id);
     }
   
 
