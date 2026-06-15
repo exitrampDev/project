@@ -7,14 +7,22 @@ export type MessageDocument = HydratedDocument<Message>;
 export class Message {
 
 
-  @Prop({ type: [String], default: [] })
-  senterId!: string[]; //user ids
+
+  @Prop({ type: String, required: true })
+  senderId!: string;
 
   @Prop({ type: String })
   message!: string;
 
   @Prop({ type: String })
   file!: string; // base64 image
+
+  @Prop({
+  type: Types.ObjectId,
+  ref: 'Conversation',
+  required: true,
+  })
+  conversationId!: Types.ObjectId;
 
 }
 

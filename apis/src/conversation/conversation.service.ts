@@ -1,4 +1,42 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
+import { Model } from 'mongoose';
+import { InjectModel } from '@nestjs/mongoose';
+import { Message, MessageDocument } from './schema/message.schema';
+import { Conversation, ConversationDocument } from './schema/conversation.schema';
+import { CreateMessageDto } from './dto/create-message.dto';
 
 @Injectable()
-export class ConversationService {}
+export class ConversationService {
+  constructor(
+    @InjectModel(Message.name) private readonly messageModel: Model<MessageDocument>,
+    @InjectModel(Conversation.name) private readonly conversationModel: Model<ConversationDocument>,
+  ) {}
+
+ async sendMessage( createMessageDto: CreateMessageDto, user: any): Promise<Message> {
+    let conversation = await this.conversationModel.findOne({
+            participants: {
+                $all: [user.userId, createMessageDto.toUserId],
+            },
+        });
+
+    if (!createMessageDto.conversationId) {
+        if(createMessageDto.toUserId === user.userId) {
+            throw new ForbiddenException("Cannot send message to yourself");
+        }
+        if (!createMessageDto.toUserId) {
+            throw new ForbiddenException("Recipient user ID is required");
+        }
+        conversation = await this.conversationModel.create({
+        participants: [user.userId, createMessageDto.toUserId],
+        });
+    }
+
+    createMessageDto.conversationId =  conversation?._id.toString() ??   createMessageDto.conversationId;
+
+    createMessageDto.senderId = user.userId;
+
+    const message = new this.messageModel(createMessageDto);
+
+    return await message.save();
+    }
+}
