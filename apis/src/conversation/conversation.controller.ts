@@ -1,4 +1,16 @@
-import { Controller } from '@nestjs/common';
+import { Controller, Post } from '@nestjs/common';
+import { ConversationService } from "./conversation.service";
 
 @Controller('conversation')
-export class ConversationController {}
+export class ConversationController {
+
+     constructor(
+        private readonly conversationService: ConversationService,
+    ) {}
+
+
+     @Post()
+      async SendMessge() {
+         return true;
+    }
+}
