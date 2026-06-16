@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { Message, MessageDocument } from './schema/message.schema';
@@ -12,13 +12,21 @@ export class ConversationService {
     @InjectModel(Conversation.name) private readonly conversationModel: Model<ConversationDocument>,
   ) {}
 
+  async findAllConversations(user): Promise<ConversationDocument[]> {
+  return this.conversationModel
+    .find()
+    // .populate('participants')
+     .populate({ path: 'participants', model: 'User' , select:'first_name last_name email'})
+    .exec();
+}
 
 async findAllMyConversations(user): Promise<ConversationDocument[]> {
   return this.conversationModel
     .find({
       participants: { $in: [user.userId] },
     })
-    .populate('participants')
+    // .populate('participants')
+     .populate({ path: 'participants', model: 'User' , select:'first_name last_name email'})
     .exec();
 }
 
@@ -32,6 +40,18 @@ async findAllChatHistory(conversationId): Promise<MessageDocument[]> {
 }
 
  async sendMessage( createMessageDto: CreateMessageDto, user: any): Promise<Message> {
+
+    if (createMessageDto.conversationId) {
+        const conversationExist = await this.conversationModel.findById(
+            createMessageDto.conversationId,
+          );
+
+          if (!conversationExist) {
+            throw new NotFoundException('Conversation not found');
+          }
+    }
+
+
     let conversation = await this.conversationModel.findOne({
             participants: {
                 $all: [user.userId, createMessageDto.toUserId],
