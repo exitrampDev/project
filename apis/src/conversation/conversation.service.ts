@@ -16,7 +16,7 @@ export class ConversationService {
   return this.conversationModel
     .find()
     // .populate('participants')
-     .populate({ path: 'participants', model: 'User' , select:'first_name last_name email'})
+     .populate({ path: 'participants', model: 'User' , select:'first_name last_name email user_type'})
     .exec();
 }
 
@@ -26,7 +26,7 @@ async findAllMyConversations(user): Promise<ConversationDocument[]> {
       participants: { $in: [user.userId] },
     })
     // .populate('participants')
-     .populate({ path: 'participants', model: 'User' , select:'first_name last_name email'})
+     .populate({ path: 'participants', model: 'User' , select:'first_name last_name email user_type'})
     .exec();
 }
 
@@ -35,9 +35,33 @@ async findAllChatHistory(conversationId): Promise<MessageDocument[]> {
     .find({
       conversationId:conversationId,
     })
-    .populate({ path: 'senderId', model: 'User' , select:'first_name last_name email'})
+    .populate({ path: 'senderId', model: 'User' , select:'first_name last_name email user_type'})
     .exec();
 }
+
+
+ async sendAdminMessage( createMessageDto: CreateMessageDto, user: any): Promise<Message> {
+
+    if (createMessageDto.conversationId) {
+        const conversationExist = await this.conversationModel.findById(
+            createMessageDto.conversationId,
+          );
+
+          if (!conversationExist) {
+            throw new NotFoundException('Conversation not found');
+          }
+    }
+
+
+  
+    createMessageDto.conversationId  =  createMessageDto.conversationId;
+
+    createMessageDto.senderId = user.userId;
+
+    const message = new this.messageModel(createMessageDto);
+
+    return await message.save();
+    }
 
  async sendMessage( createMessageDto: CreateMessageDto, user: any): Promise<Message> {
 

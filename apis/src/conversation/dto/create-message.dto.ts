@@ -2,10 +2,11 @@ import { IsOptional, IsString } from "class-validator";
 
 export class CreateMessageDto {
   // Array of participant user IDs (sender and optionally receiver IDs)
-  @IsString()
   @IsOptional()
+  @IsString()
   senderId?: string;
 
+  @IsOptional()
   @IsString()
   toUserId!: string;
 
@@ -16,7 +17,7 @@ export class CreateMessageDto {
   // Optional base64-encoded file (e.g., image)
   file?: string;
 
-  @IsString()
   @IsOptional()
+  @IsString()
   conversationId?: string;
 }

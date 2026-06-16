@@ -38,11 +38,19 @@ export class ConversationController {
       return this.conversationService.findAllConversations(user);
     }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
   @Get('admin/:id/history')
     async getChatHistoryForAdmin(@User() user: any, @Param('id') id: string) {
       return this.conversationService.findAllChatHistory(id);
     }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  @Post('admin/send')
+  async sendAdminMessage(@Body() createMessageDto: CreateMessageDto, @User() user: any) {
+    return this.conversationService.sendAdminMessage(createMessageDto, user);
+  }
   
 
 }
