@@ -5646,6 +5646,283 @@ a.view-profile-link {
   font-size: 2rem;
   margin-bottom: 10px;
 }
+
+/* ==========================================================================
+   Structural Layout & Wrappers
+   ========================================================================== */
+.chat-dashboard-wrapper {
+  padding: 1rem;
+  text-align: left;
+}
+
+.chat-layout {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+  height: calc(100vh - 180px);
+  min-height: 500px;
+}
+
+/* ==========================================================================
+   Left Column: Sidebar Pane
+   ========================================================================== */
+.chat-sidebar {
+  flex: 0 0 320px;
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.sidebar-header {
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #e0e0e0;
+  background: #f8f9fa;
+}
+
+.sidebar-title {
+  font-weight: 700;
+}
+
+.conversations-list {
+  flex: 1;
+}
+
+/* Individual Conversation Items */
+.conversation-item {
+  padding: 1rem;
+  cursor: pointer;
+  border-bottom: 1px solid #f0f0f0;
+  background: transparent;
+  transition: background 0.2s, border-left-color 0.2s;
+  border-left: 4px solid transparent;
+}
+
+.conversation-item:hover {
+  background: #fcfcfc;
+}
+
+.conversation-item.selected {
+  background: #e3f2fd;
+  border-left-color: #002f68;
+}
+
+.conversation-meta {
+  font-weight: 600;
+  color: #333333;
+  display: flex;
+  justify-content: space-between;
+}
+
+.participant-name {
+  display: inline-block;
+}
+
+.conversation-item .timestamp {
+  font-size: 0.75rem;
+  color: #999999;
+}
+
+.conversation-item .last-message {
+  margin: 4px 0 0 0;
+  font-size: 0.85rem;
+  color: #666666;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ==========================================================================
+   Right Column: Main Chat Window Workspace
+   ========================================================================== */
+.chat-workspace {
+  flex: 1;
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-history-area {
+  flex: 1;
+  padding: 1.5rem;
+  overflow-y: auto;
+  background: #f4f6f9;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* Dialogue Bubble Row Assignments */
+.message-row {
+  display: flex;
+  width: 100%;
+      flex-wrap: wrap;
+}
+.message-container {
+    width: 100%;
+}
+
+span.message-sender {
+    font-size: 10px;
+    font-weight: 700;
+}
+.message-bubble.admin-bubble {
+    background: #002f68 !important;
+    color: #fff !important;
+}
+.message-row.me-align {
+  justify-content: flex-end;
+}
+
+.message-row.them-align {
+  justify-content: flex-start;
+}
+
+/* Core Message Bubble Scaffolding */
+.message-bubble {
+  max-width: 70%;
+  padding: 0.75rem 1rem;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.message-bubble.me-bubble {
+  background: #ffb100;
+  color: #ffffff;
+  border-radius: 12px 12px 0px 12px;
+}
+
+.message-bubble.them-bubble {
+  background: #ffffff;
+  color: #333333;
+  border-radius: 12px 12px 12px 0px;
+}
+
+.message-text {
+  margin: 0;
+  white-space: pre-line;
+  font-size: 0.95rem;
+}
+
+.message-timestamp {
+  text-align: right;
+  font-size: 0.7rem;
+  margin-top: 4px;
+}
+
+.message-timestamp.me-time {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.message-timestamp.them-time {
+  color: #888888;
+}
+
+/* Bottom Interactive Input Deck */
+.chat-input-bar {
+  padding: 1rem;
+  border-top: 1px solid #e0e0e0;
+  background: #ffffff;
+}
+
+.input-flex-container {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-end;
+}
+
+.reply-textarea {
+  flex: 1;
+  resize: none;
+}
+
+.input-send-btn {
+  height: 44px;
+  width: 44px;
+}
+
+/* ==========================================================================
+   Modals & Popups Layout Fields
+   ========================================================================== */
+.modal-footer-container {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+button.footer-chat-start-btn.p-button.p-component {
+    background: #ffb100;
+    color: #fff;
+    padding: 8px 15px;
+    font-size: 13px;
+    display: inline-flex;
+}
+
+button.footer-chat-cancel-btn.p-button.p-component {
+    background: #9a9a9a;
+}
+.modal-body-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  margin-top: 0.5rem;
+}
+
+.modal-label {
+  font-weight: 600;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+/* ==========================================================================
+   Loaders, Placeholders, Empty State Defs
+   ========================================================================== */
+.loader-container {
+  text-align: center;
+  padding: 2rem;
+}
+
+.loader-container.central {
+  margin: auto;
+}
+
+.loader-icon {
+  color: #002f68;
+}
+
+.loader-icon.large {
+  font-size: 2rem;
+}
+
+.empty-conversations {
+  text-align: center;
+  padding: 2rem;
+  color: #888888;
+}
+
+.chat-placeholder {
+  margin: auto;
+  text-align: center;
+  color: #888888;
+}
+
+.placeholder-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  color: #cccccc;
+}
+
+.placeholder-text {
+  margin: 0;
+  padding: 0 1rem;
+}
+
+
 @media (max-width: 768px) {
   .broker-detail-grid {
     grid-template-columns: 1fr;

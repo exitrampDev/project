@@ -14,6 +14,7 @@ import icon27 from "../../../assets/icon27.png";
 import icon28 from "../../../assets/icon28.png";
 import { useRecoilValue } from "recoil";
 import { authState } from "../../../recoil/ctaState";
+import msgIcon from "../../../assets/msgIcon.png";
 
 export default function SellerPremiumNav() {
 
@@ -57,6 +58,14 @@ const { user, access_token } = useRecoilValue(authState) ?? {};
                 <img src={invite} alt="Invite Team" /> Invite Team
               </NavLink>
             </li>
+            <li>
+               <NavLink
+                 to="/user/chatbox"
+                 className={({ isActive }) => (isActive ? "active" : "")}
+               >
+                 <img src={msgIcon} alt="My Listing" />  Message Center
+               </NavLink>
+             </li>
              <li>
                 <NavLink
                   to="/user/my-invited-listing"
@@ -148,6 +157,8 @@ const { user, access_token } = useRecoilValue(authState) ?? {};
                  <img src={icon25} alt="My Listing" />   Support Tickets
                </NavLink>
              </li>
+
+             
 
 
            </ul>

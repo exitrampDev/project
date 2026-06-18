@@ -3,6 +3,7 @@ import { NavLink } from "react-router-dom";
 import icon1 from "../../../assets/d-icon.png";
 import icon2 from "../../../assets/d-icon1.png";
 import icon3 from "../../../assets/d-icon2.png";
+import msgIcon from "../../../assets/msgIcon.png";
 
 export default function AdminNav() {
   return (
@@ -48,6 +49,14 @@ export default function AdminNav() {
             <img src={icon1} alt="Dashboard" /> Insight Management
           </NavLink>
         </li>
+        <li>
+               <NavLink
+                 to="/admin/chatbox"
+                 className={({ isActive }) => (isActive ? "active" : "")}
+               >
+                 <img src={msgIcon} alt="My Listing" />  Message Center
+               </NavLink>
+             </li>
         <li>
           <NavLink
             to="/admin/users"

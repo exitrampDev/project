@@ -11,6 +11,7 @@ import icon25 from "../../../assets/icon25.png";
 import icon26 from "../../../assets/icon26.png";
 import icon27 from "../../../assets/icon27.png";
 import icon28 from "../../../assets/icon28.png";
+import msgIcon from "../../../assets/msgIcon.png";
 
 export default function BuyerFreeNav() {
   return (
@@ -39,6 +40,14 @@ export default function BuyerFreeNav() {
             <img src={icon23} alt="Saved Listing" /> Invited Listing
           </NavLink>
         </li>
+        <li>
+               <NavLink
+                 to="/user/chatbox"
+                 className={({ isActive }) => (isActive ? "active" : "")}
+               >
+                 <img src={msgIcon} alt="My Listing" />  Message Center
+               </NavLink>
+             </li>
         <li>
           <NavLink
             to="/user/complete-profile-invited-person"

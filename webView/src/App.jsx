@@ -59,6 +59,8 @@ import UserTickets from "./components/dashboard/AdminContent/UserTickets";
 import MyTicketView from "./components/dashboard/DasboardContentComponents/MyTicketView";
 import UserTicketviewAdmin from "./components/dashboard/AdminContent/UserTicketviewAdmin";
 import AcceptInviteComponent from "./components/dashboard/DasboardContentComponents/AcceptInviteComponent";
+import ChatBox from "./components/dashboard/DasboardContentComponents/ChatBox";
+import ChatBoxAdmin from "./components/dashboard/AdminContent/ChatBoxAdmin";
 
 const App = () => {
   return (
@@ -110,6 +112,7 @@ const App = () => {
           <Route path="ticket/:id" element={<MyTicketView/>} />
           <Route path="due-diligence/:id" element={<DueDiligence/>} />
           <Route path="payment-process/:type/:id" element={<PaymentProcess />} />
+          <Route path="chatbox" element={<ChatBox />} />
           <Route
             path="complete-profile-buyer-free"
             element={<ProfileFormBuyer />}
@@ -153,6 +156,7 @@ const App = () => {
           <Route path="insight" element={<BlogPostList />} />
           <Route path="insight/create" element={<BlogPostBuilder />} />
           <Route path="insight/:slug" element={<BlogPostBuilder />} />
+          <Route path="chatbox" element={<ChatBoxAdmin />} />
         </Route>
         <Route path="payment" element={<Dashboard />}>
           <Route path="success" element={<SuccessPayment />} />
