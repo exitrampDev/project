@@ -8,6 +8,7 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './jwt.strategy';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { SharedModule } from 'src/common/shared.module';
+import { WsJwtGuard } from './ws-jwt.guard';
 
 @Module({
   imports: [
@@ -26,7 +27,8 @@ import { SharedModule } from 'src/common/shared.module';
       }),
     }),
   ],
-  providers: [AuthService, JwtStrategy],
+  providers: [AuthService, JwtStrategy, WsJwtGuard],
   controllers: [AuthController],
+   exports: [JwtModule, WsJwtGuard],
 })
 export class AuthModule {}

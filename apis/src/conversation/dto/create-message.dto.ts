@@ -8,7 +8,7 @@ export class CreateMessageDto {
 
   @IsOptional()
   @IsString()
-  toUserId!: string;
+  toUserId?: string;
 
   // Message content text
   @IsString()

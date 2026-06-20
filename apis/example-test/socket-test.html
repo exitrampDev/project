@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Socket.IO Test</title>
+  <style>
+    body { font-family: Arial; padding: 20px; }
+    input, button { margin: 5px; padding: 8px; }
+    #log { margin-top: 20px; background: #111; color: #0f0; padding: 10px; height: 300px; overflow: auto; }
+  </style>
+</head>
+<body>
+
+<h2>NestJS WebSocket Test</h2>
+
+<!-- JWT -->
+<input id="token" placeholder="JWT Token" style="width:400px;" />
+<button onclick="connect()">Connect</button>
+
+<br><br>
+
+<!-- Room -->
+<input id="room" placeholder="Conversation ID" value="123" />
+<button onclick="joinRoom()">Join Room</button>
+
+<br><br>
+
+<!-- Message -->
+<input id="msg" placeholder="Message" />
+<button onclick="sendMessage()">Send</button>
+
+<div id="log"></div>
+
+<!-- Socket.IO client CDN -->
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+
+<script>
+let socket;
+
+function log(data) {
+  const div = document.getElementById("log");
+  div.innerHTML += data + "<br/>";
+  div.scrollTop = div.scrollHeight;
+}
+
+function connect() {
+  const token = document.getElementById("token").value;
+
+  socket = io("http://localhost:5000", {
+    auth: {
+      token: token
+    }
+  });
+
+  socket.on("connect", () => {
+    log("✅ Connected: " + socket.id);
+  });
+
+  socket.on("disconnect", () => {
+    log("❌ Disconnected");
+  });
+
+  socket.on("connect_error", (err) => {
+    log("❌ Error: " + err.message);
+  });
+
+  socket.on("newMessage", (data) => {
+    log("📩 New Message: " + JSON.stringify(data));
+  });
+
+  socket.on("joined", (data) => {
+    log("🚪 Joined: " + JSON.stringify(data));
+  });
+}
+
+function joinRoom() {
+  const room = document.getElementById("room").value;
+
+  socket.emit("joinConversation", {
+    conversationId: room
+  });
+
+  log("➡️ joinConversation: " + room);
+}
+
+function sendMessage() {
+  const room = document.getElementById("room").value;
+  const msg = document.getElementById("msg").value;
+
+  socket.emit("sendMessage", {
+    conversationId: room,
+    text: msg
+  });
+
+  log("➡️ sendMessage: " + msg);
+}
+</script>
+
+</body>
+</html>
