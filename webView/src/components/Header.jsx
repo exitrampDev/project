@@ -1,23 +1,20 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import { Menubar } from "primereact/menubar";
 import { Button } from "primereact/button";
+import { Sidebar } from "primereact/sidebar";
+import { Menu } from "primereact/menu";
 import logo from "../assets/logo.png";
 import signIcon from "../assets/signIcon.png";
 import SignupPopup from "./SignupPopup";
 import { authState } from "../recoil/ctaState";
-
-// Icons
-import icon1 from "../assets/buyerIcon.png";
-import icon2 from "../assets/sellerIcon.png";
-import icon3 from "../assets/mnaIcon.png";
-import icon4 from "../assets/subsIcon.png";
-import icon5 from "../assets/freeBuyerAcc.png";
-import icon6 from "../assets/paidBuyerAcc.png";
-import icon7 from "../assets/freeSellerAcc.png";
-import icon8 from "../assets/paidSellerAcc.png";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 
+// icons
+import icon1 from "../assets/buyerIcon.png";
+import icon2 from "../assets/sellerIcon.png";
+import icon5 from "../assets/freeBuyerAcc.png";
+import icon8 from "../assets/paidSellerAcc.png";
 
 const accountTypes = [
   {
@@ -32,127 +29,39 @@ const accountTypes = [
     description: "List your business and manage interest from serious buyers.",
     value: "seller",
   },
-  // {
-  //   icon: icon3,
-  //   title: "I'm an M&A Expert",
-  //   description: "Showcase your expertise and help sellers close strong deals.",
-  //   value: "ma_expert",
-  // },
-  // {
-  //   icon: icon4,
-  //   title: "I Just Want Updates",
-  //   description: "Sign up for insights and M&A market news.",
-  //   value: "subscriber",
-  // },
 ];
 
 const roleOptions = {
   buyer: {
     title: "Choose Buyer Plan",
-    subtitle: "Select the right plan to begin your buyer journey on Exit Ramp.",
+    subtitle: "Select the right plan to begin your buyer journey.",
     subOptions: [
       {
         icon: icon5,
         title: "Free Buyer Account",
         description:
-          "Browse listings, submit NDA requests, and save favorites — all with full confidentiality and no cost.",
+          "Browse listings, submit NDA requests, and save favorites.",
         button: {
-          text: "Continue with Free Account",
+          text: "Continue",
           link: "/register",
           roleOptionValue: "buyer_basic",
         },
       },
-      // {
-      //   icon: icon6,
-      //   title: "Buyer ",
-      //   description:
-      //     "Get direct access to sellers, unlock CIMs after NDA approval, and use advanced tools built for buyers.",
-      //   button: {
-      //     text: "Register as Buyer",
-      //     link: "/register",
-      //     roleOptionValue: "buyer_premium",
-      //   },
-      // },
     ],
   },
   seller: {
     title: "Choose Seller Plan",
-    subtitle:
-      "Select how you’d like to list and manage your business on Exit Ramp.",
+    subtitle: "Select how you’d like to list your business.",
     subOptions: [
-      // {
-      //   icon: icon7,
-      //   title: "Seller Basic",
-      //   description:
-      //     "List your business, manage NDA requests, and message buyers privately — all while keeping your identity protected.",
-      //   button: {
-      //     text: "Register as Seller Basic",
-      //     link: "/register",
-      //     roleOptionValue: "seller_basic",
-      //   },
-      // },
-      // {
-      //   icon: icon8,
-      //   title: "Seller Listing",
-      //   description:
-      //     "Can Create Listing of the Businesses",
-      //   button: {
-      //     text: "Register as Seller Listing",
-      //     link: "/register",
-      //     roleOptionValue: "seller_listing",
-      //   },
-      // },
       {
         icon: icon8,
         title: "Seller Sign Up",
         description:
-          "Get the toolkit: Buyer NDA Management, CIM Management, Document Management Room, Buyer Access Management, and more.",
+          "Manage NDAs, CIMs, documents, and buyer access.",
         button: {
-          text: "Register as Seller",
+          text: "Register",
           link: "/register",
           roleOptionValue: "seller_central",
-        },
-      },
-    ],
-  },
-  ma_expert: {
-    title: "I’m an M&A Expert",
-    subtitle: "Choose your advisory service.",
-    subOptions: [
-      {
-        icon: icon1,
-        title: "Legal Advisor",
-        description: "Support deal structures and compliance.",
-        button: {
-          text: "Continue with Free Account",
-          link: "/free-buyer",
-          roleOptionValue: "m&a_expert_basic",
-        },
-      },
-      {
-        icon: icon1,
-        title: "Financial Advisor",
-        description: "Provide valuations and funding options.",
-        button: {
-          text: "Continue with Free Account",
-          link: "/free-buyer",
-          roleOptionValue: "m&a_expert_premium",
-        },
-      },
-    ],
-  },
-  subscriber: {
-    title: "I’m a Subscriber",
-    subtitle: "Choose your Subscriber type.",
-    subOptions: [
-      {
-        icon: icon1,
-        title: "Angel Subscriber",
-        description: "Invest in early-stage companies.",
-        button: {
-          text: "Continue with Free Account",
-          link: "/subcriber",
-          roleOptionValue: "subscriber",
         },
       },
     ],
@@ -163,19 +72,23 @@ const Header = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [popupStep, setPopupStep] = useState(1);
   const [selectedRole, setSelectedRole] = useState(null);
+
+  const [mobileVisible, setMobileVisible] = useState(false);
+
   const navigate = useNavigate();
   const location = useLocation();
   const auth = useRecoilValue(authState);
-  const currentPath = location.pathname;
-    const setAuth = useSetRecoilState(authState);
-    const handleLogout = () => {
-      setAuth(null);
-      localStorage.removeItem("auth");
-      localStorage.removeItem("user");
-      localStorage.removeItem("tokenLocalStorage");
-      navigate("/");
-    };
+  const setAuth = useSetRecoilState(authState);
 
+  const currentPath = location.pathname;
+
+  const handleLogout = () => {
+    setAuth(null);
+    localStorage.clear();
+    navigate("/");
+  };
+
+  // ================= POPUP =================
   const openPopup = () => {
     setPopupStep(1);
     setSelectedRole(null);
@@ -189,131 +102,120 @@ const Header = () => {
   };
 
   const handleRoleSelect = (roleKey) => {
-    // Redirect if role is ma_expert or subscriber
-    if (roleKey === "ma_expert") {
+    if (roleKey === "ma_expert" || roleKey === "subscriber") {
       closePopup();
-      navigate("/register", {
-        state: {
-          role: roleKey,
-        },
-      });
+      navigate("/register", { state: { role: roleKey } });
+      return;
     }
-    if (roleKey === "subscriber") {
-      closePopup();
-      navigate("/register", {
-        state: {
-          role: roleKey,
-        },
-      });
-    }
-    // Proceed to Step 2 for other roles
     setSelectedRole(roleKey);
     setPopupStep(2);
   };
+
   const handlePlanSelect = (roleKey) => {
     closePopup();
-    navigate("/register", {
-      state: {
-        role: roleKey,
-      },
-    });
+    navigate("/register", { state: { role: roleKey } });
   };
- const navItems = [
-    {
-      label: "Listings",
-      command: () => navigate("/listings"),
-      className: currentPath.startsWith("/listings") ? "p-menuitem-active" : "",
-    },
-    {
-      label: "Find a Broker",
-      command: () => navigate("/find-broker"), // Adjust route if different
-      className: currentPath === "/find-broker" ? "p-menuitem-active" : "",
-    },
-    {
-      label: "Pricing",
-      command: () => navigate("/pricing"),
-      className: currentPath === "/pricing" ? "p-menuitem-active" : "",
-    },
+
+  // ================= NAV ITEMS =================
+  const navItems = [
+    { label: "Listings", command: () => navigate("/listings") },
+    { label: "Find a Broker", command: () => navigate("/find-broker") },
+    { label: "Pricing", command: () => navigate("/pricing") },
     {
       label: "Features",
       items: [
-        {
-          label: "Selling",
-          command: () => navigate("/page/selling"), 
-        },
-        {
-          label: "Buying",
-          command: () => navigate("/page/buying"), 
-        },
-        {
-          label: "Experts",
-          command: () => navigate("/page/experts"), 
-        },
+        { label: "Selling", command: () => navigate("/page/selling") },
+        { label: "Buying", command: () => navigate("/page/buying") },
+        { label: "Experts", command: () => navigate("/page/experts") },
       ],
     },
     {
       label: "Resources",
       items: [
-        {
-          label: "Insights",
-          command: () => navigate("/insight"),
-          className: currentPath === "/insight" ? "p-menuitem-active" : "",
-        },
-        {
-          label: "How to Use",
-          command: () => navigate("/page/how-to-use"),
-          className: currentPath === "/page/how-to-use" ? "p-menuitem-active" : "",
-        },
-        {
-          label: "Contact Us",
-          command: () => navigate("/contactus"),
-          className: currentPath === "/contactus" ? "p-menuitem-active" : "",
-        },
-        {
-          label: "Submit Ticket",
-          command: () => navigate("/submit-ticket"), // Adjust route if different
-          className: currentPath === "/submit-ticket" ? "p-menuitem-active" : "",
-        },
+        { label: "Insights", command: () => navigate("/insight") },
+        { label: "How to Use", command: () => navigate("/page/how-to-use") },
+        { label: "Contact Us", command: () => navigate("/contactus") },
+        { label: "Submit Ticket", command: () => navigate("/submit-ticket") },
       ],
     },
   ];
+
+  // ================= MOBILE MENU =================
+  const mobileMenuItems = navItems.map((item) => ({
+    label: item.label,
+    command: item.command
+      ? () => {
+          setMobileVisible(false);
+          item.command();
+        }
+      : undefined,
+    items: item.items
+      ? item.items.map((sub) => ({
+          label: sub.label,
+          command: () => {
+            setMobileVisible(false);
+            sub.command();
+          },
+        }))
+      : undefined,
+  }));
+
+  // ================= HEADER UI =================
   const start = (
-    <div className="logo_col">
+    <div className="logo_col flex align-items-center gap-2">
       <NavLink to="/">
         <img src={logo} alt="Logo" />
       </NavLink>
+
+      <Button
+        icon="pi pi-bars mobile-menu-icon-only-mobile"
+        className="p-button-text mobile-menu-btn"
+        onClick={() => setMobileVisible(true)}
+      />
     </div>
   );
 
-  const end = auth?.access_token ? (<>
-  <button onClick={handleLogout} className="logout-btn header-logout-btn">
-        Logout <img src={signIcon} alt="signIcon" />
+  const end = auth?.access_token ? (
+    <>
+      <button onClick={handleLogout} className="logout-btn header-logout-btn">
+        Logout <img src={signIcon} alt="icon" />
       </button>
-    <NavLink to="/user/dashboard" className="signup-btn">
-      Dashboard <img src={signIcon} alt="signIcon" />
-    </NavLink>
-    
-      </>
+
+      <NavLink to="/user/dashboard" className="signup-btn">
+        Dashboard <img src={signIcon} alt="icon" />
+      </NavLink>
+    </>
   ) : (
     <>
-    <button  className="login-btn">
-      <NavLink
-            to="/login"
-          >
-             login <img src={signIcon} alt="signIcon" />
-          </NavLink>
-     
-    </button>
-        <button onClick={openPopup} className="signup-btn">
-      Sign Up <img src={signIcon} alt="signIcon" />
-    </button>
+    <Button className="login-btn">
+
+      <NavLink to="/login" className="login-btn-login-page">
+        Login <img src={signIcon} alt="icon" />
+      </NavLink>
+    </Button>
+
+      <button onClick={openPopup} className="signup-btn">
+        Sign Up <img src={signIcon} alt="icon" />
+      </button>
     </>
-    
   );
+
   return (
     <header className="signup_content">
+      {/* DESKTOP MENU */}
       <Menubar model={navItems} start={start} end={end} />
 
+      {/* MOBILE DRAWER */}
+      <Sidebar
+        visible={mobileVisible}
+        onHide={() => setMobileVisible(false)}
+        position="left"
+        className="mobile-sidebar-just-mobile-menu"
+      >
+        <Menu model={mobileMenuItems} />
+      </Sidebar>
+
+      {/* SIGNUP POPUP */}
       {showPopup && (
         <SignupPopup
           step={popupStep}

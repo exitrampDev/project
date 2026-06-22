@@ -93,7 +93,7 @@ header {
   align-items: center;
   gap: 90px;
   padding: 60px 0 60px 60px;
-  border-radius: 45px;
+  border-radius: 25px;
 }
 
 .whouse_sec_wrap_container .whouse_sec_content_wrap .whouse_sec_content_second {
@@ -3986,10 +3986,11 @@ button.button__save_listing_global_single_listing.p-button.p-component.p-button-
     gap: 10px;
 }
 
-button.login-btn {
+.signup_content button.login-btn {
     background: #fff;
     color: #ccc;
     padding: 0 !important;
+    font-size: 17px;
 }
 
 button.login-btn a {
@@ -5922,12 +5923,84 @@ button.footer-chat-cancel-btn.p-button.p-component {
   padding: 0 1rem;
 }
 
-
+button.p-button-text.mobile-menu-btn.p-button.p-component.p-button-icon-only {
+    display: none;
+}
 @media (max-width: 768px) {
   .broker-detail-grid {
     grid-template-columns: 1fr;
   }
+.menuBarWrap.p-menubar .p-menubar-root-list .p-menuitem-link{
+    padding: 4px 7px;
+}
+button.p-button-text.mobile-menu-btn.p-button.p-component.p-button-icon-only {
+           display: inline-flex;
+        padding: 0;
+        background: transparent;
+        text-align: center;
+        border-radius: 0;
+}
+header a.p-menubar-button{
+  display: none;
+}
+.mobile-sidebar-just-mobile-menu.p {}
 
+.mobile-sidebar-just-mobile-menu .p-menu.p-component{
+    border: none;
+    width: 100%;
+    background: #002f68;
+    color: #fff;
+    padding-top: 30px;
+}
+
+.mobile-sidebar-just-mobile-menu .p-menu.p-component a.p-menuitem-link {
+    padding: 4px 0;
+    font-size: 12px;
+}
+
+.mobile-sidebar-just-mobile-menu .p-menu.p-component li.p-submenu-header {
+    padding: 17px 0 0px 0;
+    font-size: 14px;
+    background: transparent;
+    color: #ffb100;
+}
+
+.mobile-sidebar-just-mobile-menu.p-sidebar.p-component.p-ripple-disabled.p-sidebar-enter-done {
+    background: #002f68;
+}
+
+
+.mobile-sidebar-just-mobile-menu .p-menu.p-component a.p-menuitem-link span.p-menuitem-text {
+    color: #fff;
+}
+
+.mobile-sidebar-just-mobile-menu .p-sidebar-header {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 999;
+    padding: 0;
+}
+    .mobile-sidebar-just-mobile-menu  .p-sidebar-icon svg{color:#fff}
+.logo_col.flex.align-items-center.gap-2 {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.menuBarWrap.p-menubar .p-menubar-root-list .p-menuitem-link span.p-menuitem-text {
+    font-size: 12px;
+}
+
+.menuBarWrap.p-menubar  .p-menuitem-link ul.p-submenu-list {
+    padding: 0;
+}
+
+header .menuBarWrap.p-menubar ul.p-submenu-list{
+    padding: 3px 4px;
+    border-radius: 0;
+}
   .business-card {
     flex-direction: column;
     gap: 15px;
@@ -5949,7 +6022,6 @@ button.footer-chat-cancel-btn.p-button.p-component {
     font-size: 17px;
     padding: 15px 40px;
   }
-
   .bannerSecContent_wrap .imageBannerRight {
     width: 50%;
   }
@@ -6526,16 +6598,33 @@ header.signup_content .p-menubar.p-component {
   }
 
 
+button.login-btn a{
+    padding: 7px 12px 7px 7px;
+}
+
+.signup_content button {
+    padding: 7px 12px 7px 7px;
+}
   header a.p-menubar-button {
     color: #fff;
     background: transparent;
     border: none;
     outline: none;
   }
-  .contentSecLeft h3 {
-    font-size: 35px;
+  .contentSecLeft h3,.whouse_sec_wrap_container .whouse_sec_content_wrap .whouse_sec_content_first h3,
+  .whouse_sec_wrap_container .whouse_sec_content_wrap .whouse_sec_content_second .whouse_sec_content_text_box h3,
+  .whouse_sec_wrap_container .whouse_sec_content_wrap .whouse_sec_content_third .whouse_sec_content_text_box h3 {
+    font-size: 25px;
   }
-
+.contentSecLeft p,.whouse_sec_wrap_container .whouse_sec_content_wrap .whouse_sec_content_first p,
+.whouse_sec_wrap_container .whouse_sec_content_wrap .whouse_sec_content_second .whouse_sec_content_text_box p,
+  .whouse_sec_wrap_container .whouse_sec_content_wrap .whouse_sec_content_third .whouse_sec_content_text_box p{
+  font-size: 16px;
+}
+.whouse_sec_wrap_container .whouse_sec_content_wrap .whouse_sec_content_third.man-expert .coming__soon{
+  text-align: center;
+  font-size: 30px;
+}
   .bannerSecContent {
     padding: 15px;
     flex-direction: column-reverse;
@@ -6543,7 +6632,7 @@ header.signup_content .p-menubar.p-component {
   }
   .whouse_sec_wrap_container h2.whouse_sec_wrap_heading {
     margin-top: 30px;
-    font-size: 40px;
+    font-size: 30px;
   }
 
   .whouse_sec_wrap_container {
@@ -6559,10 +6648,35 @@ header.signup_content .p-menubar.p-component {
   }
 
   .platformFeature__container .platformFeature__content_box > h3 {
-    font-size: 35px;
+    font-size: 30px;
     text-align: center;
   }
+.HowItWorks__section_body_card.step1,.HowItWorks__section_body_card.step2,.HowItWorks__section_body_card.step3 {
+    width: 100%;
+    max-width: 320px;
+    padding: 20px;
+}
 
+.HowItWorks__section_body_card_heading {
+    font-size: 25px;
+    margin: 13px 0;
+}
+
+.HowItWorks__section_body_card_para {
+    font-size: 16px;
+}
+.ComplienceStatement_content_box {
+    width: 100%;
+}
+
+.ComplienceStatement_container {
+    gap: 8px;
+}
+
+.ComplienceStatement_image_box {
+    width: 100%;
+    max-width: 320px;
+}
   .platformFeature__content_box_area {
     padding: 49px 0 0px 0;
   }
@@ -6571,14 +6685,14 @@ header.signup_content .p-menubar.p-component {
     .platformFeature__content_box_area_list
     .platformFeature__content_box_area_text
     h3 {
-    font-size: 25px;
+    font-size: 20px;
   }
 
   .platformFeature__content_box_area
     .platformFeature__content_box_area_list
     .platformFeature__content_box_area_text
     p {
-    font-size: 22px;
+    font-size: 16px;
   }
 
   .ExitRampPricing__main_wrap {
@@ -6595,8 +6709,14 @@ header.signup_content .p-menubar.p-component {
 
   .ExitRampPricing__container .ExitRampPricing__header_wrap p {
     margin: 10px 0 30px 0;
+    font-size: 16px;
   }
-
+.ExitRampPricing__pricing_table_wrap .ExitRampPricing__pricing_table_body {
+    padding: 0 15px;
+  }
+  .ExitRampPricing__pricing_table_wrap .ExitRampPricing__pricing_table_body .ExitRampPricing__pricing_table_list .ExitRampPricing__pricing_table_body_type p {
+    font-size: 15px;
+  }
   .ExitRampPricing__pricing_table_wrap
     .ExitRampPricing__pricing_table_body
     .ExitRampPricing__pricing_table_list
@@ -6638,27 +6758,31 @@ header.signup_content .p-menubar.p-component {
   }
 
   .HowItWorks__section_container .HowItWorks__section_header_content p {
-    font-size: 22px;
+    font-size: 16px;
   }
+.HowItWorks__section_body_card_step_tag {
+    font-size: 16px;
+    padding: 5px 10px;}
 
   .ComplienceStatement_wrapper {
     padding: 40px 15px;
   }
 
   .ComplienceStatement_container .ComplienceStatement_content_box h4 {
-    font-size: 35px;
+    font-size: 25px;
   }
 
   .ComplienceStatement_container .ComplienceStatement_content_box p {
-    font-size: 22px;
+    font-size: 16px;
+    margin-bottom: 20px;
   }
 
   .ComplienceStatement_container
     .ComplienceStatement_content_box
     button.arrowIcon {
-    font-size: 22px;
+    font-size: 16px;
     gap: 10px;
-    padding: 20px 22px;
+    padding: 10px 20px;
   }
 
   .UpgradeFree_when_ready_wrap {
@@ -6678,7 +6802,7 @@ header.signup_content .p-menubar.p-component {
   }
 
   .footer__content_container .logo_block > img {
-    max-width: 320px;
+    max-width: 200px;
   }
 
   .footer__content_container .logo_block form.subscription-form {
@@ -6686,7 +6810,24 @@ header.signup_content .p-menubar.p-component {
     justify-content: center;
     padding: 17px 0;
   }
+header ul.p-menubar-root-list a.p-menuitem-link svg.p-icon.p-submenu-icon{
+  color: #000;
+}
+/* Ensure the parent menu item fills the space and handles clicks correctly on mobile */
+.p-menubar .p-menubar-root-list .p-menuitem-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
 
+/* Prevent the submenu from collapsing instantly on mobile interaction */
+.p-menubar-mobile-active .p-submenu-list {
+    position: relative;
+    box-shadow: none;
+    width: 100%;
+    padding-left: 1rem; /* Indent sub-items slightly for better mobile UX */
+}
   .footer__content_container .logo_block form.subscription-form button {
     margin: 0;
   }
@@ -7519,4 +7660,173 @@ footer.footer__section_broker_page_container {
     max-width: 1170px;
     margin: 0 auto;
     text-align: center;
+}
+
+
+
+/**** Menu Css***/
+/* Container Layout styles */
+.custom-header {
+  background-color: #ffffff;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  position: relative;
+  z-index: 1000;
+  width: 100%;
+}
+.header-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 2rem;
+}
+.header-logo {
+  height: 40px;
+}
+
+/* Nav Menu Structure */
+.nav-menu-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-grow: 1;
+  margin-left: 2rem;
+}
+.nav-list {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: 1.5rem;
+}
+.nav-list li a {
+  text-decoration: none;
+  color: #333;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+}
+
+/* Desktop Submenus hidden by default */
+.has-submenu {
+  position: relative;
+}
+.submenu-list {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: white;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  list-style: none;
+  padding: 0.5rem 0;
+  margin: 0;
+  min-width: 180px;
+  border-radius: 4px;
+}
+.submenu-list li a {
+  padding: 0.6rem 1.2rem;
+  font-size: 0.9rem;
+}
+/* Desktop hover state */
+@media (min-width: 961px) {
+  .has-submenu:hover .submenu-list {
+    display: block;
+  }
+}
+
+.auth-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.mobile-menu-toggle {
+  display: none;
+}
+
+/* --- Mobile Breakpoint Optimization --- */
+@media (max-width: 960px) {
+  .mobile-menu-toggle {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 24px;
+    height: 18px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    z-index: 1001;
+  }
+  .mobile-menu-toggle span {
+    width: 100%;
+    height: 2px;
+    background-color: #333;
+    transition: all 0.3s ease;
+  }
+  
+  /* Slide down Menu Drawer container styling */
+  .nav-menu-wrapper {
+    display: none;
+    flex-direction: column;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: #ffffff;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    padding: 1.5rem;
+    margin: 0;
+    box-sizing: border-box;
+  }
+  .nav-menu-wrapper.mobile-active {
+    display: flex;
+  }
+  .nav-list {
+    flex-direction: column;
+    width: 100%;
+    gap: 0;
+  }
+  .nav-list li {
+    width: 100%;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  .nav-list li a {
+    padding: 1rem 0;
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  /* Custom Arrow Rotate Element */
+  .arrow-icon::after {
+    content: '▼';
+    font-size: 0.65rem;
+    transition: transform 0.2s ease;
+    display: inline-block;
+  }
+  .submenu-open .arrow-icon::after {
+    transform: rotate(180deg);
+  }
+
+  /* Toggle display rule strictly controlled via component active state class */
+  .submenu-list {
+    position: static;
+    display: none;
+    box-shadow: none;
+    background: #fafafa;
+    padding-left: 1rem;
+  }
+  .submenu-open .submenu-list {
+    display: block;
+  }
+  .auth-actions {
+    width: 100%;
+    flex-direction: column;
+    margin-top: 1.5rem;
+    gap: 0.75rem;
+  }
+  .auth-actions > * {
+    width: 100%;
+    text-align: center;
+  }
 }
