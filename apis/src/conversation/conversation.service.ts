@@ -1,5 +1,5 @@
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { Message, MessageDocument } from './schema/message.schema';
 import { Conversation, ConversationDocument } from './schema/conversation.schema';
@@ -33,7 +33,7 @@ async findAllMyConversations(user): Promise<ConversationDocument[]> {
 async findAllChatHistory(conversationId): Promise<MessageDocument[]> {
   return this.messageModel
     .find({
-      conversationId:conversationId,
+      conversationId:new Types.ObjectId(conversationId),
     })
     .populate({ path: 'senderId', model: 'User' , select:'first_name last_name email user_type'})
     .exec();
@@ -97,9 +97,35 @@ async findAllChatHistory(conversationId): Promise<MessageDocument[]> {
     createMessageDto.conversationId =  conversation?._id.toString() ??   createMessageDto.conversationId;
 
     createMessageDto.senderId = user.userId;
-
-    const message = new this.messageModel(createMessageDto);
+    console.log('Sending message with data:', createMessageDto, 'from user:', user.userId);
+    // const message = new this.messageModel(createMessageDto);
+    const message = new this.messageModel({
+                          ...createMessageDto,
+                          senderId: new Types.ObjectId(user.userId),
+                          conversationId: conversation?._id
+                            ? new Types.ObjectId(conversation._id)
+                            : new Types.ObjectId(createMessageDto.conversationId),
+                        });
 
     return await message.save();
+    }
+
+
+    async markMessageAsRead(messageId: string, user: any){
+      this.messageModel.findByIdAndUpdate(messageId, {
+        $addToSet: { readersIds: user.userId },
+      }, { new: true }).exec();
+
+    }
+
+    async getUnreadCount(userId: string, conversationId: string): Promise<number> {
+    const userObjectId = new Types.ObjectId(userId);
+
+    const unreadCount = await this.messageModel.countDocuments({
+      conversationId: new Types.ObjectId(conversationId),
+      senderId: { $ne:  new Types.ObjectId(userObjectId) },
+      readersIds: { $nin:  new Types.ObjectId(userObjectId) },
+    });
+      return unreadCount;
     }
 }
