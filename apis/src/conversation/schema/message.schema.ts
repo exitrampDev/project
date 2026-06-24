@@ -8,10 +8,17 @@ export class Message {
 
 
    @Prop({
-    type: [{ type: Types.ObjectId, ref: 'User' }],
+    type: Types.ObjectId,
+    ref: 'User',
     required: true,
   })
-  senderId!: string;
+  senderId!: Types.ObjectId;
+
+  @Prop({
+    type: [{ type: Types.ObjectId, ref: 'User' }],
+    default: [],
+  })
+  readersIds!: Types.ObjectId[];
 
   @Prop({ type: String })
   message!: string;

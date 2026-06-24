@@ -29,6 +29,19 @@ export class ConversationController {
     return this.conversationService.sendMessage(createMessageDto, user);
   }
 
+   @UseGuards(JwtAuthGuard)
+  @Post('message-read-by/:messageId')
+  async markMessageAsRead(@Param('messageId') messageId: string, @User() user: any) {
+    return this.conversationService.markMessageAsRead(messageId, user);
+  }
+
+  
+  @UseGuards(JwtAuthGuard)
+  @Get('/unread-count/:conversationId')
+    async getUnreadCount(@User() user: any, @Param('conversationId') conversationId: string) {
+      return this.conversationService.getUnreadCount(user.userId, conversationId);
+    }
+
       // ===========================================For Admin==================================
 
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -51,6 +64,8 @@ export class ConversationController {
   async sendAdminMessage(@Body() createMessageDto: CreateMessageDto, @User() user: any) {
     return this.conversationService.sendAdminMessage(createMessageDto, user);
   }
+
+
   
 
 }

@@ -11,7 +11,7 @@ export class Conversation {
   type: [{ type: Types.ObjectId, ref: 'User' }],
   required: true,
 })
-  participants!: Types.ObjectId[]; //user ids
+  participants!: Types.ObjectId[]; //users ids
 
 
 }
