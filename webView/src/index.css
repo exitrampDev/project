@@ -5718,6 +5718,7 @@ a.view-profile-link {
   color: #333333;
   display: flex;
   justify-content: space-between;
+      align-items: center;
 }
 
 .participant-name {

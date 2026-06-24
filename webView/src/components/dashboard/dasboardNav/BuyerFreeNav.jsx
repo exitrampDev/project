@@ -21,7 +21,7 @@ export default function BuyerFreeNav() {
           <NavLink
             to="/"
             className={({ isActive }) => (isActive ? "active" : "")}>
-            <img src={icon3} alt="Dashboard" /> Web View asdad
+            <img src={icon3} alt="Dashboard" /> Web View
           </NavLink>
         </li>
         <li>

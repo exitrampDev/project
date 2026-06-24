@@ -9,7 +9,7 @@ import { InputText } from "primereact/inputtext";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { authState, apiBaseUrlState } from "../../../recoil/ctaState";
 import DashboardHeader from "./DashboardHeaderBlock";
-
+import { io } from "socket.io-client";
 
 const ChatDashboard = () => {
   const navigate = useNavigate();
@@ -35,19 +35,85 @@ const ChatDashboard = () => {
 
   const toast = useRef(null);
   const messageEndRef = useRef(null);
+  const socketRef = useRef(null);
+  
+  // Ref to bypass React closure traps inside real-time socket events
+  const activeConversationIdRef = useRef(activeConversationId);
 
+  // Sync ref with state updates
+  useEffect(() => {
+    activeConversationIdRef.current = activeConversationId;
+  }, [activeConversationId]);
+
+  // Fetch initial discussions array
   useEffect(() => {
     fetchConversations();
   }, []);
 
+  // Handle centralized socket channel infrastructure
   useEffect(() => {
-    if (activeConversationId) {
-      fetchChatHistory(activeConversationId);
-    } else {
+    if (!access_token || !API_BASE) return;
+
+    const socket = io(API_BASE, {
+      auth: {
+        token: access_token,
+      },
+      transports: ["websocket"],
+      reconnection: true,
+    });
+
+    socketRef.current = socket;
+
+    socket.on("connect", () => {
+      console.log("Socket Connected:", socket.id);
+    });
+
+    socket.on("disconnect", () => {
+      console.log("Socket Disconnected");
+    });
+
+    socket.on("connect_error", (err) => {
+      console.error("Socket Error:", err.message);
+    });
+
+    socket.on("joined", (data) => {
+      console.log("Joined Room Context:", data);
+    });
+
+    socket.on("newMessage", () => {
+      const currentActiveId = activeConversationIdRef.current;
+      console.log("New message event received from server. Active ID:", currentActiveId);
+      
+      if (currentActiveId) {
+        fetchChatHistory(currentActiveId);
+      }
+      fetchConversations();
+    });
+
+    return () => {
+      socket.disconnect();
+      socketRef.current = null;
+    };
+  }, [access_token, API_BASE]);
+
+  // Consolidated single hook managing channel switches & socket joins
+  useEffect(() => {
+    if (!activeConversationId) {
       setMessages([]);
+      return;
+    }
+
+    fetchChatHistory(activeConversationId);
+
+    if (socketRef.current?.connected) {
+      socketRef.current.emit("joinConversation", {
+        conversationId: activeConversationId,
+      });
+      console.log("Joined Room:", activeConversationId);
     }
   }, [activeConversationId]);
 
+  // Auto-scroll anchor point alignment adjustment
   useEffect(() => {
     messageEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
@@ -110,43 +176,59 @@ const ChatDashboard = () => {
     }
   };
 
-  const handleSendMessage = async () => {
-    if (!replyMessage.trim() || !activeConversationId) return;
+ const handleSendMessage = async () => {
+  const text = replyMessage.trim();
+  if (!text || !activeConversationId) return;
 
-    const activeChat = conversations.find(
-      (c) => c._id === activeConversationId || c.id === activeConversationId
-    );
+  const socket = socketRef.current;
+  if (!socket?.connected) {
+    showToast("error", "Connection Error", "Socket is disconnected. Cannot send message.");
+    return;
+  }
+
+  try {
+    setIsSending(true);
+    console.log("Emitting message to conversation:", activeConversationId);
     
-    const recipientObj = activeChat?.participants?.find(p => p._id !== loggedInUserId);
-    const targetUserId = recipientObj?._id || activeChat?.toUserId || "";
+    // 1. Fire the payload over your WebSocket lane
+    socket.emit("sendMessage", {
+      conversationId: activeConversationId,
+      text: text,
+    });
 
-    try {
-      setIsSending(true);
-      const res = await fetch(`${API_BASE}/conversation/send`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${access_token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          toUserId: targetUserId,
-          message: replyMessage.trim(),
-          conversationId: activeConversationId,
-        }),
-      });
+    // 2. Optimistically append the message to your local state instantly 
+    // so the user sees it without waiting for a database round-trip
+    const optimisticMessage = {
+      _id: `temp-${Date.now()}`, // Temporary fallback ID
+      message: text,
+      createdAt: new Date().toISOString(),
+      senderId: [
+        {
+          _id: loggedInUserId,
+          first_name: authInfo?.user?.first_name || "Me",
+          last_name: authInfo?.user?.last_name || "",
+          user_type: authInfo?.user?.user_type || "user"
+        }
+      ],
+      senderType: "user",
+      isOuterSender: false // Ensures your 'isMe' alignment logic captures it perfectly
+    };
 
-      if (res.status === 403) { handle403Forbidden(); return; }
-      if (!res.ok) throw new Error("Outbound payload execution rejected.");
+    setMessages((prevMessages) => [...prevMessages, optimisticMessage]);
 
-      setReplyMessage("");
-      await fetchChatHistory(activeConversationId);
-      await fetchConversations();
-    } catch (error) {
-      showToast("error", "Error", "Message distribution pipeline failed.");
-    } finally {
-      setIsSending(false);
-    }
-  };
+    // 3. Clear out your input field
+    setReplyMessage("");
+
+    // Optional: If your backend needs a quick sync call to ensure order alignment:
+    // await fetchChatHistory(activeConversationId);
+    
+  } catch (err) {
+    console.error("Failed to process local timeline submission append:", err);
+    showToast("error", "Error", "Failed to register sent dispatch trace item.");
+  } finally {
+    setIsSending(false);
+  }
+};
 
   const handleStartNewChat = async () => {
     if (!newChatUserId.trim() || !newInitialMessage.trim()) {
@@ -225,134 +307,127 @@ const ChatDashboard = () => {
           </div>
 
           <div className="conversations-list">
-  {loadingConversations ? (
-    <div className="loader-container">
-      <i className="pi pi-spin pi-spinner loader-icon"></i>
-    </div>
-  ) : conversations.length === 0 ? (
-    <div className="empty-conversations">No active chats found.</div>
-  ) : (
-    // Copy and sort conversations: newest date first
-    [...conversations]
-      .sort((a, b) => {
-        const dateA = new Date(a.updatedAt || a.createdAt || 0);
-        const dateB = new Date(b.updatedAt || b.createdAt || 0);
-        return dateB - dateA; // Descending order (Newest to Oldest)
-      })
-      .map((chat) => {
-        const chatId = chat._id || chat.id || chat.conversationId;
-        const isSelected = chatId === activeConversationId;
+            {loadingConversations ? (
+              <div className="loader-container">
+                <i className="pi pi-spin pi-spinner loader-icon"></i>
+              </div>
+            ) : conversations.length === 0 ? (
+              <div className="empty-conversations">No active chats found.</div>
+            ) : (
+              [...conversations]
+                .sort((a, b) => {
+                  const dateA = new Date(a.updatedAt || a.createdAt || 0);
+                  const dateB = new Date(b.updatedAt || b.createdAt || 0);
+                  return dateB - dateA;
+                })
+                .map((chat) => {
+                  const chatId = chat._id || chat.id || chat.conversationId;
+                  const isSelected = chatId === activeConversationId;
 
-        let otherParticipant = chat.participants?.find((p) => p._id !== loggedInUserId);
-        if (!otherParticipant && chat.participants?.length > 1) {
-          otherParticipant = chat.participants[1];
-        } else if (!otherParticipant && chat.participants?.length === 1) {
-          otherParticipant = chat.participants[0];
-        }
+                  let otherParticipant = chat.participants?.find((p) => p._id !== loggedInUserId);
+                  if (!otherParticipant && chat.participants?.length > 1) {
+                    otherParticipant = chat.participants[1];
+                  } else if (!otherParticipant && chat.participants?.length === 1) {
+                    otherParticipant = chat.participants[0];
+                  }
 
-        const participantName = otherParticipant?.first_name 
-          ? `${otherParticipant.first_name} ${otherParticipant.last_name || ""}`.trim() 
-          : `User ...${chatId?.slice(-6)}`;
-        
-        const displayMessageText = chat.lastMessage || chat.message || "Open discussion thread...";
+                  const participantName = otherParticipant?.first_name 
+                    ? `${otherParticipant.first_name} ${otherParticipant.last_name || ""}`.trim() 
+                    : `User ...${chatId?.slice(-6)}`;
+                  
+                  const displayMessageText = chat.lastMessage || chat.message || "Open discussion thread...";
 
-        return (
-          <div
-            key={chatId}
-            onClick={() => setActiveConversationId(chatId)}
-            className={`conversation-item ${isSelected ? 'selected' : ''}`}
-          >
-            <div className="conversation-meta">
-              <span className="participant-name">{participantName}</span>
-              <span className="timestamp">{formatDate(chat.updatedAt || chat.createdAt)}</span>
-            </div>
-            <p className="last-message">
-              {displayMessageText}
-            </p>
+                  return (
+                    <div
+                      key={chatId}
+                      onClick={() => {
+                        setActiveConversationId(chatId);
+                        console.log("Selected Conversation ID changed to:", chatId);
+                      }}
+                      className={`conversation-item ${isSelected ? 'selected' : ''}`}
+                    >
+                      <div className="conversation-meta">
+                        <span className="participant-name">{participantName}</span>
+                        <span className="timestamp">{formatDate(chat.updatedAt || chat.createdAt)}</span>
+                      </div>
+                      <p className="last-message">{displayMessageText}</p>
+                    </div>
+                  );
+                })
+            )}
           </div>
-        );
-      })
-  )}
-</div>
         </div>
 
-        {/* RIGHT COLUMN: Chat Transcript Dialogue Space */}
-       <div className="chat-workspace">
-                 {activeConversationId ? (
-                   <>
-                     <div className="chat-history-area">
-                       {loadingHistory ? (
-                           <div className="loader-container central">
-                           <i className="pi pi-spin pi-spinner loader-icon large"></i>
-                           </div>
-                       ) : (
-                           messages.map((msg, idx) => {
-                           // 1. Safely grab the sender object
-                           const sender = msg.senderId?.[0];
-       
-                           // 2. Run your existing 'isMe' logic
-                           const isMe = msg.senderId === loggedInUserId || 
-                                       (Array.isArray(msg.senderId) && sender?._id === loggedInUserId) ||
-                                       msg.senderType?.toLowerCase() === "user" || 
-                                       msg.isOuterSender === false;
-       
-                           // 3. Check if the sender is an admin
-                           const isAdmin = sender?.user_type === "admin";
-       
-                           return (
-                               <div 
-                               key={msg._id || msg.id || idx} 
-                               className={`message-row ${isMe ? 'me-align' : 'them-align'} ${isAdmin ? 'admin-row' : ''}`}
-                               >
-       
-                               {/* Message Bubble */}
-                               <div className={`message-bubble ${isMe ? 'me-bubble' : 'them-bubble'} ${isAdmin ? 'admin-bubble' : ''}`}>
-                                     {/* Render Sender Name */}
-                                   <span className={`message-sender ${isMe ? 'me-sender' : 'them-sender'} ${isAdmin ? 'admin-sender' : ''}`}>
-                                   {isAdmin ? "Admin" : sender?.first_name 
-                                       ? `${sender.first_name} ${sender.last_name || ""}`.trim() 
-                                       : `User ...${sender?._id?.slice(-6)}`}
-                                   </span>
-                                   <p className="message-text">{msg.message}</p>
-                                   <div className={`message-timestamp ${isMe ? 'me-time' : 'them-time'}`}>
-                                   {formatDate(msg.createdAt)}
-                                   </div>
-                               </div>
-                               </div>
-                           );
-                           })
-                       )}
-                       <div ref={messageEndRef} />
-                       </div>
-       
-                     <div className="chat-input-bar">
-                       <div className="input-flex-container">
-                         <InputTextarea
-                           value={replyMessage}
-                           onChange={(e) => setReplyMessage(e.target.value)}
-                           rows={2}
-                           autoResize
-                           placeholder="Type your message here..."
-                           disabled={isSending}
-                           className="reply-textarea"
-                           onKeyDown={(e) => {
-                             if (e.key === "Enter" && !e.shiftKey) {
-                               e.preventDefault();
-                               handleSendMessage();
-                             }
-                           }}
-                         />
-                         <Button icon="pi pi-send" onClick={handleSendMessage} loading={isSending} disabled={!replyMessage.trim()} className="input-send-btn" />
-                       </div>
-                     </div>
-                   </>
-                 ) : (
-                   <div className="chat-placeholder">
-                     <i className="pi pi-comments placeholder-icon"></i>
-                     <p className="placeholder-text">Select a discussion or click the "+" icon to start a new chat workspace layout window pane view.</p>
-                   </div>
-                 )}
-               </div>
+        {/* RIGHT COLUMN: Chat Workspace */}
+        <div className="chat-workspace">
+          {activeConversationId ? (
+            <>
+              <div className="chat-history-area">
+                {loadingHistory ? (
+                  <div className="loader-container central">
+                    <i className="pi pi-spin pi-spinner loader-icon large"></i>
+                  </div>
+                ) : (
+                  messages.map((msg, idx) => {
+                    const sender = msg.senderId?.[0];
+                    const isMe = msg.senderId === loggedInUserId || 
+                                (Array.isArray(msg.senderId) && sender?._id === loggedInUserId) ||
+                                msg.senderType?.toLowerCase() === "user" || 
+                                msg.isOuterSender === false;
+
+                    const isAdmin = sender?.user_type === "admin";
+
+                    return (
+                      <div 
+                        key={msg._id || msg.id || idx} 
+                        className={`message-row ${isMe ? 'me-align' : 'them-align'} ${isAdmin ? 'admin-row' : ''}`}
+                      >
+                        <div className={`message-bubble ${isMe ? 'me-bubble' : 'them-bubble'} ${isAdmin ? 'admin-bubble' : ''}`}>
+                          <span className={`message-sender ${isMe ? 'me-sender' : 'them-sender'} ${isAdmin ? 'admin-sender' : ''}`}>
+                            {isAdmin ? "Admin" : sender?.first_name 
+                              ? `${sender.first_name} ${sender.last_name || ""}`.trim() 
+                              : `User ...${sender?._id?.slice(-6)}`}
+                          </span>
+                          <p className="message-text">{msg.message}</p>
+                          <div className={`message-timestamp ${isMe ? 'me-time' : 'them-time'}`}>
+                            {formatDate(msg.createdAt)}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
+                <div ref={messageEndRef} />
+              </div>
+
+              <div className="chat-input-bar">
+                <div className="input-flex-container">
+                  <InputTextarea
+                    value={replyMessage}
+                    onChange={(e) => setReplyMessage(e.target.value)}
+                    rows={2}
+                    autoResize
+                    placeholder="Type your message here..."
+                    disabled={isSending}
+                    className="reply-textarea"
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" && !e.shiftKey) {
+                        e.preventDefault();
+                        handleSendMessage();
+                      }
+                    }}
+                  />
+                  <Button icon="pi pi-send" onClick={handleSendMessage} loading={isSending} disabled={!replyMessage.trim()} className="input-send-btn" />
+                </div>
+              </div>
+            </>
+          ) : (
+            <div className="chat-placeholder">
+              <i className="pi pi-comments placeholder-icon"></i>
+              <p className="placeholder-text">Select a discussion or click the "+" icon to start a new chat workspace layout window pane view.</p>
+            </div>
+          )}
+        </div>
 
       </div>
 
