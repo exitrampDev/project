@@ -169,7 +169,7 @@ fetchNdaList();
   //     <img
   //       src={rowData.image || "https://via.placeholder.com/40"}
   //       alt={rowData.listingTitle}
-  //       className="w-10 h-10 rounded"
+  //       className=""
   //     />
   //     <span>{rowData.listingTitle}</span>
   //   </div>
@@ -188,7 +188,7 @@ const listingNameTemplate = (rowData) => {
       <img
         src={rowData.image || "https://via.placeholder.com/40"}
         alt={title}
-        className="w-10 h-10 rounded"
+        className=""
       />
       <span>{truncatedTitle}</span>
     </div>

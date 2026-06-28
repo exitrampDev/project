@@ -58,7 +58,7 @@ const listingNameTemplate = (rowData) => {
       <img
         src={rowData.image || "https://via.placeholder.com/40"}
         alt={title}
-        className="w-10 h-10 rounded"
+        className=""
       />
       <span>{truncatedTitle}</span>
     </div>
