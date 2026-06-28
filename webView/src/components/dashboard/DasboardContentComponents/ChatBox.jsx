@@ -17,7 +17,7 @@ const ChatDashboard = () => {
   const authInfo = useRecoilValue(authState);
   const { access_token } = authInfo ?? {};
   const setAuth = useSetRecoilState(authState);
-
+  const [unreadCounts, setUnreadCounts] = useState({});
   const loggedInUserId = authInfo?.user?._id || authInfo?.user?.id || JSON.parse(localStorage.getItem("user"))?._id;
 
   const [conversations, setConversations] = useState([]);
@@ -28,6 +28,9 @@ const ChatDashboard = () => {
   const [isSending, setIsSending] = useState(false);
   const [activeConversationId, setActiveConversationId] = useState(null); 
 
+  // --- ATTACHMENT STATE ---
+  const [attachment, setAttachment] = useState(null); // stores { name, type, base64 }
+
   const [displayModal, setDisplayModal] = useState(false);
   const [newChatUserId, setNewChatUserId] = useState("");
   const [newInitialMessage, setNewInitialMessage] = useState("");
@@ -36,58 +39,44 @@ const ChatDashboard = () => {
   const toast = useRef(null);
   const messageEndRef = useRef(null);
   const socketRef = useRef(null);
+  const fileInputRef = useRef(null);
   
-  // Ref to bypass React closure traps inside real-time socket events
   const activeConversationIdRef = useRef(activeConversationId);
 
-  // Sync ref with state updates
   useEffect(() => {
     activeConversationIdRef.current = activeConversationId;
   }, [activeConversationId]);
 
-  // Fetch initial discussions array
   useEffect(() => {
     fetchConversations();
   }, []);
 
-  // Handle centralized socket channel infrastructure
   useEffect(() => {
     if (!access_token || !API_BASE) return;
 
     const socket = io(API_BASE, {
-      auth: {
-        token: access_token,
-      },
+      auth: { token: access_token },
       transports: ["websocket"],
       reconnection: true,
     });
 
     socketRef.current = socket;
 
-    socket.on("connect", () => {
-      console.log("Socket Connected:", socket.id);
-    });
+    socket.on("connect", () => console.log("Socket Connected:", socket.id));
+    socket.on("disconnect", () => console.log("Socket Disconnected"));
+    socket.on("connect_error", (err) => console.error("Socket Error:", err.message));
+    socket.on("joined", (data) => console.log("Joined Room Context:", data));
 
-    socket.on("disconnect", () => {
-      console.log("Socket Disconnected");
-    });
-
-    socket.on("connect_error", (err) => {
-      console.error("Socket Error:", err.message);
-    });
-
-    socket.on("joined", (data) => {
-      console.log("Joined Room Context:", data);
-    });
-
-    socket.on("newMessage", () => {
+    socket.on("newMessage", (payload) => {
       const currentActiveId = activeConversationIdRef.current;
-      console.log("New message event received from server. Active ID:", currentActiveId);
-      
       if (currentActiveId) {
         fetchChatHistory(currentActiveId);
       }
       fetchConversations();
+      conversations.forEach((chat) => {
+        const chatId = chat._id || chat.id || chat.conversationId;
+        if (chatId) fetchUnreadCount(chatId);
+      });
     });
 
     return () => {
@@ -96,7 +85,6 @@ const ChatDashboard = () => {
     };
   }, [access_token, API_BASE]);
 
-  // Consolidated single hook managing channel switches & socket joins
   useEffect(() => {
     if (!activeConversationId) {
       setMessages([]);
@@ -113,7 +101,6 @@ const ChatDashboard = () => {
     }
   }, [activeConversationId]);
 
-  // Auto-scroll anchor point alignment adjustment
   useEffect(() => {
     messageEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
@@ -143,6 +130,10 @@ const ChatDashboard = () => {
       const result = await res.json();
       const list = Array.isArray(result) ? result : result?.data || [];
       setConversations(list);
+      list.forEach((chat) => {
+        const chatId = chat._id || chat.id || chat.conversationId;
+        if (chatId) fetchUnreadCount(chatId);
+      });
     } catch (error) {
       console.error(error);
       showToast("error", "Error", "Could not populate conversations active pane.");
@@ -176,9 +167,31 @@ const ChatDashboard = () => {
     }
   };
 
+  // --- HANDLE FILE CONVERSION TO BASE64 ---
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setAttachment({
+        name: file.name,
+        type: file.type,
+        base64: reader.result, // Contains metadata prefix (e.g., data:image/png;base64,...)
+      });
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const removeAttachment = () => {
+    setAttachment(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
  const handleSendMessage = async () => {
   const text = replyMessage.trim();
-  if (!text || !activeConversationId) return;
+  // Allow sending if there's either text OR an attachment present
+  if ((!text && !attachment) || !activeConversationId) return;
 
   const socket = socketRef.current;
   if (!socket?.connected) {
@@ -188,39 +201,39 @@ const ChatDashboard = () => {
 
   try {
     setIsSending(true);
-    console.log("Emitting message to conversation:", activeConversationId);
     
-    // 1. Fire the payload over your WebSocket lane
-    socket.emit("sendMessage", {
+    // --- EXACT MATCH FOR YOUR BACKEND SCHEMATIC PAYLOAD ---
+    const payload = {
       conversationId: activeConversationId,
-      text: text,
-    });
+      text: text, // Sends plain text if typing
+      message: text, // Standard fallback
+      file: attachment ? attachment.base64 : null // Root placement mapping your exact payload
+    };
 
-    // 2. Optimistically append the message to your local state instantly 
-    // so the user sees it without waiting for a database round-trip
+    // 1. Emit payload over WebSocket
+    socket.emit("sendMessage", payload);
+
+    // 2. Optimistic local update matching backend historical format
     const optimisticMessage = {
-      _id: `temp-${Date.now()}`, // Temporary fallback ID
+      _id: `temp-${Date.now()}`,
       message: text,
+      file: attachment ? attachment.base64 : null, // Mirroring backend database storage field
       createdAt: new Date().toISOString(),
-      senderId: [
-        {
-          _id: loggedInUserId,
-          first_name: authInfo?.user?.first_name || "Me",
-          last_name: authInfo?.user?.last_name || "",
-          user_type: authInfo?.user?.user_type || "user"
-        }
-      ],
+      senderId: {
+        _id: loggedInUserId,
+        first_name: authInfo?.user?.first_name || "Me",
+        last_name: authInfo?.user?.last_name || "",
+        user_type: authInfo?.user?.user_type || "user"
+      },
       senderType: "user",
-      isOuterSender: false // Ensures your 'isMe' alignment logic captures it perfectly
+      isOuterSender: false
     };
 
     setMessages((prevMessages) => [...prevMessages, optimisticMessage]);
 
-    // 3. Clear out your input field
+    // 3. Reset UI inputs
     setReplyMessage("");
-
-    // Optional: If your backend needs a quick sync call to ensure order alignment:
-    // await fetchChatHistory(activeConversationId);
+    removeAttachment();
     
   } catch (err) {
     console.error("Failed to process local timeline submission append:", err);
@@ -283,6 +296,26 @@ const ChatDashboard = () => {
     return new Date(dateString).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
   };
 
+  const fetchUnreadCount = async (conversationId) => {
+    try {
+      const res = await fetch(`${API_BASE}/conversation/unread-count/${conversationId}`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+          "Content-Type": "application/json",
+        },
+      });
+      if (!res.ok) return;
+      const result = await res.json();
+      // const count = result?.count ?? result?.data?.count ?? result?.unreadCount ?? 0;
+      const count = result ?? 0;
+      setUnreadCounts((prev) => ({ ...prev, [conversationId]: count }));
+      console.log(`Unread count for conversation ${conversationId}:`, count);
+    } catch (err) {
+      console.error("Unread count error", err);
+    }
+  };
+
   const renderModalFooter = () => {
     return (
       <div className="modal-footer-container">
@@ -342,12 +375,17 @@ const ChatDashboard = () => {
                       key={chatId}
                       onClick={() => {
                         setActiveConversationId(chatId);
-                        console.log("Selected Conversation ID changed to:", chatId);
+                        setUnreadCounts((prev) => ({ ...prev, [chatId]: 0 }));
                       }}
                       className={`conversation-item ${isSelected ? 'selected' : ''}`}
                     >
                       <div className="conversation-meta">
-                        <span className="participant-name">{participantName}</span>
+                        <div className="conversation-user-section">
+                          <span className="participant-name">{participantName}</span>
+                          {unreadCounts[chatId] > 0 && (
+                            <span className="unread-badge">{unreadCounts[chatId]}</span>
+                          )}
+                        </div>
                         <span className="timestamp">{formatDate(chat.updatedAt || chat.createdAt)}</span>
                       </div>
                       <p className="last-message">{displayMessageText}</p>
@@ -369,13 +407,15 @@ const ChatDashboard = () => {
                   </div>
                 ) : (
                   messages.map((msg, idx) => {
-                    const sender = msg.senderId?.[0];
-                    const isMe = msg.senderId === loggedInUserId || 
-                                (Array.isArray(msg.senderId) && sender?._id === loggedInUserId) ||
-                                msg.senderType?.toLowerCase() === "user" || 
-                                msg.isOuterSender === false;
-
+                    const sender = msg.senderId;
+                    const isMe = sender?._id === loggedInUserId || 
+                                 (Array.isArray(msg.senderId) && sender?._id === loggedInUserId) ||
+                                 msg.senderType?.toLowerCase() === "user" || 
+                                 msg.isOuterSender === false;
                     const isAdmin = sender?.user_type === "admin";
+                    
+                    // Destructure attachment payload properties depending on back-end response models
+                    const msgAttachment = msg.attachment || msg.file;
 
                     return (
                       <div 
@@ -388,7 +428,33 @@ const ChatDashboard = () => {
                               ? `${sender.first_name} ${sender.last_name || ""}`.trim() 
                               : `User ...${sender?._id?.slice(-6)}`}
                           </span>
-                          <p className="message-text">{msg.message}</p>
+                          
+                          {/* Text Rendering Context */}
+                          {msg.message && <p className="message-text">{msg.message}</p>}
+
+                          {/* Dynamic Attachment Rendering Handler */}
+                          {msgAttachment && (
+                            <div className="message-attachment-container" style={{ marginTop: '8px' }}>
+                              {msgAttachment.type?.startsWith("image/") ? (
+                                <img 
+                                  src={msgAttachment.url || msgAttachment.base64} 
+                                  alt={msgAttachment.name || "Attachment"} 
+                                  style={{ maxWidth: '100%', maxHeight: '200px', borderRadius: '4px', display: 'block' }} 
+                                />
+                              ) : (
+                                <a 
+                                  href={msgAttachment.url || msgAttachment.base64} 
+                                  target="_blank" 
+                                  rel="noopener noreferrer"
+                                  style={{ display: 'flex', alignItems: 'center', gap: '6px', textDecoration: 'underline', color: isMe ? '#fff' : '#007ad9' }}
+                                >
+                                  <i className="pi pi-file"></i>
+                                  <span>{msgAttachment.name || "View Document"}</span>
+                                </a>
+                              )}
+                            </div>
+                          )}
+
                           <div className={`message-timestamp ${isMe ? 'me-time' : 'them-time'}`}>
                             {formatDate(msg.createdAt)}
                           </div>
@@ -400,8 +466,39 @@ const ChatDashboard = () => {
                 <div ref={messageEndRef} />
               </div>
 
+              {/* CHAT INPUT BAR WITH ATTACHMENTS */}
               <div className="chat-input-bar">
+                {/* Visual preview of staging attachment before emitting payload */}
+                {attachment && (
+                  <div className="attachment-preview-bar" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 12px', background: '#f4f4f4', borderBottom: '1px solid #ddd', borderRadius: '4px 4px 0 0' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <i className={attachment.type.startsWith("image/") ? "pi pi-image" : "pi pi-file-pdf"}></i>
+                      <span style={{ fontSize: '0.9rem', maxWidth: '250px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {attachment.name}
+                      </span>
+                    </div>
+                    <Button icon="pi pi-times" className="p-button-rounded p-button-text p-button-danger p-button-sm" onClick={removeAttachment} />
+                  </div>
+                )}
+
                 <div className="input-flex-container">
+                  {/* Hidden browser input handling file selection */}
+                  <input 
+                    type="file" 
+                    ref={fileInputRef} 
+                    style={{ display: 'none' }} 
+                    accept="image/*,application/pdf,application/*"
+                    onChange={handleFileChange} 
+                  />
+                  
+                  <Button 
+                    icon="pi pi-paperclip" 
+                    type="button"
+                    className="p-button-text input-attach-btn" 
+                    onClick={() => fileInputRef.current?.click()} 
+                    disabled={isSending}
+                  />
+
                   <InputTextarea
                     value={replyMessage}
                     onChange={(e) => setReplyMessage(e.target.value)}
@@ -417,7 +514,13 @@ const ChatDashboard = () => {
                       }
                     }}
                   />
-                  <Button icon="pi pi-send" onClick={handleSendMessage} loading={isSending} disabled={!replyMessage.trim()} className="input-send-btn" />
+                  <Button 
+                    icon="pi pi-send" 
+                    onClick={handleSendMessage} 
+                    loading={isSending} 
+                    disabled={!replyMessage.trim() && !attachment} 
+                    className="input-send-btn" 
+                  />
                 </div>
               </div>
             </>

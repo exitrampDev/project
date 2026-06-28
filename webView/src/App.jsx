@@ -61,6 +61,7 @@ import UserTicketviewAdmin from "./components/dashboard/AdminContent/UserTicketv
 import AcceptInviteComponent from "./components/dashboard/DasboardContentComponents/AcceptInviteComponent";
 import ChatBox from "./components/dashboard/DasboardContentComponents/ChatBox";
 import ChatBoxAdmin from "./components/dashboard/AdminContent/ChatBoxAdmin";
+import SellerPage from "./pages/SellerPage";
 
 const App = () => {
   return (
@@ -73,6 +74,7 @@ const App = () => {
         <Route path="/pricing" element={<Pricing/>} />
         <Route path="/broker" element={<Broker />} />
         <Route path="/broker/:id" element={<BrokerSingleView />} />
+        <Route path="/seller-details" element={<SellerPage />} />
         <Route path="/contactus" element={<ContactUs />} />
         <Route path="/termscondition" element={<TermsCondition />} />
         <Route path="/privacypolicy" element={<PrivacyPolicy />} />
