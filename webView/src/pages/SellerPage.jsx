@@ -69,6 +69,7 @@ export function PricingCardsSection() {
             subtitle: 'For Sellers Wanting To Engage Potential Buyers Without Listing.',
             hasPrice: false,
             bgClass: 'bg-blue-free', 
+            isDisabled: true,
             style: { background: 'linear-gradient(90deg, #4F93FF26 15%, #4f92ff06 100%)', border: '1px solid #E5E8F6' },
             titleColor: 'text-title-blue',
             btnLabel: 'Coming Soon',
@@ -135,6 +136,12 @@ export function PricingCardsSection() {
             ]
         }
     ];
+     const handleSignupClick = () => {
+    const signupBtn = document.querySelector(".signup-btn");
+    if (signupBtn) {
+      signupBtn.click();
+    }
+  };
 
     return (
         <section className="PricingCards__wrapper">
@@ -208,6 +215,7 @@ export function PricingCardsSection() {
                                 label={plan.btnLabel} 
                                 disabled={plan.isDisabled} 
                                 className={`PricingCard__cta-${plan.btnClass}-btn`} 
+                                onClick={handleSignupClick}
                             />
                         </div>
                     </div>
