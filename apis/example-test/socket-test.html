@@ -88,7 +88,8 @@ function sendMessage() {
 
   socket.emit("sendMessage", {
     conversationId: room,
-    text: msg
+    text: msg,
+    file: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO2Z0eQAAAAASUVORK5CYII="
   });
 
   log("➡️ sendMessage: " + msg);

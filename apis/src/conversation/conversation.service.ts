@@ -64,7 +64,7 @@ async findAllChatHistory(conversationId): Promise<MessageDocument[]> {
     }
 
  async sendMessage( createMessageDto: CreateMessageDto, user: any): Promise<Message> {
-
+   let conversation:any = null;
     if (createMessageDto.conversationId) {
         const conversationExist = await this.conversationModel.findById(
             createMessageDto.conversationId,
@@ -75,14 +75,18 @@ async findAllChatHistory(conversationId): Promise<MessageDocument[]> {
           }
     }
 
-
-    let conversation = await this.conversationModel.findOne({
+    if(!createMessageDto.conversationId && !createMessageDto.toUserId) {
+        throw new ForbiddenException("Either conversationId or toUserId must be provided");
+    }
+    if(createMessageDto.toUserId){
+     conversation = await this.conversationModel.findOne({
             participants: {
-                $all: [user.userId, createMessageDto.toUserId],
+                $all: [new Types.ObjectId(user.userId), new Types.ObjectId(createMessageDto.toUserId)],
             },
         });
+    }
 
-    if (!createMessageDto.conversationId) {
+    if (!createMessageDto.conversationId && !conversation) {
         if(createMessageDto.toUserId === user.userId) {
             throw new ForbiddenException("Cannot send message to yourself");
         }

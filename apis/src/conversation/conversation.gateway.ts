@@ -44,9 +44,9 @@ export class ConversationGateway  {
         }
     let user = client.data.user; // if you attach auth later
     user.userId = user.sub; // if your JWT payload uses 'sub' for user ID, adjust as needed
-console.log('Received message from client:', data, 'User:', user);
-const mesageData = {message:data.text, conversationId:data.conversationId, senderId:user.sub};
-console.log('Constructed message data:', mesageData);
+    console.log('Received message from client:', data, 'User:', user);
+    const mesageData = {message:data.text, conversationId:data.conversationId, senderId:user.sub, file:data.file, toUserId:data.toUserId};
+    console.log('Constructed message data:', mesageData);
     const message = await this.conversationService.sendMessage(mesageData, user);
 
     // broadcast to conversation room
