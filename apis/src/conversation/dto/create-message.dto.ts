@@ -1,4 +1,4 @@
-import { IsOptional, IsString } from "class-validator";
+import { IsOptional, IsString, Matches } from "class-validator";
 
 export class CreateMessageDto {
   // Array of participant user IDs (sender and optionally receiver IDs)
@@ -14,7 +14,9 @@ export class CreateMessageDto {
   @IsString()
   message!: string;
 
-  // Optional base64-encoded file (e.g., image)
+  @IsOptional()
+  @IsString()
+  @Matches(/^data:image\/(png|jpg|jpeg|gif);base64,/, { message: 'Invalid image format' })
   file?: string;
 
   @IsOptional()
