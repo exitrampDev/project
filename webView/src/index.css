@@ -4428,7 +4428,11 @@ img.buyerSig {max-width: 100%;}
     align-items: center;
     gap: 21px;
 }
-
+.listing__dashboard_listing_widget.lisiting_recent_view_widget .flex.items-center.gap-2.img_my_save_lisiting img{
+  width: 26px;
+  height: 26px;
+  object-fit: cover;
+}
 .listing__dashboard_listing_widget.lisiting_recent_view_widget  span ,
 .listing__dashboard_listing_widget.lisiting_recent_view_widget  td {
     font-size: 14px;
@@ -5742,6 +5746,13 @@ a.view-profile-link {
   min-height: 500px;
 }
 
+section.PricingCards__wrapper.seller__page_pricing_card .PricingCard {
+       padding-bottom: 80px;
+    position: relative;
+    padding-top: 20px;
+}
+
+section.PricingCards__wrapper.seller__page_pricing_card .PricingCard .btn-wrap {position: absolute;bottom: 30px;left: 0;}
 /* ==========================================================================
    Left Column: Sidebar Pane
    ========================================================================== */
@@ -5762,6 +5773,8 @@ a.view-profile-link {
   align-items: center;
   border-bottom: 1px solid #e0e0e0;
   background: #f8f9fa;
+  position: sticky;
+    top: 0;
 }
 
 .sidebar-title {
@@ -5931,7 +5944,13 @@ span.message-sender {
 .input-flex-container {
   display: flex;
   gap: 0.75rem;
-  align-items: flex-end;
+  align-items: center;
+}
+button.input-attach-btn.p-button.p-component.p-button-icon-only {padding: 2px;background: transparent;border-radius: 0;}
+
+button.input-attach-btn.p-button.p-component.p-button-icon-only span.p-button-icon.p-c.pi.pi-paperclip {
+    color: #000;
+    font-size: 27px;
 }
 
 .reply-textarea {
@@ -6127,13 +6146,15 @@ section.PricingCards__wrapper .PricingCards__container .PricingCard .PricingCard
     font-size: 40px;
     color: #FFB100;
     margin: 0 4px 0 15px;
+    line-height: 1;
 }
 
 .border-bottom-1.border-blue-line {
-    border-color: #4f93ff47;
+  border: 1px solid #4f93ff47;
+    display: block;
 }
 section.PricingCards__wrapper .PricingCards__container .PricingCard__header {
-    min-height: 180px;
+    min-height: 160px;
 }
 
 section.PricingCards__wrapper .PricingCards__container .PricingCard .btn-wrap {

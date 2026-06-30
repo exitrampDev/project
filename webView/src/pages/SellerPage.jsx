@@ -2,7 +2,6 @@ import React from 'react';
 import { Button } from 'primereact/button';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
-import 'primeflex/primeflex.css';
 import Footer from "../components/Footer";
 import Header from "../components/Header";
 import ListingDashboardPreview from "../assets/my-listing-dashboard-preview.jpg";
@@ -144,7 +143,7 @@ export function PricingCardsSection() {
   };
 
     return (
-        <section className="PricingCards__wrapper">
+        <section className="PricingCards__wrapper seller__page_pricing_card">
             {/* Header section from Seller Page.jpg */}
             <div className="Hero__header text-center">
                 <h2 className="hero__heading_text">For Sellers</h2>

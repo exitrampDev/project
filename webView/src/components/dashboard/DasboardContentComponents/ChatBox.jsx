@@ -9,6 +9,7 @@ import { InputText } from "primereact/inputtext";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { authState, apiBaseUrlState } from "../../../recoil/ctaState";
 import DashboardHeader from "./DashboardHeaderBlock";
+import { Dropdown } from "primereact/dropdown";
 import { io } from "socket.io-client";
 
 const ChatDashboard = () => {
@@ -40,9 +41,14 @@ const ChatDashboard = () => {
   const messageEndRef = useRef(null);
   const socketRef = useRef(null);
   const fileInputRef = useRef(null);
+// --- DROPDOWN & INVITE STATES ---
+  const [invites, setInvites] = useState([]);
+  const [loadingInvites, setLoadingInvites] = useState(false);
+  const [selectedBusiness, setSelectedBusiness] = useState(null);
+  const [selectedMember, setSelectedMember] = useState(null);
   
   const activeConversationIdRef = useRef(activeConversationId);
-
+  const userTypeCheck = authInfo?.user?.user_type;
   useEffect(() => {
     activeConversationIdRef.current = activeConversationId;
   }, [activeConversationId]);
@@ -51,7 +57,14 @@ const ChatDashboard = () => {
     fetchConversations();
   }, []);
 
-  useEffect(() => {
+ useEffect(() => {
+    if (displayModal) {
+      fetchInvites();
+    }
+  }, [displayModal]);
+
+
+useEffect(() => {
     if (!access_token || !API_BASE) return;
 
     const socket = io(API_BASE, {
@@ -69,13 +82,38 @@ const ChatDashboard = () => {
 
     socket.on("newMessage", (payload) => {
       const currentActiveId = activeConversationIdRef.current;
-      if (currentActiveId) {
+      const incomingChatId = payload.conversationId || payload.conversation?._id;
+
+      // 1. If it's the open chat, reload history transcript
+      if (currentActiveId && incomingChatId === currentActiveId) {
         fetchChatHistory(currentActiveId);
+      } else if (incomingChatId) {
+        // 2. If it's a background chat, bump up unread counts locally
+        setUnreadCounts((prev) => ({
+          ...prev,
+          [incomingChatId]: (prev[incomingChatId] || 0) + 1,
+        }));
       }
-      fetchConversations();
-      conversations.forEach((chat) => {
-        const chatId = chat._id || chat.id || chat.conversationId;
-        if (chatId) fetchUnreadCount(chatId);
+
+      // 3. Dynamically update the target items within the sidebar list
+      setConversations((prevConversations) => {
+        const existingChatIndex = prevConversations.findIndex(
+          (chat) => (chat._id || chat.id || chat.conversationId) === incomingChatId
+        );
+
+        if (existingChatIndex > -1) {
+          const updatedConversations = [...prevConversations];
+          updatedConversations[existingChatIndex] = {
+            ...updatedConversations[existingChatIndex],
+            lastMessage: payload.message || payload.text,
+            updatedAt: new Date().toISOString(), // Forces the item to bubble up
+          };
+          return updatedConversations;
+        } else {
+          // If the conversation metadata list row is totally fresh, pull down a fresh collection sync
+          fetchConversations();
+          return prevConversations;
+        }
       });
     });
 
@@ -84,6 +122,7 @@ const ChatDashboard = () => {
       socketRef.current = null;
     };
   }, [access_token, API_BASE]);
+
 
   useEffect(() => {
     if (!activeConversationId) {
@@ -141,7 +180,54 @@ const ChatDashboard = () => {
       setLoadingConversations(false);
     }
   };
+// --- FETCH INVITED MEMBERS DATA ---
+const fetchInvites = async () => {
+  try {
+    setLoadingInvites(true);
+    
+    // 1. Declare 'res' outside the blocks so it's accessible to the rest of the function
+    let res = null; 
+    const userType = authInfo?.user?.user_type;
 
+    // 2. Use an if-else chain to determine the URL
+    if (userType === "seller_broker") {
+      res = await fetch(`${API_BASE}/invite`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+          "Content-Type": "application/json",
+        },
+      });
+    } else if (userType === "buyer_basic") {
+      res = await fetch(`${API_BASE}/invite/received`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+          "Content-Type": "application/json",
+        },
+      });
+    } else {
+      // 3. Handle the edge case where user_type is missing or doesn't match
+      throw new Error("Invalid or missing user type.");
+    }
+    
+    // 4. Safely check if 'res' exists before accessing properties
+    if (res && res.status === 403) { 
+      handle403Forbidden(); 
+      return; 
+    }
+    
+    if (!res || !res.ok) throw new Error("Failed to load invitations.");
+
+    const result = await res.json();
+    setInvites(Array.isArray(result) ? result : result?.data || []);
+  } catch (error) {
+    console.error(error);
+    showToast("error", "Error", "Could not load invited members list.");
+  } finally {
+    setLoadingInvites(false);
+  }
+};
   const fetchChatHistory = async (conversationId) => {
     try {
       setLoadingHistory(true);
@@ -242,10 +328,42 @@ const ChatDashboard = () => {
     setIsSending(false);
   }
 };
+const handleViewDocument = (e, fileData) => {
+  if (!fileData) return;
 
+  // If it's a standard web URL link, let the default navigation handle it
+  if (fileData.startsWith('http://') || fileData.startsWith('https://')) {
+    return;
+  }
+
+  // If it's a base64 string data URI, bypass the browser's about:blank block
+  if (fileData.startsWith('data:')) {
+    e.preventDefault(); // Stop default anchor navigation
+    
+    try {
+      const parts = fileData.split(';base64,');
+      const contentType = parts[0].split(':')[1];
+      const raw = window.atob(parts[1]);
+      const rawLength = raw.length;
+      const uInt8Array = new Uint8Array(rawLength);
+
+      for (let i = 0; i < rawLength; ++i) {
+        uInt8Array[i] = raw.charCodeAt(i);
+      }
+
+      const blob = new Blob([uInt8Array], { type: contentType });
+      const blobUrl = URL.createObjectURL(blob);
+      
+      // Open the clean, browser-safe local Blob URL safely
+      window.open(blobUrl, '_blank');
+    } catch (error) {
+      console.error("Failed to parse base64 document template payload:", error);
+    }
+  }
+};
   const handleStartNewChat = async () => {
-    if (!newChatUserId.trim() || !newInitialMessage.trim()) {
-      showToast("warn", "Missing Fields", "Please populate all matching forms input segments.");
+    if (!selectedMember || !newInitialMessage.trim()) {
+      showToast("warn", "Missing Fields", "Please select a member and type a message.");
       return;
     }
 
@@ -258,7 +376,7 @@ const ChatDashboard = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          toUserId: newChatUserId.trim(),
+          toUserId: selectedMember, // Uses the chosen member's ID dynamically
           message: newInitialMessage.trim(),
         }),
       });
@@ -271,8 +389,9 @@ const ChatDashboard = () => {
 
       showToast("success", "Success", "Chat connection established successfully!");
       
-      setNewChatUserId("");
       setNewInitialMessage("");
+      setSelectedBusiness(null);
+      setSelectedMember(null);
       setDisplayModal(false);
 
       await fetchConversations();
@@ -286,7 +405,6 @@ const ChatDashboard = () => {
       setIsCreatingChat(false);
     }
   };
-
   const showToast = (severity, summary, detail) => {
     toast.current?.show({ severity, summary, detail, life: 3000 });
   };
@@ -310,12 +428,43 @@ const ChatDashboard = () => {
       // const count = result?.count ?? result?.data?.count ?? result?.unreadCount ?? 0;
       const count = result ?? 0;
       setUnreadCounts((prev) => ({ ...prev, [conversationId]: count }));
-      console.log(`Unread count for conversation ${conversationId}:`, count);
+      // console.log(`Unread count for conversation ${conversationId}:`, count);
     } catch (err) {
       console.error("Unread count error", err);
     }
   };
+  // --- GENERATING DROPDOWN OPTIONS ---
+  // Get unique list of businesses from the invitations payload
+  const businessOptions = Array.from(
+    new Map(
+      invites
+        .filter((inv) => inv.businessId)
+        .map((inv) => [inv.businessId._id, { label: inv.businessId.listingTitle, value: inv.businessId._id }])
+    ).values()
+  );
+  const markUnreadCount = (childId) => {
+    console.log("this is child Id", childId);
+  }
 
+  const filteredMemberOptions = invites.map((inv) => {
+  const userType = authInfo?.user?.user_type;
+  
+  // 1. Determine which user object we are dealing with based on the role
+  let targetUser = null;
+  if (userType === "seller_broker") {
+    targetUser = inv.invitedUserId;
+  } else if (userType === "buyer_basic") {
+    targetUser = inv.invitedByUserId;
+  }
+
+  // 2. Build the email suffix dynamically
+  const emailSuffix = targetUser?.email ? ` ${targetUser.email}` : "";
+
+  return {
+    label: `${emailSuffix} | ${inv.businessId.listingTitle || '-'}`,
+    value: targetUser?._id, 
+  };
+});
   const renderModalFooter = () => {
     return (
       <div className="modal-footer-container">
@@ -348,11 +497,11 @@ const ChatDashboard = () => {
               <div className="empty-conversations">No active chats found.</div>
             ) : (
               [...conversations]
-                .sort((a, b) => {
-                  const dateA = new Date(a.updatedAt || a.createdAt || 0);
-                  const dateB = new Date(b.updatedAt || b.createdAt || 0);
-                  return dateB - dateA;
-                })
+                // .sort((a, b) => {
+                //   const dateA = new Date(a.updatedAt || a.createdAt || 0);
+                //   const dateB = new Date(b.updatedAt || b.createdAt || 0);
+                //   return dateB - dateA;
+                // })
                 .map((chat) => {
                   const chatId = chat._id || chat.id || chat.conversationId;
                   const isSelected = chatId === activeConversationId;
@@ -376,6 +525,7 @@ const ChatDashboard = () => {
                       onClick={() => {
                         setActiveConversationId(chatId);
                         setUnreadCounts((prev) => ({ ...prev, [chatId]: 0 }));
+                        markUnreadCount(chat._id)
                       }}
                       className={`conversation-item ${isSelected ? 'selected' : ''}`}
                     >
@@ -414,8 +564,9 @@ const ChatDashboard = () => {
                                  msg.isOuterSender === false;
                     const isAdmin = sender?.user_type === "admin";
                     
-                    // Destructure attachment payload properties depending on back-end response models
-                    const msgAttachment = msg.attachment || msg.file;
+                    // Unified file data checker targeting back-end schema varieties
+                    const fileData = msg.file || msg.base64 || msg.attachment?.url || msg.attachment?.base64;
+                    const isImage = fileData?.startsWith("data:image/") || /\.(jpeg|jpg|gif|png|webp)$/i.test(fileData || "");
 
                     return (
                       <div 
@@ -433,23 +584,31 @@ const ChatDashboard = () => {
                           {msg.message && <p className="message-text">{msg.message}</p>}
 
                           {/* Dynamic Attachment Rendering Handler */}
-                          {msgAttachment && (
+                          {fileData && (
                             <div className="message-attachment-container" style={{ marginTop: '8px' }}>
-                              {msgAttachment.type?.startsWith("image/") ? (
+                              {isImage ? (
                                 <img 
-                                  src={msgAttachment.url || msgAttachment.base64} 
-                                  alt={msgAttachment.name || "Attachment"} 
+                                  src={fileData} 
+                                  alt={msg.name || "Attachment"} 
                                   style={{ maxWidth: '100%', maxHeight: '200px', borderRadius: '4px', display: 'block' }} 
                                 />
                               ) : (
                                 <a 
-                                  href={msgAttachment.url || msgAttachment.base64} 
+                                  href={fileData} 
                                   target="_blank" 
                                   rel="noopener noreferrer"
-                                  style={{ display: 'flex', alignItems: 'center', gap: '6px', textDecoration: 'underline', color: isMe ? '#fff' : '#007ad9' }}
+                                  onClick={(e) => handleViewDocument(e, fileData)}
+                                  style={{ 
+                                    display: 'flex', 
+                                    alignItems: 'center', 
+                                    gap: '6px', 
+                                    textDecoration: 'underline', 
+                                    cursor: 'pointer',
+                                    color: typeof isMe !== 'undefined' && isMe ? '#fff' : '#007ad9' 
+                                  }}
                                 >
                                   <i className="pi pi-file"></i>
-                                  <span>{msgAttachment.name || "View Document"}</span>
+                                  <span>View Document</span> 
                                 </a>
                               )}
                             </div>
@@ -494,7 +653,7 @@ const ChatDashboard = () => {
                   <Button 
                     icon="pi pi-paperclip" 
                     type="button"
-                    className="p-button-text input-attach-btn" 
+                    className="input-attach-btn" 
                     onClick={() => fileInputRef.current?.click()} 
                     disabled={isSending}
                   />
@@ -538,15 +697,28 @@ const ChatDashboard = () => {
       <Dialog 
         header="Start a New Conversation" 
         visible={displayModal} 
-        style={{ width: '450px' }} 
+        style={{ width: '650px' }} 
         modal 
         footer={renderModalFooter()} 
-        onHide={() => setDisplayModal(false)}
+        onHide={() => { setDisplayModal(false); setSelectedBusiness(null); setSelectedMember(null); }}
       >
         <div className="p-fluid modal-body-layout">
           <div className="field">
-            <label htmlFor="recipientId" className="modal-label">Recipient User ID</label>
-            <InputText id="recipientId" value={newChatUserId} onChange={(e) => setNewChatUserId(e.target.value)} placeholder="Enter context target user identification string..." disabled={isCreatingChat} />
+           <label htmlFor="recipientId" className="modal-label">
+            {authInfo?.user?.user_type === "seller_broker" 
+              ? "Select Invitee" 
+              : authInfo?.user?.user_type === "buyer_basic" 
+                ? "Select Inviter" 
+                : "Select User"}
+          </label>
+            <Dropdown 
+              id="memberSelect" 
+              value={selectedMember} 
+              options={filteredMemberOptions} 
+              onChange={(e) => setSelectedMember(e.value)} 
+              placeholder={!selectedBusiness ? "Please select a business listing first" : "Choose an invited user..."} 
+              
+            />
           </div>
           <div className="field">
             <label htmlFor="initialMessage" className="modal-label">Initial Message</label>
