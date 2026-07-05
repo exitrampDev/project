@@ -124,7 +124,7 @@ const ChatDashboardAdmin = () => {
   const fetchAvailableUsers = async () => {
     try {
       setLoadingUsers(true);
-      const res = await fetch(`http://localhost:5000/users`, {
+      const res = await fetch(`${API_BASE}/users`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${access_token}`,
