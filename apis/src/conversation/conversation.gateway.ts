@@ -53,6 +53,7 @@ export class ConversationGateway  {
     this.server
       .to(message.conversationId.toString())
       .emit('newMessage', message);
+      
 
     return message;
   }

@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException, UseInterceptors } from '@nestjs/common';
 import { Model, Types } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { Message, MessageDocument } from './schema/message.schema';
@@ -30,13 +30,19 @@ async findAllMyConversations(user): Promise<ConversationDocument[]> {
     .exec();
 }
 
-async findAllChatHistory(conversationId): Promise<MessageDocument[]> {
-  return this.messageModel
+async findAllChatHistory(conversationId, user): Promise<MessageDocument[]> {
+  const data = await this.messageModel
     .find({
       conversationId:new Types.ObjectId(conversationId),
     })
     .populate({ path: 'senderId', model: 'User' , select:'first_name last_name email user_type'})
     .exec();
+    data.forEach((message) => {
+
+      this.markMessageAsRead(message._id.toString(), user);
+      
+    });
+  return data;
 }
 
 

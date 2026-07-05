@@ -19,7 +19,7 @@ export class ConversationController {
   @UseGuards(JwtAuthGuard)
   @Get(':id/history')
     async findAllChatHistory(@User() user: any, @Param('id') id: string) {
-      return this.conversationService.findAllChatHistory(id);
+      return this.conversationService.findAllChatHistory(id, user);
     }
   
 
@@ -42,7 +42,7 @@ export class ConversationController {
       return this.conversationService.getUnreadCount(user.userId, conversationId);
     }
 
-      // ===========================================For Admin==================================
+  // ===========================================For Admin==================================
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
@@ -55,7 +55,7 @@ export class ConversationController {
   @Roles('admin')
   @Get('admin/:id/history')
     async getChatHistoryForAdmin(@User() user: any, @Param('id') id: string) {
-      return this.conversationService.findAllChatHistory(id);
+      return this.conversationService.findAllChatHistory(id, user);
     }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -64,8 +64,6 @@ export class ConversationController {
   async sendAdminMessage(@Body() createMessageDto: CreateMessageDto, @User() user: any) {
     return this.conversationService.sendAdminMessage(createMessageDto, user);
   }
-
-
   
 
 }
