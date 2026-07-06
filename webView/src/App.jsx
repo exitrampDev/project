@@ -74,7 +74,7 @@ const App = () => {
         <Route path="/pricing" element={<Pricing/>} />
         <Route path="/broker" element={<Broker />} />
         <Route path="/broker/:id" element={<BrokerSingleView />} />
-        <Route path="/seller-details" element={<SellerPage />} />
+        <Route path="/seller-features" element={<SellerPage />} />
         <Route path="/contactus" element={<ContactUs />} />
         <Route path="/termscondition" element={<TermsCondition />} />
         <Route path="/privacypolicy" element={<PrivacyPolicy />} />

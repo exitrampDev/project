@@ -71,7 +71,7 @@ const MyTickets = () => {
     try {
       setSubmitLoading(true);
 
-      const response = await fetch(`${API_BASE}/tickets/create`, {
+      const response = await fetch(`${API_BASE}/tickets`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${access_token}`,

@@ -123,7 +123,7 @@ const Header = () => {
     { label: "Pricing", 
       items: [
         { label: "Pricing", command: () => navigate("/pricing") },
-        { label: "Seller", command: () => navigate("/seller-details") },
+        { label: "Seller", command: () => navigate("/seller-features") },
       ],
     },
 
@@ -142,7 +142,7 @@ const Header = () => {
         { label: "Insights", command: () => navigate("/insight") },
         { label: "How to Use", command: () => navigate("/page/how-to-use") },
         { label: "Contact Us", command: () => navigate("/contactus") },
-        { label: "Submit Ticket", command: () => navigate("/submit-ticket") },
+        // { label: "Submit Ticket", command: () => navigate("/submit-ticket") },
       ],
     },
   ];
