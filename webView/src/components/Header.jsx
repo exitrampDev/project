@@ -120,18 +120,11 @@ const Header = () => {
   const navItems = [
     { label: "Listings", command: () => navigate("/listings") },
     { label: "Find a Broker", command: () => navigate("/find-broker") },
-    { label: "Pricing", 
-      items: [
-        { label: "Pricing", command: () => navigate("/pricing") },
-        { label: "Seller", command: () => navigate("/seller-features") },
-      ],
-    },
-
-
+    { label: "Pricing", command: () => navigate("/pricing") },
     {
       label: "Features",
       items: [
-        { label: "Selling", command: () => navigate("/page/selling") },
+        { label: "Selling", command: () => navigate("/seller-features") },
         { label: "Buying", command: () => navigate("/page/buying") },
         { label: "Experts", command: () => navigate("/page/experts") },
       ],
