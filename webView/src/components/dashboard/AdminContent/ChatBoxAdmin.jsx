@@ -1,11 +1,10 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { Card } from "primereact/card";
 import { Button } from "primereact/button";
 import { Toast } from "primereact/toast";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Dialog } from "primereact/dialog"; 
-import { Dropdown } from "primereact/dropdown"; // Imported Dropdown for user selection
+import { Dropdown } from "primereact/dropdown"; 
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { authState, apiBaseUrlState } from "../../../recoil/ctaState";
 import DashboardHeaderAdmin from "./DaashboardHeaderAdmin";
@@ -29,12 +28,12 @@ const ChatDashboardAdmin = () => {
   const [isSending, setIsSending] = useState(false);
   const [activeConversationId, setActiveConversationId] = useState(null); 
 
-  // --- NEW USER DROPDOWN STATE ---
+  // --- USER DROPDOWN STATE ---
   const [availableUsers, setAvailableUsers] = useState([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
 
   // --- ATTACHMENT STATE ---
-  const [attachment, setAttachment] = useState(null); // stores { name, type, base64 }
+  const [attachment, setAttachment] = useState(null); 
 
   const [displayModal, setDisplayModal] = useState(false);
   const [newChatUserId, setNewChatUserId] = useState("");
@@ -56,7 +55,6 @@ const ChatDashboardAdmin = () => {
     fetchConversations();
   }, []);
 
-  // Fetch users whenever the Modal is popped open
   useEffect(() => {
     if (displayModal) {
       fetchAvailableUsers();
@@ -79,12 +77,39 @@ const ChatDashboardAdmin = () => {
     socket.on("disconnect", () => console.log("Admin Socket Disconnected"));
     socket.on("connect_error", (err) => console.error("Socket Error:", err.message));
 
-    socket.on("newMessage", (payload) => {
+   socket.on("newMessage", (payload) => {
       const currentActiveId = activeConversationIdRef.current;
-      if (currentActiveId) {
+      const incomingChatId = payload.conversationId || payload.conversation?._id;
+
+      if (currentActiveId && incomingChatId === currentActiveId) {
         fetchChatHistory(currentActiveId);
+      } else if (incomingChatId) {
+        // This will now trigger reliably for background chats 
+        // because you've joined all conversation channels!
+        setUnreadCounts((prev) => ({
+          ...prev,
+          [incomingChatId]: (prev[incomingChatId] || 0) + 1,
+        }));
       }
-      fetchConversations();
+
+      setConversations((prevConversations) => {
+        const existingChatIndex = prevConversations.findIndex(
+          (chat) => (chat._id || chat.id || chat.conversationId) === incomingChatId
+        );
+
+        if (existingChatIndex > -1) {
+          const updatedConversations = [...prevConversations];
+          updatedConversations[existingChatIndex] = {
+            ...updatedConversations[existingChatIndex],
+            lastMessage: payload.message || payload.text,
+            updatedAt: new Date().toISOString(),
+          };
+          return updatedConversations;
+        } else {
+          fetchConversations();
+          return prevConversations;
+        }
+      });
     });
 
     return () => {
@@ -120,7 +145,6 @@ const ChatDashboardAdmin = () => {
     navigate("/login");
   };
 
-  // Fetch user directory from your user service resource
   const fetchAvailableUsers = async () => {
     try {
       setLoadingUsers(true);
@@ -136,10 +160,8 @@ const ChatDashboardAdmin = () => {
       if (!res.ok) throw new Error("Failed to load users list.");
 
       const result = await res.json();
-      // Safe fallback processing depending on structure of your returned users data stream array
       const userList = Array.isArray(result) ? result : result?.data || [];
       
-      // Transform records nicely to give PrimeReact Dropdown standard label/value options
       const formattedUsers = userList.map(user => ({
         label: user.name || `${user.first_name || ""} ${user.last_name || ""}`.trim() || user.email || user._id,
         value: user._id || user.id
@@ -154,7 +176,6 @@ const ChatDashboardAdmin = () => {
     }
   };
 
-  // Uses your distinct Admin Endpoint: /conversation/all-conversations
   const fetchConversations = async () => {
     try {
       setLoadingConversations(true);
@@ -221,14 +242,12 @@ const ChatDashboardAdmin = () => {
       });
       if (!res.ok) return;
       const result = await res.json();
-      const count = result ?? 0;
-      setUnreadCounts((prev) => ({ ...prev, [conversationId]: count }));
+      setUnreadCounts((prev) => ({ ...prev, [conversationId]: result ?? 0 }));
     } catch (err) {
       console.error("Unread count error", err);
     }
   };
 
-  // --- HANDLE FILE CONVERSION TO BASE64 ---
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -249,7 +268,6 @@ const ChatDashboardAdmin = () => {
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
-  // --- HYBRID TRANSMISSION DISPATCH (SOCKET + OPTIMISTIC UI) ---
   const handleSendMessage = async () => {
     const text = replyMessage.trim();
     if ((!text && !attachment) || !activeConversationId) return;
@@ -270,30 +288,24 @@ const ChatDashboardAdmin = () => {
         file: attachment ? attachment.base64 : null
       };
 
-      // 1. Emit Payload over Socket
       socket.emit("sendMessage", payload);
 
-      // 2. Local Appending State Layout Configuration
       const optimisticMessage = {
         _id: `temp-${Date.now()}`,
         message: text,
         file: attachment ? attachment.base64 : null,
         createdAt: new Date().toISOString(),
-        senderId: [
-          {
-            _id: loggedInUserId,
-            first_name: authInfo?.user?.first_name || "Admin",
-            last_name: authInfo?.user?.last_name || "",
-            user_type: "admin"
-          }
-        ],
+        senderId: {
+          _id: loggedInUserId,
+          first_name: authInfo?.user?.first_name || "Admin",
+          last_name: authInfo?.user?.last_name || "",
+          user_type: "admin"
+        },
         senderType: "user",
         isOuterSender: false
       };
 
       setMessages((prevMessages) => [...prevMessages, optimisticMessage]);
-
-      // 3. Purge inputs
       setReplyMessage("");
       removeAttachment();
       
@@ -304,39 +316,65 @@ const ChatDashboardAdmin = () => {
       setIsSending(false);
     }
   };
-const handleViewDocument = (e, fileData) => {
-  if (!fileData) return;
+const markUnreadCount = async (childId) => {
+    if (!childId || !API_BASE || !access_token) return;
 
-  // If it's a standard web URL link, let the default navigation handle it
-  if (fileData.startsWith('http://') || fileData.startsWith('https://')) {
-    return;
-  }
-
-  // If it's a base64 string data URI, bypass the browser's about:blank block
-  if (fileData.startsWith('data:')) {
-    e.preventDefault(); // Stop default anchor navigation
-    
     try {
-      const parts = fileData.split(';base64,');
-      const contentType = parts[0].split(':')[1];
-      const raw = window.atob(parts[1]);
-      const rawLength = raw.length;
-      const uInt8Array = new Uint8Array(rawLength);
+      console.log("Marking message as read for conversation/message ID:", childId);
+      
+      const res = await fetch(`${API_BASE}/conversation/message-read-by/${childId}`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+          "Content-Type": "application/json",
+        },
+      });
 
-      for (let i = 0; i < rawLength; ++i) {
-        uInt8Array[i] = raw.charCodeAt(i);
+      if (res.status === 403) { 
+        handle403Forbidden(); 
+        return; 
       }
 
-      const blob = new Blob([uInt8Array], { type: contentType });
-      const blobUrl = URL.createObjectURL(blob);
+      if (!res.ok) throw new Error("Failed to update read status on the server.");
+
+      // Optional: Update your local unread badge state immediately upon success
+      setUnreadCounts((prev) => ({ ...prev, [childId]: 0 }));
       
-      // Open the clean, browser-safe local Blob URL safely
-      window.open(blobUrl, '_blank');
-    } catch (error) {
-      console.error("Failed to parse base64 document template payload:", error);
+    } catch (err) {
+      console.error("Error in markUnreadCount:", err);
     }
-  }
-};
+  };
+  const handleViewDocument = (e, fileData) => {
+    if (!fileData) return;
+
+    if (fileData.startsWith('http://') || fileData.startsWith('https://')) {
+      return;
+    }
+
+    if (fileData.startsWith('data:')) {
+      e.preventDefault(); 
+      
+      try {
+        const parts = fileData.split(';base64,');
+        const contentType = parts[0].split(':')[1];
+        const raw = window.atob(parts[1]);
+        const rawLength = raw.length;
+        const uInt8Array = new Uint8Array(rawLength);
+
+        for (let i = 0; i < rawLength; ++i) {
+          uInt8Array[i] = raw.charCodeAt(i);
+        }
+
+        const blob = new Blob([uInt8Array], { type: contentType });
+        const blobUrl = URL.createObjectURL(blob);
+        
+        window.open(blobUrl, '_blank');
+      } catch (error) {
+        console.error("Failed to parse base64 document template payload:", error);
+      }
+    }
+  };
+
   const handleStartNewChat = async () => {
     if (!newChatUserId || !newInitialMessage.trim()) {
       showToast("warn", "Missing Fields", "Please populate all matching forms input segments.");
@@ -366,7 +404,7 @@ const handleViewDocument = (e, fileData) => {
       showToast("success", "Success", "Chat connection established successfully!");
       
       setNewChatUserId("");
-      setNewInitialMessage(""); // Fixed: previously called as `newInitialMessage("")`
+      setNewInitialMessage(""); 
       setDisplayModal(false);
 
       await fetchConversations();
@@ -405,7 +443,6 @@ const handleViewDocument = (e, fileData) => {
       <DashboardHeaderAdmin headingData="Messaging Center" />
 
       <div className="chat-layout">
-        
         {/* LEFT COLUMN: Sidebar */}
         <div className="chat-sidebar">
           <div className="sidebar-header">
@@ -450,6 +487,7 @@ const handleViewDocument = (e, fileData) => {
                       onClick={() => {
                         setActiveConversationId(chatId);
                         setUnreadCounts((prev) => ({ ...prev, [chatId]: 0 }));
+                        markUnreadCount(chat._id);
                       }}
                       className={`conversation-item ${isSelected ? 'selected' : ''}`}
                     >
@@ -470,151 +508,145 @@ const handleViewDocument = (e, fileData) => {
           </div>
         </div>
 
-         {/* RIGHT COLUMN: Chat Workspace */}
-                <div className="chat-workspace">
-                  {activeConversationId ? (
-                    <>
-                      <div className="chat-history-area">
-                        {loadingHistory ? (
-                          <div className="loader-container central">
-                            <i className="pi pi-spin pi-spinner loader-icon large"></i>
-                          </div>
-                        ) : (
-                          messages.map((msg, idx) => {
-                            const sender = msg.senderId;
-                            const isMe = sender?._id === loggedInUserId || 
-                                         (Array.isArray(msg.senderId) && sender?._id === loggedInUserId) ||
-                                         msg.senderType?.toLowerCase() === "user" || 
-                                         msg.isOuterSender === false;
-                            const isAdmin = sender?.user_type === "admin";
-                            
-                            // Unified file data checker targeting back-end schema varieties
-                            const fileData = msg.file || msg.base64 || msg.attachment?.url || msg.attachment?.base64;
-                            const isImage = fileData?.startsWith("data:image/") || /\.(jpeg|jpg|gif|png|webp)$/i.test(fileData || "");
-        
-                            return (
-                              <div 
-                                key={msg._id || msg.id || idx} 
-                                className={`message-row ${isMe ? 'me-align' : 'them-align'} ${isAdmin ? 'admin-row' : ''}`}
-                              >
-                                <div className={`message-bubble ${isMe ? 'me-bubble' : 'them-bubble'} ${isAdmin ? 'admin-bubble' : ''}`}>
-                                  <span className={`message-sender ${isMe ? 'me-sender' : 'them-sender'} ${isAdmin ? 'admin-sender' : ''}`}>
-                                    {isAdmin ? "Admin" : sender?.first_name 
-                                      ? `${sender.first_name} ${sender.last_name || ""}`.trim() 
-                                      : `User ...${sender?._id?.slice(-6)}`}
-                                  </span>
-                                  
-                                  {/* Text Rendering Context */}
-                                  {msg.message && <p className="message-text">{msg.message}</p>}
-        
-                                  {/* Dynamic Attachment Rendering Handler */}
-                                  {fileData && (
-                                    <div className="message-attachment-container" style={{ marginTop: '8px' }}>
-                                      {isImage ? (
-                                        <img 
-                                          src={fileData} 
-                                          alt={msg.name || "Attachment"} 
-                                          style={{ maxWidth: '100%', maxHeight: '200px', borderRadius: '4px', display: 'block' }} 
-                                        />
-                                      ) : (
-                                        <a 
-                                          href={fileData} 
-                                          target="_blank" 
-                                          rel="noopener noreferrer"
-                                          onClick={(e) => handleViewDocument(e, fileData)}
-                                          style={{ 
-                                            display: 'flex', 
-                                            alignItems: 'center', 
-                                            gap: '6px', 
-                                            textDecoration: 'underline', 
-                                            cursor: 'pointer',
-                                            color: typeof isMe !== 'undefined' && isMe ? '#fff' : '#007ad9' 
-                                          }}
-                                        >
-                                          <i className="pi pi-file"></i>
-                                          <span>View Document</span> 
-                                        </a>
-                                      )}
-                                    </div>
-                                  )}
-        
-                                  <div className={`message-timestamp ${isMe ? 'me-time' : 'them-time'}`}>
-                                    {formatDate(msg.createdAt)}
-                                  </div>
-                                </div>
-                              </div>
-                            );
-                          })
-                        )}
-                        <div ref={messageEndRef} />
-                      </div>
-        
-                      {/* CHAT INPUT BAR WITH ATTACHMENTS */}
-                      <div className="chat-input-bar">
-                        {/* Visual preview of staging attachment before emitting payload */}
-                        {attachment && (
-                          <div className="attachment-preview-bar" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 12px', background: '#f4f4f4', borderBottom: '1px solid #ddd', borderRadius: '4px 4px 0 0' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                              <i className={attachment.type.startsWith("image/") ? "pi pi-image" : "pi pi-file-pdf"}></i>
-                              <span style={{ fontSize: '0.9rem', maxWidth: '250px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                {attachment.name}
-                              </span>
-                            </div>
-                            <Button icon="pi pi-times" className="p-button-rounded p-button-text p-button-danger p-button-sm" onClick={removeAttachment} />
-                          </div>
-                        )}
-        
-                        <div className="input-flex-container">
-                          {/* Hidden browser input handling file selection */}
-                          <input 
-                            type="file" 
-                            ref={fileInputRef} 
-                            style={{ display: 'none' }} 
-                            accept="image/*,application/pdf,application/*"
-                            onChange={handleFileChange} 
-                          />
+        {/* RIGHT COLUMN: Chat Workspace */}
+        <div className="chat-workspace">
+          {activeConversationId ? (
+            <>
+              <div className="chat-history-area">
+                {loadingHistory ? (
+                  <div className="loader-container central">
+                    <i className="pi pi-spin pi-spinner loader-icon large"></i>
+                  </div>
+                ) : (
+                  messages.map((msg, idx) => {
+                    const sender = msg.senderId;
+                    const isMe = sender?._id === loggedInUserId || 
+                                 (Array.isArray(sender) && sender[0]?._id === loggedInUserId) ||
+                                 msg.senderType?.toLowerCase() === "user" || 
+                                 msg.isOuterSender === false;
+                    const isAdmin = sender?.user_type === "admin";
+                    
+                    const fileData = msg.file || msg.base64 || msg.attachment?.url || msg.attachment?.base64;
+                    const isImage = fileData?.startsWith("data:image/") || /\.(jpeg|jpg|gif|png|webp)$/i.test(fileData || "");
+
+                    return (
+                      <div 
+                        key={msg._id || msg.id || idx} 
+                        className={`message-row ${isMe ? 'me-align' : 'them-align'} ${isAdmin ? 'admin-row' : ''}`}
+                      >
+                        <div className={`message-bubble ${isMe ? 'me-bubble' : 'them-bubble'} ${isAdmin ? 'admin-bubble' : ''}`}>
+                          <span className={`message-sender ${isMe ? 'me-sender' : 'them-sender'} ${isAdmin ? 'admin-sender' : ''}`}>
+                            {isAdmin ? "Admin" : sender?.first_name 
+                              ? `${sender.first_name} ${sender.last_name || ""}`.trim() 
+                              : `User ...${sender?._id?.slice(-6)}`}
+                          </span>
                           
-                          <Button 
-                            icon="pi pi-paperclip" 
-                            type="button"
-                            className="input-attach-btn" 
-                            onClick={() => fileInputRef.current?.click()} 
-                            disabled={isSending}
-                          />
-        
-                          <InputTextarea
-                            value={replyMessage}
-                            onChange={(e) => setReplyMessage(e.target.value)}
-                            rows={2}
-                            autoResize
-                            placeholder="Type your message here..."
-                            disabled={isSending}
-                            className="reply-textarea"
-                            onKeyDown={(e) => {
-                              if (e.key === "Enter" && !e.shiftKey) {
-                                e.preventDefault();
-                                handleSendMessage();
-                              }
-                            }}
-                          />
-                          <Button 
-                            icon="pi pi-send" 
-                            onClick={handleSendMessage} 
-                            loading={isSending} 
-                            disabled={!replyMessage.trim() && !attachment} 
-                            className="input-send-btn" 
-                          />
+                          {msg.message && <p className="message-text">{msg.message}</p>}
+
+                          {fileData && (
+                            <div className="message-attachment-container" style={{ marginTop: '8px' }}>
+                              {isImage ? (
+                                <img 
+                                  src={fileData} 
+                                  alt={msg.name || "Attachment"} 
+                                  style={{ maxWidth: '100%', maxHeight: '200px', borderRadius: '4px', display: 'block' }} 
+                                />
+                              ) : (
+                                <a 
+                                  href={fileData} 
+                                  target="_blank" 
+                                  rel="noopener noreferrer"
+                                  onClick={(e) => handleViewDocument(e, fileData)}
+                                  style={{ 
+                                    display: 'flex', 
+                                    alignItems: 'center', 
+                                    gap: '6px', 
+                                    textDecoration: 'underline', 
+                                    cursor: 'pointer',
+                                    color: isMe ? '#fff' : '#007ad9' 
+                                  }}
+                                >
+                                  <i className="pi pi-file"></i>
+                                  <span>View Document</span> 
+                                </a>
+                              )}
+                            </div>
+                          )}
+
+                          <div className={`message-timestamp ${isMe ? 'me-time' : 'them-time'}`}>
+                            {formatDate(msg.createdAt)}
+                          </div>
                         </div>
                       </div>
-                    </>
-                  ) : (
-                    <div className="chat-placeholder">
-                      <i className="pi pi-comments placeholder-icon"></i>
-                      <p className="placeholder-text">Select a discussion or click the "+" icon to start a new chat workspace layout window pane view.</p>
-                    </div>
-                  )}
-                </div>
+                    );
+                  })
+                )}
+                <div ref={messageEndRef} />
+              </div>
 
+              {/* CHAT INPUT BAR WITH ATTACHMENTS */}
+              <div className="chat-input-bar">
+                {attachment && (
+                  <div className="attachment-preview-bar" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 12px', background: '#f4f4f4', borderBottom: '1px solid #ddd', borderRadius: '4px 4px 0 0' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <i className={attachment.type.startsWith("image/") ? "pi pi-image" : "pi pi-file-pdf"}></i>
+                      <span style={{ fontSize: '0.9rem', maxWidth: '250px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {attachment.name}
+                      </span>
+                    </div>
+                    <Button icon="pi pi-times" className="p-button-rounded p-button-text p-button-danger p-button-sm" onClick={removeAttachment} />
+                  </div>
+                )}
+
+                <div className="input-flex-container">
+                  <input 
+                    type="file" 
+                    ref={fileInputRef} 
+                    style={{ display: 'none' }} 
+                    accept="image/*,application/pdf,application/*"
+                    onChange={handleFileChange} 
+                  />
+                  
+                  <Button 
+                    icon="pi pi-paperclip" 
+                    type="button"
+                    className="input-attach-btn" 
+                    onClick={() => fileInputRef.current?.click()} 
+                    disabled={isSending}
+                  />
+
+                  <InputTextarea
+                    value={replyMessage}
+                    onChange={(e) => setReplyMessage(e.target.value)}
+                    rows={2}
+                    autoResize
+                    placeholder="Type your message here..."
+                    disabled={isSending}
+                    className="reply-textarea"
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" && !e.shiftKey) {
+                        e.preventDefault();
+                        handleSendMessage();
+                      }
+                    }}
+                  />
+                  <Button 
+                    icon="pi pi-send" 
+                    onClick={handleSendMessage} 
+                    loading={isSending} 
+                    disabled={!replyMessage.trim() && !attachment} 
+                    className="input-send-btn" 
+                  />
+                </div>
+              </div>
+            </>
+          ) : (
+            <div className="chat-placeholder">
+              <i className="pi pi-comments placeholder-icon"></i>
+              <p className="placeholder-text">Select a discussion or click the "+" icon to start a new chat workspace layout window pane view.</p>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* POPUP MODAL */}
@@ -636,7 +668,7 @@ const handleViewDocument = (e, fileData) => {
               onChange={(e) => setNewChatUserId(e.value)} 
               placeholder={loadingUsers ? "Loading user list..." : "Select a user to begin..."} 
               disabled={isCreatingChat || loadingUsers}
-              filter // Allows searching through users if the list is long
+              filter 
               showClear
             />
           </div>

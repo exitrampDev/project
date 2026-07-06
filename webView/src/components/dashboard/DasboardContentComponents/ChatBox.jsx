@@ -75,7 +75,21 @@ useEffect(() => {
 
     socketRef.current = socket;
 
-    socket.on("connect", () => console.log("Socket Connected:", socket.id));
+    socket.on("connect", () => {
+      console.log("Socket Connected:", socket.id);
+      
+      // --- BACKUP JOIN ALL ACTIVE ROOMS ON DELAYED CONNECT ---
+      if (conversations.length > 0) {
+        conversations.forEach((chat) => {
+          const chatId = chat._id || chat.id || chat.conversationId;
+          if (chatId) {
+            socket.emit("joinConversation", { conversationId: chatId });
+          }
+        });
+        console.log("Re-joined all active background conversation rooms.");
+      }
+    });
+
     socket.on("disconnect", () => console.log("Socket Disconnected"));
     socket.on("connect_error", (err) => console.error("Socket Error:", err.message));
     socket.on("joined", (data) => console.log("Joined Room Context:", data));
@@ -84,18 +98,17 @@ useEffect(() => {
       const currentActiveId = activeConversationIdRef.current;
       const incomingChatId = payload.conversationId || payload.conversation?._id;
 
-      // 1. If it's the open chat, reload history transcript
       if (currentActiveId && incomingChatId === currentActiveId) {
         fetchChatHistory(currentActiveId);
       } else if (incomingChatId) {
-        // 2. If it's a background chat, bump up unread counts locally
+        // This will now trigger reliably for background chats 
+        // because you've joined all conversation channels!
         setUnreadCounts((prev) => ({
           ...prev,
           [incomingChatId]: (prev[incomingChatId] || 0) + 1,
         }));
       }
 
-      // 3. Dynamically update the target items within the sidebar list
       setConversations((prevConversations) => {
         const existingChatIndex = prevConversations.findIndex(
           (chat) => (chat._id || chat.id || chat.conversationId) === incomingChatId
@@ -106,11 +119,10 @@ useEffect(() => {
           updatedConversations[existingChatIndex] = {
             ...updatedConversations[existingChatIndex],
             lastMessage: payload.message || payload.text,
-            updatedAt: new Date().toISOString(), // Forces the item to bubble up
+            updatedAt: new Date().toISOString(),
           };
           return updatedConversations;
         } else {
-          // If the conversation metadata list row is totally fresh, pull down a fresh collection sync
           fetchConversations();
           return prevConversations;
         }
@@ -121,8 +133,7 @@ useEffect(() => {
       socket.disconnect();
       socketRef.current = null;
     };
-  }, [access_token, API_BASE]);
-
+  }, [access_token, API_BASE, conversations.length]); // added conversations.length safely here
 
   useEffect(() => {
     if (!activeConversationId) {
@@ -133,6 +144,7 @@ useEffect(() => {
     fetchChatHistory(activeConversationId);
 
     if (socketRef.current?.connected) {
+      console.log(`[Socket] Emitting joinConversation for room: ${activeConversationId}`);
       socketRef.current.emit("joinConversation", {
         conversationId: activeConversationId,
       });
@@ -169,9 +181,19 @@ useEffect(() => {
       const result = await res.json();
       const list = Array.isArray(result) ? result : result?.data || [];
       setConversations(list);
+
+      // --- JOIN ALL ROOMS ON FETCH ---
       list.forEach((chat) => {
         const chatId = chat._id || chat.id || chat.conversationId;
-        if (chatId) fetchUnreadCount(chatId);
+        if (chatId) {
+          fetchUnreadCount(chatId);
+          
+          // Emit a join event for every conversation room in the list
+          if (socketRef.current?.connected) {
+            socketRef.current.emit("joinConversation", { conversationId: chatId });
+            console.log("Background Room Joined:", chatId);
+          }
+        }
       });
     } catch (error) {
       console.error(error);
@@ -206,7 +228,20 @@ const fetchInvites = async () => {
           "Content-Type": "application/json",
         },
       });
-    } else {
+    } 
+    
+    else if (userType === "invited_member") {
+      res = await fetch(`${API_BASE}/invite/received`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+          "Content-Type": "application/json",
+        },
+      });
+    } 
+    
+    
+    else {
       // 3. Handle the edge case where user_type is missing or doesn't match
       throw new Error("Invalid or missing user type.");
     }
@@ -442,9 +477,34 @@ const handleViewDocument = (e, fileData) => {
         .map((inv) => [inv.businessId._id, { label: inv.businessId.listingTitle, value: inv.businessId._id }])
     ).values()
   );
-  const markUnreadCount = (childId) => {
-    console.log("this is child Id", childId);
-  }
+const markUnreadCount = async (childId) => {
+    if (!childId || !API_BASE || !access_token) return;
+
+    try {
+      console.log("Marking message as read for conversation/message ID:", childId);
+      
+      const res = await fetch(`${API_BASE}/conversation/message-read-by/${childId}`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (res.status === 403) { 
+        handle403Forbidden(); 
+        return; 
+      }
+
+      if (!res.ok) throw new Error("Failed to update read status on the server.");
+
+      // Optional: Update your local unread badge state immediately upon success
+      setUnreadCounts((prev) => ({ ...prev, [childId]: 0 }));
+      
+    } catch (err) {
+      console.error("Error in markUnreadCount:", err);
+    }
+  };
 
   const filteredMemberOptions = invites.map((inv) => {
   const userType = authInfo?.user?.user_type;
@@ -454,6 +514,8 @@ const handleViewDocument = (e, fileData) => {
   if (userType === "seller_broker") {
     targetUser = inv.invitedUserId;
   } else if (userType === "buyer_basic") {
+    targetUser = inv.invitedByUserId;
+  } else if (userType === "invited_member") {
     targetUser = inv.invitedByUserId;
   }
 
