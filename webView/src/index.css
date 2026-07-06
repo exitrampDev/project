@@ -5952,7 +5952,40 @@ button.input-attach-btn.p-button.p-component.p-button-icon-only span.p-button-ic
     color: #000;
     font-size: 27px;
 }
+.btn__footer_ticket_modal {
+    display: flex;
+    justify-content: space-between;
+}
 
+.btn__footer_ticket_modal button.btn__cancel_ticket_popup.p-button.p-component {
+     display: flex;
+        align-items: center;
+        border: none;
+        background: #535353;
+        color: #fff;
+        font-size: 14px;
+        padding: 8px 15px;
+        border-radius: 100px;
+        cursor: pointer;
+        gap: 0;
+}
+
+.btn__footer_ticket_modal button.btn__submit_ticket_popup.p-button.p-component {
+        display: flex;
+        align-items: center;
+        border: none;
+        background: #ffb100;
+        color: #fff;
+        font-size: 14px;
+        padding: 8px 15px;
+        border-radius: 100px;
+        cursor: pointer;
+        gap: 0;
+}
+
+.btn__footer_ticket_modal .p-button.p-component span.p-button-icon {
+    font-size: 12px;
+}
 .reply-textarea {
   flex: 1;
   resize: none;

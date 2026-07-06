@@ -153,9 +153,9 @@ const MyTickets = () => {
 
   const renderModalFooter = () => {
     return (
-      <div>
-        <Button label="Cancel" icon="pi pi-times" className="p-button-text" onClick={() => setDisplayModal(false)} disabled={submitLoading} />
-        <Button label="Submit" icon="pi pi-check" onClick={handleCreateTicket} loading={submitLoading} autoFocus />
+      <div className="btn__footer_ticket_modal">
+        <Button label="Cancel" icon="pi pi-times" className="btn__cancel_ticket_popup" onClick={() => setDisplayModal(false)} disabled={submitLoading} />
+        <Button label="Submit" icon="pi pi-check" className="btn__submit_ticket_popup" onClick={handleCreateTicket} loading={submitLoading} autoFocus />
       </div>
     );
   };
