@@ -644,7 +644,7 @@ const ndaUserOptions = ndaSubmissions
 
     if (userType === "buyer_basic") {
       const sellerId =
-        submission?._id ||
+        submission?.ownerId ||
         submission?._id ||
         submission?.sellerId ||
         submission?.ownerId;
@@ -658,7 +658,7 @@ const ndaUserOptions = ndaSubmissions
         "Listing Seller";
 
       return {
-        label: `${sellerName} | ${
+        label: ` ${
           submission?.listingTitle || "Untitled listing"
         } | ${submission?.ndaStatus || "Unknown"}`,
         value: sellerId,
