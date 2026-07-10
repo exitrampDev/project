@@ -46,7 +46,10 @@ const ChatDashboard = () => {
   const [loadingInvites, setLoadingInvites] = useState(false);
   const [selectedBusiness, setSelectedBusiness] = useState(null);
   const [selectedMember, setSelectedMember] = useState(null);
-  
+  // --- NDA USER STATES ---
+const [ndaSubmissions, setNdaSubmissions] = useState([]);
+const [loadingNdaUsers, setLoadingNdaUsers] = useState(false);
+const [selectedNdaUser, setSelectedNdaUser] = useState(null);
   const activeConversationIdRef = useRef(activeConversationId);
   const userTypeCheck = authInfo?.user?.user_type;
   useEffect(() => {
@@ -57,11 +60,18 @@ const ChatDashboard = () => {
     fetchConversations();
   }, []);
 
- useEffect(() => {
-    if (displayModal) {
-      fetchInvites();
-    }
-  }, [displayModal]);
+useEffect(() => {
+  if (!displayModal) return;
+
+  fetchInvites();
+
+  if (
+    authInfo?.user?.user_type === "seller_broker" ||
+    authInfo?.user?.user_type === "buyer_basic"
+  ) {
+    fetchNdaSubmissions();
+  }
+}, [displayModal]);
 
 
 useEffect(() => {
@@ -263,6 +273,48 @@ const fetchInvites = async () => {
     setLoadingInvites(false);
   }
 };
+// --- FETCH NDA OWNER SUBMISSIONS ---
+const fetchNdaSubmissions = async () => {
+  try {
+    setLoadingNdaUsers(true);
+
+    const userType = authInfo?.user?.user_type;
+
+    let endpoint = "";
+
+    if (userType === "seller_broker") {
+      endpoint = `${API_BASE}/nda/owner-submissions`;
+    } else if (userType === "buyer_basic") {
+      endpoint = `${API_BASE}/nda`;
+    } else {
+      return;
+    }
+
+    const res = await fetch(endpoint, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${access_token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (res.status === 403) {
+      handle403Forbidden();
+      return;
+    }
+
+    if (!res.ok) throw new Error("Failed to load NDA submissions.");
+
+    const result = await res.json();
+    setNdaSubmissions(Array.isArray(result) ? result : result?.data || []);
+  } catch (error) {
+    console.error(error);
+    showToast("error", "Error", "Could not load NDA users.");
+  } finally {
+    setLoadingNdaUsers(false);
+  }
+  console.log("Fetched NDA Submissions:", ndaSubmissions);
+};
   const fetchChatHistory = async (conversationId) => {
     try {
       setLoadingHistory(true);
@@ -396,50 +448,83 @@ const handleViewDocument = (e, fileData) => {
     }
   }
 };
-  const handleStartNewChat = async () => {
-    if (!selectedMember || !newInitialMessage.trim()) {
-      showToast("warn", "Missing Fields", "Please select a member and type a message.");
+const handleStartNewChat = async () => {
+  const recipientUserId = selectedNdaUser || selectedMember;
+  const message = newInitialMessage.trim();
+
+  if (!recipientUserId || !message) {
+    showToast(
+      "warn",
+      "Missing Fields",
+      "Please select an invited member or NDA user and type a message."
+    );
+    return;
+  }
+
+  try {
+    setIsCreatingChat(true);
+
+    const res = await fetch(`${API_BASE}/conversation/send`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${access_token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        toUserId: recipientUserId,
+        message,
+      }),
+    });
+
+    if (res.status === 403) {
+      handle403Forbidden();
       return;
     }
 
-    try {
-      setIsCreatingChat(true);
-      const res = await fetch(`${API_BASE}/conversation/send`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${access_token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          toUserId: selectedMember, // Uses the chosen member's ID dynamically
-          message: newInitialMessage.trim(),
-        }),
-      });
+    const responseData = await res.json().catch(() => null);
 
-      if (res.status === 403) { handle403Forbidden(); return; }
-      if (!res.ok) throw new Error("Could not initialize conversation pipeline channel.");
-
-      const responseData = await res.json();
-      const createdConversationId = responseData?.conversationId || responseData?.data?.conversationId || responseData?.data?._id;
-
-      showToast("success", "Success", "Chat connection established successfully!");
-      
-      setNewInitialMessage("");
-      setSelectedBusiness(null);
-      setSelectedMember(null);
-      setDisplayModal(false);
-
-      await fetchConversations();
-      
-      if (createdConversationId) {
-        setActiveConversationId(createdConversationId);
-      }
-    } catch (error) {
-      showToast("error", "Initialization Error", "Failed to clear target stream initialization rules setup.");
-    } finally {
-      setIsCreatingChat(false);
+    if (!res.ok) {
+      throw new Error(
+        responseData?.message ||
+        "Could not initialize the conversation."
+      );
     }
-  };
+
+    const createdConversationId =
+      responseData?.conversationId ||
+      responseData?.data?.conversationId ||
+      responseData?.data?._id ||
+      responseData?._id;
+
+    showToast(
+      "success",
+      "Success",
+      "Conversation started successfully."
+    );
+
+    setNewInitialMessage("");
+    setSelectedBusiness(null);
+    setSelectedMember(null);
+    setSelectedNdaUser(null);
+    setDisplayModal(false);
+
+    await fetchConversations();
+
+    if (createdConversationId) {
+      setActiveConversationId(createdConversationId);
+    }
+  } catch (error) {
+    console.error("Start conversation error:", error);
+
+    showToast(
+      "error",
+      "Conversation Error",
+      error.message || "Failed to start the conversation."
+    );
+  } finally {
+    setIsCreatingChat(false);
+  }
+};
   const showToast = (severity, summary, detail) => {
     toast.current?.show({ severity, summary, detail, life: 3000 });
   };
@@ -527,6 +612,62 @@ const markUnreadCount = async (childId) => {
     value: targetUser?._id, 
   };
 });
+
+// --- GENERATE UNIQUE NDA USER OPTIONS ---
+const ndaUserOptions = ndaSubmissions
+  .map((submission) => {
+    const userType = authInfo?.user?.user_type;
+
+    if (userType === "seller_broker") {
+      const buyer = submission?.buyer;
+
+      const buyerId =
+        buyer?._id ||
+        submission?.submittedBy?._id ||
+        submission?.submittedBy;
+
+      if (!buyerId) return null;
+
+      const buyerName =
+        `${buyer?.first_name || ""} ${buyer?.last_name || ""}`.trim() ||
+        submission?.buyerName ||
+        submission?.submittedByEmail ||
+        "NDA Buyer";
+
+      return {
+        label: `${buyerName} | ${
+          submission?.listingTitle || "Untitled listing"
+        } | ${submission?.ndaStatus || "Unknown"}`,
+        value: buyerId,
+      };
+    }
+
+    if (userType === "buyer_basic") {
+      const sellerId =
+        submission?._id ||
+        submission?._id ||
+        submission?.sellerId ||
+        submission?.ownerId;
+
+      if (!sellerId) return null;
+
+      const sellerName =
+        `${submission?.buyerName || ""}`.trim() ||
+        submission?.sellerName ||
+        submission?.ownerName ||
+        "Listing Seller";
+
+      return {
+        label: `${sellerName} | ${
+          submission?.listingTitle || "Untitled listing"
+        } | ${submission?.ndaStatus || "Unknown"}`,
+        value: sellerId,
+      };
+    }
+
+    return null;
+  })
+  .filter(Boolean);
   const renderModalFooter = () => {
     return (
       <div className="modal-footer-container">
@@ -756,38 +897,111 @@ const markUnreadCount = async (childId) => {
       </div>
 
       {/* POPUP MODAL */}
-      <Dialog 
-        header="Start a New Conversation" 
-        visible={displayModal} 
-        style={{ width: '650px' }} 
-        modal 
-        footer={renderModalFooter()} 
-        onHide={() => { setDisplayModal(false); setSelectedBusiness(null); setSelectedMember(null); }}
-      >
-        <div className="p-fluid modal-body-layout">
-          <div className="field">
-           <label htmlFor="recipientId" className="modal-label">
-            {authInfo?.user?.user_type === "seller_broker" 
-              ? "Select Invitee" 
-              : authInfo?.user?.user_type === "buyer_basic" 
-                ? "Select Inviter" 
-                : "Select User"}
-          </label>
-            <Dropdown 
-              id="memberSelect" 
-              value={selectedMember} 
-              options={filteredMemberOptions} 
-              onChange={(e) => setSelectedMember(e.value)} 
-              placeholder={!selectedBusiness ? "Please select a business listing first" : "Choose an invited user..."} 
-              
-            />
-          </div>
-          <div className="field">
-            <label htmlFor="initialMessage" className="modal-label">Initial Message</label>
-            <InputTextarea id="initialMessage" value={newInitialMessage} onChange={(e) => setNewInitialMessage(e.target.value)} rows={4} autoResize placeholder="Type context greetings string text to begin..." disabled={isCreatingChat} />
-          </div>
-        </div>
-      </Dialog>
+      <Dialog
+  header="Start a New Conversation"
+  visible={displayModal}
+  style={{ width: "650px" }}
+  modal
+  footer={renderModalFooter()}
+  onHide={() => {
+    setDisplayModal(false);
+    setSelectedBusiness(null);
+    setSelectedMember(null);
+    setSelectedNdaUser(null);
+    setNewInitialMessage("");
+  }}
+>
+  <div className="p-fluid modal-body-layout">
+    <div className="field">
+      <label htmlFor="memberSelect" className="modal-label">
+        {authInfo?.user?.user_type === "seller_broker"
+          ? "Select Invitee"
+          : authInfo?.user?.user_type === "buyer_basic"
+            ? "Select Inviter"
+            : "Select User"}
+      </label>
+
+     <Dropdown
+  id="memberSelect"
+  value={selectedMember}
+  options={filteredMemberOptions}
+  onChange={(e) => {
+    setSelectedMember(e.value);
+
+    if (e.value) {
+      setSelectedNdaUser(null);
+    }
+  }}
+  placeholder={
+    loadingInvites
+      ? "Loading invited users..."
+      : "Choose an invited user..."
+  }
+  loading={loadingInvites}
+  disabled={
+    loadingInvites ||
+    isCreatingChat ||
+    !!selectedNdaUser
+  }
+  filter
+  showClear
+  emptyMessage="No invited users found"
+/>
+    </div>
+
+    {["seller_broker", "buyer_basic"].includes(
+  authInfo?.user?.user_type
+) && (
+      <div className="field">
+        <label htmlFor="ndaUserSelect" className="modal-label">
+          Select NDA User
+        </label>
+<Dropdown
+  id="ndaUserSelect"
+  value={selectedNdaUser}
+  options={ndaUserOptions}
+  onChange={(e) => {
+    setSelectedNdaUser(e.value);
+
+    if (e.value) {
+      setSelectedMember(null);
+    }
+  }}
+  placeholder={
+    loadingNdaUsers
+      ? "Loading NDA users..."
+      : "Choose an NDA user..."
+  }
+  loading={loadingNdaUsers}
+  disabled={
+    loadingNdaUsers ||
+    isCreatingChat ||
+    !!selectedMember
+  }
+  filter
+  showClear
+  emptyMessage="No NDA users found"
+/>
+      </div>
+    )}
+
+    <div className="field">
+      <label htmlFor="initialMessage" className="modal-label">
+        Initial Message
+      </label>
+
+      <InputTextarea
+        id="initialMessage"
+        value={newInitialMessage}
+        onChange={(e) => setNewInitialMessage(e.target.value)}
+        rows={4}
+        autoResize
+        placeholder="Type your initial message..."
+        disabled={isCreatingChat}
+      />
+    </div>
+  </div>
+</Dialog>
     </div>
   );
 };
