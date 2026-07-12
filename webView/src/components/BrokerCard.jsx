@@ -170,10 +170,10 @@ const BrokerCard = () => {
           onClick={() => setIsFilterOpen((prev) => !prev)}
         >
           <i className="pi pi-filter" />
-          Filter Options
         </div>
 
-        <h3>Broker Directory | Total: ({filteredBrokers.length})</h3>
+        <h3>Broker Directory </h3>
+        <div className="list__count"> Showing: {filteredBrokers.length}</div>
 
         {loading ? (
           <p>Loading directory profiles...</p>

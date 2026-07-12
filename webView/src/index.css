@@ -7527,19 +7527,74 @@ button.button__save_listing_global_single_listing.p-button.p-component.p-button-
     z-index: 1;
 }
 .content__listing_col h3 {
-    font-size: 25px;
+    font-size: 20px;
+    margin-right: 25px
+}
+.main__listing_grid ul.list__ul_container li.list__row_item {
+    flex-wrap: wrap;
+    flex-direction: column-reverse;
+    gap: 0;
 }
 
+.list_content_col_listing_title {
+    flex-wrap: wrap;
+    width: 100%;
+    gap: 0;
+}
+
+.list_content_col_listing_title .list_content_col {
+    width: 100%;
+}
+
+.list_content_col_listing_title .list__image_col {
+    width: 100%;
+    height: auto;
+}
+
+.list_content_col_listing_title .list__image_col img.broker-avatar {
+    height: auto;
+    max-width: 160px;
+    margin: 0 auto;
+    display: block;
+}
+
+.list_content_col_listing_des {
+    width: 100%;
+    flex-direction: row-reverse;
+    align-items: center;
+}
+
+.active-listings-count {
+    text-align: center;
+}
 .list__count {
     font-size: 12px;
 }
 
 li.list__row_item span.list__image_col {
-    width: 80px;
+    width: 100%;
+        height: auto;
 }
 
 li.list__row_item span.list__image_col img {
-    height: auto !important;
+            height: auto !important;
+        max-width: 160px;
+        margin: 0 auto;
+        display: block;
+        width: 100% !important;
+}
+.main__listing_grid.property__listing_page.main__listing_grid  span.list_content_col_listing_des {
+    margin-bottom: 15px;
+}
+
+.main__listing_grid.property__listing_page.main__listing_grid ul.list__ul_container span.list_content_col h4 {
+    font-size: 19px;
+    padding-right: 10px;
+}
+
+
+.main__listing_grid.property__listing_page.main__listing_grid span.listing__info_left_content {
+    border:none
 }
 
 li.list__row_item span.list_content_col {

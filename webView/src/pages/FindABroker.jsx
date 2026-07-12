@@ -31,7 +31,7 @@ const FindABroker = () => {
       </div>
 
       {/* --- Dynamic Listings Section --- */}
-      <div className="properties_list_wrapper saad">
+      <div className="properties_list_wrapper">
         
             <BrokerCard />      
             

@@ -433,7 +433,7 @@ useEffect(() => {
 }, [access_token]);
 
   return (
-    <div className="main__listing_grid">
+    <div className="main__listing_grid property__listing_page">
       {/* Left Sidebar Filters */}
         <div className={`listing__filter_col_overlay ${isFilterOpen ? "open" : ""}`}
         onClick={() => setIsFilterOpen(prev => !prev)}
