@@ -106,7 +106,7 @@ const BrokerCard = () => {
 
 
   return (
-    <div className="main__listing_grid">
+    <div className="main__listing_grid broker__card_wrap">
       <div
         className={`listing__filter_col_overlay ${
           isFilterOpen ? "open" : ""

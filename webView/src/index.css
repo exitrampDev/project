@@ -7600,7 +7600,9 @@ button.button__save_listing_global_single_listing.p-button.p-component.p-button-
     margin: 0 auto;
     display: block;
 }
-
+.main__listing_grid.broker__card_wrap .broker-avatar{
+  border-radius:15px;
+}
 .list_content_col_listing_des {
     width: 100%;
     flex-direction: row-reverse;
