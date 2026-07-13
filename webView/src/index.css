@@ -6811,7 +6811,7 @@ header .menuBarWrap.p-menubar ul.p-submenu-list{
   }
 
   .ContactUs__container .ContactUs__heading_row p {
-    font-size: 20px;
+    font-size: 17px;
   }
   header {
     padding: 45px 15px 5px 15px;
@@ -7422,13 +7422,56 @@ header ul.p-menubar-root-list a.p-menuitem-link svg.p-icon.p-submenu-icon{
   }
 
   .ContactUs__container .ContactUs__heading_row p {
-    font-size: 20px;
+    font-size: 17px;
   }
+.contact__form_firstName,.contact__form_lastName,.contact__form_email,.contact__form_subject{
+  width: 100%;
+}
 
   .contact__form_submit_btn button {
-    font-size: 21px;
-    padding: 15px 25px;
+    font-size: 17px;
+    padding: 10px 15px;
   }
+  .contact__form_submit_btn{
+    justify-content: center;
+  }
+  h1.blog__content_post{
+    font-size: 30px;
+  }
+  header.header__post_single h1 {
+    font-size: 30px !important;
+}
+.blog-content p{
+  font-size: 15px;
+}
+.broker-detail-container {
+    padding: 20px 15px;
+}
+
+.broker-detail-container .breadcrubs__main_container {
+    font-size: 12px;
+}
+.header__wrap_listing {
+    flex-wrap: wrap;
+}
+.breadcrubs__main_container {
+    font-size: 10px;
+}
+
+.header__wrap_listing {
+    flex-direction: column-reverse;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 8px;
+    margin-top: 20px;
+}
+.business__list_single_highLevelSummary>h3 {
+    font-size: 15px;
+}
+
+.business__list_single_highLevelSummary .busines_lisiting_highLevelSummary_list, .about_listing_toggle_item,.business_list_single_overview_list {
+    font-size: 13px;
+}
   /*terms page*/
   .TermsCondition__container {
     padding: 0 15px;

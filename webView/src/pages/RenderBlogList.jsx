@@ -50,7 +50,7 @@ const BlogList = () => {
           /* Responsive CSS Grid without needing a separate stylesheet */
           <div style={{ 
             display: "grid", 
-            gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", 
+            gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", 
             gap: "2rem" 
           }}>
             {blogs.map((blog) => (
