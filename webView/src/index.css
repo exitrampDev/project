@@ -7603,6 +7603,83 @@ button.button__save_listing_global_single_listing.p-button.p-component.p-button-
 .main__listing_grid.broker__card_wrap .broker-avatar{
   border-radius:15px;
 }
+.CompareGridCard .CompareCategoryGroup .CompareRow.CompareRow--body .CompareRow__col.CompareRow__col--feature {
+    width: 55%;
+    font-size: 13px;
+}
+
+.CompareGridCard .CompareCategoryGroup .CompareRow.CompareRow--body .CompareRow__col.CompareRow__col--status {
+    width: 25%;
+    font-size: 12px;
+}
+
+.CompareGridCard .CompareCategoryGroup .CompareRow.CompareRow--body .CompareRow__col.CompareRow__col--status span.status-check {
+    font-size: 15px;
+}
+
+section.PricingCards__wrapper .PricingCards__container.seller-pricing-cards {
+    justify-content: center;
+}
+
+.CompareContainer {
+    padding: 40px 15px;
+}
+
+.CompareContainer {}
+
+.FeatureDetailsConfidentials .FeatureBlock {
+    flex-wrap: wrap;
+    width: 100%;
+    padding: 20px 15px;
+}
+
+.FeatureDetailsConfidentials .FeatureBlock .FeatureBlock__content {
+    width: 100%;
+}
+
+.FeatureDetailsConfidentials .FeatureBlock .FeatureBlock__media {
+    width: 100%;
+}
+
+.FeatureDetailsConfidentials .FeatureBlock .FeatureBlock__content h3.FeatureBlock__heading {
+    font-size: 26px;
+}
+
+.FeatureDetailsConfidentials .FeatureBlock .FeatureBlock__content p.FeatureBlock__description {
+    font-size: 14px;
+}
+
+.FeatureDetailsConfidentials .FeatureBlock .FeatureBlock__content p.FeatureBlock__note {
+    font-size: 13px;
+}
+
+.BrokerDirectory .BrokerDirectory__inner {
+    padding: 20px 15px;
+}
+
+.CompareGridCard .CompareRow.CompareRow--header {
+    font-size: 13px;
+    align-items: center;
+}
+
+.CompareGridCard .CompareRow.CompareRow--header .CompareRow__col.CompareRow__col--feature {
+    width: 50%;
+}
+
+.CompareGridCard .CompareRow.CompareRow--header .CompareRow__col.CompareRow__col--tier {
+    width: 25%;
+}
+
+.CompareGridCard .CompareCategoryGroup .CompareCategoryRow {
+    font-size: 18px;
+}
+.CompareContainer .CompareHeader h2.CompareHeader__title {
+    font-size: 25px;
+}
+
+.CompareContainer .CompareHeader p.CompareHeader__subtitle {
+    font-size: 18px;
+}
 .list_content_col_listing_des {
     width: 100%;
     flex-direction: row-reverse;
