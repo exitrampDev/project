@@ -7680,6 +7680,34 @@ section.PricingCards__wrapper .PricingCards__container.seller-pricing-cards {
 .CompareContainer .CompareHeader p.CompareHeader__subtitle {
     font-size: 18px;
 }
+div#PricingpageHero {
+    padding: 40px 15px;
+}
+
+.PricingpageHero__container h4 {
+    font-size: 33px;
+}
+
+.PricingpageHero__container p {
+    font-size: 18px;
+}
+
+section.PricingCards__wrapper .PricingCards__container {
+    justify-content: center;
+}
+
+.PricingTable__container {
+    padding: 0 15px;
+}
+section.PricingTable__wrapper table.PricingTable tr th {
+    font-size: 17px;
+    line-height: 1;
+    padding: 9px 5px;
+}
+
+section.PricingTable__wrapper table.PricingTable tbody tr td {
+    font-size: 14px;
+}
 .list_content_col_listing_des {
     width: 100%;
     flex-direction: row-reverse;
@@ -7707,8 +7735,17 @@ li.list__row_item span.list__image_col img {
 }
 .main__listing_grid.property__listing_page.main__listing_grid  span.list_content_col_listing_des {
     margin-bottom: 15px;
+    width: 100%;
+    justify-content:flex-start
 }
-
+.main__listing_grid.property__listing_page.main__listing_grid .list__content_prices span{
+width: 100%;
+padding-right: 40px;
+        text-align: left;
+}
+.main__listing_grid.property__listing_page.main__listing_grid .list__content_prices{
+  gap: 0;
+}
 .main__listing_grid.property__listing_page.main__listing_grid ul.list__ul_container span.list_content_col h4 {
     font-size: 19px;
     padding-right: 10px;
