@@ -4,7 +4,7 @@ import { Navigate, Outlet } from "react-router-dom";
 
 import { authState } from "../../recoil/ctaState";
 import DashboardSidebar from "./DashboardSidebar";
-import mobileLogo from "../../assets/mobile-Bar-logo.png";
+import mobileLogo from "../../assets/mobile-Bar-logo.PNG";
 
 const Dashboard = () => {
   const user = useRecoilValue(authState).user;
