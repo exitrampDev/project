@@ -7,7 +7,9 @@ body {
 .bannerSecContent_wrap {
   background: #002f68;
 }
-
+.hideOnDesktop {
+  display: none;
+}
 .bannerSecContent {
      max-width: 1200px;
     margin: 0 auto;
@@ -6331,6 +6333,12 @@ section.PricingCards__wrapper .PricingCards__container .PricingCard button.Prici
   .broker-detail-grid {
     grid-template-columns: 1fr;
   }
+  .hideOnMobile {
+    display: none;
+  }
+  .hideOnDesktop {
+    display: block;
+  }
 .menuBarWrap.p-menubar .p-menubar-root-list .p-menuitem-link{
     padding: 4px 7px;
 }
@@ -8444,3 +8452,132 @@ footer.footer__section_broker_page_container {
     text-align: center;
   }
 }
+
+
+
+
+/* PWA responsive work */
+@media(max-width: 768px) {
+  .dashboard__sidebar_wrap.dashboard_mobrile_sidebar {
+    position: fixed;
+    height: 100vh;
+    top: 0;
+    left: -370px;
+    padding-top: 40px;
+    border-radius: 0 14px 15px 0px;
+    transition:ease all 0.5s;
+}
+.mobile_logo_col_sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: #002f68;
+    /* height: 100vh; */
+    padding: 10px 5px;
+    z-index:222;
+    border-bottom: 1px solid #144885;
+}
+.mobile_logo_col_sidebar button{
+        padding:0;
+    background:transparent;
+    box-shadow:none;
+    border:none
+}
+.dashboard__main_wrap.MobileSideBarOpen .dashboard__sidebar_wrap.dashboard_mobrile_sidebar {
+    position: fixed;
+    height: 100vh;
+    top: 0;
+    padding-top: 4px;
+    left: 61px;
+    border-radius: 0 14px 15px 0px;
+    transition:ease all 0.5s;
+}
+
+.dashboard__sidebar_wrap.dashboard_mobrile_sidebar {
+    position: fixed;
+    height: 100vh;
+    top: 0;
+    left: -370px;
+    padding-top: 40px;
+    border-radius: 0 14px 15px 0px;
+    transition:ease all 0.5s;
+}
+
+.dashboard__main_wrap.MobileSideBarOpen .dashboard__sidebar_wrap.dashboard_mobrile_sidebar {
+    position: fixed;
+    height: 100vh;
+    top: 70px;
+    padding-top: 4px;
+    left: 0;
+    border-radius: 0 14px 15px 0px;
+    transition:ease all 0.5s;
+    z-index: 99999;
+}
+
+
+
+
+.dasboard__content_container_wrap {
+    width: 100%;
+    margin-left: 0;
+    padding: 0 12px;
+}
+
+.dashboard__main_wrap {
+    padding: 0;
+}
+
+.dasboard__content_container_wrap .dashboard__header_block {
+    flex-wrap: wrap;
+    padding: 6px 0 0 55px;
+    align-items: flex-start;
+}
+
+.dasboard__content_container_wrap .dashboard__header_block .dashboard__header_search_notification_wrap {
+    gap: 6px;
+}
+
+.dashboard__free_buyer_count_block {
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.dashboard__free_buyer_count_block_sav_listing, .dashboard__free_buyer_count_block_nda_submit,.dashboard__free_buyer_count_block_profile_completion {
+    width: 48%;
+    max-width: 500px;
+    display: inline-flex;
+    flex-wrap: wrap;
+    padding: 20px;
+}
+
+.dashboard__free_buyer_count_block h3 {
+    width: 100%;
+}
+
+.listing__dashboard_data_table_widget_wrap {
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.listing__dashboard_nda_chart_widget {
+    width: 100%;
+}
+
+.listing__dashboard_listing_widget.lisiting_recent_view_widget {
+    width: 100%;
+}.p-paginator-bottom.p-paginator.p-component button.p-paginator-element.p-link.p-disabled {
+    padding: 0;
+    width: auto;
+    height: auto;
+    font-size: 8px;
+}
+
+
+
+.p-paginator-bottom.p-paginator.p-component span.p-paginator-pages button {height: auto;width: auto;padding: 4px 9px;min-width: max-content;border-radius: 0;font-size: 12px;}
+
+button.mobile_sidebar_overlay {
+    padding: 0;
+}
+
+} 

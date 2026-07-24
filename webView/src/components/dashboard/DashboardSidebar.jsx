@@ -23,10 +23,11 @@ const DashboardSidebar = () => {
   };
   return (
     <>
-      <div className="logo_col_sidebar">
+      <div className="logo_col_sidebar ">
         <img src={logo} alt="Logo" />
         {/* {user?.user_type} */}
       </div>
+     
       {user?.user_type === "seller_basic" ? <SellerFreeNav /> : " "}
       {user?.user_type === "invited_member" ? <InvitedPersonNav /> : " "}
       {user?.user_type === "seller_listing" ? <SelleListingNav /> : " "}
