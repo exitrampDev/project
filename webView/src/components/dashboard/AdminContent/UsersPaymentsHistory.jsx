@@ -11,6 +11,8 @@ import { Dialog } from "primereact/dialog";
 import { Button } from "primereact/button";
 import DashboardHeader from "../DasboardContentComponents/DashboardHeaderBlock";
 import { Link } from "react-router-dom";
+import ResponsiveDataTable from "../../customcomponent/ResponsiveDataTable";
+
 
 const PaymentHistory = () => {
   const toast = useRef(null);
@@ -277,73 +279,68 @@ const formatUserType = (value) => {
 };
 
 
-
+const paymentColumns = [
+  {
+    field: "listingTitle",
+    header: "Listing Title",
+    primary: true,
+    body: listingTitleTemplate,
+  },
+  {
+    field: "referenceId",
+    header: "Listing ID / Link",
+    body: (row) =>
+      row?.referenceId?._id ? (
+        <Link
+          to={`/user/single-listing/${row.referenceId._id}`}
+          className="text-blue-600 underline"
+        >
+          {row.referenceId._id}
+        </Link>
+      ) : (
+        "-"
+      ),
+  },
+  {
+    field: "amount",
+    header: "Amount ($)",
+    body: (row) =>
+      row?.amount != null
+        ? `$${(row.amount / 100).toLocaleString()}`
+        : "-",
+  },
+  {
+    field: "ownerType",
+    header: "Listing Owner Type",
+    body: (row) =>
+      formatUserType(row?.userId?.user_type) || "-",
+  },
+  {
+    field: "refundRequests",
+    header: "Refund Requests",
+    body: actionTemplate,
+  },
+];
   return (
     <>
      <Toast ref={toast} />
       <DashboardHeader headingData="Payment History" />
 
       <div className="my__save_listing_wrap my__payment_history_table">
-        <DataTable
-          value={payments}
-          loading={loading}
-          paginator
-          rows={limit}
-          totalRecords={totalRecords}
-          onPage={onPageChange}
-          dataKey="_id"
-          emptyMessage="No payments found."
-          className="userPaymentHistoryTable__wrapper"
-        >
-          <Column header="Listing Title" body={listingTitleTemplate} />
-          <Column
-  header="Listing ID / Link"
-  body={(row) =>
-    row?.referenceId?._id ? (
-      <Link
-        to={`/user/single-listing/${row.referenceId._id}`}
-        className="text-blue-600 underline"
-      >
-        {row.referenceId._id}
-      </Link>
-    ) : (
-      "-"
-    )
-  }
+        <ResponsiveDataTable
+  value={payments}
+  columns={paymentColumns}
+  loading={loading}
+  paginator
+  lazy
+  rows={limit}
+  totalRecords={totalRecords}
+  onPage={onPageChange}
+  dataKey="_id"
+  emptyMessage="No payments found."
+  className="userPaymentHistoryTable__wrapper"
+  cardBreakpoint="768px"
 />
-
-{/* <Column header="Stripe Customer ID" body={(row) => row?.userId?.stripe_customer_id || "-"} />
-    <Column header="Stripe Customer ID" body={(row) => row?.userId?.stripe_customer_id || "-"} />
-<Column header="Stripe Payment ID" body={(row) => row?.paymentIntentId || "-"} /> */}
-{/* <Column header="User Refund Reason" body={(row) => row?.refundReason || "-"} />
-<Column header="Admin Comment" body={(row) => row?.refundCommentByAdmin || "-"} /> */}
-
-          
-  <Column
-  header="Amount ($)"
-  body={(row) =>
-    row?.amount || row?.amount === 0
-      ? `$${(row.amount / 100).toLocaleString()}`
-      : "-"
-  }
-/>
-<Column
-  header="Listing Owner Type"
-  body={(row) => formatUserType(row?.userId?.user_type)}
-/>
-
-          {/* <Column header="User" body={userNameTemplate} />
-          <Column header="Email" body={emailTemplate} /> */}
-
-          {/* <Column
-            field="transactionDateTime"
-            header="Date"
-            body={dateTemplate}
-            style={{ width: "200px" }}
-          /> */}
-
-          <Column header="Refund Requests" body={actionTemplate} />
-        </DataTable>
       </div>
 
       {/* Invoice Popup */}

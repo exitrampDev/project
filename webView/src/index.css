@@ -4417,6 +4417,7 @@ img.buyerSig {max-width: 100%;}
 .dashboard__container_main_buyer_free.admin__dashboard_main_container .dashboard__free_buyer_count_block {
     flex-wrap: wrap;
         justify-content: space-between;
+            gap: 0;
 }
 .listing__dashboard_listing_widget.lisiting_recent_view_widget img.w-10.h-10.rounded {
     width: 35px;
