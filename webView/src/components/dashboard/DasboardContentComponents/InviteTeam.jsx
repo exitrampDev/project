@@ -10,6 +10,7 @@ import { Button } from "primereact/button";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import DashboardHeader from "./DashboardHeaderBlock";
+import ResponsiveDataTable from "../../customcomponent/ResponsiveDataTable";
 
 const InviteTeam = () => {
   const API_BASE = useRecoilValue(apiBaseUrlState);
@@ -220,7 +221,65 @@ const permissionTemplate = (row) => {
     // }
   }
 };
+const inviteColumns = [
+  {
+    field: "name",
+    header: "Name",
+    primary: true,
+  },
+  {
+    field: "invitedEmail",
+    header: "Email",
+  },
+  {
+    field: "role",
+    header: "Role",
+  },
+  {
+    field: "businessId",
+    header: "Listing",
+    body: (row) => {
+      const text = row?.businessId?.listingTitle || "-";
 
+      return text.length > 25
+        ? `${text.substring(0, 25)}...`
+        : text;
+    },
+  },
+  {
+    field: "accuisitionType",
+    header: "Permissions",
+    body: permissionTemplate,
+  },
+  {
+    field: "actions",
+    header: "Actions",
+    cardLabel: "Actions",
+    body: (row) => {
+      if (row.access === "revoked") {
+        return (
+          <span className="btn__revoked_invite_text">
+            Access Revoked
+          </span>
+        );
+      }
+
+      if (row.access === "granted") {
+        return (
+          <Button
+            type="button"
+            label="Revoke Access"
+            icon="pi pi-times"
+            className="btn__remove_invite"
+            onClick={() => removeInvite(row._id)}
+          />
+        );
+      }
+
+      return "-";
+    },
+  },
+];
   /* ===========================
      UI
   ============================ */
@@ -291,45 +350,15 @@ const permissionTemplate = (row) => {
       />
    </div>
 
-      {/* TABLE */}
-      <DataTable value={invites}  className="my__save_listing_wrap my__payment_history_table">
-        <Column field="name" header="Name" />
-        <Column field="invitedEmail" header="Email" />
-        <Column field="role" header="Role" />
-        <Column
-          header="Listing"
-            body={(row) => {
-                const text = row?.businessId?.listingTitle || "";
-                return text.length > 25 ? text.substring(0, 25) + "..." : text;
-            }}
-        />
-        <Column header="Permissions" body={permissionTemplate} />
-       <Column
-          header="Actions"
-          body={(row) => {
-            if (row.access === "revoked") {
-              return (
-                <span className="btn__revoked_invite_text">
-                  Access Revoked
-                </span>
-              );
-            }
-
-            if (row.access === "granted") {
-              return (
-                <Button
-                  label="Revoke Access"
-                  icon="pi pi-times"
-                  className="btn__remove_invite"
-                  onClick={() => removeInvite(row._id)}
-                />
-              );
-            }
-
-            return null; // fallback
-          }}
-        />
-      </DataTable>
+     
+      <ResponsiveDataTable
+        value={invites}
+        columns={inviteColumns}
+        dataKey="_id"
+        emptyMessage="No team invitations found."
+        className="my__save_listing_wrap my__payment_history_table"
+        cardBreakpoint="768px"
+      />
     </div>
   );
 };

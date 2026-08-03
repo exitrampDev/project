@@ -13,6 +13,8 @@ import notifInfo from "../../../assets/notifInfo.png";
 import userImg from "../../../assets/userImg.png";
 import { Link } from "react-router-dom";
 import DashboardHeader from "./DashboardHeaderBlock";
+import ResponsiveDataTable from "../../customcomponent/ResponsiveDataTable";
+
 
 
 const FavoriteListings = () => {
@@ -165,10 +167,87 @@ const cimTemplate = (rowData) => (
     </Link>
   </>
 );
-   const ndaStatusTemplate = () => <><div className="class__nda_not_started">Not Started</div></>;
 
-  const saveIndustryTemplate = (indusValue) => (JSON.parse(Object(indusValue?.industry)))
-   const locationTemplate = (row) =>  row.businessCountry && row.businessState ? `${row.businessCountry}, ${row.businessState}` : "-"; 
+
+
+const ndaStatusTemplate = () => <><div className="class__nda_not_started">Not Started</div></>;
+
+const saveIndustryTemplate = (indusValue) => (JSON.parse(Object(indusValue?.industry)))
+const locationTemplate = (row) =>  row.businessCountry && row.businessState ? `${row.businessCountry}, ${row.businessState}` : "-"; 
+const buyerColumns = [
+  {
+    columnKey: "listingName",
+    header: "Listing Name",
+    body: listingNameTemplate,
+    primary: true,
+  },
+  {
+    columnKey: "ndaStatus",
+    header: "NDA Status",
+    body: ndaStatusTemplate,
+  },
+  {
+    columnKey: "askingPrice",
+    header: "Asking Price",
+    body: moneyTemplate,
+  },
+  {
+    columnKey: "viewListing",
+    header: "View Listing",
+    body: cimTemplate,
+  },
+  {
+    columnKey: "action",
+    header: "Action",
+    body: actionTemplate,
+  },
+];
+
+const sellerColumns = [
+  {
+    columnKey: "listingName",
+    header: "Listing Name",
+    body: listingNameTemplate,
+    primary: true,
+  },
+  {
+    field: "yearStablished",
+    header: "Year",
+  },
+  {
+    columnKey: "location",
+    header: "Location",
+    body: locationTemplate,
+  },
+  {
+    columnKey: "ndaStatus",
+    header: "NDA Status",
+    body: ndaStatusTemplate,
+  },
+  {
+    columnKey: "savedOn",
+    header: "Saved On",
+    body: (row) => {
+      if (!row?.createdAt) return "-";
+
+      return new Date(row.createdAt).toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      });
+    },
+  },
+  {
+    columnKey: "askingPrice",
+    header: "Asking Price",
+    body: moneyTemplate,
+  },
+  {
+    columnKey: "action",
+    header: "Action",
+    body: actionTemplate,
+  },
+];
   return (
     <>
 
@@ -178,23 +257,19 @@ const cimTemplate = (rowData) => (
        <div className="brief__infor_content">Allow users to view listings they have bookmarked. No publishing, editing, or cancellation capabilities are available.</div>
    
           <div className="my__save_listing_wrap">
-           <DataTable
-        value={filteredListings}
-        paginator
-        rows={10}
-        loading={loading}
-        responsiveLayout="scroll"
-        emptyMessage={error ? `Error: ${error}` : "No business listings found."}
-      >
-        <Column header="Listing Name" body={listingNameTemplate} />
-        {/* <Column header="Industry" body={saveIndustryTemplate}/> */}
-        <Column header="NDA Status" body={ndaStatusTemplate} />
-        {/* <Column field="entityType" header="Type" /> */}
-        {/* <Column field="revenue" header="Revenue" /> */}
-<Column header="Asking Price" body={moneyTemplate} />
-        <Column header="View Listing" body={cimTemplate} />
-        <Column header="Action" body={actionTemplate} />
-      </DataTable>
+           
+      <ResponsiveDataTable
+  value={filteredListings}
+  columns={buyerColumns}
+  paginator
+  rows={10}
+  loading={loading}
+  emptyMessage={
+    error
+      ? `Error: ${error}`
+      : "No business listings found."
+  }
+/>
           </div>
    </>
       )}
@@ -207,55 +282,24 @@ const cimTemplate = (rowData) => (
         <>
       <div className="brief__infor_content">Allow users to view listings they have bookmarked. No publishing, editing, or cancellation capabilities are available.</div>
           <div className="my__save_listing_wrap">
-           <DataTable
-        value={filteredListings}
-        paginator
-        rows={10}
-        loading={loading}
-        responsiveLayout="scroll"
-        emptyMessage={error ? `Error: ${error}` : "No business listings found."}
-      >
-        <Column header="Listing Name" body={listingNameTemplate}/>
-        
-        {/* <Column header="Industry" body={saveIndustryTemplate} /> */}
-        <Column field="yearStablished" header="Year" />
-          <Column header="Location" body={locationTemplate} />
-        <Column header="NDA Status" body={ndaStatusTemplate} />
-       <Column
-          header="Saved On"
-          body={(row) => {
-            const date = new Date(row?.createdAt);
-            return date.toLocaleDateString("en-US", {
-              month: "short",
-              day: "numeric",
-              year: "numeric",
-            });
-          }}
-        />
-
-        {/* <Column field="revenue" header="Revenue" /> */}
-<Column header="Asking Price" body={moneyTemplate} />
-        <Column header="Action" body={(row)=> (<> <div className="action__recent_view">
-               <Link to={`/user/single-listing/${row._id}`} className="flex gap-4">
-                  <i
-                    className="pi pi-eye cursor-pointer text-blue-500 hover:text-blue-700"
-                  ></i>
-                  </Link>
-              <Button
-                icon="pi pi-trash"
-                className="button__remove_listing_fav"
-                onClick={() => removeFavorite(row._favId)}
-                data-pr-tooltip="Remove" // tooltip text
-              />
-              <Tooltip target=".button__remove_listing_fav" position="top" />
-             </div></>)} />
-      </DataTable>
+           <ResponsiveDataTable
+  value={filteredListings}
+  columns={sellerColumns}
+  paginator
+  rows={10}
+  loading={loading}
+  emptyMessage={
+    error
+      ? `Error: ${error}`
+      : "No business listings found."
+  }
+/>
           </div>
    </>
       )}
 
       {/* Data Table */}
-      
+    
     </>
   );
 };

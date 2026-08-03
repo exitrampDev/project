@@ -4413,13 +4413,14 @@ img.buyerSig {max-width: 100%;}
 }
 .dashboard__container_main_buyer_free.admin__dashboard_main_container .dashboard__free_buyer_count_block_sav_listing,
 .dashboard__container_main_buyer_free.admin__dashboard_main_container .dashboard__free_buyer_count_block_nda_submit ,
-.dashboard__container_main_buyer_free.admin__dashboard_main_container .dashboard__free_buyer_count_block_profile_completion {
+.dashboard__container_main_buyer_free.admin__dashboard_main_container .dashboard__free_buyer_count_block_profile_completion ,.dashboard__container_main_buyer_free.admin__dashboard_main_container .dashboard__free_buyer_count_block_profile_completion.uesr__data_quarterly_activity, .dashboard__container_main_buyer_free.admin__dashboard_main_container .dashboard__free_buyer_count_block_sav_listing.uesr__data_quarterly_activity{
     width: 100%;
-    max-width: 440px;
+    max-width: 180px;
 }
 
 .dashboard__container_main_buyer_free.admin__dashboard_main_container .dashboard__free_buyer_count_block {
     flex-wrap: wrap;
+        justify-content: space-between;
 }
 .listing__dashboard_listing_widget.lisiting_recent_view_widget img.w-10.h-10.rounded {
     width: 35px;
@@ -8466,6 +8467,7 @@ footer.footer__section_broker_page_container {
     padding-top: 40px;
     border-radius: 0 14px 15px 0px;
     transition:ease all 0.5s;
+    z-index: 9999;
 }
 .mobile_logo_col_sidebar {
     position: fixed;
@@ -8579,5 +8581,85 @@ footer.footer__section_broker_page_container {
 button.mobile_sidebar_overlay {
     padding: 0;
 }
+button.login-btn a, .signup_content button{font-size: 12px;}
+button.login-btn a img, .signup_content button img{width:15px}
+.popup_modal_signup h3 {
+    font-size: 25px;
+}
 
+.popup_modal_signup > p {
+    font-size: 16px;
+}
+
+.popup_modal_signup {
+    padding: 20px;
+    width: 90%;
+}
+
+.popup_options {
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.popup_options .popup_option {
+    width: 100%;
+    padding: 15px 10px;
+}
+
+.login__content {
+    font-size: 14px;
+}
+
+.popup_option h4 {
+    font-size: 18px;
+}
+
+.popup_option p {
+    max-width: 95%;
+    font-size: 14px;
+    margin-top: 5px;
+}
+.popup_option .popup__content_block button {
+    font-size: 16px;
+    padding: 10px 20px;
+}
+
+.popup_modal_signup button.back_btn {
+    font-size: 15px;
+    padding: 10px 20px;
+    margin-top: 15px;
+}
+
+.step__two_main > p {
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+.register-page {
+    padding: 0 15px 80px 15px;
+}
+
+.register-page form.p-fluid.space-y-4.register_form_col {
+    gap: 15px;
+}
+.dasboard__content_container_wrap .dashboard__header_block .dashboard__header_search_notification_wrap .dashboard__search_field_wrap{
+      width: 70%;
+}
+.dasboard__content_container_wrap .dashboard__header_block .dashboard__header_search_notification_wrap .dashboard__search_field_wrap input[type="text"]{
+      width: calc(100% - 15px);
+}
+.main__invite-form-wrap .invite__form_grid {
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.main__invite-form-wrap .invite__form_grid .invite__form_field {
+    width: 48%;
+}
+
+.main__invite-form-wrap {
+    padding: 15px;
+}
+.service_area_row{
+  gap: 10px;
+}
 } 
