@@ -13,7 +13,7 @@ import { Dialog } from "primereact/dialog";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import { InputTextarea } from "primereact/inputtextarea";
-
+import ResponsiveDataTable from "../../customcomponent/ResponsiveDataTable";
 const PaymentHistory = () => {
   const navigate = useNavigate();
   const API_BASE = useRecoilValue(apiBaseUrlState);
@@ -216,7 +216,65 @@ pdf.save(
       )}
     </div>
   );
+const paymentColumns = [
+  {
+    field: "referenceId.listingTitle",
+    header: "Listing Name",
+    primary: true,
+    sortable: true,
+    body: (rowData) => {
+      const text = rowData?.referenceId?.listingTitle || "-";
+      const words = text.split(" ");
 
+      return words.length > 6
+        ? `${words.slice(0, 6).join(" ")}...`
+        : text;
+    },
+  },
+  {
+    field: "_id",
+    header: "Payment ID",
+  },
+  {
+    field: "referenceId._id",
+    header: "Listing ID",
+  },
+  {
+    field: "amount",
+    header: "Amount ($)",
+    body: (row) => `$${row?.amount ?? 0}`,
+  },
+  {
+    field: "refundReason",
+    header: "Refund Reason",
+    body: (row) =>
+      row?.refundStatus !== "NOT_REQUESTED"
+        ? row?.refundReason || "-"
+        : "-",
+  },
+  {
+    field: "refundCommentByAdmin",
+    header: "Admin Comment",
+    body: (row) => row?.refundCommentByAdmin || "-",
+  },
+  {
+    field: "status",
+    header: "Status",
+    body: statusTemplate,
+    style: { width: "140px" },
+  },
+  {
+    field: "date",
+    header: "Date",
+    body: formatDate,
+    style: { width: "200px" },
+  },
+  {
+    field: "refundRequests",
+    header: "Refund Requests",
+    body: actionTemplate,
+  },
+];
   return (
     <>
       <DashboardHeader headingData="Payment History" />
@@ -225,57 +283,18 @@ pdf.save(
           Payments Table
       ============================ */}
       <div className="my__save_listing_wrap my__payment_history_table">
-        <DataTable
-          value={payments}
-          loading={loading}
-          paginator
-          rows={limit}
-          totalRecords={totalRecords}
-          onPage={onPageChange}
-          dataKey="_id"
-          emptyMessage="No payments found."
-        >
-          {/* <Column
-            header="Listing Name"
-            body={(row) => row?.referenceId?.listingTitle || "-"}
-          /> */}
-
-    <Column
-  header="Listing Name"
-  sortable
-  body={(rowData) => {
-    const text = rowData?.referenceId?.listingTitle  || "";
-    const words = text.split(" ");
-    return words.length > 6 ? words.slice(0, 6).join(" ") + "..." : text;
-  }}
+        <ResponsiveDataTable
+  value={payments}
+  columns={paymentColumns}
+  loading={loading}
+  paginator
+  rows={limit}
+  totalRecords={totalRecords}
+  onPage={onPageChange}
+  dataKey="_id"
+  emptyMessage="No payments found."
+  cardBreakpoint="768px"
 />
-
-          <Column field="_id" header="Payment ID"  />
-          <Column field="referenceId._id" header="Listing ID"  />
-          {/* <Column field="paymentIntentId" header="Stripe ID" /> */}
-          <Column body={(row) => `$${row?.amount || 0}`} header="Amount ($)" />
-<Column
-  header="Refund Reason"
-  body={(row) =>
-    row?.refundStatus !== "NOT_REQUESTED" ? row?.refundReason || "-" : "-"
-  }
-/>
-
-<Column header="Admin Comment" body={(row) => row?.refundCommentByAdmin || "-"} />
-
-
-          <Column
-            header="Status"
-            body={statusTemplate}
-            style={{ width: "140px" }}
-          />
-          <Column
-            header="Date"
-            body={formatDate}
-            style={{ width: "200px" }}
-          />
-          <Column header="Refund Requests" body={actionTemplate} />
-        </DataTable>
       </div>
 
       {/* ===========================
