@@ -8705,4 +8705,19 @@ button.login-btn a img, .signup_content button img{width:15px}
 .listing__creation_block_main_wrap {
     gap: 5px;
 }
+.mobile-chat-header button.p-button-rounded.p-button-text.mobile-back-button.p-button.p-component.p-button-icon-only {
+    width: auto;
+    height: auto;
+    color: #fff;
+    padding: 5px 9px;
+    border-radius: 0;
+    border-radius: 3px;
+}
+.chat-dashboard-wrapper .chat-input-bar button.input-send-btn.p-button {
+    width: 110px;
+    padding: 0 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
 } 

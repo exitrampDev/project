@@ -1,1007 +1,2207 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, {
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { useNavigate } from "react-router-dom";
-import { Card } from "primereact/card";
 import { Button } from "primereact/button";
 import { Toast } from "primereact/toast";
 import { InputTextarea } from "primereact/inputtextarea";
-import { Dialog } from "primereact/dialog"; 
-import { InputText } from "primereact/inputtext"; 
-import { useRecoilValue, useSetRecoilState } from "recoil";
-import { authState, apiBaseUrlState } from "../../../recoil/ctaState";
-import DashboardHeader from "./DashboardHeaderBlock";
+import { Dialog } from "primereact/dialog";
 import { Dropdown } from "primereact/dropdown";
+import {
+  useRecoilValue,
+  useSetRecoilState,
+} from "recoil";
+import {
+  authState,
+  apiBaseUrlState,
+} from "../../../recoil/ctaState";
+import DashboardHeader from "./DashboardHeaderBlock";
 import { io } from "socket.io-client";
 
 const ChatDashboard = () => {
   const navigate = useNavigate();
+
   const API_BASE = useRecoilValue(apiBaseUrlState);
   const authInfo = useRecoilValue(authState);
-  const { access_token } = authInfo ?? {};
   const setAuth = useSetRecoilState(authState);
-  const [unreadCounts, setUnreadCounts] = useState({});
-  const loggedInUserId = authInfo?.user?._id || authInfo?.user?.id || JSON.parse(localStorage.getItem("user"))?._id;
+
+  const { access_token } = authInfo ?? {};
+
+  const storedUser = JSON.parse(
+    localStorage.getItem("user") || "null"
+  );
+
+  const loggedInUserId =
+    authInfo?.user?._id ||
+    authInfo?.user?.id ||
+    storedUser?._id ||
+    storedUser?.id;
 
   const [conversations, setConversations] = useState([]);
   const [messages, setMessages] = useState([]);
-  const [loadingConversations, setLoadingConversations] = useState(true);
-  const [loadingHistory, setLoadingHistory] = useState(false);
+  const [unreadCounts, setUnreadCounts] = useState({});
+
+  const [loadingConversations, setLoadingConversations] =
+    useState(true);
+  const [loadingHistory, setLoadingHistory] =
+    useState(false);
+
   const [replyMessage, setReplyMessage] = useState("");
   const [isSending, setIsSending] = useState(false);
-  const [activeConversationId, setActiveConversationId] = useState(null); 
 
-  // --- ATTACHMENT STATE ---
-  const [attachment, setAttachment] = useState(null); // stores { name, type, base64 }
+  const [activeConversationId, setActiveConversationId] =
+    useState(null);
+
+  const [attachment, setAttachment] = useState(null);
 
   const [displayModal, setDisplayModal] = useState(false);
-  const [newChatUserId, setNewChatUserId] = useState("");
-  const [newInitialMessage, setNewInitialMessage] = useState("");
-  const [isCreatingChat, setIsCreatingChat] = useState(false);
+  const [newInitialMessage, setNewInitialMessage] =
+    useState("");
+  const [isCreatingChat, setIsCreatingChat] =
+    useState(false);
+
+  const [invites, setInvites] = useState([]);
+  const [loadingInvites, setLoadingInvites] =
+    useState(false);
+  const [selectedMember, setSelectedMember] =
+    useState(null);
+
+  const [ndaSubmissions, setNdaSubmissions] =
+    useState([]);
+  const [loadingNdaUsers, setLoadingNdaUsers] =
+    useState(false);
+  const [selectedNdaUser, setSelectedNdaUser] =
+    useState(null);
 
   const toast = useRef(null);
   const messageEndRef = useRef(null);
   const socketRef = useRef(null);
   const fileInputRef = useRef(null);
-// --- DROPDOWN & INVITE STATES ---
-  const [invites, setInvites] = useState([]);
-  const [loadingInvites, setLoadingInvites] = useState(false);
-  const [selectedBusiness, setSelectedBusiness] = useState(null);
-  const [selectedMember, setSelectedMember] = useState(null);
-  // --- NDA USER STATES ---
-const [ndaSubmissions, setNdaSubmissions] = useState([]);
-const [loadingNdaUsers, setLoadingNdaUsers] = useState(false);
-const [selectedNdaUser, setSelectedNdaUser] = useState(null);
-  const activeConversationIdRef = useRef(activeConversationId);
-  const userTypeCheck = authInfo?.user?.user_type;
+
+  const activeConversationIdRef = useRef(
+    activeConversationId
+  );
+
+  const conversationsRef = useRef(conversations);
+
+  const showToast = (
+    severity,
+    summary,
+    detail
+  ) => {
+    toast.current?.show({
+      severity,
+      summary,
+      detail,
+      life: 3000,
+    });
+  };
+
+  const handle403Forbidden = () => {
+    setAuth(null);
+
+    localStorage.removeItem("auth");
+    localStorage.removeItem("user");
+    localStorage.removeItem("tokenLocalStorage");
+
+    navigate("/login");
+  };
+
+  const getChatId = (chat) =>
+    chat?._id ||
+    chat?.id ||
+    chat?.conversationId;
+
+  const formatDate = (dateString) => {
+    if (!dateString) return "";
+
+    return new Date(dateString).toLocaleTimeString(
+      "en-US",
+      {
+        hour: "2-digit",
+        minute: "2-digit",
+      }
+    );
+  };
+
+  const getOtherParticipant = (chat) => {
+    if (!chat?.participants?.length) {
+      return null;
+    }
+
+    return (
+      chat.participants.find(
+        (participant) =>
+          participant?._id !== loggedInUserId &&
+          participant?.id !== loggedInUserId
+      ) || chat.participants[0]
+    );
+  };
+
+  const getParticipantName = (chat) => {
+    const participant = getOtherParticipant(chat);
+    const chatId = getChatId(chat);
+
+    if (participant?.first_name) {
+      return `${participant.first_name} ${
+        participant.last_name || ""
+      }`.trim();
+    }
+
+    if (participant?.name) {
+      return participant.name;
+    }
+
+    if (participant?.email) {
+      return participant.email;
+    }
+
+    return `User ...${chatId?.slice(-6) || ""}`;
+  };
+
   useEffect(() => {
-    activeConversationIdRef.current = activeConversationId;
+    activeConversationIdRef.current =
+      activeConversationId;
   }, [activeConversationId]);
 
+  /*
+   * Whenever the conversation list changes,
+   * update the ref and join all socket rooms.
+   */
   useEffect(() => {
+    conversationsRef.current = conversations;
+
+    if (!socketRef.current?.connected) {
+      return;
+    }
+
+    conversations.forEach((chat) => {
+      const chatId = getChatId(chat);
+
+      if (chatId) {
+        socketRef.current.emit(
+          "joinConversation",
+          {
+            conversationId: chatId,
+          }
+        );
+      }
+    });
+  }, [conversations]);
+
+  const fetchUnreadCount = async (
+    conversationId
+  ) => {
+    if (
+      !conversationId ||
+      !API_BASE ||
+      !access_token
+    ) {
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `${API_BASE}/conversation/unread-count/${conversationId}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${access_token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.status === 403) {
+        handle403Forbidden();
+        return;
+      }
+
+      if (!response.ok) return;
+
+      const result = await response.json();
+
+      const count =
+        typeof result === "number"
+          ? result
+          : result?.count ??
+            result?.data?.count ??
+            result?.unreadCount ??
+            0;
+
+      setUnreadCounts((previousCounts) => ({
+        ...previousCounts,
+        [conversationId]: count,
+      }));
+    } catch (error) {
+      console.error(
+        "Unread count error:",
+        error
+      );
+    }
+  };
+
+  const fetchConversations = async () => {
+    if (!API_BASE || !access_token) {
+      return;
+    }
+
+    try {
+      setLoadingConversations(true);
+
+      const response = await fetch(
+        `${API_BASE}/conversation/my-conversations`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${access_token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.status === 403) {
+        handle403Forbidden();
+        return;
+      }
+
+      if (!response.ok) {
+        throw new Error(
+          "Failed to load conversations."
+        );
+      }
+
+      const result = await response.json();
+
+      const list = Array.isArray(result)
+        ? result
+        : result?.data || [];
+
+      setConversations(list);
+      conversationsRef.current = list;
+
+      list.forEach((chat) => {
+        const chatId = getChatId(chat);
+
+        if (!chatId) return;
+
+        /*
+         * Load the initial unread badge value.
+         */
+        fetchUnreadCount(chatId);
+
+        /*
+         * Join immediately when the socket
+         * is already connected.
+         */
+        if (socketRef.current?.connected) {
+          socketRef.current.emit(
+            "joinConversation",
+            {
+              conversationId: chatId,
+            }
+          );
+        }
+      });
+    } catch (error) {
+      console.error(
+        "Conversation list error:",
+        error
+      );
+
+      showToast(
+        "error",
+        "Error",
+        "Could not load conversations."
+      );
+    } finally {
+      setLoadingConversations(false);
+    }
+  };
+
+  const fetchChatHistory = async (
+    conversationId
+  ) => {
+    if (
+      !conversationId ||
+      !API_BASE ||
+      !access_token
+    ) {
+      return;
+    }
+
+    try {
+      setLoadingHistory(true);
+
+      const response = await fetch(
+        `${API_BASE}/conversation/${conversationId}/history`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${access_token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.status === 403) {
+        handle403Forbidden();
+        return;
+      }
+
+      if (!response.ok) {
+        throw new Error(
+          "Failed to load chat history."
+        );
+      }
+
+      const result = await response.json();
+
+      const historyList = Array.isArray(result)
+        ? result
+        : result?.data || [];
+
+      setMessages(historyList);
+    } catch (error) {
+      console.error(
+        "Chat history error:",
+        error
+      );
+
+      showToast(
+        "error",
+        "Error",
+        "Failed to load the conversation."
+      );
+    } finally {
+      setLoadingHistory(false);
+    }
+  };
+
+  const fetchInvites = async () => {
+    if (!API_BASE || !access_token) {
+      return;
+    }
+
+    try {
+      setLoadingInvites(true);
+
+      const userType =
+        authInfo?.user?.user_type;
+
+      let endpoint = "";
+
+      if (userType === "seller_broker") {
+        endpoint = `${API_BASE}/invite`;
+      } else if (
+        userType === "buyer_basic" ||
+        userType === "invited_member"
+      ) {
+        endpoint = `${API_BASE}/invite/received`;
+      } else {
+        throw new Error(
+          "Invalid or missing user type."
+        );
+      }
+
+      const response = await fetch(endpoint, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.status === 403) {
+        handle403Forbidden();
+        return;
+      }
+
+      if (!response.ok) {
+        throw new Error(
+          "Failed to load invitations."
+        );
+      }
+
+      const result = await response.json();
+
+      setInvites(
+        Array.isArray(result)
+          ? result
+          : result?.data || []
+      );
+    } catch (error) {
+      console.error(
+        "Invitations error:",
+        error
+      );
+
+      showToast(
+        "error",
+        "Error",
+        "Could not load invited members."
+      );
+    } finally {
+      setLoadingInvites(false);
+    }
+  };
+
+  const fetchNdaSubmissions = async () => {
+    if (!API_BASE || !access_token) {
+      return;
+    }
+
+    try {
+      setLoadingNdaUsers(true);
+
+      const userType =
+        authInfo?.user?.user_type;
+
+      let endpoint = "";
+
+      if (userType === "seller_broker") {
+        endpoint =
+          `${API_BASE}/nda/owner-submissions`;
+      } else if (
+        userType === "buyer_basic"
+      ) {
+        endpoint = `${API_BASE}/nda`;
+      } else {
+        return;
+      }
+
+      const response = await fetch(endpoint, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.status === 403) {
+        handle403Forbidden();
+        return;
+      }
+
+      if (!response.ok) {
+        throw new Error(
+          "Failed to load NDA submissions."
+        );
+      }
+
+      const result = await response.json();
+
+      setNdaSubmissions(
+        Array.isArray(result)
+          ? result
+          : result?.data || []
+      );
+    } catch (error) {
+      console.error(
+        "NDA submissions error:",
+        error
+      );
+
+      showToast(
+        "error",
+        "Error",
+        "Could not load NDA users."
+      );
+    } finally {
+      setLoadingNdaUsers(false);
+    }
+  };
+
+  const markUnreadCount = async (
+    conversationId
+  ) => {
+    if (
+      !conversationId ||
+      !API_BASE ||
+      !access_token
+    ) {
+      return;
+    }
+
+    /*
+     * Clear the badge immediately.
+     */
+    setUnreadCounts((previousCounts) => ({
+      ...previousCounts,
+      [conversationId]: 0,
+    }));
+
+    try {
+      const response = await fetch(
+        `${API_BASE}/conversation/message-read-by/${conversationId}`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${access_token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.status === 403) {
+        handle403Forbidden();
+        return;
+      }
+
+      if (!response.ok) {
+        throw new Error(
+          "Failed to mark conversation as read."
+        );
+      }
+    } catch (error) {
+      console.error(
+        "Mark as read error:",
+        error
+      );
+
+      /*
+       * Restore the actual count if the
+       * server update failed.
+       */
+      fetchUnreadCount(conversationId);
+    }
+  };
+
+  /*
+   * Load initial conversations.
+   */
+  useEffect(() => {
+    if (!API_BASE || !access_token) {
+      return;
+    }
+
     fetchConversations();
-  }, []);
+  }, [API_BASE, access_token]);
 
-useEffect(() => {
-  if (!displayModal) return;
+  /*
+   * Fetch new-conversation modal data.
+   */
+  useEffect(() => {
+    if (!displayModal) return;
 
-  fetchInvites();
+    fetchInvites();
 
-  if (
-    authInfo?.user?.user_type === "seller_broker" ||
-    authInfo?.user?.user_type === "buyer_basic"
-  ) {
-    fetchNdaSubmissions();
-  }
-}, [displayModal]);
+    if (
+      authInfo?.user?.user_type ===
+        "seller_broker" ||
+      authInfo?.user?.user_type ===
+        "buyer_basic"
+    ) {
+      fetchNdaSubmissions();
+    }
+  }, [displayModal]);
 
-
-useEffect(() => {
-    if (!access_token || !API_BASE) return;
+  /*
+   * Socket connection and unread badge handling.
+   */
+  useEffect(() => {
+    if (!access_token || !API_BASE) {
+      return;
+    }
 
     const socket = io(API_BASE, {
-      auth: { token: access_token },
+      auth: {
+        token: access_token,
+      },
       transports: ["websocket"],
       reconnection: true,
     });
 
     socketRef.current = socket;
 
-    socket.on("connect", () => {
-      console.log("Socket Connected:", socket.id);
-      
-      // --- BACKUP JOIN ALL ACTIVE ROOMS ON DELAYED CONNECT ---
-      if (conversations.length > 0) {
-        conversations.forEach((chat) => {
-          const chatId = chat._id || chat.id || chat.conversationId;
+    const handleConnect = () => {
+      console.log(
+        "Socket Connected:",
+        socket.id
+      );
+
+      /*
+       * Join every conversation room after
+       * initial connection and reconnection.
+       */
+      conversationsRef.current.forEach(
+        (chat) => {
+          const chatId = getChatId(chat);
+
           if (chatId) {
-            socket.emit("joinConversation", { conversationId: chatId });
+            socket.emit(
+              "joinConversation",
+              {
+                conversationId: chatId,
+              }
+            );
           }
-        });
-        console.log("Re-joined all active background conversation rooms.");
-      }
-    });
-
-    socket.on("disconnect", () => console.log("Socket Disconnected"));
-    socket.on("connect_error", (err) => console.error("Socket Error:", err.message));
-    socket.on("joined", (data) => console.log("Joined Room Context:", data));
-
-    socket.on("newMessage", (payload) => {
-      const currentActiveId = activeConversationIdRef.current;
-      const incomingChatId = payload.conversationId || payload.conversation?._id;
-
-      if (currentActiveId && incomingChatId === currentActiveId) {
-        fetchChatHistory(currentActiveId);
-      } else if (incomingChatId) {
-        // This will now trigger reliably for background chats 
-        // because you've joined all conversation channels!
-        setUnreadCounts((prev) => ({
-          ...prev,
-          [incomingChatId]: (prev[incomingChatId] || 0) + 1,
-        }));
-      }
-
-      setConversations((prevConversations) => {
-        const existingChatIndex = prevConversations.findIndex(
-          (chat) => (chat._id || chat.id || chat.conversationId) === incomingChatId
-        );
-
-        if (existingChatIndex > -1) {
-          const updatedConversations = [...prevConversations];
-          updatedConversations[existingChatIndex] = {
-            ...updatedConversations[existingChatIndex],
-            lastMessage: payload.message || payload.text,
-            updatedAt: new Date().toISOString(),
-          };
-          return updatedConversations;
-        } else {
-          fetchConversations();
-          return prevConversations;
         }
-      });
-    });
+      );
+    };
+
+    const handleDisconnect = () => {
+      console.log(
+        "Socket Disconnected"
+      );
+    };
+
+    const handleConnectError = (error) => {
+      console.error(
+        "Socket Error:",
+        error.message
+      );
+    };
+
+    const handleJoined = (data) => {
+      console.log(
+        "Joined Room:",
+        data
+      );
+    };
+
+    const handleNewMessage = (payload) => {
+      const currentActiveId =
+        activeConversationIdRef.current;
+
+      const incomingChatId =
+        payload?.conversationId ||
+        payload?.conversation?._id;
+
+      if (!incomingChatId) {
+        return;
+      }
+
+      if (
+        currentActiveId &&
+        incomingChatId === currentActiveId
+      ) {
+        /*
+         * Open conversation:
+         * refresh history without increasing badge.
+         */
+        fetchChatHistory(currentActiveId);
+      } else {
+        /*
+         * Background conversation:
+         * increase its unread badge via socket.
+         */
+        setUnreadCounts(
+          (previousCounts) => ({
+            ...previousCounts,
+            [incomingChatId]:
+              Number(
+                previousCounts[incomingChatId] || 0
+              ) + 1,
+          })
+        );
+      }
+
+      /*
+       * Update the conversation preview.
+       */
+      setConversations(
+        (previousConversations) => {
+          const existingIndex =
+            previousConversations.findIndex(
+              (chat) =>
+                getChatId(chat) ===
+                incomingChatId
+            );
+
+          if (existingIndex > -1) {
+            const updatedConversations = [
+              ...previousConversations,
+            ];
+
+            const currentConversation =
+              updatedConversations[
+                existingIndex
+              ];
+
+            updatedConversations[
+              existingIndex
+            ] = {
+              ...currentConversation,
+              lastMessage:
+                payload.message ||
+                payload.text ||
+                currentConversation.lastMessage,
+              updatedAt:
+                payload.createdAt ||
+                new Date().toISOString(),
+            };
+
+            /*
+             * Move the updated conversation
+             * to the top of the list.
+             */
+            const [updatedConversation] =
+              updatedConversations.splice(
+                existingIndex,
+                1
+              );
+
+            return [
+              updatedConversation,
+              ...updatedConversations,
+            ];
+          }
+
+          /*
+           * Fetch again if this is a newly
+           * created conversation.
+           */
+          fetchConversations();
+
+          return previousConversations;
+        }
+      );
+    };
+
+    socket.on(
+      "connect",
+      handleConnect
+    );
+
+    socket.on(
+      "disconnect",
+      handleDisconnect
+    );
+
+    socket.on(
+      "connect_error",
+      handleConnectError
+    );
+
+    socket.on(
+      "joined",
+      handleJoined
+    );
+
+    socket.on(
+      "newMessage",
+      handleNewMessage
+    );
 
     return () => {
+      socket.off(
+        "connect",
+        handleConnect
+      );
+
+      socket.off(
+        "disconnect",
+        handleDisconnect
+      );
+
+      socket.off(
+        "connect_error",
+        handleConnectError
+      );
+
+      socket.off(
+        "joined",
+        handleJoined
+      );
+
+      socket.off(
+        "newMessage",
+        handleNewMessage
+      );
+
       socket.disconnect();
       socketRef.current = null;
     };
-  }, [access_token, API_BASE, conversations.length]); // added conversations.length safely here
+  }, [access_token, API_BASE]);
 
+  /*
+   * Load the selected conversation.
+   */
   useEffect(() => {
     if (!activeConversationId) {
       setMessages([]);
       return;
     }
 
-    fetchChatHistory(activeConversationId);
+    fetchChatHistory(
+      activeConversationId
+    );
 
     if (socketRef.current?.connected) {
-      console.log(`[Socket] Emitting joinConversation for room: ${activeConversationId}`);
-      socketRef.current.emit("joinConversation", {
-        conversationId: activeConversationId,
-      });
-      console.log("Joined Room:", activeConversationId);
+      socketRef.current.emit(
+        "joinConversation",
+        {
+          conversationId:
+            activeConversationId,
+        }
+      );
     }
   }, [activeConversationId]);
 
+  /*
+   * Scroll to the latest message.
+   */
   useEffect(() => {
-    messageEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    messageEndRef.current?.scrollIntoView({
+      behavior: "smooth",
+    });
   }, [messages]);
 
-  const handle403Forbidden = () => {
-    setAuth(null);
-    localStorage.removeItem("auth");
-    localStorage.removeItem("user");
-    localStorage.removeItem("tokenLocalStorage");
-    navigate("/login");
+  const handleConversationSelect = (
+    chatId
+  ) => {
+    if (!chatId) return;
+
+    setActiveConversationId(chatId);
+
+    setUnreadCounts(
+      (previousCounts) => ({
+        ...previousCounts,
+        [chatId]: 0,
+      })
+    );
+
+    markUnreadCount(chatId);
   };
 
-  const fetchConversations = async () => {
-    try {
-      setLoadingConversations(true);
-      const res = await fetch(`${API_BASE}/conversation/my-conversations`, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${access_token}`,
-          "Content-Type": "application/json",
-        },
-      });
+  const handleFileChange = (event) => {
+    const file = event.target.files?.[0];
 
-      if (res.status === 403) { handle403Forbidden(); return; }
-      if (!res.ok) throw new Error("Failed to load conversation history list.");
-
-      const result = await res.json();
-      const list = Array.isArray(result) ? result : result?.data || [];
-      setConversations(list);
-
-      // --- JOIN ALL ROOMS ON FETCH ---
-      list.forEach((chat) => {
-        const chatId = chat._id || chat.id || chat.conversationId;
-        if (chatId) {
-          fetchUnreadCount(chatId);
-          
-          // Emit a join event for every conversation room in the list
-          if (socketRef.current?.connected) {
-            socketRef.current.emit("joinConversation", { conversationId: chatId });
-            console.log("Background Room Joined:", chatId);
-          }
-        }
-      });
-    } catch (error) {
-      console.error(error);
-      showToast("error", "Error", "Could not populate conversations active pane.");
-    } finally {
-      setLoadingConversations(false);
-    }
-  };
-// --- FETCH INVITED MEMBERS DATA ---
-const fetchInvites = async () => {
-  try {
-    setLoadingInvites(true);
-    
-    // 1. Declare 'res' outside the blocks so it's accessible to the rest of the function
-    let res = null; 
-    const userType = authInfo?.user?.user_type;
-
-    // 2. Use an if-else chain to determine the URL
-    if (userType === "seller_broker") {
-      res = await fetch(`${API_BASE}/invite`, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${access_token}`,
-          "Content-Type": "application/json",
-        },
-      });
-    } else if (userType === "buyer_basic") {
-      res = await fetch(`${API_BASE}/invite/received`, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${access_token}`,
-          "Content-Type": "application/json",
-        },
-      });
-    } 
-    
-    else if (userType === "invited_member") {
-      res = await fetch(`${API_BASE}/invite/received`, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${access_token}`,
-          "Content-Type": "application/json",
-        },
-      });
-    } 
-    
-    
-    else {
-      // 3. Handle the edge case where user_type is missing or doesn't match
-      throw new Error("Invalid or missing user type.");
-    }
-    
-    // 4. Safely check if 'res' exists before accessing properties
-    if (res && res.status === 403) { 
-      handle403Forbidden(); 
-      return; 
-    }
-    
-    if (!res || !res.ok) throw new Error("Failed to load invitations.");
-
-    const result = await res.json();
-    setInvites(Array.isArray(result) ? result : result?.data || []);
-  } catch (error) {
-    console.error(error);
-    showToast("error", "Error", "Could not load invited members list.");
-  } finally {
-    setLoadingInvites(false);
-  }
-};
-// --- FETCH NDA OWNER SUBMISSIONS ---
-const fetchNdaSubmissions = async () => {
-  try {
-    setLoadingNdaUsers(true);
-
-    const userType = authInfo?.user?.user_type;
-
-    let endpoint = "";
-
-    if (userType === "seller_broker") {
-      endpoint = `${API_BASE}/nda/owner-submissions`;
-    } else if (userType === "buyer_basic") {
-      endpoint = `${API_BASE}/nda`;
-    } else {
-      return;
-    }
-
-    const res = await fetch(endpoint, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${access_token}`,
-        "Content-Type": "application/json",
-      },
-    });
-
-    if (res.status === 403) {
-      handle403Forbidden();
-      return;
-    }
-
-    if (!res.ok) throw new Error("Failed to load NDA submissions.");
-
-    const result = await res.json();
-    setNdaSubmissions(Array.isArray(result) ? result : result?.data || []);
-  } catch (error) {
-    console.error(error);
-    showToast("error", "Error", "Could not load NDA users.");
-  } finally {
-    setLoadingNdaUsers(false);
-  }
-  console.log("Fetched NDA Submissions:", ndaSubmissions);
-};
-  const fetchChatHistory = async (conversationId) => {
-    try {
-      setLoadingHistory(true);
-      const res = await fetch(`${API_BASE}/conversation/${conversationId}/history`, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${access_token}`,
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (res.status === 403) { handle403Forbidden(); return; }
-      if (!res.ok) throw new Error("Could not parse conversation timeline logs.");
-
-      const result = await res.json();
-      const historyList = Array.isArray(result) ? result : result?.data || [];
-      setMessages(historyList);
-    } catch (error) {
-      console.error(error);
-      showToast("error", "Error", "Failed loading chat transcript.");
-    } finally {
-      setLoadingHistory(false);
-    }
-  };
-
-  // --- HANDLE FILE CONVERSION TO BASE64 ---
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
     if (!file) return;
 
     const reader = new FileReader();
+
     reader.onloadend = () => {
       setAttachment({
         name: file.name,
         type: file.type,
-        base64: reader.result, // Contains metadata prefix (e.g., data:image/png;base64,...)
+        base64: reader.result,
       });
     };
+
     reader.readAsDataURL(file);
   };
 
   const removeAttachment = () => {
     setAttachment(null);
-    if (fileInputRef.current) fileInputRef.current.value = "";
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
   };
 
- const handleSendMessage = async () => {
-  const text = replyMessage.trim();
-  // Allow sending if there's either text OR an attachment present
-  if ((!text && !attachment) || !activeConversationId) return;
+  const handleSendMessage = () => {
+    const text = replyMessage.trim();
 
-  const socket = socketRef.current;
-  if (!socket?.connected) {
-    showToast("error", "Connection Error", "Socket is disconnected. Cannot send message.");
-    return;
-  }
-
-  try {
-    setIsSending(true);
-    
-    // --- EXACT MATCH FOR YOUR BACKEND SCHEMATIC PAYLOAD ---
-    const payload = {
-      conversationId: activeConversationId,
-      text: text, // Sends plain text if typing
-      message: text, // Standard fallback
-      file: attachment ? attachment.base64 : null // Root placement mapping your exact payload
-    };
-
-    // 1. Emit payload over WebSocket
-    socket.emit("sendMessage", payload);
-
-    // 2. Optimistic local update matching backend historical format
-    const optimisticMessage = {
-      _id: `temp-${Date.now()}`,
-      message: text,
-      file: attachment ? attachment.base64 : null, // Mirroring backend database storage field
-      createdAt: new Date().toISOString(),
-      senderId: {
-        _id: loggedInUserId,
-        first_name: authInfo?.user?.first_name || "Me",
-        last_name: authInfo?.user?.last_name || "",
-        user_type: authInfo?.user?.user_type || "user"
-      },
-      senderType: "user",
-      isOuterSender: false
-    };
-
-    setMessages((prevMessages) => [...prevMessages, optimisticMessage]);
-
-    // 3. Reset UI inputs
-    setReplyMessage("");
-    removeAttachment();
-    
-  } catch (err) {
-    console.error("Failed to process local timeline submission append:", err);
-    showToast("error", "Error", "Failed to register sent dispatch trace item.");
-  } finally {
-    setIsSending(false);
-  }
-};
-const handleViewDocument = (e, fileData) => {
-  if (!fileData) return;
-
-  // If it's a standard web URL link, let the default navigation handle it
-  if (fileData.startsWith('http://') || fileData.startsWith('https://')) {
-    return;
-  }
-
-  // If it's a base64 string data URI, bypass the browser's about:blank block
-  if (fileData.startsWith('data:')) {
-    e.preventDefault(); // Stop default anchor navigation
-    
-    try {
-      const parts = fileData.split(';base64,');
-      const contentType = parts[0].split(':')[1];
-      const raw = window.atob(parts[1]);
-      const rawLength = raw.length;
-      const uInt8Array = new Uint8Array(rawLength);
-
-      for (let i = 0; i < rawLength; ++i) {
-        uInt8Array[i] = raw.charCodeAt(i);
-      }
-
-      const blob = new Blob([uInt8Array], { type: contentType });
-      const blobUrl = URL.createObjectURL(blob);
-      
-      // Open the clean, browser-safe local Blob URL safely
-      window.open(blobUrl, '_blank');
-    } catch (error) {
-      console.error("Failed to parse base64 document template payload:", error);
-    }
-  }
-};
-const handleStartNewChat = async () => {
-  const recipientUserId = selectedNdaUser || selectedMember;
-  const message = newInitialMessage.trim();
-
-  if (!recipientUserId || !message) {
-    showToast(
-      "warn",
-      "Missing Fields",
-      "Please select an invited member or NDA user and type a message."
-    );
-    return;
-  }
-
-  try {
-    setIsCreatingChat(true);
-
-    const res = await fetch(`${API_BASE}/conversation/send`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${access_token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        toUserId: recipientUserId,
-        message,
-      }),
-    });
-
-    if (res.status === 403) {
-      handle403Forbidden();
+    if (
+      (!text && !attachment) ||
+      !activeConversationId
+    ) {
       return;
     }
 
-    const responseData = await res.json().catch(() => null);
+    const socket = socketRef.current;
 
-    if (!res.ok) {
-      throw new Error(
-        responseData?.message ||
-        "Could not initialize the conversation."
+    if (!socket?.connected) {
+      showToast(
+        "error",
+        "Connection Error",
+        "Socket is disconnected. Cannot send the message."
       );
+
+      return;
     }
-
-    const createdConversationId =
-      responseData?.conversationId ||
-      responseData?.data?.conversationId ||
-      responseData?.data?._id ||
-      responseData?._id;
-
-    showToast(
-      "success",
-      "Success",
-      "Conversation started successfully."
-    );
-
-    setNewInitialMessage("");
-    setSelectedBusiness(null);
-    setSelectedMember(null);
-    setSelectedNdaUser(null);
-    setDisplayModal(false);
-
-    await fetchConversations();
-
-    if (createdConversationId) {
-      setActiveConversationId(createdConversationId);
-    }
-  } catch (error) {
-    console.error("Start conversation error:", error);
-
-    showToast(
-      "error",
-      "Conversation Error",
-      error.message || "Failed to start the conversation."
-    );
-  } finally {
-    setIsCreatingChat(false);
-  }
-};
-  const showToast = (severity, summary, detail) => {
-    toast.current?.show({ severity, summary, detail, life: 3000 });
-  };
-
-  const formatDate = (dateString) => {
-    if (!dateString) return "";
-    return new Date(dateString).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
-  };
-
-  const fetchUnreadCount = async (conversationId) => {
-    try {
-      const res = await fetch(`${API_BASE}/conversation/unread-count/${conversationId}`, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${access_token}`,
-          "Content-Type": "application/json",
-        },
-      });
-      if (!res.ok) return;
-      const result = await res.json();
-      // const count = result?.count ?? result?.data?.count ?? result?.unreadCount ?? 0;
-      const count = result ?? 0;
-      setUnreadCounts((prev) => ({ ...prev, [conversationId]: count }));
-      // console.log(`Unread count for conversation ${conversationId}:`, count);
-    } catch (err) {
-      console.error("Unread count error", err);
-    }
-  };
-  // --- GENERATING DROPDOWN OPTIONS ---
-  // Get unique list of businesses from the invitations payload
-  const businessOptions = Array.from(
-    new Map(
-      invites
-        .filter((inv) => inv.businessId)
-        .map((inv) => [inv.businessId._id, { label: inv.businessId.listingTitle, value: inv.businessId._id }])
-    ).values()
-  );
-const markUnreadCount = async (childId) => {
-    if (!childId || !API_BASE || !access_token) return;
 
     try {
-      console.log("Marking message as read for conversation/message ID:", childId);
-      
-      const res = await fetch(`${API_BASE}/conversation/message-read-by/${childId}`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${access_token}`,
-          "Content-Type": "application/json",
-        },
-      });
+      setIsSending(true);
 
-      if (res.status === 403) { 
-        handle403Forbidden(); 
-        return; 
+      const payload = {
+        conversationId:
+          activeConversationId,
+        text,
+        message: text,
+        file: attachment
+          ? attachment.base64
+          : null,
+      };
+
+      socket.emit(
+        "sendMessage",
+        payload
+      );
+
+      const optimisticMessage = {
+        _id: `temp-${Date.now()}`,
+        message: text,
+        file: attachment
+          ? attachment.base64
+          : null,
+        createdAt:
+          new Date().toISOString(),
+        senderId: {
+          _id: loggedInUserId,
+          first_name:
+            authInfo?.user?.first_name ||
+            "Me",
+          last_name:
+            authInfo?.user?.last_name ||
+            "",
+          user_type:
+            authInfo?.user?.user_type ||
+            "user",
+        },
+        senderType: "user",
+        isOuterSender: false,
+      };
+
+      setMessages(
+        (previousMessages) => [
+          ...previousMessages,
+          optimisticMessage,
+        ]
+      );
+
+      setReplyMessage("");
+      removeAttachment();
+    } catch (error) {
+      console.error(
+        "Send message error:",
+        error
+      );
+
+      showToast(
+        "error",
+        "Error",
+        "Failed to send the message."
+      );
+    } finally {
+      setIsSending(false);
+    }
+  };
+
+  const handleViewDocument = (
+    event,
+    fileData
+  ) => {
+    if (!fileData) return;
+
+    if (
+      fileData.startsWith("http://") ||
+      fileData.startsWith("https://")
+    ) {
+      return;
+    }
+
+    if (!fileData.startsWith("data:")) {
+      return;
+    }
+
+    event.preventDefault();
+
+    try {
+      const parts =
+        fileData.split(";base64,");
+
+      if (parts.length !== 2) {
+        throw new Error(
+          "Invalid Base64 file."
+        );
       }
 
-      if (!res.ok) throw new Error("Failed to update read status on the server.");
+      const contentType =
+        parts[0].split(":")[1];
 
-      // Optional: Update your local unread badge state immediately upon success
-      setUnreadCounts((prev) => ({ ...prev, [childId]: 0 }));
-      
-    } catch (err) {
-      console.error("Error in markUnreadCount:", err);
+      const raw = window.atob(parts[1]);
+
+      const byteArray =
+        new Uint8Array(raw.length);
+
+      for (
+        let index = 0;
+        index < raw.length;
+        index += 1
+      ) {
+        byteArray[index] =
+          raw.charCodeAt(index);
+      }
+
+      const blob = new Blob(
+        [byteArray],
+        {
+          type: contentType,
+        }
+      );
+
+      const blobUrl =
+        URL.createObjectURL(blob);
+
+      window.open(blobUrl, "_blank");
+
+      window.setTimeout(() => {
+        URL.revokeObjectURL(blobUrl);
+      }, 60000);
+    } catch (error) {
+      console.error(
+        "Open document error:",
+        error
+      );
+
+      showToast(
+        "error",
+        "File Error",
+        "The attached document could not be opened."
+      );
     }
   };
 
-  const filteredMemberOptions = invites.map((inv) => {
-  const userType = authInfo?.user?.user_type;
-  
-  // 1. Determine which user object we are dealing with based on the role
-  let targetUser = null;
-  if (userType === "seller_broker") {
-    targetUser = inv.invitedUserId;
-  } else if (userType === "buyer_basic") {
-    targetUser = inv.invitedByUserId;
-  } else if (userType === "invited_member") {
-    targetUser = inv.invitedByUserId;
-  }
+  const handleStartNewChat = async () => {
+    const recipientUserId =
+      selectedNdaUser || selectedMember;
 
-  // 2. Build the email suffix dynamically
-  const emailSuffix = targetUser?.email ? ` ${targetUser.email}` : "";
+    const initialMessage =
+      newInitialMessage.trim();
 
-  return {
-    label: `${emailSuffix} | ${inv.businessId.listingTitle || '-'}`,
-    value: targetUser?._id, 
+    if (
+      !recipientUserId ||
+      !initialMessage
+    ) {
+      showToast(
+        "warn",
+        "Missing Fields",
+        "Please select an invited member or NDA user and type a message."
+      );
+
+      return;
+    }
+
+    try {
+      setIsCreatingChat(true);
+
+      const response = await fetch(
+        `${API_BASE}/conversation/send`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${access_token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            toUserId: recipientUserId,
+            message: initialMessage,
+          }),
+        }
+      );
+
+      if (response.status === 403) {
+        handle403Forbidden();
+        return;
+      }
+
+      const responseData =
+        await response
+          .json()
+          .catch(() => null);
+
+      if (!response.ok) {
+        throw new Error(
+          responseData?.message ||
+            "Could not start the conversation."
+        );
+      }
+
+      const createdConversationId =
+        responseData?.conversationId ||
+        responseData?.data
+          ?.conversationId ||
+        responseData?.data?._id ||
+        responseData?._id;
+
+      showToast(
+        "success",
+        "Success",
+        "Conversation started successfully."
+      );
+
+      setNewInitialMessage("");
+      setSelectedMember(null);
+      setSelectedNdaUser(null);
+      setDisplayModal(false);
+
+      await fetchConversations();
+
+      if (createdConversationId) {
+        setActiveConversationId(
+          createdConversationId
+        );
+
+        if (
+          socketRef.current?.connected
+        ) {
+          socketRef.current.emit(
+            "joinConversation",
+            {
+              conversationId:
+                createdConversationId,
+            }
+          );
+        }
+      }
+    } catch (error) {
+      console.error(
+        "Start conversation error:",
+        error
+      );
+
+      showToast(
+        "error",
+        "Conversation Error",
+        error.message ||
+          "Failed to start the conversation."
+      );
+    } finally {
+      setIsCreatingChat(false);
+    }
   };
-});
 
-// --- GENERATE UNIQUE NDA USER OPTIONS ---
-const ndaUserOptions = ndaSubmissions
-  .map((submission) => {
-    const userType = authInfo?.user?.user_type;
+  const filteredMemberOptions = invites
+    .map((invite) => {
+      const userType =
+        authInfo?.user?.user_type;
 
-    if (userType === "seller_broker") {
-      const buyer = submission?.buyer;
+      let targetUser = null;
 
-      const buyerId =
-        buyer?._id ||
-        submission?.submittedBy?._id ||
-        submission?.submittedBy;
+      if (userType === "seller_broker") {
+        targetUser =
+          invite?.invitedUserId;
+      } else if (
+        userType === "buyer_basic" ||
+        userType === "invited_member"
+      ) {
+        targetUser =
+          invite?.invitedByUserId;
+      }
 
-      if (!buyerId) return null;
+      const targetUserId =
+        targetUser?._id ||
+        targetUser?.id;
 
-      const buyerName =
-        `${buyer?.first_name || ""} ${buyer?.last_name || ""}`.trim() ||
-        submission?.buyerName ||
-        submission?.submittedByEmail ||
-        "NDA Buyer";
+      if (!targetUserId) {
+        return null;
+      }
 
-      return {
-        label: `${buyerName} | ${
-          submission?.listingTitle || "Untitled listing"
-        } | ${submission?.ndaStatus || "Unknown"}`,
-        value: buyerId,
-      };
-    }
+      const userName =
+        `${targetUser?.first_name || ""} ${
+          targetUser?.last_name || ""
+        }`.trim();
 
-    if (userType === "buyer_basic") {
-      const sellerId =
-        submission?.ownerId ||
-        submission?._id ||
-        submission?.sellerId ||
-        submission?.ownerId;
+      const userLabel =
+        userName ||
+        targetUser?.email ||
+        "Invited User";
 
-      if (!sellerId) return null;
-
-      const sellerName =
-        `${submission?.buyerName || ""}`.trim() ||
-        submission?.sellerName ||
-        submission?.ownerName ||
-        "Listing Seller";
+      const listingTitle =
+        invite?.businessId
+          ?.listingTitle ||
+        invite?.listingTitle ||
+        "Untitled listing";
 
       return {
-        label: ` ${
-          submission?.listingTitle || "Untitled listing"
-        } | ${submission?.ndaStatus || "Unknown"}`,
-        value: sellerId,
+        label: `${userLabel} | ${listingTitle}`,
+        value: targetUserId,
       };
-    }
+    })
+    .filter(Boolean);
 
-    return null;
-  })
-  .filter(Boolean);
-  const renderModalFooter = () => {
-    return (
-      <div className="modal-footer-container">
-        <Button label="Cancel" className="footer-chat-cancel-btn" onClick={() => setDisplayModal(false)} disabled={isCreatingChat} />
-        <Button icon="pi pi-send" className="footer-chat-start-btn" onClick={handleStartNewChat} loading={isCreatingChat} />
-      </div>
+  const ndaUserOptions = ndaSubmissions
+    .map((submission) => {
+      const userType =
+        authInfo?.user?.user_type;
+
+      if (userType === "seller_broker") {
+        const buyer =
+          submission?.buyer;
+
+        const buyerId =
+          buyer?._id ||
+          buyer?.id ||
+          submission?.submittedBy?._id ||
+          submission?.submittedBy?.id ||
+          submission?.submittedBy;
+
+        if (!buyerId) return null;
+
+        const buyerName =
+          `${buyer?.first_name || ""} ${
+            buyer?.last_name || ""
+          }`.trim() ||
+          submission?.buyerName ||
+          submission?.submittedByEmail ||
+          "NDA Buyer";
+
+        return {
+          label: `${buyerName} | ${
+            submission?.listingTitle ||
+            "Untitled listing"
+          } | ${
+            submission?.ndaStatus ||
+            "Unknown"
+          }`,
+          value: buyerId,
+        };
+      }
+
+      if (userType === "buyer_basic") {
+        const sellerId =
+          submission?.ownerId?._id ||
+          submission?.ownerId?.id ||
+          submission?.ownerId ||
+          submission?.sellerId?._id ||
+          submission?.sellerId?.id ||
+          submission?.sellerId ||
+          submission?.owner?._id ||
+          submission?.owner?.id;
+
+        if (!sellerId) return null;
+
+        const sellerName =
+          submission?.sellerName ||
+          submission?.ownerName ||
+          submission?.owner?.name ||
+          "Listing Seller";
+
+        return {
+          label: `${sellerName} | ${
+            submission?.listingTitle ||
+            "Untitled listing"
+          } | ${
+            submission?.ndaStatus ||
+            "Unknown"
+          }`,
+          value: sellerId,
+        };
+      }
+
+      return null;
+    })
+    .filter(Boolean);
+
+  const activeConversation =
+    conversations.find(
+      (chat) =>
+        getChatId(chat) ===
+        activeConversationId
     );
-  };
+
+  const activeParticipantName =
+    activeConversation
+      ? getParticipantName(
+          activeConversation
+        )
+      : "Conversation";
+
+  const renderModalFooter = () => (
+    <div className="modal-footer-container">
+      <Button
+        label="Cancel"
+        type="button"
+        className="footer-chat-cancel-btn"
+        onClick={() =>
+          setDisplayModal(false)
+        }
+        disabled={isCreatingChat}
+      />
+
+      <Button
+        icon="pi pi-send"
+        type="button"
+        aria-label="Start conversation"
+        className="footer-chat-start-btn"
+        onClick={handleStartNewChat}
+        loading={isCreatingChat}
+      />
+    </div>
+  );
 
   return (
     <div className="chat-dashboard-wrapper">
-      <Toast ref={toast} position="top-right" />
-      <DashboardHeader headingData="Messaging Center" />
+      <Toast
+        ref={toast}
+        position="top-right"
+      />
 
-      <div className="chat-layout">
-        
-        {/* LEFT COLUMN: Sidebar */}
+      <DashboardHeader
+        headingData="Messaging Center"
+      />
+
+      <style>{`
+        .mobile-chat-header {
+          display: none;
+        }
+
+        @media (max-width: 767px) {
+          .chat-dashboard-wrapper {
+            min-width: 0;
+            overflow: hidden;
+          }
+
+          .chat-dashboard-wrapper .chat-layout {
+            display: block !important;
+            width: 100%;
+            height: calc(100vh - 105px);
+            height: calc(100dvh - 105px);
+            min-height: 420px;
+            overflow: hidden;
+          }
+
+          .chat-dashboard-wrapper .chat-sidebar {
+            display: flex;
+            flex-direction: column;
+            width: 100% !important;
+            max-width: none !important;
+            height: 100%;
+            border-right: 0;
+          }
+
+          .chat-dashboard-wrapper .sidebar-header {
+            flex: 0 0 auto;
+            padding: 12px 14px;
+          }
+
+          .chat-dashboard-wrapper .conversations-list {
+            flex: 1 1 auto;
+            min-height: 0;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+          }
+
+          .chat-dashboard-wrapper .conversation-item {
+            padding: 14px;
+            cursor: pointer;
+          }
+
+          .chat-dashboard-wrapper .conversation-meta {
+            gap: 10px;
+          }
+
+          .chat-dashboard-wrapper
+            .conversation-user-section {
+            min-width: 0;
+          }
+
+          .chat-dashboard-wrapper
+            .participant-name,
+          .chat-dashboard-wrapper
+            .last-message {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
+
+          .chat-dashboard-wrapper .chat-workspace {
+            display: none !important;
+            width: 100% !important;
+            height: 100%;
+            min-width: 0;
+            overflow: hidden;
+          }
+
+          .chat-dashboard-wrapper
+            .chat-layout.mobile-chat-open
+            .chat-sidebar {
+            display: none;
+          }
+
+          .chat-dashboard-wrapper
+            .chat-layout.mobile-chat-open
+            .chat-workspace {
+            display: flex !important;
+            flex-direction: column;
+          }
+
+          .chat-dashboard-wrapper
+            .mobile-chat-header {
+            display: flex;
+            flex: 0 0 auto;
+            align-items: center;
+            gap: 10px;
+            min-height: 52px;
+            padding: 8px 12px;
+            background: #ffffff;
+            border-bottom: 1px solid #e5e7eb;
+          }
+
+          .chat-dashboard-wrapper
+            .mobile-back-button.p-button {
+            flex: 0 0 40px;
+            width: 40px;
+            height: 40px;
+            padding: 0;
+          }
+
+          .chat-dashboard-wrapper
+            .mobile-chat-name {
+            min-width: 0;
+            overflow: hidden;
+            color: #1f2937;
+            font-size: 0.95rem;
+            font-weight: 600;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
+
+          .chat-dashboard-wrapper
+            .chat-history-area {
+            flex: 1 1 auto;
+            min-height: 0;
+            padding: 12px;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+          }
+
+          .chat-dashboard-wrapper .message-row {
+            width: 100%;
+          }
+
+          .chat-dashboard-wrapper
+            .message-bubble {
+            max-width: 86%;
+            overflow-wrap: anywhere;
+          }
+
+          .chat-dashboard-wrapper
+            .message-attachment-container
+            img {
+            width: auto;
+            max-width: 100% !important;
+            height: auto;
+          }
+
+          .chat-dashboard-wrapper
+            .chat-input-bar {
+            position: static;
+            flex: 0 0 auto;
+            width: 100%;
+            padding: 8px 10px
+              calc(
+                8px +
+                  env(safe-area-inset-bottom)
+              );
+            background: #ffffff;
+            border-top: 1px solid #e5e7eb;
+          }
+
+          .chat-dashboard-wrapper
+            .input-flex-container {
+            display: grid;
+            grid-template-columns:
+              42px minmax(0, 1fr) 42px;
+            align-items: end;
+            gap: 7px;
+            width: 100%;
+          }
+
+          .chat-dashboard-wrapper
+            .input-attach-btn.p-button,
+          .chat-dashboard-wrapper
+            .input-send-btn.p-button {
+            width: 42px;
+            height: 42px;
+            padding: 0;
+          }
+
+          .chat-dashboard-wrapper
+            .reply-textarea {
+            width: 100%;
+            min-width: 0;
+            max-height: 112px;
+            padding: 10px;
+            overflow-y: auto !important;
+            resize: none;
+          }
+
+          .chat-dashboard-wrapper
+            .attachment-preview-bar
+            span {
+            max-width: 55vw !important;
+          }
+
+          .chat-start-dialog {
+            width: calc(
+              100vw - 24px
+            ) !important;
+            max-height: calc(
+              100dvh - 24px
+            );
+            margin: 12px;
+          }
+
+          .chat-start-dialog
+            .p-dialog-content {
+            overflow-y: auto;
+          }
+
+          .chat-start-dialog .p-dropdown {
+            width: 100%;
+            min-width: 0;
+          }
+        }
+
+        @media (max-width: 380px) {
+          .chat-dashboard-wrapper
+            .message-bubble {
+            max-width: 91%;
+          }
+
+          .chat-dashboard-wrapper
+            .input-flex-container {
+            grid-template-columns:
+              38px minmax(0, 1fr) 38px;
+            gap: 5px;
+          }
+
+          .chat-dashboard-wrapper
+            .input-attach-btn.p-button,
+          .chat-dashboard-wrapper
+            .input-send-btn.p-button {
+            width: 38px;
+            height: 40px;
+          }
+        }
+      `}</style>
+
+      <div
+        className={`chat-layout ${
+          activeConversationId
+            ? "mobile-chat-open"
+            : ""
+        }`}
+      >
         <div className="chat-sidebar">
           <div className="sidebar-header">
-            <span className="sidebar-title">Active Discussions</span>
-            <Button icon="pi pi-plus" className="p-button-sm footer-chat-start-btn" onClick={() => setDisplayModal(true)} />
+            <span className="sidebar-title">
+              Active Discussions
+            </span>
+
+            <Button
+              icon="pi pi-plus"
+              type="button"
+              aria-label="Start conversation"
+              className="p-button-sm footer-chat-start-btn"
+              onClick={() =>
+                setDisplayModal(true)
+              }
+            />
           </div>
 
           <div className="conversations-list">
             {loadingConversations ? (
               <div className="loader-container">
-                <i className="pi pi-spin pi-spinner loader-icon"></i>
+                <i className="pi pi-spin pi-spinner loader-icon" />
               </div>
             ) : conversations.length === 0 ? (
-              <div className="empty-conversations">No active chats found.</div>
+              <div className="empty-conversations">
+                No active chats found.
+              </div>
             ) : (
-              [...conversations]
-                // .sort((a, b) => {
-                //   const dateA = new Date(a.updatedAt || a.createdAt || 0);
-                //   const dateB = new Date(b.updatedAt || b.createdAt || 0);
-                //   return dateB - dateA;
-                // })
-                .map((chat) => {
-                  const chatId = chat._id || chat.id || chat.conversationId;
-                  const isSelected = chatId === activeConversationId;
+              conversations.map((chat) => {
+                const chatId =
+                  getChatId(chat);
 
-                  let otherParticipant = chat.participants?.find((p) => p._id !== loggedInUserId);
-                  if (!otherParticipant && chat.participants?.length > 1) {
-                    otherParticipant = chat.participants[1];
-                  } else if (!otherParticipant && chat.participants?.length === 1) {
-                    otherParticipant = chat.participants[0];
-                  }
+                const isSelected =
+                  chatId ===
+                  activeConversationId;
 
-                  const participantName = otherParticipant?.first_name 
-                    ? `${otherParticipant.first_name} ${otherParticipant.last_name || ""}`.trim() 
-                    : `User ...${chatId?.slice(-6)}`;
-                  
-                  const displayMessageText = chat.lastMessage || chat.message || "Open discussion thread...";
+                const participantName =
+                  getParticipantName(chat);
 
-                  return (
-                    <div
-                      key={chatId}
-                      onClick={() => {
-                        setActiveConversationId(chatId);
-                        setUnreadCounts((prev) => ({ ...prev, [chatId]: 0 }));
-                        markUnreadCount(chat._id)
-                      }}
-                      className={`conversation-item ${isSelected ? 'selected' : ''}`}
-                    >
-                      <div className="conversation-meta">
-                        <div className="conversation-user-section">
-                          <span className="participant-name">{participantName}</span>
-                          {unreadCounts[chatId] > 0 && (
-                            <span className="unread-badge">{unreadCounts[chatId]}</span>
-                          )}
-                        </div>
-                        <span className="timestamp">{formatDate(chat.updatedAt || chat.createdAt)}</span>
-                      </div>
-                      <p className="last-message">{displayMessageText}</p>
-                    </div>
+                const displayMessageText =
+                  chat.lastMessage ||
+                  chat.message ||
+                  "Open discussion thread...";
+
+                const unreadCount =
+                  Number(
+                    unreadCounts[chatId] || 0
                   );
-                })
+
+                return (
+                  <div
+                    key={chatId}
+                    role="button"
+                    tabIndex={0}
+                    className={`conversation-item ${
+                      isSelected
+                        ? "selected"
+                        : ""
+                    }`}
+                    onClick={() =>
+                      handleConversationSelect(
+                        chatId
+                      )
+                    }
+                    onKeyDown={(event) => {
+                      if (
+                        event.key ===
+                          "Enter" ||
+                        event.key === " "
+                      ) {
+                        event.preventDefault();
+
+                        handleConversationSelect(
+                          chatId
+                        );
+                      }
+                    }}
+                  >
+                    <div className="conversation-meta">
+                      <div className="conversation-user-section">
+                        <span className="participant-name">
+                          {participantName}
+                        </span>
+
+                        {unreadCount > 0 && (
+                          <span className="unread-badge">
+                            {unreadCount}
+                          </span>
+                        )}
+                      </div>
+
+                      <span className="timestamp">
+                        {formatDate(
+                          chat.updatedAt ||
+                            chat.createdAt
+                        )}
+                      </span>
+                    </div>
+
+                    <p className="last-message">
+                      {displayMessageText}
+                    </p>
+                  </div>
+                );
+              })
             )}
           </div>
         </div>
 
-        {/* RIGHT COLUMN: Chat Workspace */}
         <div className="chat-workspace">
           {activeConversationId ? (
             <>
+              <div className="mobile-chat-header">
+                <Button
+                  icon="pi pi-arrow-left"
+                  type="button"
+                  className="p-button-rounded p-button-text mobile-back-button"
+                  aria-label="Back to conversations"
+                  onClick={() =>
+                    setActiveConversationId(
+                      null
+                    )
+                  }
+                />
+
+                <span className="mobile-chat-name">
+                  {activeParticipantName}
+                </span>
+              </div>
+
               <div className="chat-history-area">
                 {loadingHistory ? (
                   <div className="loader-container central">
-                    <i className="pi pi-spin pi-spinner loader-icon large"></i>
+                    <i className="pi pi-spin pi-spinner loader-icon large" />
                   </div>
                 ) : (
-                  messages.map((msg, idx) => {
-                    const sender = msg.senderId;
-                    const isMe = sender?._id === loggedInUserId || 
-                                 (Array.isArray(msg.senderId) && sender?._id === loggedInUserId) ||
-                                 msg.senderType?.toLowerCase() === "user" || 
-                                 msg.isOuterSender === false;
-                    const isAdmin = sender?.user_type === "admin";
-                    
-                    // Unified file data checker targeting back-end schema varieties
-                    const fileData = msg.file || msg.base64 || msg.attachment?.url || msg.attachment?.base64;
-                    const isImage = fileData?.startsWith("data:image/") || /\.(jpeg|jpg|gif|png|webp)$/i.test(fileData || "");
+                  messages.map(
+                    (
+                      messageItem,
+                      index
+                    ) => {
+                      const sender =
+                        messageItem.senderId;
 
-                    return (
-                      <div 
-                        key={msg._id || msg.id || idx} 
-                        className={`message-row ${isMe ? 'me-align' : 'them-align'} ${isAdmin ? 'admin-row' : ''}`}
-                      >
-                        <div className={`message-bubble ${isMe ? 'me-bubble' : 'them-bubble'} ${isAdmin ? 'admin-bubble' : ''}`}>
-                          <span className={`message-sender ${isMe ? 'me-sender' : 'them-sender'} ${isAdmin ? 'admin-sender' : ''}`}>
-                            {isAdmin ? "Admin" : sender?.first_name 
-                              ? `${sender.first_name} ${sender.last_name || ""}`.trim() 
-                              : `User ...${sender?._id?.slice(-6)}`}
-                          </span>
-                          
-                          {/* Text Rendering Context */}
-                          {msg.message && <p className="message-text">{msg.message}</p>}
+                      const normalizedSender =
+                        Array.isArray(sender)
+                          ? sender[0]
+                          : sender;
 
-                          {/* Dynamic Attachment Rendering Handler */}
-                          {fileData && (
-                            <div className="message-attachment-container" style={{ marginTop: '8px' }}>
-                              {isImage ? (
-                                <img 
-                                  src={fileData} 
-                                  alt={msg.name || "Attachment"} 
-                                  style={{ maxWidth: '100%', maxHeight: '200px', borderRadius: '4px', display: 'block' }} 
-                                />
-                              ) : (
-                                <a 
-                                  href={fileData} 
-                                  target="_blank" 
-                                  rel="noopener noreferrer"
-                                  onClick={(e) => handleViewDocument(e, fileData)}
-                                  style={{ 
-                                    display: 'flex', 
-                                    alignItems: 'center', 
-                                    gap: '6px', 
-                                    textDecoration: 'underline', 
-                                    cursor: 'pointer',
-                                    color: typeof isMe !== 'undefined' && isMe ? '#fff' : '#007ad9' 
-                                  }}
-                                >
-                                  <i className="pi pi-file"></i>
-                                  <span>View Document</span> 
-                                </a>
+                      const isMe =
+                        normalizedSender?._id ===
+                          loggedInUserId ||
+                        normalizedSender?.id ===
+                          loggedInUserId ||
+                        messageItem
+                          .senderType
+                          ?.toLowerCase() ===
+                          "user" ||
+                        messageItem
+                          .isOuterSender ===
+                          false;
+
+                      const isAdmin =
+                        normalizedSender
+                          ?.user_type ===
+                          "admin";
+
+                      const fileData =
+                        messageItem.file ||
+                        messageItem.base64 ||
+                        messageItem
+                          .attachment?.url ||
+                        messageItem
+                          .attachment?.base64;
+
+                      const isImage =
+                        fileData?.startsWith(
+                          "data:image/"
+                        ) ||
+                        /\.(jpeg|jpg|gif|png|webp)$/i.test(
+                          fileData || ""
+                        );
+
+                      return (
+                        <div
+                          key={
+                            messageItem._id ||
+                            messageItem.id ||
+                            index
+                          }
+                          className={`message-row ${
+                            isMe
+                              ? "me-align"
+                              : "them-align"
+                          } ${
+                            isAdmin
+                              ? "admin-row"
+                              : ""
+                          }`}
+                        >
+                          <div
+                            className={`message-bubble ${
+                              isMe
+                                ? "me-bubble"
+                                : "them-bubble"
+                            } ${
+                              isAdmin
+                                ? "admin-bubble"
+                                : ""
+                            }`}
+                          >
+                            <span
+                              className={`message-sender ${
+                                isMe
+                                  ? "me-sender"
+                                  : "them-sender"
+                              } ${
+                                isAdmin
+                                  ? "admin-sender"
+                                  : ""
+                              }`}
+                            >
+                              {isAdmin
+                                ? "Admin"
+                                : normalizedSender
+                                      ?.first_name
+                                  ? `${
+                                      normalizedSender.first_name
+                                    } ${
+                                      normalizedSender.last_name ||
+                                      ""
+                                    }`.trim()
+                                  : `User ...${
+                                      normalizedSender?._id?.slice(
+                                        -6
+                                      ) || ""
+                                    }`}
+                            </span>
+
+                            {messageItem.message && (
+                              <p className="message-text">
+                                {
+                                  messageItem.message
+                                }
+                              </p>
+                            )}
+
+                            {fileData && (
+                              <div
+                                className="message-attachment-container"
+                                style={{
+                                  marginTop:
+                                    "8px",
+                                }}
+                              >
+                                {isImage ? (
+                                  <img
+                                    src={fileData}
+                                    alt={
+                                      messageItem.name ||
+                                      "Attachment"
+                                    }
+                                    style={{
+                                      maxWidth:
+                                        "100%",
+                                      maxHeight:
+                                        "200px",
+                                      borderRadius:
+                                        "4px",
+                                      display:
+                                        "block",
+                                    }}
+                                  />
+                                ) : (
+                                  <a
+                                    href={fileData}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    onClick={(
+                                      event
+                                    ) =>
+                                      handleViewDocument(
+                                        event,
+                                        fileData
+                                      )
+                                    }
+                                    style={{
+                                      display:
+                                        "flex",
+                                      alignItems:
+                                        "center",
+                                      gap: "6px",
+                                      textDecoration:
+                                        "underline",
+                                      cursor:
+                                        "pointer",
+                                      color: isMe
+                                        ? "#ffffff"
+                                        : "#007ad9",
+                                    }}
+                                  >
+                                    <i className="pi pi-file" />
+
+                                    <span>
+                                      View Document
+                                    </span>
+                                  </a>
+                                )}
+                              </div>
+                            )}
+
+                            <div
+                              className={`message-timestamp ${
+                                isMe
+                                  ? "me-time"
+                                  : "them-time"
+                              }`}
+                            >
+                              {formatDate(
+                                messageItem.createdAt
                               )}
                             </div>
-                          )}
-
-                          <div className={`message-timestamp ${isMe ? 'me-time' : 'them-time'}`}>
-                            {formatDate(msg.createdAt)}
                           </div>
                         </div>
-                      </div>
-                    );
-                  })
+                      );
+                    }
+                  )
                 )}
+
                 <div ref={messageEndRef} />
               </div>
 
-              {/* CHAT INPUT BAR WITH ATTACHMENTS */}
               <div className="chat-input-bar">
-                {/* Visual preview of staging attachment before emitting payload */}
                 {attachment && (
-                  <div className="attachment-preview-bar" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 12px', background: '#f4f4f4', borderBottom: '1px solid #ddd', borderRadius: '4px 4px 0 0' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <i className={attachment.type.startsWith("image/") ? "pi pi-image" : "pi pi-file-pdf"}></i>
-                      <span style={{ fontSize: '0.9rem', maxWidth: '250px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  <div
+                    className="attachment-preview-bar"
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent:
+                        "space-between",
+                      padding: "6px 12px",
+                      background: "#f4f4f4",
+                      borderBottom:
+                        "1px solid #dddddd",
+                      borderRadius:
+                        "4px 4px 0 0",
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        minWidth: 0,
+                        gap: "8px",
+                      }}
+                    >
+                      <i
+                        className={
+                          attachment.type.startsWith(
+                            "image/"
+                          )
+                            ? "pi pi-image"
+                            : "pi pi-file-pdf"
+                        }
+                      />
+
+                      <span
+                        style={{
+                          fontSize:
+                            "0.9rem",
+                          maxWidth:
+                            "250px",
+                          overflow:
+                            "hidden",
+                          textOverflow:
+                            "ellipsis",
+                          whiteSpace:
+                            "nowrap",
+                        }}
+                      >
                         {attachment.name}
                       </span>
                     </div>
-                    <Button icon="pi pi-times" className="p-button-rounded p-button-text p-button-danger p-button-sm" onClick={removeAttachment} />
+
+                    <Button
+                      icon="pi pi-times"
+                      type="button"
+                      aria-label="Remove attachment"
+                      className="p-button-rounded p-button-text p-button-danger p-button-sm"
+                      onClick={
+                        removeAttachment
+                      }
+                    />
                   </div>
                 )}
 
                 <div className="input-flex-container">
-                  {/* Hidden browser input handling file selection */}
-                  <input 
-                    type="file" 
-                    ref={fileInputRef} 
-                    style={{ display: 'none' }} 
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    style={{
+                      display: "none",
+                    }}
                     accept="image/*,application/pdf,application/*"
-                    onChange={handleFileChange} 
+                    onChange={
+                      handleFileChange
+                    }
                   />
-                  
-                  <Button 
-                    icon="pi pi-paperclip" 
+
+                  <Button
+                    icon="pi pi-paperclip"
                     type="button"
-                    className="input-attach-btn" 
-                    onClick={() => fileInputRef.current?.click()} 
+                    aria-label="Attach file"
+                    className="input-attach-btn"
+                    onClick={() =>
+                      fileInputRef.current?.click()
+                    }
                     disabled={isSending}
                   />
 
                   <InputTextarea
                     value={replyMessage}
-                    onChange={(e) => setReplyMessage(e.target.value)}
+                    onChange={(event) =>
+                      setReplyMessage(
+                        event.target.value
+                      )
+                    }
                     rows={2}
                     autoResize
                     placeholder="Type your message here..."
                     disabled={isSending}
                     className="reply-textarea"
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" && !e.shiftKey) {
-                        e.preventDefault();
+                    onKeyDown={(event) => {
+                      if (
+                        event.key ===
+                          "Enter" &&
+                        !event.shiftKey
+                      ) {
+                        event.preventDefault();
                         handleSendMessage();
                       }
                     }}
                   />
-                  <Button 
-                    icon="pi pi-send" 
-                    onClick={handleSendMessage} 
-                    loading={isSending} 
-                    disabled={!replyMessage.trim() && !attachment} 
-                    className="input-send-btn" 
+
+                  <Button
+                    icon="pi pi-send"
+                    type="button"
+                    aria-label="Send message"
+                    onClick={
+                      handleSendMessage
+                    }
+                    loading={isSending}
+                    disabled={
+                      !replyMessage.trim() &&
+                      !attachment
+                    }
+                    className="input-send-btn"
                   />
                 </div>
               </div>
             </>
           ) : (
             <div className="chat-placeholder">
-              <i className="pi pi-comments placeholder-icon"></i>
-              <p className="placeholder-text">Select a discussion or click the "+" icon to start a new chat workspace layout window pane view.</p>
+              <i className="pi pi-comments placeholder-icon" />
+
+              <p className="placeholder-text">
+                Select a discussion or click
+                the “+” icon to start a new
+                conversation.
+              </p>
             </div>
           )}
         </div>
-
       </div>
 
-      {/* POPUP MODAL */}
       <Dialog
-  header="Start a New Conversation"
-  visible={displayModal}
-  style={{ width: "650px" }}
-  modal
-  footer={renderModalFooter()}
-  onHide={() => {
-    setDisplayModal(false);
-    setSelectedBusiness(null);
-    setSelectedMember(null);
-    setSelectedNdaUser(null);
-    setNewInitialMessage("");
-  }}
->
-  <div className="p-fluid modal-body-layout">
-    <div className="field">
-      <label htmlFor="memberSelect" className="modal-label">
-        {authInfo?.user?.user_type === "seller_broker"
-          ? "Select Invitee"
-          : authInfo?.user?.user_type === "buyer_basic"
-            ? "Select Inviter"
-            : "Select User"}
-      </label>
+        header="Start a New Conversation"
+        visible={displayModal}
+        style={{
+          width: "650px",
+        }}
+        className="chat-start-dialog"
+        breakpoints={{
+          "767px":
+            "calc(100vw - 24px)",
+        }}
+        modal
+        footer={renderModalFooter()}
+        onHide={() => {
+          setDisplayModal(false);
+          setSelectedMember(null);
+          setSelectedNdaUser(null);
+          setNewInitialMessage("");
+        }}
+      >
+        <div className="p-fluid modal-body-layout">
+          <div className="field">
+            <label
+              htmlFor="memberSelect"
+              className="modal-label"
+            >
+              {authInfo?.user
+                ?.user_type ===
+              "seller_broker"
+                ? "Select Invitee"
+                : authInfo?.user
+                      ?.user_type ===
+                    "buyer_basic"
+                  ? "Select Inviter"
+                  : "Select User"}
+            </label>
 
-     <Dropdown
-  id="memberSelect"
-  value={selectedMember}
-  options={filteredMemberOptions}
-  onChange={(e) => {
-    setSelectedMember(e.value);
+            <Dropdown
+              id="memberSelect"
+              value={selectedMember}
+              options={
+                filteredMemberOptions
+              }
+              onChange={(event) => {
+                setSelectedMember(
+                  event.value
+                );
 
-    if (e.value) {
-      setSelectedNdaUser(null);
-    }
-  }}
-  placeholder={
-    loadingInvites
-      ? "Loading invited users..."
-      : "Choose an invited user..."
-  }
-  loading={loadingInvites}
-  disabled={
-    loadingInvites ||
-    isCreatingChat ||
-    !!selectedNdaUser
-  }
-  filter
-  showClear
-  emptyMessage="No invited users found"
-/>
-    </div>
+                if (event.value) {
+                  setSelectedNdaUser(
+                    null
+                  );
+                }
+              }}
+              placeholder={
+                loadingInvites
+                  ? "Loading invited users..."
+                  : "Choose an invited user..."
+              }
+              loading={loadingInvites}
+              disabled={
+                loadingInvites ||
+                isCreatingChat ||
+                Boolean(
+                  selectedNdaUser
+                )
+              }
+              filter
+              showClear
+              emptyMessage="No invited users found"
+            />
+          </div>
 
-    {["seller_broker", "buyer_basic"].includes(
-  authInfo?.user?.user_type
-) && (
-      <div className="field">
-        <label htmlFor="ndaUserSelect" className="modal-label">
-          Select NDA User
-        </label>
-<Dropdown
-  id="ndaUserSelect"
-  value={selectedNdaUser}
-  options={ndaUserOptions}
-  onChange={(e) => {
-    setSelectedNdaUser(e.value);
+          {[
+            "seller_broker",
+            "buyer_basic",
+          ].includes(
+            authInfo?.user?.user_type
+          ) && (
+            <div className="field">
+              <label
+                htmlFor="ndaUserSelect"
+                className="modal-label"
+              >
+                Select NDA User
+              </label>
 
-    if (e.value) {
-      setSelectedMember(null);
-    }
-  }}
-  placeholder={
-    loadingNdaUsers
-      ? "Loading NDA users..."
-      : "Choose an NDA user..."
-  }
-  loading={loadingNdaUsers}
-  disabled={
-    loadingNdaUsers ||
-    isCreatingChat ||
-    !!selectedMember
-  }
-  filter
-  showClear
-  emptyMessage="No NDA users found"
-/>
-      </div>
-    )}
+              <Dropdown
+                id="ndaUserSelect"
+                value={selectedNdaUser}
+                options={ndaUserOptions}
+                onChange={(event) => {
+                  setSelectedNdaUser(
+                    event.value
+                  );
 
-    <div className="field">
-      <label htmlFor="initialMessage" className="modal-label">
-        Initial Message
-      </label>
+                  if (event.value) {
+                    setSelectedMember(
+                      null
+                    );
+                  }
+                }}
+                placeholder={
+                  loadingNdaUsers
+                    ? "Loading NDA users..."
+                    : "Choose an NDA user..."
+                }
+                loading={
+                  loadingNdaUsers
+                }
+                disabled={
+                  loadingNdaUsers ||
+                  isCreatingChat ||
+                  Boolean(
+                    selectedMember
+                  )
+                }
+                filter
+                showClear
+                emptyMessage="No NDA users found"
+              />
+            </div>
+          )}
 
-      <InputTextarea
-        id="initialMessage"
-        value={newInitialMessage}
-        onChange={(e) => setNewInitialMessage(e.target.value)}
-        rows={4}
-        autoResize
-        placeholder="Type your initial message..."
-        disabled={isCreatingChat}
-      />
-    </div>
-  </div>
-</Dialog>
+          <div className="field">
+            <label
+              htmlFor="initialMessage"
+              className="modal-label"
+            >
+              Initial Message
+            </label>
+
+            <InputTextarea
+              id="initialMessage"
+              value={newInitialMessage}
+              onChange={(event) =>
+                setNewInitialMessage(
+                  event.target.value
+                )
+              }
+              rows={4}
+              autoResize
+              placeholder="Type your initial message..."
+              disabled={isCreatingChat}
+            />
+          </div>
+        </div>
+      </Dialog>
     </div>
   );
 };
