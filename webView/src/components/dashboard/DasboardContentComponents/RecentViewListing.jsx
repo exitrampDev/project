@@ -10,6 +10,7 @@ import { useRecoilValue } from "recoil";
 import { Tooltip } from "primereact/tooltip";
 import DashboardHeader from "./DashboardHeaderBlock";
 import { Link } from "react-router-dom";
+import ResponsiveDataTable from "../../customcomponent/ResponsiveDataTable";
 
 const RecentViewListing = () => {
   const { user, access_token } = useRecoilValue(authState) ?? {};
@@ -117,28 +118,72 @@ const listingNameTemplate = (rowData) => {
   const moneyTemplate = (value) =>
     value ? `$${Number(value).toLocaleString()}` : "—";
 
+
+const listingColumns = [
+  {
+    field: "listingName",
+    header: "Listing Name",
+    primary: true,
+    body: listingNameTemplate,
+  },
+  {
+    field: "industry",
+    header: "Industry",
+    body: industryTemplate,
+  },
+  {
+    field: "businessState",
+    header: "Business State",
+    body: (row) => row.businessState || "-",
+  },
+  {
+    field: "cashFlow",
+    header: "Cash Flow",
+    body: (row) =>
+      row.cashFlow != null
+        ? moneyTemplate(row.cashFlow)
+        : "-",
+  },
+  {
+    field: "askingPrice",
+    header: "Asking Price",
+    body: (row) =>
+      row.askingPrice != null
+        ? moneyTemplate(row.askingPrice)
+        : "-",
+  },
+  {
+    field: "createdAt",
+    header: "Created Date",
+    body: (row) =>
+      row.createdAt
+        ? new Date(row.createdAt).toLocaleDateString()
+        : "-",
+  },
+  {
+    field: "actions",
+    header: "Action",
+    body: actionTemplate,
+  },
+];
+
   return (
     <>
 <DashboardHeader headingData="Recent View"/>
       <div className="my__save_listing_wrap">
-        <DataTable
-          value={listings}
-          paginator
-          rows={10}
-          loading={loading}
-          responsiveLayout="scroll"
-          emptyMessage={
-            error ? `Error: ${error}` : "No business listings found."
-          }
-        >
-          <Column header="Listing Name" body={listingNameTemplate} />
-          <Column header="Industry" body={industryTemplate} />
-         <Column  header="Business State" body={(listingData) => { return listingData.businessState;}}/>
-          <Column header="Cash Flow" body={(listingData) => { return `$${listingData.cashFlow}`}} />
-          <Column header="Asking Price"  body={(rowData) => moneyTemplate(rowData.askingPrice)} />
-          <Column body={(listingData)=>{return new Date(listingData.createdAt).toLocaleDateString()}} header="Created Date" />
-          <Column header="Action" body={actionTemplate} />
-        </DataTable>
+        <ResponsiveDataTable
+  value={listings}
+  columns={listingColumns}
+  paginator
+  rows={10}
+  loading={loading}
+  dataKey="_id"
+  responsiveLayout="scroll"
+  emptyMessage={
+    error ? `Error: ${error}` : "No business listings found."
+  }
+  cardBreakpoint="768px"
+/>
       </div>
     </>
   );

@@ -2269,9 +2269,7 @@ button.btn__crt_listing.p-button.p-component {
     color: #6380a4;
     cursor: pointer;
 }
-.my__save_listing_wrap.my__listing_table table.p-datatable-table {
-    width: 110vw;
-}
+
 .form__field_col_hardocded_email {
   font-family: var(--font-family);
   font-feature-settings: var(--font-feature-settings, normal);
@@ -3349,9 +3347,7 @@ ul.list__card_cim_row_sub_list {
     font-size: 14px;
     color: #002F67;
 }
-.my__save_listing_wrap.my__listing_table.nda__request_block table.p-datatable-table {
-    width: 77vw;
-}
+
 h2.business__list_single_nda_submit_row_intro_head.nda__listing_heading {
     font-size: 18px;
     color: #002F68;
@@ -4801,11 +4797,11 @@ a.view__edit_buttons_action_edit_btn {
     font-size: 11px;
 }
 
-.permissions__badges_wrap span.permissions__badges_wrap_badge {
+/* .permissions__badges_wrap span.permissions__badges_wrap_badge {
     display: flex;
     align-items: center;
     width: 100%;
-}
+} */
 
 .permissions__badges_wrap span.permissions__badges_wrap_badge em {font-style: normal;font-weight: 600;}
 
@@ -4820,9 +4816,9 @@ a.view__edit_buttons_action_edit_btn {
     width: calc(100% - 15px);
     font-style: normal;
 }
-td.invited__list_title {
+/* td.invited__list_title {
     max-width: 160px;
-}
+} */
 .main__invite-form-wrap .invite__form_grid .invite__form_field {
     width: 25%;
     display: flex;
@@ -8661,5 +8657,51 @@ button.login-btn a img, .signup_content button img{width:15px}
 }
 .service_area_row{
   gap: 10px;
+}
+.my__listing_render_table_filters span.p-input-icon-left {
+    width: 49%;
+}
+
+.my__listing_render_table_filters .p-dropdown.p-component {
+    width: 49%;
+}
+
+.my__listing_render_table_filters {
+    flex-wrap: wrap;
+}
+
+.my__listing_render_table_filters_fields {
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.my__listing_render_table_filters span.p-input-icon-left input.p-inputtext.p-component {
+    width: 100%;
+    padding-right: 35px;
+}
+
+.my__listing_render_table_filters_fields input.p-inputtext.p-component {
+    width: 49%;
+}
+.selection__container .selection__box_content_container {
+    padding: 20px;
+    max-width: 95%;
+}
+
+.selection__container .selection__box_content_container .selection__listing_type_cards_wrap .selection__listing_type_cards_box {
+    padding: 15px;
+}
+
+.selection__content_main_heading h2 {
+    font-size: 25px;
+}
+.listing__creation_block_main_wrap .listing__creation_field_col {
+    max-width: 360px;
+    padding: 10px;
+    width: 49%;
+}
+
+.listing__creation_block_main_wrap {
+    gap: 5px;
 }
 } 

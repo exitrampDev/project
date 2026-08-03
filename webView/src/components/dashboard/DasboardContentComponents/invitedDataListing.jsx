@@ -8,6 +8,7 @@ import DashboardHeader from "./DashboardHeaderBlock";
 // PrimeReact
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
+import ResponsiveDataTable from "../../customcomponent/ResponsiveDataTable";
 
 const InvitedDataListing = () => {
   const API_BASE = useRecoilValue(apiBaseUrlState);
@@ -279,65 +280,82 @@ if (invitedStatus === "accepted" && accessStatus !== "revoked") {
   // FALLBACK
   return "-";
 };
+
+
+const inviteColumns = [
+  {
+    field: "businessId",
+    header: "Name",
+    primary: true,
+    className: "invited__list_title",
+    body: (row) => row.businessId?.listingTitle || "-",
+  },
+  {
+    field: "role",
+    header: "Role",
+  },
+  {
+    field: "invitedByUserId.email",
+    header: "Invited By",
+    body: invitedByTemplate,
+  },
+  {
+    field: "permissions",
+    header: "Permissions",
+    body: permissionsTemplate,
+  },
+  {
+    field: "status",
+    header: "Status",
+    body: statusTemplate,
+  },
+  {
+    field: "createdAt",
+    header: "Created At",
+    body: dateTemplate,
+  },
+  {
+    field: "access",
+    header: "Access",
+    body: (row) => {
+      if (row.access === "revoked") {
+        return (
+          <span className="btn__revoked_invite_text">
+            Access Revoked
+          </span>
+        );
+      }
+
+      return (
+        <span className="text-capitalize">
+          {row?.access || "-"}
+        </span>
+      );
+    },
+  },
+  {
+    field: "actions",
+    header: "Actions",
+    body: actionTemplate,
+  },
+];
   return (
     <>
       <DashboardHeader headingData="My Invited Listings" />
 
       <div className="p-4">
-        <DataTable
+        <ResponsiveDataTable
           value={invites}
+          columns={inviteColumns}
           loading={loading}
           paginator
           rows={5}
+          dataKey="_id"
           responsiveLayout="scroll"
           emptyMessage="No invitations found"
           className="my__save_listing_wrap my__payment_history_table"
-        >
-          <Column header="Name" body={(row) => row.businessId?.listingTitle || "-"}  className="invited__list_title "/>
-          
-          <Column field="role" header="Role"  />
-
-          <Column
-            field="invitedByUserId.email"
-            header="Invited By"
-            body={invitedByTemplate}
-          />
-
-          <Column
-            header="Permissions"
-            body={permissionsTemplate}
-          />
-
-          <Column
-            field="status"
-            header="Status"
-            body={statusTemplate}
-            
-          />
-
-          <Column
-            field="createdAt"
-            header="Created At"
-            body={dateTemplate}
-            
-          />
-          <Column header="Access" body={(row) => {
-            if (row.access === "revoked") {
-              return (
-                <span className="btn__revoked_invite_text">
-                  Access Revoked
-                </span>
-              );
-            }else { 
-              return (<span className="text-capitalize">
-                  {row?.access }
-                </span>
-              );
-            }
-            return null;
-          }} />
-          <Column header="Actions" body={actionTemplate} />
-        </DataTable>
+          cardBreakpoint="768px"
+        />
       </div>
     </>
   );

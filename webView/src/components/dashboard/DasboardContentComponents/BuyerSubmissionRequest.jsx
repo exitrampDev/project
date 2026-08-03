@@ -13,7 +13,7 @@ import { Button } from "primereact/button";
 import { Toast } from "primereact/toast";
 import { Link } from "react-router-dom";
 import { Message } from "primereact/message";
-
+import ResponsiveDataTable from "../../customcomponent/ResponsiveDataTable";
 import SignatureCanvas from "react-signature-canvas";
 import DashboardHeader from "./DashboardHeaderBlock";
 
@@ -211,7 +211,72 @@ const openBuyerInfoModal = (row) => {
   setBuyerInfoVisible(true);
 };
 
+const buyerSubmissionColumns = [
+  {
+    field: "listingTitle",
+    header: "Listing Name",
+    primary: true,
+    sortable: true,
+    body: (rowData) => {
+      const text = rowData?.listingTitle || "-";
+      const words = text.split(" ");
 
+      return words.length > 4
+        ? `${words.slice(0, 4).join(" ")}...`
+        : text;
+    },
+  },
+  {
+    field: "buyer",
+    header: "Buyer Name",
+    sortable: true,
+    body: (rowData) => (
+      <span
+        onClick={() => openBuyerInfoModal(rowData)}
+        style={{
+          cursor: "pointer",
+          color: "#2563eb",
+          fontWeight: 500,
+          textDecoration: "underline",
+        }}
+      >
+        {rowData?.buyer?.first_name || ""}{" "}
+        {rowData?.buyer?.last_name || ""}
+      </span>
+    ),
+  },
+  {
+    field: "submittedByEmail",
+    header: "Email",
+  },
+  {
+    field: "submittedOn",
+    header: "Submitted On",
+    body: (row) => formatDate(row.submittedOn),
+  },
+  {
+    field: "sellerResponseOn",
+    header: "Seller Responded On",
+    body: (row) => formatDate(row.sellerResponseOn),
+  },
+  {
+    field: "ndaStatus",
+    header: "NDA Status",
+    body: ndaStatusTemplate,
+    sortable: true,
+  },
+  {
+    field: "dueDiligence",
+    header: "Due Diligence",
+    body: (row) =>
+      DueDiligenceAction(row.ndaStatus, row.businessId),
+  },
+  {
+    field: "actions",
+    header: "Action",
+    body: ndaViewActionTemplate,
+  },
+];
   return (
     <>
       <Toast ref={toast} />
@@ -225,63 +290,18 @@ const openBuyerInfoModal = (row) => {
       </div>
 
       <div className="my__save_listing_wrap my__listing_table nda__request_block">
-        <DataTable
-          value={filteredData}
-          loading={loading}
-          paginator
-          rows={10}
-          stripedRows
-          emptyMessage="No Buyer Submission"
-          responsiveLayout="scroll"
-        >
-            <Column
-              header="Listing Name"
-              sortable
-              body={(rowData) => {
-                const text = rowData?.listingTitle || "";
-                const words = text.split(" ");
-                return words.length > 4 ? words.slice(0, 4).join(" ") + "..." : text;
-              }}
-            />
-          <Column
-            header="Buyer Name"
-            sortable
-            body={(rowData) => (
-              <span
-                onClick={() => openBuyerInfoModal(rowData)}
-                style={{
-                  cursor: "pointer",
-                  color: "#2563eb",
-                  fontWeight: 500,
-                  textDecoration: "underline"
-                }}
-              >
-                {rowData?.buyer?.first_name} {rowData?.buyer?.last_name}
-              </span>
-            )}
-          />
-
-
-          <Column field="submittedByEmail" header="Email" />
-          <Column
-            field="submittedOn"
-            header="Submitted On"
-            body={(row) => formatDate(row.submittedOn)}
-          />
-          <Column
-            field="sellerResponseOn"
-            header="Seller Responded On"
-            body={(row) => formatDate(row.sellerResponseOn)}
-          />
-          <Column
-            field="ndaStatus"
-            header="NDA Status"
-            body={ndaStatusTemplate}
-            sortable
-          />
-          <Column body={(row) => DueDiligenceAction(row.ndaStatus, row.businessId)} header="Due Diligence" />
-          <Column header="Action" body={ndaViewActionTemplate} />
-        </DataTable>
+        <ResponsiveDataTable
+  value={filteredData}
+  columns={buyerSubmissionColumns}
+  loading={loading}
+  paginator
+  rows={10}
+  stripedRows
+  dataKey="_id"
+  emptyMessage="No Buyer Submission"
+  responsiveLayout="scroll"
+  cardBreakpoint="768px"
+/>
       </div>
 
       {/* NDA Modal */}

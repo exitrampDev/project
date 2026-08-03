@@ -30,6 +30,7 @@ import { Chips } from "primereact/chips";
 import { Link } from "react-router-dom";
 import { InputSwitch } from "primereact/inputswitch";
 import DashboardHeader from "./DashboardHeaderBlock";
+import ResponsiveDataTable from "../../customcomponent/ResponsiveDataTable";
 import { useNavigate } from "react-router-dom";
 import FileUploader from "../../customcomponent/FileUploader";
 import { Editor } from "primereact/editor";
@@ -763,7 +764,60 @@ const isMainImageInvalid =
   checkingError && (!newListing.image || newListing.image === "");
 
 
-
+const listingColumns = [
+  {
+    field: "listingName",
+    header: "Listing Name",
+    primary: true,
+    body: listingNameTemplate,
+  },
+  {
+    field: "askingPrice",
+    header: "Asking Price",
+    body: moneyTemplate,
+  },
+  {
+    field: "status",
+    header: "Listing Status",
+    body: lisitngStatus,
+  },
+  {
+    field: "cimStatus",
+    header: "CIM Status",
+    body: cimTemplate,
+  },
+  {
+    field: "cimView",
+    header: "CIM View",
+    body: (row) => createCIMList(row._id, row.cimUrl, row),
+  },
+  {
+    field: "documentRoom",
+    header: "Document Room",
+    body: (row) => documentRoomLink(row._id, row),
+  },
+  {
+    field: "location",
+    header: "Location",
+    body: locationTemplate,
+  },
+  {
+    field: "industry",
+    header: "Industry",
+    body: industryTemplate,
+    style: { maxWidth: "200px" },
+  },
+  {
+    field: "lastEdited",
+    header: "Last Edited",
+    body: dateTemplate,
+  },
+  {
+    field: "actions",
+    header: "Action",
+    body: actionTemplate,
+  },
+];
   // ==== UI ====
   return (
     <>
@@ -2059,38 +2113,21 @@ impact the confidentiality of your sale.</em>
             {/* Data Table */}
             <div className="my__save_listing_wrap my__listing_table">
               
-          <DataTable
+     <ResponsiveDataTable
   value={filteredListings}
+  columns={listingColumns}
   paginator
   rows={10}
   loading={loading}
+  dataKey="_id"
   responsiveLayout="scroll"
+  emptyMessage="No listings found"
   className="listing__main_wrap"
-  rowClassName={(rowData) => {
-    return {
-      "blocked-row": rowData.status === "block"
-    };
-  }}
->
-  <Column header="Listing Name" body={listingNameTemplate} />
-  <Column field="askingPrice" header="Asking Price" body={moneyTemplate} />
-  <Column field="status" header="Listing Status"  body={lisitngStatus}/>
-
-  <Column field="cimStatus" header="CIM Status" body={(row) => cimTemplate(row)} />
-  <Column body={(row) => createCIMList(row._id, row.cimUrl, row)} header="CIM View" />
-
-
-
-  <Column body={(row) => documentRoomLink(row._id, row)} header="Document Room" />
-  {/* <Column field="yearStablished" header="Year" /> */}
-  <Column header="Location" body={locationTemplate} />
-  <Column header="Industry" body={industryTemplate} style={{ maxWidth: '200px' }}/>
-  {/* <Column field="revenue" header="Revenue" body={moneyTemplate} />
-  <Column field="monthlyRentAmount" header="Rent"  /> */}
-  <Column header="Last Edited" body={dateTemplate} />
-
-  <Column header="Action" body={actionTemplate} />
-</DataTable>
+  cardBreakpoint="768px"
+  rowClassName={(rowData) => ({
+    "blocked-row": rowData.status === "block",
+  })}
+/>
 
             </div>
             

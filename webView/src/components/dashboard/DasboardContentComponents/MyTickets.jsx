@@ -11,6 +11,7 @@ import { useRecoilValue } from "recoil";
 import { useNavigate } from "react-router-dom"; // 1. IMPORT THENAVIGATE HOOK
 import { authState, apiBaseUrlState } from "../../../recoil/ctaState";
 import DashboardHeader from "./DashboardHeaderBlock";
+import ResponsiveDataTable from "../../customcomponent/ResponsiveDataTable";
 
 const MyTickets = () => {
   const API_BASE = useRecoilValue(apiBaseUrlState);
@@ -159,7 +160,48 @@ const MyTickets = () => {
       </div>
     );
   };
-
+const ticketColumns = [
+  {
+    field: "_id",
+    header: "Ticket ID",
+    sortable: true,
+  },
+  {
+    field: "ticketTitle",
+    header: "Ticket Title",
+    body: titleBodyTemplate,
+    sortable: true,
+    primary: true,
+  },
+  {
+    field: "description",
+    header: "Description",
+    body: descriptionBodyTemplate,
+  },
+  {
+    field: "status",
+    header: "Status",
+    body: statusBodyTemplate,
+    sortable: true,
+  },
+  {
+    field: "createdAt",
+    header: "Created At",
+    body: (rowData) => formatDate(rowData?.createdAt),
+    sortable: true,
+  },
+  {
+    field: "updatedAt",
+    header: "Updated At",
+    body: (rowData) => formatDate(rowData?.updatedAt),
+    sortable: true,
+  },
+  {
+    field: "actions",
+    header: "Actions",
+    body: actionBodyTemplate,
+  },
+];
   return (
     <div className="my__tickets_page">
       <Toast ref={toast} position="top-right" />
@@ -179,23 +221,18 @@ const MyTickets = () => {
       </div>
 
       <div className="my__save_listing_wrap my__listing_table nda__request_block">
-        <DataTable
-          value={tickets}
-          loading={loading}
-          paginator
-          rows={10}
-          stripedRows
-          emptyMessage="No tickets found."
-          className="p-datatable-sm"
-        >
-          <Column header="Ticket ID" field="_id" sortable />
-          <Column header="Ticket Title" body={titleBodyTemplate} sortable field="ticketTitle" />
-          <Column header="Description" body={descriptionBodyTemplate} />
-          <Column header="Status" field="status" body={statusBodyTemplate} sortable />
-          <Column header="Created At" body={(rowData) => formatDate(rowData?.createdAt)} sortable field="createdAt" />
-          <Column header="Updated At" body={(rowData) => formatDate(rowData?.updatedAt)} sortable field="updatedAt" />
-          <Column header="Actions" body={actionBodyTemplate} />
-        </DataTable>
+        <ResponsiveDataTable
+  value={tickets}
+  columns={ticketColumns}
+  loading={loading}
+  paginator
+  rows={10}
+  stripedRows
+  dataKey="_id"
+  emptyMessage="No tickets found."
+  className="p-datatable-sm"
+  cardBreakpoint="768px"
+/>
       </div>
 
       {/* CREATE TICKET MODAL DIALOG */}
