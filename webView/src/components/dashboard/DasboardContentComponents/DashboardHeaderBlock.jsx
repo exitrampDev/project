@@ -14,7 +14,7 @@ const DashboardHeader = ({headingData}) => {
         <div className="dashboard__header_block">
         <h3>{headingData}</h3>
         <div className="dashboard__header_search_notification_wrap">
-          <div className="dashboard__search_field_wrap">
+          <div className="dashboard__search_field_wrap hideOnMobile">
             <input type="text" placeholder="Search" />
             <img src={serachIcon} alt="Search" />
           </div>

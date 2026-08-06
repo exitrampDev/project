@@ -28,6 +28,9 @@ const Dashboard = () => {
         isMobileSidebarOpen ? "MobileSideBarOpen" : ""
       }`}
     >
+       {isMobileSidebarOpen && (
+  <div className="overlayMobile" onClick={closeMobileSidebar}></div>
+ )}
       <div className="mobile_logo_col_sidebar hideOnDesktop">
         <button
           type="button"
@@ -40,7 +43,7 @@ const Dashboard = () => {
           }
           aria-expanded={isMobileSidebarOpen}
         >
-          <img src={mobileLogo} alt="" />
+          <i className="pi pi-bars"> </i>
         </button>
       </div>
 

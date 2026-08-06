@@ -4417,7 +4417,7 @@ img.buyerSig {max-width: 100%;}
 .dashboard__container_main_buyer_free.admin__dashboard_main_container .dashboard__free_buyer_count_block {
     flex-wrap: wrap;
         justify-content: space-between;
-            gap: 0;
+            gap: 10px;
 }
 .listing__dashboard_listing_widget.lisiting_recent_view_widget img.w-10.h-10.rounded {
     width: 35px;
@@ -6332,10 +6332,10 @@ section.PricingCards__wrapper .PricingCards__container .PricingCard button.Prici
     grid-template-columns: 1fr;
   }
   .hideOnMobile {
-    display: none;
+    display: none !important;
   }
   .hideOnDesktop {
-    display: block;
+    display: block !important;
   }
 .menuBarWrap.p-menubar .p-menubar-root-list .p-menuitem-link{
     padding: 4px 7px;
@@ -8467,14 +8467,18 @@ footer.footer__section_broker_page_container {
     z-index: 9999;
 }
 .mobile_logo_col_sidebar {
-    position: fixed;
-    top: 0;
-    left: 0;
+            position: fixed;
+        top: 15px;
+        left: 10px;
     background: #002f68;
     /* height: 100vh; */
-    padding: 10px 5px;
+    padding: 10px 13px;
     z-index:222;
     border-bottom: 1px solid #144885;
+}
+.mobile_logo_col_sidebar i.pi.pi-bars {
+    color: #fff;
+    font-size: 25px;
 }
 .mobile_logo_col_sidebar button{
         padding:0;
@@ -8505,7 +8509,7 @@ footer.footer__section_broker_page_container {
 .dashboard__main_wrap.MobileSideBarOpen .dashboard__sidebar_wrap.dashboard_mobrile_sidebar {
     position: fixed;
     height: 100vh;
-    top: 70px;
+    top: 0px;
     padding-top: 4px;
     left: 0;
     border-radius: 0 14px 15px 0px;
@@ -8527,9 +8531,10 @@ footer.footer__section_broker_page_container {
 }
 
 .dasboard__content_container_wrap .dashboard__header_block {
-    flex-wrap: wrap;
-    padding: 6px 0 0 55px;
-    align-items: flex-start;
+    
+    padding: 0 0 0 55px;
+    align-items: center;     
+    margin-top: 15px;
 }
 
 .dasboard__content_container_wrap .dashboard__header_block .dashboard__header_search_notification_wrap {
@@ -8719,5 +8724,14 @@ button.login-btn a img, .signup_content button img{width:15px}
     display: inline-flex;
     align-items: center;
     justify-content: center;
+}
+.overlayMobile {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background: #000000ab;
+    z-index: 9;
 }
 } 
