@@ -1,8 +1,6 @@
-import { IsEmail, IsNotEmpty, IsString, Length } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsOptional, IsString, Length } from 'class-validator';
 
 export class ContactUsDto {
-
- 
   @IsEmail({}, { message: 'Invalid email address' })
   email: string;
 
@@ -10,7 +8,6 @@ export class ContactUsDto {
   @IsNotEmpty({ message: 'First name is required' })
   @Length(2, 50, { message: 'First name must be between 2 and 50 characters' })
   first_name: string;
-
 
   @IsString()
   @IsNotEmpty({ message: 'Last name is required' })
@@ -22,5 +19,19 @@ export class ContactUsDto {
   @Length(10, 500, { message: 'Message must be between 10 and 500 characters' })
   message: string;
 
+  @IsOptional()
+  @IsString()
+  captchaId?: string;
 
+  @IsOptional()
+  @IsString()
+  captcha_id?: string;
+
+  @IsOptional()
+  @IsString()
+  captchaValue?: string;
+
+  @IsOptional()
+  @IsString()
+  captcha_value?: string;
 }

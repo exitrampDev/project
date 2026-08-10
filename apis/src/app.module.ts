@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UsersModule } from './users/users.module';
 import { HttpLoggerMiddleware } from './logger/http-logger.middleware';
@@ -34,6 +34,8 @@ import { InviteModule } from './invite/invite.module';
 import { BlogModule } from './blog/blog.module';
 import { TicketsModule } from './tickets/tickets.module';
 import { ConversationModule } from './conversation/conversation.module';
+import { CaptchaModule } from './captcha/captcha.module';
+import { CaptchaValidationMiddleware } from './captcha/captcha.middleware';
 
 
 @Module({
@@ -83,6 +85,7 @@ import { ConversationModule } from './conversation/conversation.module';
     FlagModule,
     CimModule,
     SharedModule,
+    CaptchaModule,
     DueDiligenceModule,  
     NotificationModule, PaymentModule, CronModule, AdminModule, PageModule, InviteModule, BlogModule, TicketsModule, ConversationModule 
   ],
@@ -92,5 +95,11 @@ import { ConversationModule } from './conversation/conversation.module';
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(HttpLoggerMiddleware).forRoutes('*');
+    consumer
+      .apply(CaptchaValidationMiddleware)
+      .forRoutes(
+        { path: 'auth/register', method: RequestMethod.POST },
+        { path: 'auth/contact-us-form', method: RequestMethod.POST },
+      );
   }
 }

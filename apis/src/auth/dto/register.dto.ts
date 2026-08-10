@@ -1,5 +1,5 @@
 // src/auth/dto/register.dto.ts
-import { IsEmail, IsEnum, IsNotEmpty, IsString, Length } from 'class-validator';
+import { IsEmail, IsEnum, IsNotEmpty, IsOptional, IsString, Length } from 'class-validator';
 import { UserType } from 'src/users/enums/user-type.enum';
 
 export class RegisterDto {
@@ -19,8 +19,24 @@ export class RegisterDto {
   @IsNotEmpty({ message: 'Last name is required' })
   last_name: string;
 
- @IsEnum(UserType, {
+  @IsEnum(UserType, {
     message: 'User type must be one of: admin, subscriber, buyer_basic, buyer_premium, seller_broker, seller_individual',
   })
   user_type: UserType;
+
+  @IsOptional()
+  @IsString()
+  captchaId?: string;
+
+  @IsOptional()
+  @IsString()
+  captcha_id?: string;
+
+  @IsOptional()
+  @IsString()
+  captchaValue?: string;
+
+  @IsOptional()
+  @IsString()
+  captcha_value?: string;
 }
