@@ -178,8 +178,69 @@ async getOrCreateStripeCustomer(user) {
 }
 
 
- async  createUpgradePaymentIntent(userId: any, businessId?: string) {
-    let amount = 0;
+//  async  createUpgradePaymentIntent(userId: any, businessId?: string) {
+//     let amount = 0;
+//     let user = await this.usersService.findById(userId);
+//     const customerId = await this.getOrCreateStripeCustomer(user);
+
+//     const business = businessId ? await this.businessService.findOne(businessId) : null;
+//     if (businessId && !business) {
+//       throw new BadRequestException('Invalid businessId provided');
+//     }
+
+//   //  ----------------------------------------------------
+//  let currentDate = new Date();
+
+// // Last day of current month
+// let lastDayOfMonth = new Date(
+//   currentDate.getFullYear(),
+//   currentDate.getMonth() + 1,
+//   0
+// ).getDate();
+
+// let remainingDays = lastDayOfMonth - currentDate.getDate();
+
+// console.log(remainingDays);
+//   // -----------------------------------------------------
+//     amount = remainingDays * 1; // Override amount based on listing type if businessId is provided
+
+//     const payload = qs.stringify({
+//       amount: Math.round(amount * 100),
+//       currency: 'usd',
+//       customer: customerId,
+//       setup_future_usage: 'off_session',
+//       // 'payment_method_types[0]': 'card',
+//       automatic_payment_methods: { enabled: true },
+//       //  'automatic_payment_methods[enabled]': true,
+//       'metadata[userId]': userId.toString(),
+//       'metadata[businessId]': businessId?.toString(),
+//       'metadata[purpose]': PaymentPurpose.BUSINESS_UPGRADE,
+    
+//    });
+
+//   const response = await axios.post(
+//     'https://api.stripe.com/v1/payment_intents',
+//     payload,
+//     {
+//       headers: {
+//         Authorization: `Bearer ${process.env.STRIPE_SECRET_KEY}`,
+//         'Content-Type': 'application/x-www-form-urlencoded',
+//       },
+//     }
+//   );
+
+//   console.log('Payment Intent created:', response.data.client_secret);
+
+//   return {
+//     clientSecret: response.data.client_secret,
+//     id:response.data.id,
+//     amount: amount
+//   };
+// }
+
+async  createUpgradePaymentIntent(userId: any, businessId?: string) {
+
+
     let user = await this.usersService.findById(userId);
     const customerId = await this.getOrCreateStripeCustomer(user);
 
@@ -189,20 +250,43 @@ async getOrCreateStripeCustomer(user) {
     }
 
   //  ----------------------------------------------------
- let currentDate = new Date();
+ const BASIC_PRICE = 15;
+const UPGRADED_PRICE = 30;
+const BILLING_DAYS = 30;
 
-// Last day of current month
-let lastDayOfMonth = new Date(
-  currentDate.getFullYear(),
-  currentDate.getMonth() + 1,
-  0
-).getDate();
+const upgradeDifference = UPGRADED_PRICE - BASIC_PRICE; // $15
+const dailyUpgradeDifference = upgradeDifference / BILLING_DAYS; // $0.50
+console.log(business?.paymentDate, 'business?.paymentDate');
+const paymentDate = new Date(business?.paymentDate || new Date()); // Use business paymentDate or current date if not available
+const currentDate = new Date();
 
-let remainingDays = lastDayOfMonth - currentDate.getDate();
+// Current 30-day billing period
+const billingEndDate = new Date(paymentDate);
+billingEndDate.setDate(billingEndDate.getDate() + BILLING_DAYS);
 
-console.log(remainingDays);
+// Calculate remaining milliseconds
+const remainingMs = billingEndDate.getTime() - currentDate.getTime();
+
+// Convert to remaining days
+const remainingDays = Math.max(
+  0,
+  Math.ceil(remainingMs / (1000 * 60 * 60 * 24))
+);
+
+// Prorated upgrade amount
+const amount = Math.min(
+  upgradeDifference,
+  remainingDays * dailyUpgradeDifference
+);
+
+console.log({
+  paymentDate,
+  billingEndDate,
+  remainingDays,
+  amount,
+});
   // -----------------------------------------------------
-    amount = remainingDays * 1; // Override amount based on listing type if businessId is provided
+    // amount = remainingDays * 1; // Override amount based on listing type if businessId is provided
 
     const payload = qs.stringify({
       amount: Math.round(amount * 100),

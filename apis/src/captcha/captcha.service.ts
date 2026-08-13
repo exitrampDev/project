@@ -14,12 +14,14 @@ export class CaptchaService {
   ) {}
 
   async createCaptcha() {
-    const captcha = svgCaptcha.create({
-      size: 6,
-      noise: 3,
-      width: 150,
-      height: 50,
-      ignoreChars: '0Oo1Il',
+    // Generate a math expression captcha (SVG shows expression, text holds the answer)
+    const captcha = svgCaptcha.createMathExpr({
+      mathMin: 1,
+      mathMax: 9,
+      mathOperator: '+-',
+      noise: 2,
+      width: 160,
+      height: 60,
       color: true,
     });
 
