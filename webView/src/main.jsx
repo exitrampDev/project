@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import ReactDOM from "react-dom/client";
 import AppWrapper from "./AppWrapper";
 import { RecoilRoot } from "recoil";
@@ -20,18 +20,25 @@ registerSW({
 function PWAInstallManager() {
   useEffect(() => {
     const handleBeforeInstallPrompt = (event) => {
+      console.log("✅ beforeinstallprompt fired");
+
       event.preventDefault();
 
-      // Store the install prompt globally
       window.deferredPWAInstallPrompt = event;
 
-      // Tell React components that installation is available
-      window.dispatchEvent(new Event("pwa-install-available"));
+      window.dispatchEvent(
+        new Event("pwa-install-available")
+      );
     };
 
     const handleAppInstalled = () => {
+      console.log("✅ PWA installed");
+
       window.deferredPWAInstallPrompt = null;
-      window.dispatchEvent(new Event("pwa-installed"));
+
+      window.dispatchEvent(
+        new Event("pwa-installed")
+      );
     };
 
     window.addEventListener(
@@ -39,7 +46,10 @@ function PWAInstallManager() {
       handleBeforeInstallPrompt
     );
 
-    window.addEventListener("appinstalled", handleAppInstalled);
+    window.addEventListener(
+      "appinstalled",
+      handleAppInstalled
+    );
 
     return () => {
       window.removeEventListener(
@@ -47,14 +57,19 @@ function PWAInstallManager() {
         handleBeforeInstallPrompt
       );
 
-      window.removeEventListener("appinstalled", handleAppInstalled);
+      window.removeEventListener(
+        "appinstalled",
+        handleAppInstalled
+      );
     };
   }, []);
 
   return null;
 }
 
-ReactDOM.createRoot(document.getElementById("root")).render(
+ReactDOM.createRoot(
+  document.getElementById("root")
+).render(
   <React.StrictMode>
     <RecoilRoot>
       <BrowserRouter>
