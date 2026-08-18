@@ -3,145 +3,103 @@ import React, { useEffect, useState } from "react";
 const PWAInstallButton = () => {
   const [installPrompt, setInstallPrompt] = useState(null);
   const [isInstalled, setIsInstalled] = useState(false);
-  const [showInstructions, setShowInstructions] = useState(false);
+  const [showCustomModal, setShowCustomModal] = useState(false);
 
   useEffect(() => {
     const updateInstallPrompt = () => {
-      setInstallPrompt(
-        window.deferredPWAInstallPrompt || null
-      );
+      setInstallPrompt(window.deferredPWAInstallPrompt || null);
     };
 
     updateInstallPrompt();
-
-    window.addEventListener(
-      "pwa-install-available",
-      updateInstallPrompt
-    );
+    window.addEventListener("pwa-install-available", updateInstallPrompt);
 
     const handleInstalled = () => {
-      console.log("PWA installed");
-
       setInstallPrompt(null);
       setIsInstalled(true);
+      setShowCustomModal(false);
     };
 
-    window.addEventListener(
-      "pwa-installed",
-      handleInstalled
-    );
+    window.addEventListener("pwa-installed", handleInstalled);
 
-    // Check whether the app is currently installed
     const checkInstalled = () => {
-      const standalone =
-        window.matchMedia(
-          "(display-mode: standalone)"
-        ).matches;
-
-      const iosStandalone =
-        window.navigator.standalone === true;
-
-      setIsInstalled(
-        standalone || iosStandalone
-      );
+      const standalone = window.matchMedia("(display-mode: standalone)").matches;
+      const iosStandalone = window.navigator.standalone === true;
+      setIsInstalled(standalone || iosStandalone);
     };
 
     checkInstalled();
 
     return () => {
-      window.removeEventListener(
-        "pwa-install-available",
-        updateInstallPrompt
-      );
-
-      window.removeEventListener(
-        "pwa-installed",
-        handleInstalled
-      );
+      window.removeEventListener("pwa-install-available", updateInstallPrompt);
+      window.removeEventListener("pwa-installed", handleInstalled);
     };
   }, []);
 
-  const handleInstall = async () => {
-    // Native browser install prompt available
+  const handleInstallClick = async () => {
+    // If native prompt exists (Normal Browsing), show Chrome's native modal directly
     if (installPrompt) {
       try {
         await installPrompt.prompt();
-
-        const { outcome } =
-          await installPrompt.userChoice;
-
-        console.log(
-          "PWA install result:",
-          outcome
-        );
-
-        // Prompt can only be used once
+        const { outcome } = await installPrompt.userChoice;
+        if (outcome === "accepted") {
+          setIsInstalled(true);
+        }
         window.deferredPWAInstallPrompt = null;
         setInstallPrompt(null);
       } catch (error) {
-        console.error(
-          "PWA installation failed:",
-          error
-        );
+        console.error("Native installation failed:", error);
       }
-
       return;
     }
 
-    // Native prompt isn't currently available
-    setShowInstructions(true);
+    // Fallback: If in Incognito / unsupported browser, show custom styled dialog
+    setShowCustomModal(true);
   };
 
-  // Don't show the button if the app is currently installed
-  if (isInstalled) {
-    return null;
-  }
+  if (isInstalled) return null;
 
   return (
     <>
       <div className="pwa-install-button">
-        <button
-          type="button"
-          onClick={handleInstall}
-        >
-         <i className="pi pi-download"></i> Install ExitRamp
+        <button type="button" onClick={handleInstallClick}>
+          <i className="pi pi-download"></i> Install ExitRamp
         </button>
       </div>
 
-      {showInstructions && (
-        <div className="install-popup">
-          <div className="install-popup-content">
-
-            <h2>Install ExitRamp</h2>
-
-            <p>
-              The automatic installation prompt is
-              currently unavailable.
-            </p>
-
-            <p>
-              Open your browser menu and choose:
-            </p>
-
-            <strong>
-              Install and create shortcut
-            </strong>
-
-            <br />
-            <br />
-
-            <button
-              type="button"
-              onClick={() =>
-                setShowInstructions(false)
-              }
-            >
-              Close
-            </button>
-
-          </div>
+      {showCustomModal && (
+  <div className="chrome-dialog-overlay">
+    <div className="chrome-dialog-box">
+      <div className="chrome-dialog-header">
+        <span className="chrome-dialog-title">Install ExitRamp</span>
+      </div>
+      
+      <div className="chrome-dialog-body">
+        
+        <div className="app-details">
+          <span className="app-name">ExitRamp</span>
+          <span className="app-domain">{window.location.host}</span>
         </div>
-      )}
+      </div>
+
+      <div className="incognito-note">
+        <strong>PWA installation is disabled in Incognito mode.</strong>
+        <p style={{ margin: "4px 0 0 0" }}>
+          To install ExitRamp, open standard browsing mode or visit via <strong>HTTPS / localhost</strong>.
+        </p>
+      </div>
+
+      <div className="chrome-dialog-actions">
+        <button 
+          type="button" 
+          className="btn-install" 
+          onClick={() => setShowCustomModal(false)}
+        >
+          Got it
+        </button>
+      </div>
+    </div>
+  </div>
+)}
     </>
   );
 };
