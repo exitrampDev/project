@@ -238,99 +238,111 @@ async getOrCreateStripeCustomer(user) {
 //   };
 // }
 
-async  createUpgradePaymentIntent(userId: any, businessId?: string) {
+async createUpgradePaymentIntent(userId: any, businessId?: string) {
+  const user = await this.usersService.findById(userId);
+  const customerId = await this.getOrCreateStripeCustomer(user);
 
+  const business = businessId ? await this.businessService.findOne(businessId) : null;
+  if (businessId && !business) {
+    throw new BadRequestException('Invalid businessId provided');
+  }
 
-    let user = await this.usersService.findById(userId);
-    const customerId = await this.getOrCreateStripeCustomer(user);
+  const BASIC_PRICE = 15;
+  const UPGRADED_PRICE = 30;
+  const BILLING_DAYS = 30;
+  const MIN_STRIPE_AMOUNT_USD = 0.50; // Stripe USD minimum charge requirement
 
-    const business = businessId ? await this.businessService.findOne(businessId) : null;
-    if (businessId && !business) {
-      throw new BadRequestException('Invalid businessId provided');
+  const isFreeListing = !business?.paymentDate;
+  let amount: number;
+
+  if (isFreeListing) {
+    // First free Basic listing upgraded to Premium
+    amount = UPGRADED_PRICE;
+  } else {
+    // Paid Basic listing → Premium
+    const upgradeDifference = UPGRADED_PRICE - BASIC_PRICE;
+    const dailyUpgradeDifference = upgradeDifference / BILLING_DAYS;
+
+    const paymentDate = new Date(business.paymentDate as Date);
+    const currentDate = new Date();
+
+    const billingEndDate = new Date(paymentDate);
+    billingEndDate.setDate(billingEndDate.getDate() + BILLING_DAYS);
+
+    const remainingMs = billingEndDate.getTime() - currentDate.getTime();
+
+    // Prevent negative days
+    const remainingDays = Math.max(
+      0,
+      Math.ceil(remainingMs / (1000 * 60 * 60 * 24))
+    );
+
+    // If cycle is completely expired, prevent 0 amount charge
+    if (remainingDays <= 0) {
+      throw new BadRequestException(
+        'Billing cycle has expired. Please renew the listing instead of upgrading.'
+      );
     }
 
-  //  ----------------------------------------------------
-const BASIC_PRICE = 15;
-const UPGRADED_PRICE = 30;
-const BILLING_DAYS = 30;
+    // Calculate prorated amount
+    amount = Math.min(
+      upgradeDifference,
+      remainingDays * dailyUpgradeDifference
+    );
 
-const isFreeListing = !business?.paymentDate;
-
-let amount: number;
-
-if (isFreeListing) {
-  // First free Basic listing upgraded to Premium
-  amount = UPGRADED_PRICE;
-} else {
-  // Paid Basic listing → Premium
-  const upgradeDifference = UPGRADED_PRICE - BASIC_PRICE;
-  const dailyUpgradeDifference = upgradeDifference / BILLING_DAYS;
-
-const paymentDate = new Date(business.paymentDate as Date);
-  const currentDate = new Date();
-
-  const billingEndDate = new Date(paymentDate);
-  billingEndDate.setDate(
-    billingEndDate.getDate() + BILLING_DAYS
-  );
-
-  const remainingMs =
-    billingEndDate.getTime() - currentDate.getTime();
-
-  const remainingDays = Math.max(
-    0,
-    Math.ceil(
-      remainingMs / (1000 * 60 * 60 * 24)
-    )
-  );
-
-  amount = Math.min(
-    upgradeDifference,
-    remainingDays * dailyUpgradeDifference
-  );
-}
-
-console.log({
-  isFreeListing,
-  amount,
-});
-  // -----------------------------------------------------
-    // amount = remainingDays * 1; // Override amount based on listing type if businessId is provided
-
-    const payload = qs.stringify({
-      amount: Math.round(amount * 100),
-      currency: 'usd',
-      customer: customerId,
-      setup_future_usage: 'off_session',
-      // 'payment_method_types[0]': 'card',
-      automatic_payment_methods: { enabled: true },
-      //  'automatic_payment_methods[enabled]': true,
-      'metadata[userId]': userId.toString(),
-      'metadata[businessId]': businessId?.toString(),
-      'metadata[purpose]': PaymentPurpose.BUSINESS_UPGRADE,
-    
-   });
-
-  const response = await axios.post(
-    'https://api.stripe.com/v1/payment_intents',
-    payload,
-    {
-      headers: {
-        Authorization: `Bearer ${process.env.STRIPE_SECRET_KEY}`,
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
+    // Enforce Stripe's minimum amount requirement ($0.50)
+    if (amount < MIN_STRIPE_AMOUNT_USD) {
+      amount = MIN_STRIPE_AMOUNT_USD;
     }
-  );
+  }
 
-  console.log('Payment Intent created:', response.data.client_secret);
+  // Convert dollars to cents and round to a whole integer
+  const amountInCents = Math.round(amount * 100);
 
-  return {
-    clientSecret: response.data.client_secret,
-    id:response.data.id,
-    amount: amount
-  };
+  console.log({
+    isFreeListing,
+    calculatedAmount: amount,
+    amountInCents,
+  });
+
+  const payload = qs.stringify({
+    amount: amountInCents,
+    currency: 'usd',
+    customer: customerId,
+    setup_future_usage: 'off_session',
+    'automatic_payment_methods[enabled]': 'true',
+    'metadata[userId]': userId.toString(),
+    'metadata[businessId]': businessId?.toString(),
+    'metadata[purpose]': PaymentPurpose.BUSINESS_UPGRADE,
+  });
+
+  try {
+    const response = await axios.post(
+      'https://api.stripe.com/v1/payment_intents',
+      payload,
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.STRIPE_SECRET_KEY}`,
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+      }
+    );
+
+    console.log('Payment Intent created:', response.data.client_secret);
+
+    return {
+      clientSecret: response.data.client_secret,
+      id: response.data.id,
+      amount: amount,
+    };
+  } catch (err: any) {
+    const stripeError = err.response?.data?.error;
+    console.error('Stripe Payment Intent Error:', stripeError);
+    throw new BadRequestException(
+      stripeError?.message || 'Failed to create payment intent'
+    );
+  }
 }
-
 async createSetupIntent(userId: string) {
   const user = await this.usersService.findById(userId);
   const customerId = await this.getOrCreateStripeCustomer(user);
