@@ -250,39 +250,48 @@ async  createUpgradePaymentIntent(userId: any, businessId?: string) {
     }
 
   //  ----------------------------------------------------
- const BASIC_PRICE = 15;
+const BASIC_PRICE = 15;
 const UPGRADED_PRICE = 30;
 const BILLING_DAYS = 30;
 
-const upgradeDifference = UPGRADED_PRICE - BASIC_PRICE; // $15
-const dailyUpgradeDifference = upgradeDifference / BILLING_DAYS; // $0.50
-console.log(business?.paymentDate, 'business?.paymentDate');
-const paymentDate = new Date(business?.paymentDate || new Date()); // Use business paymentDate or current date if not available
-const currentDate = new Date();
+const isFreeListing = !business?.paymentDate;
 
-// Current 30-day billing period
-const billingEndDate = new Date(paymentDate);
-billingEndDate.setDate(billingEndDate.getDate() + BILLING_DAYS);
+let amount: number;
 
-// Calculate remaining milliseconds
-const remainingMs = billingEndDate.getTime() - currentDate.getTime();
+if (isFreeListing) {
+  // First free Basic listing upgraded to Premium
+  amount = UPGRADED_PRICE;
+} else {
+  // Paid Basic listing → Premium
+  const upgradeDifference = UPGRADED_PRICE - BASIC_PRICE;
+  const dailyUpgradeDifference = upgradeDifference / BILLING_DAYS;
 
-// Convert to remaining days
-const remainingDays = Math.max(
-  0,
-  Math.ceil(remainingMs / (1000 * 60 * 60 * 24))
-);
+const paymentDate = new Date(business.paymentDate as Date);
+  const currentDate = new Date();
 
-// Prorated upgrade amount
-const amount = Math.min(
-  upgradeDifference,
-  remainingDays * dailyUpgradeDifference
-);
+  const billingEndDate = new Date(paymentDate);
+  billingEndDate.setDate(
+    billingEndDate.getDate() + BILLING_DAYS
+  );
+
+  const remainingMs =
+    billingEndDate.getTime() - currentDate.getTime();
+
+  const remainingDays = Math.max(
+    0,
+    Math.ceil(
+      remainingMs / (1000 * 60 * 60 * 24)
+    )
+  );
+
+  amount = Math.min(
+    upgradeDifference,
+    remainingDays * dailyUpgradeDifference
+  );
+}
 
 console.log({
-  paymentDate,
-  billingEndDate,
-  remainingDays,
+  isFreeListing,
   amount,
 });
   // -----------------------------------------------------
