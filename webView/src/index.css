@@ -2648,12 +2648,16 @@ button.button__remove_listing_fav .pi-heart-fill:before {
     flex-wrap: wrap;
 }
 .complete_buyer_form_wrap.seller__form_profile  .field.form__field_col {
-    max-width: 440px;
+    max-width: 420px;
 }
 .complete_buyer_form_wrap.seller__form_profile .field.form__field_col.col_overvice_textarea {
     max-width: 100%;
 }
-
+.buyer__modal_fields.buyer__background {
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 5px;
+}
 .complete_buyer_form_wrap.seller__form_profile .field.form__field_col.field__image_uploader_profile .p-fileupload-buttonbar {
     padding: 0;
 }
@@ -4993,6 +4997,8 @@ span.data__locked {
     background: #fff;
     padding: 35px;
     border-radius: 15px;
+    max-height: 95vh;
+    overflow: auto;
 }
 
 .card__update_process_popup .payment__box_wrap {
@@ -8348,6 +8354,213 @@ footer.footer__section_broker_page_container {
 .submenu-list li a {
   padding: 0.6rem 1.2rem;
   font-size: 0.9rem;
+}
+
+.pwa-install-button {
+    background: #ffb100;
+    padding: 5px 0;
+}
+
+.pwa-install-button button {
+    text-decoration: none;
+    color: #002f68;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 21px;
+    border: none;
+    border-radius: 24px;
+    font-size: 12px;
+    margin: 0 auto;
+}
+.chrome-native-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.25);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 50px;
+  z-index: 99999;
+}
+
+.chrome-native-dialog {
+  background: #f3f6f1;
+  border-radius: 24px;
+  width: 320px;
+  padding: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.chrome-dialog-heading {
+  margin: 0 0 16px 0;
+  font-size: 15px;
+  font-weight: 500;
+  color: #1f1f1f;
+}
+
+.chrome-app-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.chrome-app-icon-bg {
+  width: 36px;
+  height: 36px;
+  background: #00213b;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chrome-app-icon {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+}
+
+.chrome-app-meta {
+  display: flex;
+  flex-direction: column;
+}
+
+.chrome-app-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1f1f1f;
+}
+
+.chrome-app-origin {
+  font-size: 12px;
+  color: #5f6368;
+}
+
+.chrome-dialog-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.chrome-dialog-buttons button {
+  height: 36px;
+  padding: 0 18px;
+  border-radius: 18px;
+  font-size: 13px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+}
+
+.chrome-btn-install {
+  background: #b6f0c2;
+  color: #07210c;
+}
+
+.chrome-btn-cancel {
+  background: #2d382e;
+  color: #ffffff;
+}.chrome-dialog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.32);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 12px;
+  z-index: 9999;
+}
+
+.chrome-dialog-box {
+  background: #ffffff;
+  border-radius: 16px;
+  width: 360px;
+  padding: 20px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  font-family: Roboto, Arial, sans-serif;
+  color: #1f1f1f;
+}
+
+.chrome-dialog-title {
+  font-size: 16px;
+  font-weight: 500;
+  color: #1f1f1f;
+}
+
+.chrome-dialog-body {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 16px;
+  margin-bottom: 12px;
+}
+
+.app-icon-wrapper .app-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.app-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.app-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: #1f1f1f;
+}
+
+.app-domain {
+  font-size: 12px;
+  color: #444746;
+}
+
+.incognito-note {
+  font-size: 12px;
+  color: #444746;
+  background-color: #f1f3f4;
+  padding: 10px;
+  border-radius: 8px;
+  margin: 12px 0 20px 0;
+  line-height: 1.4;
+}
+
+.chrome-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.chrome-dialog-actions button {
+  height: 36px;
+  padding: 0 16px;
+  border-radius: 18px;
+  font-size: 14px;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-cancel {
+  background: #c2efd4;
+  color: #00210e;
+}
+
+.btn-install {
+  background: #146c2e;
+  color: #ffffff;
 }
 /* Desktop hover state */
 @media (min-width: 961px) {

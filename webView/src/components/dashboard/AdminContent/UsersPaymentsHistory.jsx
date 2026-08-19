@@ -300,6 +300,18 @@ const paymentColumns = [
       ) : (
         "-"
       ),
+    },
+    {
+    field: "stripe_customer_id",
+    header: "Stripe Customer ID",
+    body: (row) =>
+      row?.userId?.stripe_customer_id || "-",
+  },
+  {
+    field: "paymentIntentId",
+    header: "Payment Intent ID",
+    body: (row) =>
+      row?.paymentIntentId || "-",
   },
   {
     field: "amount",
@@ -308,7 +320,7 @@ const paymentColumns = [
       row?.amount != null
         ? `$${(row.amount / 100).toLocaleString()}`
         : "-",
-  },
+      },
   {
     field: "ownerType",
     header: "Listing Owner Type",

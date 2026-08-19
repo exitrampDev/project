@@ -418,15 +418,15 @@ function CIMview() {
 </div>
 
 <div className="list__card_cim_row">
-  <span>Cash Flow:</span> {listing.cashFlow}
+  <span>Cash Flow:</span> {listing.cashFlow !=0 ? listing.cashFlow.toLocaleString() : "-"}
 </div>
 
 <div className="list__card_cim_row">
-  <span>Net Profit:</span> {listing.netProfit}
+  <span>Net Profit:</span> {listing.netProfit != 0 ? listing.netProfit.toLocaleString() : "-"}
 </div>
 
 <div className="list__card_cim_row">
-  <span>Add Backs:</span> {listing.addBacks}
+  <span>Add Backs:</span> {listing.addBacks != 0 ? listing.addBacks.toLocaleString() : "-"}
 </div>
 
 <div className="list__card_cim_row">

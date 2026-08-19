@@ -497,13 +497,13 @@ const markFlag = async () => {
                    {business?.askingPrice.toLocaleString() }
                  </div>
                  <div className="busines_lisiting_highLevelSummary_list">
-                   <strong>Cash Flow:</strong> ${business?.cashFlow?.toLocaleString()}
+                  <strong>Cash Flow:</strong> {business?.cashFlow != 0 ? `$${business.cashFlow.toLocaleString()}` : "-"}
+                </div>
+                 <div className="busines_lisiting_highLevelSummary_list">
+                   <strong>Revenue:</strong> {business?.revenue != 0 ? `$${business.revenue.toLocaleString()}` : "-"}
                  </div>
                  <div className="busines_lisiting_highLevelSummary_list">
-                   <strong>Revenue:</strong> ${business?.revenue.toLocaleString()}
-                 </div>
-                 <div className="busines_lisiting_highLevelSummary_list">
-                   <strong>Monthly Rent:</strong> ${business?.monthlyRentAmount?.toLocaleString()}
+                   <strong>Monthly Rent:</strong> {business?.monthlyRentAmount != 0 ? `$${business.monthlyRentAmount.toLocaleString()}` : "-"}
                  </div>
                  <div className="busines_lisiting_highLevelSummary_list">
                    <strong>SDE:</strong> {business?.latestSDE ? (<>{business.latestSDE}</>) : "-"}
@@ -520,11 +520,11 @@ const markFlag = async () => {
                <div className="business__list_single_description_row">
                  <h3>Business Description:</h3>
                    <div
-  className="business__list_single_description_content"
-  dangerouslySetInnerHTML={{
-    __html: business.listingDescription,
-  }}
-/>
+                        className="business__list_single_description_content"
+                        dangerouslySetInnerHTML={{
+                          __html: business.listingDescription,
+                        }}
+                      />
                     <div className="about_listing_toggle">
                       <div className="about_listing_toggle_item"><strong>Franchise:</strong> {business?.isFranchise? business?.isFranchise : "-" }</div>
                       <div className="about_listing_toggle_item"><strong>Relocate:</strong>{business?.isRelocatable? business?.isRelocatable : "-"}</div>
@@ -536,13 +536,13 @@ const markFlag = async () => {
                   <div className="business__list_single_description_row">
           <h3>Additional Financial Details</h3>
           <div className="about_listing_toggle">
-              <div className="about_listing_toggle_item">
+              {/* <div className="about_listing_toggle_item">
                 <strong>Real Estate:</strong> {renderMoney(business?.realEstateValue)}
               </div>
 
               <div className="about_listing_toggle_item">
                 <strong>Real Estate Included:</strong> {renderYesNo(business?.propertyIncludedinAskingPrice)}
-              </div>
+              </div> */}
 
               <div className="about_listing_toggle_item">
                 <strong>FFE Value:</strong> {renderMoney(business?.ffEValue)}

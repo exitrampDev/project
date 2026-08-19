@@ -566,16 +566,13 @@ const buyerSubmissionColumns = [
       <div className="buyer__modal_fields">
         <strong>Phone:</strong> {selectedBuyer?.buyer?.profile?.phone}
       </div>
-   <div className="buyer__modal_fields">
-        <strong>Buyer Background:</strong>{" "}
-        {selectedBuyer.buyer?.profile?.background ? selectedBuyer.buyer?.profile?.background : "-"}
-      </div>
-      <div className="buyer__modal_fields">
+  
+      {/* <div className="buyer__modal_fields">
         <strong>Business Type Preferred:</strong>{" "}
         {selectedBuyer.buyer?.profile?.business_type_preferred ? selectedBuyer.buyer?.profile?.business_type_preferred : "-"}
-      </div>
+      </div> */}
       <div className="buyer__modal_fields">
-        <strong>Investment Budget:</strong>{" "}
+        <strong>Purchase Budget:</strong>{" "}
         {selectedBuyer.buyer?.profile?.investment_budget
         ? new Intl.NumberFormat('en-US', {
             style: 'currency',
@@ -588,13 +585,19 @@ const buyerSubmissionColumns = [
 
       <div className="buyer__modal_fields">
         <strong>Liquid Assets:</strong>{" "}
-        {selectedBuyer.buyer?.profile?.liquid_assets ? selectedBuyer.buyer?.profile?.liquid_assets + "%" : "-"}
+        {selectedBuyer.buyer?.profile?.liquid_assets
+          ? new Intl.NumberFormat('en-US', {
+              style: 'currency',
+              currency: 'USD',
+              maximumFractionDigits: 0
+            }).format(selectedBuyer.buyer?.profile?.liquid_assets)
+          : "N/A"}
       </div>
 
-      <div className="buyer__modal_fields">
+      {/* <div className="buyer__modal_fields">
         <strong>Financing:</strong>{" "}
         {selectedBuyer.buyer?.profile?.financing ? selectedBuyer.buyer?.profile?.financing : "-"}
-      </div>
+      </div> */}
 
       <div className="buyer__modal_fields">
         <strong>How Do You Plan To Fund Your Purchase:</strong>{" "}
@@ -606,10 +609,10 @@ const buyerSubmissionColumns = [
         {selectedBuyer.buyer?.profile?.industry ? selectedBuyer.buyer?.profile?.industry : "-"}
       </div>
 
-      <div className="buyer__modal_fields">
+      {/* <div className="buyer__modal_fields">
         <strong>Previous Experience:</strong>{" "}
         {selectedBuyer.buyer?.profile?.previous_experience ? selectedBuyer.buyer?.profile?.previous_experience : "-"}
-      </div>
+      </div> */}
 
 
 
@@ -650,7 +653,6 @@ const buyerSubmissionColumns = [
           }
         />
       </div>
-
       
 <div className="buyer__modal_fields">
   <strong>Financial Verification File:</strong>{" "}
@@ -665,10 +667,15 @@ const buyerSubmissionColumns = [
       View Files
     </div>
 
+
   ) : (
     "-"
   )}
 </div>
+ <div className="buyer__modal_fields buyer__background">
+        <strong>Buyer Background:</strong>{" "}
+        {selectedBuyer.buyer?.profile?.background ? selectedBuyer.buyer?.profile?.background : "-"}
+      </div>
 
 
     </div>

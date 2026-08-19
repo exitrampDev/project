@@ -7,6 +7,7 @@ import { InputTextarea } from "primereact/inputtextarea";
 import { Dropdown } from "primereact/dropdown";
 import { Button } from "primereact/button";
 import { InputMask } from "primereact/inputmask";
+import { InputNumber } from "primereact/inputnumber";
 
 import {
   authState,
@@ -50,8 +51,8 @@ const FreeBuyerForm = () => {
       financial_verification: "",
       background: "",
       nda_willing: "",
+      verification_file: "",
     },
-    verification_file: null,
   });
 
   /* ===========================
@@ -69,13 +70,17 @@ const FreeBuyerForm = () => {
     { label: "6+ Months", value: "6_plus_months" },
   ];
 
+  const fundingMethodOptions = [
+    { label: "SBA", value: "sba" },
+    { label: "Self-Funded", value: "self_funded" },
+    { label: "Investment", value: "investment" },
+    { label: "Seller Financing", value: "seller_financing" },
+    { label: "Combination of Above", value: "combination" },
+  ];
+
   /* ===========================
      FETCH PROFILE
   ============================ */
-   useEffect(() => {
-   
-
-   }, [formData]);
   useEffect(() => {
     if (!access_token) return;
 
@@ -103,14 +108,13 @@ const FreeBuyerForm = () => {
             timeline: data.profile?.timeline || "",
             liquid_assets: data.profile?.liquid_assets || "",
             financing: data.profile?.financing || "",
-            previous_experience:
-              data.profile?.previous_experience || "",
+            previous_experience: data.profile?.previous_experience || "",
             funding_plan: data.profile?.funding_plan || "",
             financial_verification:
               data.profile?.financial_verification || "",
             background: data.profile?.background || "",
             nda_willing: data.profile?.nda_willing || "",
-            verification_file: data?.profile?.verification_file || "",
+            verification_file: data.profile?.verification_file || "",
           },
         });
       } catch (err) {
@@ -139,45 +143,39 @@ const FreeBuyerForm = () => {
     setDirty(true);
   };
 
-  /* ===========================
-     BUILD PAYLOAD
-  ============================ */
-  const buildPayload = () => {
-    const fd = new FormData();
+  const handleImageSelect = (file) => {
+    const reader = new FileReader();
 
-    fd.append("first_name", formData.first_name);
-    fd.append("last_name", formData.last_name);
-    fd.append("phone_number", formData.phone_number);
-    fd.append("email", user?.email);
+    reader.onloadend = () => {
+      const base64 = reader.result;
 
-    Object.entries(formData.profile).forEach(([key, value]) => {
-      fd.append(`profile[${key}]`, value ?? "");
-    });
-    // if (formData.verification_file) {
-    //   fd.append("verification_file", formData.verification_file);
-    // }
+      setFormData((prev) => ({
+        ...prev,
+        profile: {
+          ...prev.profile,
+          verification_file: base64,
+        },
+      }));
 
-    return fd;
+      setDirty(true);
+    };
+
+    reader.readAsDataURL(file);
   };
 
   /* ===========================
      SUBMIT
   ============================ */
   const handleSubmit = async (e) => {
-
     e.preventDefault();
 
     try {
-      await axios.patch(
-        `${API_BASE}/users/profile`,
-        formData,
-        {
-          headers: {
-        Authorization: `Bearer ${access_token}`,
-        "Content-Type": "application/json",
-          },
-        }
-      );
+      await axios.patch(`${API_BASE}/users/profile`, formData, {
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+          "Content-Type": "application/json",
+        },
+      });
 
       toast.current.show({
         severity: "success",
@@ -198,35 +196,8 @@ const FreeBuyerForm = () => {
     }
   };
 
-  
-
   if (loading) return <p>Loading...</p>;
 
-const handleImageSelect = (file) => {
-  const reader = new FileReader();
-
-  reader.onloadend = () => {
-    const base64 = reader.result;
-
-    setFormData((prev) => ({
-      ...prev,
-      profile: {
-        ...prev.profile,
-        verification_file: base64,
-      },
-    }));
-
-    setDirty(true);
-  };
-
-  reader.readAsDataURL(file);
-};
-
-
-
-  /* ===========================
-     RENDER
-  ============================ */
   return (
     <>
       <Toast ref={toast} />
@@ -234,8 +205,8 @@ const handleImageSelect = (file) => {
       <DashboardHeader headingData="Complete Your Buyer Profile" />
 
       <div className="brief__infor_content">
-        Provide additional details to help sellers assess your fit.
-        A complete profile increases NDA approval chances.
+        Provide additional details to help sellers assess your fit. A complete
+        profile increases NDA approval chances.
       </div>
 
       <div className="complete_buyer_form_wrap seller__form_profile">
@@ -253,9 +224,7 @@ const handleImageSelect = (file) => {
             <label>First Name</label>
             <InputText
               value={formData.first_name}
-              onChange={(e) =>
-                updateRoot("first_name", e.target.value)
-              }
+              onChange={(e) => updateRoot("first_name", e.target.value)}
             />
           </div>
 
@@ -263,9 +232,7 @@ const handleImageSelect = (file) => {
             <label>Last Name</label>
             <InputText
               value={formData.last_name}
-              onChange={(e) =>
-                updateRoot("last_name", e.target.value)
-              }
+              onChange={(e) => updateRoot("last_name", e.target.value)}
             />
           </div>
 
@@ -275,9 +242,7 @@ const handleImageSelect = (file) => {
             <InputMask
               mask="(999) 999-9999"
               value={formData.profile?.phone}
-              onChange={(e) =>
-                updateProfile("phone", e.target.value)
-              }
+              onChange={(e) => updateProfile("phone", e.target.value)}
             />
           </div>
 
@@ -295,15 +260,13 @@ const handleImageSelect = (file) => {
 
           {/* Industry */}
           <div className="field form__field_col">
-            <label>Industry of Interest</label>
+            <label>Target Industry</label>
             <Dropdown
               value={formData.profile?.industry}
               options={industryList}
               optionLabel="label"
               optionValue="value"
-              onChange={(e) =>
-                updateProfile("industry", e.value)
-              }
+              onChange={(e) => updateProfile("industry", e.value)}
             />
           </div>
 
@@ -315,23 +278,19 @@ const handleImageSelect = (file) => {
               options={usStatesList}
               optionLabel="label"
               optionValue="value"
-              onChange={(e) =>
-                updateProfile("region", e.value)
-              }
+              onChange={(e) => updateProfile("region", e.value)}
             />
           </div>
 
           {/* Business Type */}
           <div className="field form__field_col">
-            <label>Business Type Preferred</label>
-            <InputText
-              value={formData.profile?.business_type_preferred}
+            <label>Liquid Assets</label>
+            <InputNumber
+              value={formData.profile?.liquid_assets}
               onChange={(e) =>
-                updateProfile(
-                  "business_type_preferred",
-                  e.target.value
-                )
+                updateProfile("liquid_assets", e.value)
               }
+              prefix="$"
             />
           </div>
 
@@ -341,9 +300,18 @@ const handleImageSelect = (file) => {
             <Dropdown
               value={formData.profile?.timeline}
               options={acquisitionOptions}
-              onChange={(e) =>
-                updateProfile("timeline", e.value)
-              }
+              onChange={(e) => updateProfile("timeline", e.value)}
+            />
+          </div>
+
+          {/* Funding Method */}
+          <div className="field form__field_col">
+            <label>Funding Method</label>
+            <Dropdown
+              value={formData.profile?.funding_plan}
+              options={fundingMethodOptions}
+              onChange={(e) => updateProfile("funding_plan", e.value)}
+              placeholder="Select Funding Method"
             />
           </div>
 
@@ -354,10 +322,7 @@ const handleImageSelect = (file) => {
               value={formData.profile?.financial_verification}
               options={yesNoOptions}
               onChange={(e) =>
-                updateProfile(
-                  "financial_verification",
-                  e.value
-                )
+                updateProfile("financial_verification", e.value)
               }
             />
           </div>
@@ -367,35 +332,25 @@ const handleImageSelect = (file) => {
             <div className="field form__field_col">
               <label>Upload Verification (PDF)</label>
               <FileUploader
-              accept=".pdf"
-              fileName="Verification file"
-              maxSizeMB={0.5}
-              existingFileUrl={formData.profile?.verification_file || "dss"}
-              onFileSelect={handleImageSelect}
-            />
-              {/* <input
-                type="file"
-                accept="application/pdf"
-                onChange={(e) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    verification_file: e.target.files[0],
-                  }))
+                accept=".pdf"
+                fileName="Verification file"
+                maxSizeMB={0.5}
+                existingFileUrl={
+                  formData.profile?.verification_file || "dss"
                 }
-              /> */}
+                onFileSelect={handleImageSelect}
+              />
             </div>
           )}
 
           {/* Background */}
           <div className="field form__field_col col_overvice_textarea">
-            <label>Brief Background</label>
+            <label>Brief Background and Experience</label>
             <InputTextarea
               rows={3}
               autoResize
               value={formData.profile?.background}
-              onChange={(e) =>
-                updateProfile("background", e.target.value)
-              }
+              onChange={(e) => updateProfile("background", e.target.value)}
             />
           </div>
 
