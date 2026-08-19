@@ -31,7 +31,7 @@ export class CronService {
   /**
    * Returns the monthly price for a listing type.
    */
-  private getMonthlyPrice(listingType: ListingTypes): number {
+  private getMonthlyPrice(listingType: string): number {
     return listingType === ListingTypes.NORMAL
       ? this.PLAN_PRICES.NORMAL
       : this.PLAN_PRICES.PREMIUM;
