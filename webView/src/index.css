@@ -2648,7 +2648,7 @@ button.button__remove_listing_fav .pi-heart-fill:before {
     flex-wrap: wrap;
 }
 .complete_buyer_form_wrap.seller__form_profile  .field.form__field_col {
-    max-width: 440px;
+    max-width: 420px;
 }
 .complete_buyer_form_wrap.seller__form_profile .field.form__field_col.col_overvice_textarea {
     max-width: 100%;
