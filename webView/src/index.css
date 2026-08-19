@@ -2653,7 +2653,11 @@ button.button__remove_listing_fav .pi-heart-fill:before {
 .complete_buyer_form_wrap.seller__form_profile .field.form__field_col.col_overvice_textarea {
     max-width: 100%;
 }
-
+.buyer__modal_fields.buyer__background {
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 5px;
+}
 .complete_buyer_form_wrap.seller__form_profile .field.form__field_col.field__image_uploader_profile .p-fileupload-buttonbar {
     padding: 0;
 }

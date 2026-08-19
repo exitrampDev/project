@@ -7,6 +7,7 @@ import { InputTextarea } from "primereact/inputtextarea";
 import { Dropdown } from "primereact/dropdown";
 import { Button } from "primereact/button";
 import { InputMask } from "primereact/inputmask";
+import { InputNumber } from "primereact/inputnumber";
 
 import {
   authState,
@@ -284,11 +285,12 @@ const FreeBuyerForm = () => {
           {/* Business Type */}
           <div className="field form__field_col">
             <label>Liquid Assets</label>
-            <InputText
-              value={formData.profile?.business_type_preferred}
+            <InputNumber
+              value={formData.profile?.liquid_assets}
               onChange={(e) =>
-                updateProfile("business_type_preferred", e.target.value)
+                updateProfile("liquid_assets", e.value)
               }
+              prefix="$"
             />
           </div>
 
