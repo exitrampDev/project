@@ -1837,10 +1837,10 @@ impact the confidentiality of your sale.</em>
               </h3>
 
               <div className="dashboard__header_search_notification_wrap">
-                <div className="dashboard__search_field_wrap hideOnMobile">
-                  {/* <input type="text" placeholder="Search" /> */}
+                {/* <div className="dashboard__search_field_wrap hideOnMobile">
+                  <input type="text" placeholder="Search" />
                   <img src={serachIcon} alt="" />
-                </div>
+                </div> */}
                 <div className="dashboard__notification_wrap">
                   <button>
                     <img src={notifInfo} alt="" />
