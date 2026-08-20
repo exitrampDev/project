@@ -497,14 +497,14 @@ const markFlag = async () => {
                    {business?.askingPrice.toLocaleString() }
                  </div>
                  <div className="busines_lisiting_highLevelSummary_list">
-                  <strong>Cash Flow:</strong> {business?.cashFlow != 0 ? `$${business.cashFlow.toLocaleString()}` : "-"}
+                  <strong>Cash Flow:</strong> {business?.cashFlow ? `$${business.cashFlow.toLocaleString()}` : "-"}
                 </div>
-                 <div className="busines_lisiting_highLevelSummary_list">
-                   <strong>Revenue:</strong> {business?.revenue != 0 ? `$${business.revenue.toLocaleString()}` : "-"}
-                 </div>
-                 <div className="busines_lisiting_highLevelSummary_list">
-                   <strong>Monthly Rent:</strong> {business?.monthlyRentAmount != 0 ? `$${business.monthlyRentAmount.toLocaleString()}` : "-"}
-                 </div>
+                <div className="busines_lisiting_highLevelSummary_list">
+                  <strong>Revenue:</strong> {business?.revenue ? `$${business.revenue.toLocaleString()}` : "-"}
+                </div>
+                <div className="busines_lisiting_highLevelSummary_list">
+                  <strong>Rent:</strong> {business?.monthlyRentAmount ? `$${business.monthlyRentAmount.toLocaleString()}` : "-"}
+                </div>
                  <div className="busines_lisiting_highLevelSummary_list">
                    <strong>SDE:</strong> {business?.latestSDE ? (<>{business.latestSDE}</>) : "-"}
                  </div>
