@@ -128,8 +128,17 @@ export class PaymentService {
   }
 
   async createPaymentIntent(amount: number, userId: Types.ObjectId | string, businessId?: string) {
-    const user = await this.usersService.findById(userId);
-    const customerId = await this.getOrCreateStripeCustomer(user);
+    const user = await this.usersService.findById(userId.toString());
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const customerId = await this.getOrCreateStripeCustomer({
+      id: user._id ? user._id.toString() : userId.toString(),
+      email: user.email,
+      name: `${user.first_name || ''} ${user.last_name || ''}`.trim(),
+      stripe_customer_id: user.stripe_customer_id,
+    });
 
     const business = businessId ? await this.businessService.findOne(businessId) : null;
     if (businessId && !business) {
@@ -174,8 +183,17 @@ export class PaymentService {
   }
 
   async createUpgradePaymentIntent(userId: Types.ObjectId | string, businessId?: string) {
-    const user = await this.usersService.findById(userId);
-    const customerId = await this.getOrCreateStripeCustomer(user);
+    const user = await this.usersService.findById(userId.toString());
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const customerId = await this.getOrCreateStripeCustomer({
+      id: user._id ? user._id.toString() : userId.toString(),
+      email: user.email,
+      name: `${user.first_name || ''} ${user.last_name || ''}`.trim(),
+      stripe_customer_id: user.stripe_customer_id,
+    });
 
     const business = businessId ? await this.businessService.findOne(businessId) : null;
     if (businessId && !business) {
@@ -189,16 +207,13 @@ export class PaymentService {
     let amount: number;
 
     if (!business?.paymentDate) {
-      // First/Free Listing Upgrade
       amount = UPGRADED_PRICE;
     } else {
       const currentDate = new Date();
       const paymentDate = new Date(business.paymentDate);
 
-      // Extract day anchor (e.g., 28th of every month)
       const anchorDay = paymentDate.getDate();
 
-      // Find the next upcoming renewal date
       let nextBillingDate = new Date(
         currentDate.getFullYear(),
         currentDate.getMonth(),
@@ -213,11 +228,10 @@ export class PaymentService {
         );
       }
 
-      // Calculate remaining days in active monthly cycle
       const diffMs = nextBillingDate.getTime() - currentDate.getTime();
       const remainingDays = Math.max(0, Math.ceil(diffMs / (1000 * 60 * 60 * 24)));
 
-      const upgradeDifference = UPGRADED_PRICE - BASIC_PRICE; // $15
+      const upgradeDifference = UPGRADED_PRICE - BASIC_PRICE;
       const dailyRate = upgradeDifference / 30;
 
       if (remainingDays > 0 && remainingDays < 30) {
@@ -226,7 +240,6 @@ export class PaymentService {
         amount = upgradeDifference;
       }
 
-      // Enforce Stripe minimum threshold ($0.50)
       if (amount < MIN_STRIPE_AMOUNT_USD) {
         amount = MIN_STRIPE_AMOUNT_USD;
       }
@@ -270,8 +283,17 @@ export class PaymentService {
   }
 
   async createSetupIntent(userId: Types.ObjectId | string) {
-    const user = await this.usersService.findById(userId);
-    const customerId = await this.getOrCreateStripeCustomer(user);
+    const user = await this.usersService.findById(userId.toString());
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const customerId = await this.getOrCreateStripeCustomer({
+      id: user._id ? user._id.toString() : userId.toString(),
+      email: user.email,
+      name: `${user.first_name || ''} ${user.last_name || ''}`.trim(),
+      stripe_customer_id: user.stripe_customer_id,
+    });
 
     const payload = qs.stringify({
       customer: customerId,
@@ -396,7 +418,7 @@ export class PaymentService {
     return payment.save();
   }
 
-  async getByUser(user: { userId: string }, query: QueryPaymentDto) {
+  async getByUser(user: { userId: string }, query: QueryPaymentDto): Promise<any> {
     const { page = 1, limit = 10, search } = query;
     const skip = (page - 1) * limit;
 
@@ -427,9 +449,9 @@ export class PaymentService {
       this.paymentModel.countDocuments(baseFilter),
     ]);
 
-    const formattedPayments = payments.map((payment) => ({
+    const formattedPayments = payments.map((payment: any) => ({
       ...payment,
-      amount: payment.amount / 100,
+      amount: payment.amount ? payment.amount / 100 : 0,
     }));
 
     return {

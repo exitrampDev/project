@@ -1,8 +1,30 @@
-import { IsNumber, IsOptional, isString, IsString } from "class-validator";
+import { IsNumber, IsOptional, IsString } from 'class-validator';
 
+export class CreatePaymentDto {
+  @IsOptional()
+  @IsNumber()
+  amount?: number;
 
-export class CreatePaymentDto{
+  @IsOptional()
   @IsString()
-  businessId : string;
+  businessId?: string;
 
+  @IsOptional()
+  @IsString()
+  sessionId?: string;
+
+  @IsOptional()
+  @IsString()
+  paymentIntentId?: string;
+
+  @IsOptional()
+  @IsString()
+  paymentStatus?: string;
+
+  @IsOptional()
+  @IsString()
+  paymentFor?: string;
+
+  @IsOptional()
+  referenceId?: any;
 }
