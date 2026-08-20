@@ -145,6 +145,7 @@ export class PaymentController {
 
     if(intent.metadata.purpose == PaymentPurpose.BUSINESS_UPGRADE){
        this.bunisessService.updateBusinessType(businessId, ListingTypes.PREMIUM);
+       this.bunisessService.updateBusinessStatus(businessId, 'live');
     }else{
  // 2. Activate business
     this.bunisessService.updateBusinessStatus(businessId, 'live');
