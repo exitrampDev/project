@@ -290,13 +290,13 @@ const renderYesNo = (value) => {
          <div className="business__list_single_description_row">
           <h3>Additional Financial Details</h3>
           <div className="about_listing_toggle">
-              {/* <div className="about_listing_toggle_item">
-                <strong>Real Estate:</strong> {renderMoney(business?.realEstateValue)}
+              <div className="about_listing_toggle_item">
+                <strong>Real Estate:</strong> {renderMoney(business?.propertyValue)}
               </div>
 
               <div className="about_listing_toggle_item">
                 <strong>Real Estate Included:</strong> {renderYesNo(business?.propertyIncludedinAskingPrice)}
-              </div> */}
+              </div>
 
               <div className="about_listing_toggle_item">
                 <strong>FFE Value:</strong> {renderMoney(business?.ffEValue)}

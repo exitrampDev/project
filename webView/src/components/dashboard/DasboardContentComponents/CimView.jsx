@@ -342,7 +342,7 @@ function CIMview() {
 </div>
 
 <div className="list__card_cim_row">
-  <span>Real Estate Ownership:</span> {listing.realEstateValue}
+  <strong>Real Estate Included:</strong> {renderYesNo(business?.propertyIncludedinAskingPrice)}
 </div>
 
 <div className="list__card_cim_row">
@@ -438,7 +438,7 @@ function CIMview() {
 </div>
 
 <div className="list__card_cim_row">
-  <span>Real Estate Value:</span> {listing.realEstateValue}
+  <span>Real Estate Value:</span> {listing.propertyValue}
 </div>
 
   
