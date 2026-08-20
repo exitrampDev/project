@@ -60,8 +60,9 @@ const renderMoney = (value) => {
 
 const renderYesNo = (value) => {
   if (value === "" || value === null || value === undefined) return "-";
-  if (value === true || value === "true") return "Yes";
-  if (value === false || value === "false") return "No";
+  if (value === true || value === "true" || value === "yes" ) return "Yes";
+  if (value === false || value === "false" || value === "no") return "No";
+  
   return "-";
 };
 
