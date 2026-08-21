@@ -98,6 +98,7 @@ export class AppModule implements NestModule {
     consumer
       .apply(CaptchaValidationMiddleware)
       .forRoutes(
+        { path: 'auth/login', method: RequestMethod.POST },
         { path: 'auth/register', method: RequestMethod.POST },
         { path: 'auth/contact-us-form', method: RequestMethod.POST },
       );

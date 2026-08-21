@@ -11,11 +11,11 @@ export class CaptchaValidationMiddleware implements NestMiddleware {
     const captchaId = body.captchaId || body.captcha_id;
     const captchaValue = body.captchaValue || body.captcha_value;
 
-    // if (!captchaId || !captchaValue) {
-    //   throw new BadRequestException('Captcha id and value are required');
-    // }
+    if (!captchaId || !captchaValue) {
+      throw new BadRequestException('Captcha id and value are required');
+    }
 
-    // await this.captchaService.validateCaptcha(captchaId, captchaValue);
+    await this.captchaService.validateCaptcha(captchaId, captchaValue);
     next();
   }
 }
