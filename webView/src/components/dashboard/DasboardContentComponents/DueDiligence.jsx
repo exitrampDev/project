@@ -320,7 +320,7 @@ setVisible(false)
 
       {/* ---------- Header ---------- */}
       
-        <DashboardHeader headingData="Due Diligence List"/>
+        {/* <DashboardHeader headingData="Due Diligence List"/> */}
       {/* ---------- Info ---------- */}
       <div className="brief__infor_content">
         <p>

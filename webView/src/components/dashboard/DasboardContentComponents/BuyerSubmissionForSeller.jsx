@@ -279,7 +279,7 @@ const openBuyerInfoModal = (row) => {
             body={ndaStatusTemplate}
             sortable
           />
-          <Column body={(row) => DueDiligenceAction(row.ndaStatus, row.businessId)} header="Due Diligence" />
+          {/* <Column body={(row) => DueDiligenceAction(row.ndaStatus, row.businessId)} header="Due Diligence" /> */}
           <Column header="Action" body={ndaViewActionTemplate} />
         </DataTable>
       </div>

@@ -265,12 +265,12 @@ const buyerSubmissionColumns = [
     body: ndaStatusTemplate,
     sortable: true,
   },
-  {
-    field: "dueDiligence",
-    header: "Due Diligence",
-    body: (row) =>
-      DueDiligenceAction(row.ndaStatus, row.businessId),
-  },
+  // {
+  //   field: "dueDiligence",
+  //   header: "Due Diligence",
+  //   body: (row) =>
+  //     DueDiligenceAction(row.ndaStatus, row.businessId),
+  // },
   {
     field: "actions",
     header: "Action",

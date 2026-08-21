@@ -12,6 +12,7 @@ import { Button } from "primereact/button";
 import { Toast } from "primereact/toast";
 
 import DashboardHeader from "./DashboardHeaderBlock";
+import DueDiligence from "./DueDiligence";
 
 const DocumentRoom = () => {
   const { id } = useParams();
@@ -355,6 +356,11 @@ const truncatedTitle =
       </div>
 
       )}
+      <br></br>
+      <div className="dashboard__header_block">
+        <h3>Due Diligence List</h3>
+        </div>
+      <DueDiligence/>
     </div>
   );
 };
