@@ -4999,6 +4999,31 @@ span.data__locked {
     border-radius: 15px;
     max-height: 95vh;
     overflow: auto;
+}.captcha__img_wrap {
+    background-color: rgb(244, 244, 244);
+    overflow: hidden;
+    display: flex;
+    justify-content: space-between;
+    padding: 0;
+}
+
+.captcha__img_wrap button.captcha__refresh  {
+    background: #002f68;
+    padding: 0 30px;
+    border-radius: 0;
+    margin: 0 !important;
+}
+
+
+.field__set.field__set--captcha {max-width: 100%;display: flex;align-items: center;justify-content: center;}
+
+.field__set.field__set--captcha .captcha__img_wrap_main {
+    max-width: 430px;
+    width: 100%;
+}
+.captcha__img_wrap button.captcha__refresh span.p-button-icon.p-c.pi.pi-refresh {
+    font-size: 24px;
+    color: #ffb100;
 }
 
 .card__update_process_popup .payment__box_wrap {

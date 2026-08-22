@@ -1,17 +1,18 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { InputText } from "primereact/inputtext";
 import { Password } from "primereact/password";
 import { Button } from "primereact/button";
 import { Checkbox } from "primereact/checkbox";
+import { Toast } from "primereact/toast"; // 👈 Added Toast import
 import { NavLink, useNavigate } from "react-router-dom";
-import { useSetRecoilState } from "recoil";
-import { authState,apiBaseUrlState   } from "../recoil/ctaState";
+import { useSetRecoilState, useRecoilValue } from "recoil";
+import { authState, apiBaseUrlState } from "../recoil/ctaState";
 
 import Header from "./Header";
 import Footer from "./Footer";
-import SignupPopup from "./SignupPopup"; // 👈 Import your popup
+import SignupPopup from "./SignupPopup";
 import axios from "axios";
-import { useRecoilValue } from "recoil";
+
 // Icons
 import icon1 from "../assets/buyerIcon.png";
 import icon2 from "../assets/sellerIcon.png";
@@ -35,18 +36,6 @@ const accountTypes = [
     description: "List your business and manage interest from serious buyers.",
     value: "seller",
   },
-  // {
-  //   icon: icon3,
-  //   title: "I'm an M&A Expert",
-  //   description: "Showcase your expertise and help sellers close strong deals.",
-  //   value: "ma_expert",
-  // },
-  // {
-  //   icon: icon4,
-  //   title: "I Just Want Updates",
-  //   description: "Sign up for insights and M&A market news.",
-  //   value: "subscriber",
-  // },
 ];
 
 const roleOptions = {
@@ -65,17 +54,6 @@ const roleOptions = {
           roleOptionValue: "buyer_basic",
         },
       },
-      // {
-      //   icon: icon6,
-      //   title: "Buyer ",
-      //   description:
-      //     "Get direct access to sellers, unlock CIMs after NDA approval, and use advanced tools built for buyers.",
-      //   button: {
-      //     text: "Register as Buyer",
-      //     link: "/register",
-      //     roleOptionValue: "buyer_premium",
-      //   },
-      // },
     ],
   },
   seller: {
@@ -83,31 +61,9 @@ const roleOptions = {
     subtitle:
       "Select how you’d like to list and manage your business on Exit Ramp.",
     subOptions: [
-      // {
-      //   icon: icon7,
-      //   title: "Seller Basic",
-      //   description:
-      //     "List your business, manage NDA requests, and message buyers privately — all while keeping your identity protected.",
-      //   button: {
-      //     text: "Register as Seller Basic",
-      //     link: "/register",
-      //     roleOptionValue: "seller_basic",
-      //   },
-      // },
-      // {
-      //   icon: icon8,
-      //   title: "Seller Listing",
-      //   description:
-      //     "Can Create Listing of the Businesses",
-      //   button: {
-      //     text: "Register as Seller Listing",
-      //     link: "/register",
-      //     roleOptionValue: "seller_listing",
-      //   },
-      // },
       {
         icon: icon8,
-                title: "Seller Sign Up",
+        title: "Seller Sign Up",
         description:
           "Get the toolkit: Buyer NDA Management, CIM Management, Document Management Room, Buyer Access Management, and more.",
         button: {
@@ -161,23 +117,61 @@ const roleOptions = {
     ],
   },
 };
+
 const Login = () => {
+  const toast = useRef(null); // 👈 Created Toast ref
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
+    captchaInput: "",
     remember: false,
   });
+
+  const [captchaData, setCaptchaData] = useState({
+    id: "",
+    svg: "",
+  });
+  const [captchaLoading, setCaptchaLoading] = useState(false);
+
   const setAuth = useSetRecoilState(authState);
+  const API_BASE = useRecoilValue(apiBaseUrlState);
 
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
   const navigate = useNavigate();
 
-  // 🔹 Popup state (copied from Header)
+  // Popup state
   const [showPopup, setShowPopup] = useState(false);
   const [popupStep, setPopupStep] = useState(1);
   const [selectedRole, setSelectedRole] = useState(null);
-const API_BASE = useRecoilValue(apiBaseUrlState);
+
+  // Fetch CAPTCHA on initial render
+  useEffect(() => {
+    fetchCaptcha();
+  }, []);
+
+  const fetchCaptcha = async () => {
+    setCaptchaLoading(true);
+    try {
+      const res = await axios.get(`http://localhost:5000/captcha`);
+      const id = res.data.captchaId || res.data.captcha_id;
+      setCaptchaData({
+        id: id,
+        svg: res.data.svg,
+      });
+      setFormData((prev) => ({ ...prev, captchaInput: "" }));
+    } catch (error) {
+      toast.current?.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Failed to load CAPTCHA. Please refresh.",
+        life: 3000,
+      });
+    } finally {
+      setCaptchaLoading(false);
+    }
+  };
+
   const openPopup = () => {
     setPopupStep(1);
     setSelectedRole(null);
@@ -205,7 +199,6 @@ const API_BASE = useRecoilValue(apiBaseUrlState);
     navigate("/register", { state: { role: roleKey } });
   };
 
-  // 🔹 Login form
   const handleChange = (e) => {
     const { name, value, checked, type } = e.target;
     setFormData((prev) => ({
@@ -216,14 +209,27 @@ const API_BASE = useRecoilValue(apiBaseUrlState);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setMessage("");
+
+    if (!formData.captchaInput) {
+      toast.current?.show({
+        severity: "warn",
+        summary: "Validation Warning",
+        detail: "Please complete the CAPTCHA.",
+        life: 3000,
+      });
+      return;
+    }
+
     setLoading(true);
 
     try {
       const res = await axios.post(`${API_BASE}/auth/login`, {
         email: formData.email,
         password: formData.password,
+        captcha_id: captchaData.id,
+        captcha_value: formData.captchaInput,
       });
+
       const token = res.data.access_token;
       const user = res.data.data;
 
@@ -234,13 +240,30 @@ const API_BASE = useRecoilValue(apiBaseUrlState);
       }
 
       setAuth({ access_token: token, user });
-      setMessage("Login successful!");
-      navigate("/user/dashboard");
+
+      toast.current?.show({
+        severity: "success",
+        summary: "Success",
+        detail: "Login successful!",
+        life: 3000,
+      });
+
+      setTimeout(() => {
+        navigate("/user/dashboard");
+      }, 1000);
     } catch (error) {
-      setMessage(
-        "Login failed. " +
-          (error.response?.data?.message || "Please try again.")
-      );
+      const errDetail =
+        error.response?.data?.message || "Login failed. Please try again.";
+
+      toast.current?.show({
+        severity: "error",
+        summary: "Error",
+        detail: typeof errDetail === "string" ? errDetail : JSON.stringify(errDetail),
+        life: 4000,
+      });
+
+      // Refresh CAPTCHA after a failed attempt
+      fetchCaptcha();
     } finally {
       setLoading(false);
     }
@@ -248,6 +271,7 @@ const API_BASE = useRecoilValue(apiBaseUrlState);
 
   return (
     <>
+      <Toast ref={toast} /> {/* 👈 Render Toast component at root level */}
       <Header />
       <div className="register-page">
         <div className="text-center mb-5 register__header_block">
@@ -287,8 +311,35 @@ const API_BASE = useRecoilValue(apiBaseUrlState);
             />
           </div>
 
+          {/* CAPTCHA Section */}
+          <div className="field__set">
+            <label htmlFor="captchaInput">Enter Security Code</label>
+            <div className="captcha__img_wrap">
+              <div
+                className="captcha-container border-round p-2 surface-100 flex align-items-center justify-content-center"
+                dangerouslySetInnerHTML={{ __html: captchaData.svg }}
+              />
+              <Button
+                type="button"
+                icon="pi pi-refresh"
+                className="captcha__refresh"
+                onClick={fetchCaptcha}
+                loading={captchaLoading}
+                tooltip="Refresh CAPTCHA"
+              />
+            </div>
+            <InputText
+              id="captchaInput"
+              name="captchaInput"
+              value={formData.captchaInput}
+              onChange={handleChange}
+              placeholder="Enter CAPTCHA value"
+              required
+            />
+          </div>
+
           {/* Remember + Forgot */}
-          <div className="login__remember_forget_pass">
+          <div className="login__remember_forget_pass mt-3">
             <div className="p-field-checkbox mb-3">
               <Checkbox
                 inputId="remember"
@@ -313,15 +364,14 @@ const API_BASE = useRecoilValue(apiBaseUrlState);
           />
         </form>
 
-        {message && <p className="form-message">{message}</p>}
-        <div className="login_block_col register__block">
+        <div className="login_block_col register__block text-center mt-3">
           Don't have an account? <a onClick={openPopup}>Sign Up</a>
         </div>
       </div>
 
       <Footer />
 
-      {/* 🔹 SignupPopup */}
+      {/* SignupPopup */}
       {showPopup && (
         <SignupPopup
           step={popupStep}

@@ -1,39 +1,74 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
-import { authState,apiBaseUrlState  } from "../recoil/ctaState";
+import { apiBaseUrlState } from "../recoil/ctaState";
 import { InputText } from "primereact/inputtext";
 import { Password } from "primereact/password";
 import { Button } from "primereact/button";
 import { InputMask } from "primereact/inputmask";
 import { Checkbox } from "primereact/checkbox";
-import { Message } from "primereact/message";
+import { Toast } from "primereact/toast"; // 👈 Added Toast import
 import { Dropdown } from "primereact/dropdown";
 import { useRecoilValue } from "recoil";
 import Header from "./Header";
 import Footer from "./Footer";
 
 const Register = () => {
+  const toast = useRef(null); // 👈 Created Toast ref
   const navigate = useNavigate();
   const { state } = useLocation();
   const role = state?.role || "";
   const plan = state?.plan;
-const API_BASE = useRecoilValue(apiBaseUrlState);
+  const API_BASE = useRecoilValue(apiBaseUrlState);
+
   const [formData, setFormData] = useState({
     first_name: "",
     last_name: "",
     email: "",
-    phone: "",
     password: "",
     confirm_password: "",
     phone_number: "",
     user_type: role?.includes("seller") ? "" : role,
     agree: false,
+    captcha_value: "",
   });
 
+  const [captchaData, setCaptchaData] = useState({
+    id: "",
+    svg: "",
+  });
+  const [captchaLoading, setCaptchaLoading] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState({ text: "", type: "" });
-const isSeller = role?.includes("seller");
+
+  const isSeller = role?.includes("seller");
+
+  // Fetch CAPTCHA on component mount
+  useEffect(() => {
+    fetchCaptcha();
+  }, []);
+
+  const fetchCaptcha = async () => {
+    setCaptchaLoading(true);
+    try {
+      const res = await axios.get("http://localhost:5000/captcha");
+      const id = res.data.captchaId || res.data.captcha_id;
+      setCaptchaData({
+        id: id,
+        svg: res.data.svg,
+      });
+      // Clear input on new captcha load
+      setFormData((prev) => ({ ...prev, captcha_value: "" }));
+    } catch (error) {
+      toast.current?.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Failed to load CAPTCHA. Please refresh.",
+        life: 3000,
+      });
+    } finally {
+      setCaptchaLoading(false);
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value, checked, type } = e.target;
@@ -47,48 +82,88 @@ const isSeller = role?.includes("seller");
     e.preventDefault();
 
     if (formData.password !== formData.confirm_password) {
-      setMessage({ text: "Passwords do not match", type: "error" });
+      toast.current?.show({
+        severity: "warn",
+        summary: "Validation Warning",
+        detail: "Passwords do not match.",
+        life: 3000,
+      });
       return;
     }
 
     if (!formData.agree) {
-      setMessage({ text: "You must agree to the terms.", type: "error" });
+      toast.current?.show({
+        severity: "warn",
+        summary: "Validation Warning",
+        detail: "You must agree to the terms.",
+        life: 3000,
+      });
+      return;
+    }
+
+    if (!formData.captcha_value) {
+      toast.current?.show({
+        severity: "warn",
+        summary: "Validation Warning",
+        detail: "Please enter the CAPTCHA.",
+        life: 3000,
+      });
       return;
     }
 
     setLoading(true);
-    setMessage({ text: "", type: "" });
+
+    // Destructure out confirm_password and agree before forming the payload
+    const { confirm_password, agree, ...payloadData } = formData;
 
     const payload = {
-      ...formData,
+      ...payloadData,
       user_type:
         formData.user_type === "ma_expert" ? "m&a_expert" : formData.user_type,
+      captcha_id: captchaData.id,
+      captcha_value: formData.captcha_value,
     };
 
     try {
       await axios.post(`${API_BASE}/auth/register`, payload);
-      setMessage({ text: "Registration successful!", type: "success" });
-      navigate("/login");
-    } catch (error) {
-      setMessage({
-        text:
-          "Registration failed. " +
-          (typeof error.response?.data?.message === "string"
-            ? error.response.data.message
-            : JSON.stringify(error.response?.data?.message || "")),
-        type: "error",
+
+      toast.current?.show({
+        severity: "success",
+        summary: "Success",
+        detail: "Registration successful!",
+        life: 3000,
       });
+
+      setTimeout(() => {
+        navigate("/login");
+      }, 1000);
+    } catch (error) {
+      const errDetail =
+        error.response?.data?.message || "Registration failed. Please try again.";
+
+      toast.current?.show({
+        severity: "error",
+        summary: "Error",
+        detail:
+          typeof errDetail === "string" ? errDetail : JSON.stringify(errDetail),
+        life: 4000,
+      });
+
+      // Refresh CAPTCHA on submission error
+      fetchCaptcha();
     } finally {
       setLoading(false);
     }
   };
-const sellerOptions = [
-  { label: "Broker", value: "seller_broker" },
-  { label: "Individual Seller", value: "seller_individual" },
-];
+
+  const sellerOptions = [
+    { label: "Broker", value: "seller_broker" },
+    { label: "Individual Seller", value: "seller_individual" },
+  ];
 
   return (
     <>
+      <Toast ref={toast} /> {/* 👈 Render Toast component at root level */}
       <Header />
       <div className="register-page p-4 max-w-xl mx-auto">
         <div className="text-center mb-5 register__header_block">
@@ -135,11 +210,11 @@ const sellerOptions = [
           </div>
 
           <div className="field__set">
-            <label htmlFor="phone">Phone Number</label>
+            <label htmlFor="phone_number">Phone Number</label>
             <InputMask
-              id="phone"
+              id="phone_number"
               mask="(999) 999-9999"
-              name="phone"
+              name="phone_number"
               value={formData.phone_number}
               onChange={handleChange}
             />
@@ -170,27 +245,56 @@ const sellerOptions = [
               feedback={false}
             />
           </div>
-{isSeller && (
-  <div className="field__set">
-    <label htmlFor="user_type">Seller Type</label>
 
-    <Dropdown
-      id="user_type"
-      name="user_type"
-      value={formData.user_type}
-      options={sellerOptions}
-      onChange={(e) =>
-        setFormData((prev) => ({
-          ...prev,
-          user_type: e.value,
-        }))
-      }
-      placeholder="Select Seller Type"
-      className="w-full"
-      required
-    />
-  </div>
-)}
+          {isSeller && (
+            <div className="field__set">
+              <label htmlFor="user_type">Seller Type</label>
+              <Dropdown
+                id="user_type"
+                name="user_type"
+                value={formData.user_type}
+                options={sellerOptions}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    user_type: e.value,
+                  }))
+                }
+                placeholder="Select Seller Type"
+                className="w-full"
+                required
+              />
+            </div>
+          )}
+
+          {/* CAPTCHA Section */}
+          <div className="field__set field__set--captcha">
+            <div className="captcha__img_wrap_main">
+              <label htmlFor="captcha_value">Security Verification</label>
+              <div className="captcha__img_wrap">
+                <div
+                  className="captcha-container border-round p-2 surface-100 flex align-items-center justify-content-center"
+                  dangerouslySetInnerHTML={{ __html: captchaData.svg }}
+                />
+                <Button
+                  type="button"
+                  icon="pi pi-refresh"
+                  className="captcha__refresh"
+                  onClick={fetchCaptcha}
+                  loading={captchaLoading}
+                  tooltip="Refresh CAPTCHA"
+                />
+              </div>
+              <InputText
+                id="captcha_value"
+                name="captcha_value"
+                value={formData.captcha_value}
+                onChange={handleChange}
+                placeholder="Enter CAPTCHA code"
+                required
+              />
+            </div>
+          </div>
 
           <div className="field-checkbox">
             <Checkbox
@@ -215,12 +319,6 @@ const sellerOptions = [
             Already have an account? <NavLink to="/login">Sign In</NavLink>
           </div>
         </form>
-
-        {message.text && (
-          <div className="mt-3">
-            <Message severity={message.type} text={message.text} />
-          </div>
-        )}
       </div>
       <Footer />
     </>
