@@ -28,7 +28,7 @@ async function bootstrap() {
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
 
    app.enableCors({
-    origin: ['http://localhost:5173','http://localhost:5000', 'https://test.exitramp.co', 'https://exitramp.co', 'https://www.exitramp.co'], 
+    origin: ['http://localhost:5000', 'http://localhost:5173', 'https://test.exitramp.co', 'https://exitramp.co', 'https://www.exitramp.co'], 
     credentials: true,
   });
 

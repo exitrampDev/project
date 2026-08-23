@@ -153,7 +153,7 @@ const Login = () => {
   const fetchCaptcha = async () => {
     setCaptchaLoading(true);
     try {
-      const res = await axios.get(`http://localhost:5000/captcha`);
+      const res = await axios.get(`${API_BASE}/captcha`);
       const id = res.data.captchaId || res.data.captcha_id;
       setCaptchaData({
         id: id,

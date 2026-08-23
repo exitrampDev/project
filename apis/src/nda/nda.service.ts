@@ -62,9 +62,16 @@ export class NdaService {
       message: `A new NDA has been submitted for on your business "${business.listingTitle}"`,
     });
 
+    // Create notification for submitter (buyer)
+    await this.notificationHelper.createNotification({
+      userId: userObjectId,
+      title: 'NDA Submitted',
+      message: `You have successfully submitted an NDA for the business "${business.listingTitle}"`,
+    });
+
     // Send email to business owner
     let businessOwner = await this.userService.findById(business.ownerId.toString());
- if(businessOwner){   await this.mailService.sendMail(
+    if(businessOwner){   await this.mailService.sendMail(
       businessOwner.email,
       'New NDA Submission',
       'ndaSubmitted',
