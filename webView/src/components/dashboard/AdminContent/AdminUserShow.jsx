@@ -18,6 +18,10 @@ const AdminUserShow = () => {
   const [visible, setVisible] = useState(false);
   const [message, setMessage] = useState("");
 
+  // ⬇️ CAPTCHA States
+  const [captchaData, setCaptchaData] = useState({ id: "", svg: "" });
+  const [captchaLoading, setCaptchaLoading] = useState(false);
+
   const API_BASE = useRecoilValue(apiBaseUrlState);
   const auth = useRecoilValue(authState);
 
@@ -31,6 +35,7 @@ const AdminUserShow = () => {
     first_name: "",
     last_name: "",
     user_type: "",
+    captcha_value: "",
   });
 
   const userTypes = [
@@ -46,6 +51,31 @@ const AdminUserShow = () => {
     { label: "M&A Expert Basic", value: "m&a_expert_basic" },
     { label: "M&A Expert Premium", value: "m&a_expert_premium" },
   ];
+
+  // Fetch CAPTCHA logic
+  const fetchCaptcha = async () => {
+    setCaptchaLoading(true);
+    try {
+      const res = await axios.get(`${API_BASE}/captcha`);
+      const id = res.data.captchaId || res.data.captcha_id;
+      setCaptchaData({
+        id: id,
+        svg: res.data.svg,
+      });
+      setFormData((prev) => ({ ...prev, captcha_value: "" }));
+    } catch (error) {
+      console.error("Error loading CAPTCHA:", error);
+    } finally {
+      setCaptchaLoading(false);
+    }
+  };
+
+  // Fetch CAPTCHA when the modal opens
+  useEffect(() => {
+    if (visible) {
+      fetchCaptcha();
+    }
+  }, [visible]);
 
   // Fetch all users
   useEffect(() => {
@@ -76,11 +106,23 @@ const AdminUserShow = () => {
   // Register new user
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!formData.captcha_value) {
+      setMessage("❌ Please enter the CAPTCHA.");
+      return;
+    }
+
     setLoading(true);
     setMessage("");
 
+    const payload = {
+      ...formData,
+      captcha_id: captchaData.id,
+      captcha_value: formData.captcha_value,
+    };
+
     try {
-      await axios.post(`${API_BASE}/auth/register`, formData, {
+      await axios.post(`${API_BASE}/auth/register`, payload, {
         headers: {
           Authorization: `Bearer ${auth?.access_token || ""}`,
         },
@@ -93,12 +135,15 @@ const AdminUserShow = () => {
         first_name: "",
         last_name: "",
         user_type: "",
+        captcha_value: "",
       });
 
       setVisible(false);
     } catch (error) {
       console.error("❌ Error creating user:", error);
       setMessage(error.response?.data?.message || "Something went wrong.");
+      // Refresh CAPTCHA if submission fails
+      fetchCaptcha();
     } finally {
       setLoading(false);
     }
@@ -258,10 +303,39 @@ const AdminUserShow = () => {
             />
           </div>
 
+          {/* CAPTCHA Section */}
+          <div className="field__set field__set--captcha form__field_wrap">
+            <div className="captcha__img_wrap_main">
+              <label htmlFor="captcha_value">Security Verification</label>
+              <div className="captcha__img_wrap flex align-items-center gap-2 mb-2">
+                <div
+                  className="captcha-container border-round p-2 surface-100 flex align-items-center justify-content-center"
+                  dangerouslySetInnerHTML={{ __html: captchaData.svg }}
+                />
+                <Button
+                  type="button"
+                  icon="pi pi-refresh"
+                  className="captcha__refresh p-button-outlined"
+                  onClick={fetchCaptcha}
+                  loading={captchaLoading}
+                  tooltip="Refresh CAPTCHA"
+                />
+              </div>
+              <InputText
+                id="captcha_value"
+                name="captcha_value"
+                value={formData.captcha_value}
+                onChange={(e) => handleChange(e, "captcha_value")}
+                placeholder="Enter CAPTCHA code"
+                required
+              />
+            </div>
+          </div>
+
           <Button
             label={loading ? "Registering..." : "Register User"}
             icon="pi pi-user"
-            className="p-button-success"
+            className="p-button-success mt-3"
             type="submit"
             loading={loading}
           />

@@ -3843,6 +3843,7 @@ span.comment__list_btn {
 }
 
 .admin__register_new_user_form button.p-button-success.p-button.p-component {
+      margin: 0 auto;
     margin-top: 15px;
     background: #ffb100;
     color: #290100;
