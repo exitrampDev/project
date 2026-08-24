@@ -96,7 +96,7 @@ export class AuthController {
           'generalMessage',
           {
             receiverName:  'Exit Ramp Admin',
-            message:"contact us form submission : " + registerDto.message + ", form email : " + registerDto.email+", from name : " + registerDto.first_name + " " + registerDto.last_name,
+            message:"contact us form submission : " + registerDto.message + ", Subject: " + registerDto.subject + ", form email : " + registerDto.email+", from name : " + registerDto.first_name + " " + registerDto.last_name,
           }
         );
         return true;

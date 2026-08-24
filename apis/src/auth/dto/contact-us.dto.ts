@@ -5,6 +5,11 @@ export class ContactUsDto {
   email: string;
 
   @IsString()
+  @IsNotEmpty({ message: 'Subject is required' })
+  @Length(2, 100, { message: 'Subject must be between 2 and 100 characters' })
+  subject: string;
+
+  @IsString()
   @IsNotEmpty({ message: 'First name is required' })
   @Length(2, 50, { message: 'First name must be between 2 and 50 characters' })
   first_name: string;
