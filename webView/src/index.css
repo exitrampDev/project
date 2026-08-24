@@ -1276,8 +1276,16 @@ form.p-fluid.login__form_wrap button.mb-3.p-button.p-component {
 .contact__form_submit_btn {
   display: flex;
   width: 100%;
-  justify-content: flex-start;
+  justify-content: center;
 }
+.contact__form_captcha_wrap_row {
+    margin: 0 auto;
+    display: inline-flex;
+    flex-wrap: balance;
+    justify-content: center;
+    gap: 30px;
+}
+
 
 form.contact__form input {
   width: 100%;
