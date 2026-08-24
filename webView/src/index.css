@@ -8694,7 +8694,7 @@ footer.footer__section_broker_page_container {
 
 
 /* PWA responsive work */
-@media(max-width: 768px) {
+@media(max-width: 960px) {
   .dashboard__sidebar_wrap.dashboard_mobrile_sidebar {
     position: fixed;
     height: 100vh;
