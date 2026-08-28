@@ -2,13 +2,13 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Button } from "primereact/button";
 import { useNavigate } from "react-router-dom";
-import { DataTable } from "primereact/datatable";
-import { Column } from "primereact/column";
 import { apiBaseUrlState } from "../../../recoil/ctaState";
 import { useRecoilValue } from "recoil";
+import ResponsiveDataTable from "../../customcomponent/ResponsiveDataTable";
 
 const PagesList = () => {
   const [pages, setPages] = useState([]);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const apiBaseUrl = useRecoilValue(apiBaseUrlState);
 
@@ -17,81 +17,106 @@ const PagesList = () => {
   }, []);
 
   const fetchPages = async () => {
-    const res = await axios.get(`${apiBaseUrl}/blog`);
-    setPages(res.data);
+    try {
+      setLoading(true);
+      const res = await axios.get(`${apiBaseUrl}/blog`);
+      setPages(res.data || []);
+    } catch (error) {
+      console.error("Error loading pages:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const deletePage = async (slug) => {
     if (!window.confirm("Are you sure you want to delete this page?")) return;
 
-    await axios.delete(`${apiBaseUrl}/blog/${slug}`);
-    fetchPages();
+    try {
+      await axios.delete(`${apiBaseUrl}/blog/${slug}`);
+      fetchPages();
+    } catch (error) {
+      console.error("Error deleting page:", error);
+    }
   };
 
-  // 🔹 Slug Column UI (optional truncate)
+  // 🔹 Helpers
+  const formatTitle = (slug) => {
+    if (!slug) return "-";
+    return slug
+      .replace(/-/g, " ")
+      .replace(/\b\w/g, (c) => c.toUpperCase());
+  };
+
   const slugBody = (rowData) => {
     const text = rowData?.pageSlug || "";
     const words = text.split("-");
-    return words.length > 4 ? words.slice(0, 4).join("-") + "..." : text;
+    return words.length > 4 ? `${words.slice(0, 4).join("-")}...` : text;
   };
-
-const formatTitle = (slug) => {
-  return slug
-    .replace(/-/g, " ")
-    .replace(/\b\w/g, (c) => c.toUpperCase());
-};
-
 
   // 🔹 Actions Column UI
-  const actionBody = (rowData) => {
-    return (
-      <div className="actionBtnPagesList">
-        <Button
-          label="Edit"
-          size="small"
-          onClick={() => navigate(`/admin/insight/${rowData.pageSlug}`)}
-        />
-        <Button
-          label="Delete"
-          size="small"
-          severity="danger"
-          onClick={() => deletePage(rowData.pageSlug)}
-        />
-      </div>
-    );
-  };
+  const actionBody = (rowData) => (
+    <div className="actionBtnPagesList">
+      <Button
+        label="Edit"
+        size="small"
+        onClick={() => navigate(`/admin/insight/${rowData.pageSlug}`)}
+      />
+      <Button
+        label="Delete"
+        size="small"
+        severity="danger"
+        onClick={() => deletePage(rowData.pageSlug)}
+      />
+    </div>
+  );
+
+  // 🔹 Column Configurations for ResponsiveDataTable
+  const pageColumns = [
+    {
+      field: "pageTitle",
+      header: "Page Title",
+      primary: true, // Used as the primary title in card view
+      sortable: true,
+      body: (rowData) => formatTitle(rowData.pageSlug),
+    },
+    {
+      field: "pageSlug",
+      header: "Page Slug",
+      sortable: true,
+      body: slugBody,
+    },
+    {
+      field: "actions",
+      header: "Actions",
+      body: actionBody,
+    },
+  ];
 
   return (
     <div className="p-4">
-       <div className="dashboard__header_block">
+      <div className="dashboard__header_block">
+        <h3>All Posts</h3>
+        <div className="dashboard__header_search_notification_wrap">
+          <Button
+            label="Create New Post"
+            onClick={() => navigate("/admin/insight/create")}
+            className="mb-3"
+          />
+        </div>
+      </div>
 
-      <h3>All Posts</h3>
-    <div className="dashboard__header_search_notification_wrap">
-      <Button
-        label="Create New Post"
-        onClick={() => navigate("/admin/insight/create")}
-        className="mb-3"
-      />
-
-    </div>
-       </div>
-
-      <DataTable value={pages} emptyMessage="No pages found" paginator rows={10} className="my__save_listing_wrap my__listing_table nda__request_block">
-        <Column
-        header="Page Title"
-        body={(rowData) => formatTitle(rowData.pageSlug)}
-        sortable
-      />
-        <Column
-          header="Page Slug"
-          body={slugBody}
-          sortable
+      <div className="my__save_listing_wrap my__listing_table nda__request_block">
+        <ResponsiveDataTable
+          value={pages}
+          columns={pageColumns}
+          loading={loading}
+          paginator
+          rows={10}
+          dataKey="pageSlug"
+          emptyMessage="No pages found."
+          cardBreakpoint="768px"
         />
-        <Column
-          header="Actions"
-          body={actionBody}
-        />
-      </DataTable>
+      </div>
     </div>
   );
 };

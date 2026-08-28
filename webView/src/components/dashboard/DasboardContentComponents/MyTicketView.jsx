@@ -5,8 +5,8 @@ import { Card } from "primereact/card";
 import { Button } from "primereact/button";
 import { Toast } from "primereact/toast";
 import { InputTextarea } from "primereact/inputtextarea";
-import { Dropdown } from "primereact/dropdown"; 
-import { useRecoilValue, useSetRecoilState } from "recoil"; // <-- Added useSetRecoilState
+import { Dropdown } from "primereact/dropdown";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import { authState, apiBaseUrlState } from "../../../recoil/ctaState";
 import DashboardHeader from "./DashboardHeaderBlock";
 
@@ -15,13 +15,13 @@ const TicketTimeline = () => {
   const navigate = useNavigate();
   const API_BASE = useRecoilValue(apiBaseUrlState);
   const { access_token } = useRecoilValue(authState) ?? {};
-  const setAuth = useSetRecoilState(authState); // <-- Recoil setter for handling logout
+  const setAuth = useSetRecoilState(authState);
 
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [replyMessage, setReplyMessage] = useState("");
   const [isSending, setIsSending] = useState(false);
-  
+
   // Status Update States
   const [currentStatus, setCurrentStatus] = useState(null);
   const [statusLoading, setStatusLoading] = useState(false);
@@ -30,7 +30,7 @@ const TicketTimeline = () => {
 
   const statusOptions = [
     { label: "Opened", value: "opened" },
-    { label: "Closed", value: "closed" }
+    { label: "Closed", value: "closed" },
   ];
 
   useEffect(() => {
@@ -68,10 +68,10 @@ const TicketTimeline = () => {
             Authorization: `Bearer ${access_token}`,
             "Content-Type": "application/json",
           },
-        })
+        }),
       ]);
 
-      // 2. Explicitly handle 403 Forbidden status codes (since fetch doesn't throw on 403)
+      // 2. Explicitly handle 403 Forbidden status codes
       if (messagesRes.status === 403 || listRes.status === 403) {
         handle403Forbidden();
         return;
@@ -80,25 +80,30 @@ const TicketTimeline = () => {
       // 3. Parse Messages Response if successful
       if (messagesRes.ok) {
         const messagesResult = await messagesRes.json();
-        const messageList = Array.isArray(messagesResult) ? messagesResult : messagesResult?.data || [];
+        const messageList = Array.isArray(messagesResult)
+          ? messagesResult
+          : messagesResult?.data || [];
         setMessages(messageList);
       } else {
         throw new Error("Failed to fetch messages");
       }
 
-      // 4. Parse Tickets List Response to look up the status
+      // 4. Parse Tickets List Response to look up status
       if (listRes.ok) {
         const listResult = await listRes.json();
-        const ticketList = Array.isArray(listResult) ? listResult : listResult?.data || [];
-        
-        const activeTicket = ticketList.find(ticket => ticket._id === id || ticket.id === id);
+        const ticketList = Array.isArray(listResult)
+          ? listResult
+          : listResult?.data || [];
+
+        const activeTicket = ticketList.find(
+          (ticket) => ticket._id === id || ticket.id === id
+        );
         if (activeTicket && activeTicket.status) {
           setCurrentStatus(activeTicket.status.toLowerCase());
         }
       } else {
         throw new Error("Failed to fetch ticket metadata");
       }
-
     } catch (error) {
       console.error("Error fetching ticket data", error);
       showToast("error", "Error", "Failed to load ticket details.");
@@ -122,7 +127,6 @@ const TicketTimeline = () => {
         body: JSON.stringify({ status: newStatus }),
       });
 
-      // Handle 403 if token expires while updating status
       if (response.status === 403) {
         handle403Forbidden();
         return;
@@ -157,7 +161,6 @@ const TicketTimeline = () => {
         body: JSON.stringify({ message: replyMessage }),
       });
 
-      // Handle 403 if token expires while posting a comment
       if (response.status === 403) {
         handle403Forbidden();
         return;
@@ -166,8 +169,8 @@ const TicketTimeline = () => {
       if (!response.ok) throw new Error("Failed to send reply");
 
       showToast("success", "Sent", "Comment added successfully.");
-      setReplyMessage(""); 
-      fetchTicketData(); 
+      setReplyMessage("");
+      fetchTicketData();
     } catch (error) {
       showToast("error", "Error", "Could not send reply.");
     } finally {
@@ -190,14 +193,14 @@ const TicketTimeline = () => {
   const customizedMarker = (item) => {
     const isAdmin = item.senderType?.toLowerCase() !== "user";
     return (
-      <span 
-        className="flex align-items-center justify-content-center text-white border-circle" 
-        style={{ 
-          backgroundColor: isAdmin ? "#ffb100" : "#002f68", 
-          width: "2rem", height: "2rem", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center"
-        }}
+      <span
+        className={`timeline__marker ${
+          isAdmin ? "timeline__marker--admin" : "timeline__marker--user"
+        }`}
       >
-        <i className={`pi ${isAdmin ? "pi-user-edit" : "pi-ticket"}`} style={{ color: "white" }}></i>
+        <i
+          className={`pi ${isAdmin ? "pi-user-edit" : "pi-ticket"} timeline__marker-icon`}
+        />
       </span>
     );
   };
@@ -205,20 +208,26 @@ const TicketTimeline = () => {
   const customizedContent = (item) => {
     const isUser = item.senderType?.toLowerCase() === "user";
     return (
-      <Card 
+      <Card
         subTitle={
-          <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.85rem" }}>
-            {isUser ? <span style={{ color: "#002f68", fontWeight: "600" }}>You</span> :<span style={{ color: "#ffb100", fontWeight: "600" }}>Admin</span> }
-            <span>{formatDate(item.createdAt)}</span>
+          <div className="timeline__card-header">
+            <span
+              className={
+                isUser
+                  ? "timeline__sender-label timeline__sender-label--user"
+                  : "timeline__sender-label timeline__sender-label--admin"
+              }
+            >
+              {isUser ? "You" : "Admin"}
+            </span>
+            <span className="timeline__date-label">{formatDate(item.createdAt)}</span>
           </div>
         }
-        style={{ 
-          marginBottom: "1rem", 
-          borderLeft: isUser ? "4px solid #002f68" : "4px solid #ffb100",
-          background: isUser ? "#ffffff" : "#f0f7ff" 
-        }}
+        className={`timeline__card ${
+          isUser ? "timeline__card--user" : "timeline__card--admin"
+        }`}
       >
-        <p style={{ whiteSpace: "pre-line", margin: 0 }}>{item.message}</p>
+        <p className="timeline__card-text">{item.message}</p>
       </Card>
     );
   };
@@ -228,9 +237,12 @@ const TicketTimeline = () => {
       <Toast ref={toast} position="top-right" />
       <DashboardHeader headingData="Ticket Conversation" />
 
-      <div className="timeline__topbar" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", margin: "1rem 0", gap: "1rem", flexWrap: "wrap" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-          <label htmlFor="statusDropdown" style={{ fontWeight: "600", fontSize: "0.9rem" }}>Ticket Status:</label>
+      {/* Top Action Bar */}
+      <div className="timeline__topbar">
+        <div className="timeline__status-group">
+          <label htmlFor="statusDropdown" className="timeline__status-label">
+            Ticket Status:
+          </label>
           <Dropdown
             id="statusDropdown"
             value={currentStatus}
@@ -238,45 +250,54 @@ const TicketTimeline = () => {
             onChange={(e) => handleStatusChange(e.value)}
             disabled={statusLoading || loading}
             placeholder="Select Status"
-            style={{ width: "140px" }}
+            className="timeline__status-dropdown"
           />
-          {statusLoading && <i className="pi pi-spin pi-spinner" style={{ color: "#6c757d" }} />}
+          {statusLoading && <i className="pi pi-spin pi-spinner timeline__status-spinner" />}
         </div>
-        <Button 
-          label="All Support Tickets" 
-          icon="pi pi-arrow-left" 
-          onClick={() => navigate("/user/tickets")} 
+        <Button
+          label="All Support Tickets"
+          icon="pi pi-arrow-left"
+          onClick={() => navigate("/user/tickets")}
+          className="timeline__back-btn"
         />
       </div>
 
-      <div className="timeline__container" style={{ marginTop: "2rem", minHeight: "300px" }}>
+      {/* Timeline Messages Stream */}
+      <div className="timeline__container">
         {loading ? (
-          <div style={{ textAlign: "center", padding: "2rem" }}><i className="pi pi-spin pi-spinner" style={{ fontSize: '2rem' }}></i></div>
+          <div className="timeline__loading-wrap">
+            <i className="pi pi-spin pi-spinner timeline__loading-icon" />
+          </div>
         ) : (
-          <Timeline value={messages} align="alternate" marker={customizedMarker} content={customizedContent} />
+          <Timeline
+            value={messages}
+            align="alternate"
+            marker={customizedMarker}
+            content={customizedContent}
+          />
         )}
       </div>
 
-      {/* REPLY SECTION */}
-      <div className="reply__section" style={{ marginTop: "3rem" }}>
-        <Card title="Add a Comment">
+      {/* Reply Card Section */}
+      <div className="reply__section">
+        <Card title="Add a Comment" className="reply__card">
           <div className="p-fluid">
-            <InputTextarea 
-              value={replyMessage} 
-              onChange={(e) => setReplyMessage(e.target.value)} 
-              rows={4} 
-              autoResize 
+            <InputTextarea
+              value={replyMessage}
+              onChange={(e) => setReplyMessage(e.target.value)}
+              rows={4}
+              autoResize
               placeholder="Type your response here..."
-              disabled={isSending || currentStatus === "closed"} 
+              disabled={isSending || currentStatus === "closed"}
+              className="reply__textarea"
             />
-            <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "1rem" }}>
-              <Button 
-                label="Post Reply" 
-                icon="pi pi-send" 
-                onClick={handleSendReply} 
-                loading={isSending} 
-                className="p-button-primary"
-                style={{ width: "auto" }}
+            <div className="reply__action-wrap">
+              <Button
+                label="Post Reply"
+                icon="pi pi-send"
+                onClick={handleSendReply}
+                loading={isSending}
+                className="p-button-primary reply__submit-btn"
                 disabled={currentStatus === "closed"}
               />
             </div>

@@ -82,6 +82,9 @@ const Header = () => {
 
   const currentPath = location.pathname;
 
+   useEffect(() => {
+    setMobileVisible(false);
+  }, [location.pathname]);
   const handleLogout = () => {
     setAuth(null);
     localStorage.clear();

@@ -5,8 +5,7 @@ import { Card } from "primereact/card";
 import { Button } from "primereact/button";
 import { Toast } from "primereact/toast";
 import { InputTextarea } from "primereact/inputtextarea";
-import { Dropdown } from "primereact/dropdown"; 
-import { useRecoilValue, useSetRecoilState } from "recoil"; // <-- Added useSetRecoilState
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import { authState, apiBaseUrlState } from "../../../recoil/ctaState";
 import DashboardHeaderAdmin from "./DaashboardHeaderAdmin";
 
@@ -15,16 +14,15 @@ const TicketTimeline = () => {
   const navigate = useNavigate();
   const API_BASE = useRecoilValue(apiBaseUrlState);
   const { access_token } = useRecoilValue(authState) ?? {};
-  const setAuth = useSetRecoilState(authState); // <-- Recoil setter for session handling
+  const setAuth = useSetRecoilState(authState);
 
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [replyMessage, setReplyMessage] = useState("");
   const [isSending, setIsSending] = useState(false);
-  
+
   // Status Update States
   const [currentStatus, setCurrentStatus] = useState(null);
-  const [statusLoading, setStatusLoading] = useState(false);
 
   const toast = useRef(null);
 
@@ -63,7 +61,7 @@ const TicketTimeline = () => {
             Authorization: `Bearer ${access_token}`,
             "Content-Type": "application/json",
           },
-        })
+        }),
       ]);
 
       // 2. Intercept native fetch status codes for 403 Forbidden
@@ -75,7 +73,9 @@ const TicketTimeline = () => {
       // 3. Parse Messages Response
       if (messagesRes.ok) {
         const messagesResult = await messagesRes.json();
-        const messageList = Array.isArray(messagesResult) ? messagesResult : messagesResult?.data || [];
+        const messageList = Array.isArray(messagesResult)
+          ? messagesResult
+          : messagesResult?.data || [];
         setMessages(messageList);
       } else {
         throw new Error("Failed to fetch ticket messages");
@@ -84,52 +84,24 @@ const TicketTimeline = () => {
       // 4. Parse Tickets List Response to look up the status
       if (listRes.ok) {
         const listResult = await listRes.json();
-        const ticketList = Array.isArray(listResult) ? listResult : listResult?.data || [];
-        
-        const activeTicket = ticketList.find(ticket => ticket._id === id || ticket.id === id);
+        const ticketList = Array.isArray(listResult)
+          ? listResult
+          : listResult?.data || [];
+
+        const activeTicket = ticketList.find(
+          (ticket) => ticket._id === id || ticket.id === id
+        );
         if (activeTicket && activeTicket.status) {
           setCurrentStatus(activeTicket.status.toLowerCase());
         }
       } else {
         throw new Error("Failed to fetch ticket list dashboard metadata");
       }
-
     } catch (error) {
       console.error("Error fetching ticket data", error);
       showToast("error", "Error", "Failed to load ticket details.");
     } finally {
       setLoading(false);
-    }
-  };
-
-  // PATCH Request to update ticket status
-  const handleStatusChange = async (newStatus) => {
-    if (!newStatus) return;
-
-    try {
-      setStatusLoading(true);
-      const response = await fetch(`${API_BASE}/tickets/${id}/status`, {
-        method: "PATCH",
-        headers: {
-          Authorization: `Bearer ${access_token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ status: newStatus }),
-      });
-
-      if (response.status === 403) {
-        handle403Forbidden();
-        return;
-      }
-
-      if (!response.ok) throw new Error("Failed to update status");
-
-      setCurrentStatus(newStatus);
-      showToast("success", "Status Updated", `Ticket status changed to ${newStatus}.`);
-    } catch (error) {
-      showToast("error", "Error", "Could not update ticket status.");
-    } finally {
-      setStatusLoading(false);
     }
   };
 
@@ -159,8 +131,8 @@ const TicketTimeline = () => {
       if (!response.ok) throw new Error("Failed to send reply");
 
       showToast("success", "Sent", "Comment added successfully.");
-      setReplyMessage(""); 
-      fetchTicketData(); 
+      setReplyMessage("");
+      fetchTicketData();
     } catch (error) {
       showToast("error", "Error", "Could not send reply.");
     } finally {
@@ -183,14 +155,14 @@ const TicketTimeline = () => {
   const customizedMarker = (item) => {
     const isAdmin = item.senderType?.toLowerCase() !== "user";
     return (
-      <span 
-        className="flex align-items-center justify-content-center text-white border-circle" 
-        style={{ 
-          backgroundColor: isAdmin ? "#ffb100" : "#002f68", 
-          width: "2rem", height: "2rem", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center"
-        }}
+      <span
+        className={`timeline__marker ${
+          isAdmin ? "timeline__marker--admin" : "timeline__marker--user"
+        }`}
       >
-        <i className={`pi ${isAdmin ? "pi-user-edit" : "pi-ticket"}`} style={{ color: "white" }}></i>
+        <i
+          className={`pi ${isAdmin ? "pi-user-edit" : "pi-ticket"} timeline__marker-icon`}
+        />
       </span>
     );
   };
@@ -198,20 +170,20 @@ const TicketTimeline = () => {
   const customizedContent = (item) => {
     const isUser = item.senderType?.toLowerCase() === "user";
     return (
-      <Card 
+      <Card
         subTitle={
-          <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.85rem" }}>
-            <span style={{ fontWeight: "600" }}>{item?.senderId?.first_name} {item?.senderId?.last_name}</span>
-            <span>{formatDate(item.createdAt)}</span>
+          <div className="timeline__card-header">
+            <span className="timeline__sender-name">
+              {item?.senderId?.first_name} {item?.senderId?.last_name}
+            </span>
+            <span className="timeline__date-label">{formatDate(item.createdAt)}</span>
           </div>
         }
-        style={{ 
-          marginBottom: "1rem", 
-          borderLeft: isUser ? "4px solid #002f68" : "4px solid #ffb100",
-          background: isUser ? "#ffffff" : "#f0f7ff" 
-        }}
+        className={`timeline__card ${
+          isUser ? "timeline__card--user" : "timeline__card--admin"
+        }`}
       >
-        <p style={{ whiteSpace: "pre-line", margin: 0 }}>{item.message}</p>
+        <p className="timeline__card-text">{item.message}</p>
       </Card>
     );
   };
@@ -221,48 +193,66 @@ const TicketTimeline = () => {
       <Toast ref={toast} position="top-right" />
       <DashboardHeaderAdmin headingData="Ticket Conversation" />
 
-      <div className="timeline__topbar" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", margin: "1rem 0", gap: "1rem", flexWrap: "wrap" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-          <label htmlFor="statusDropdown" style={{ fontWeight: "600", fontSize: "0.9rem" }}>Ticket Status:</label>
-          <div className={`status__badge ${currentStatus === "opened" ? "status-opened" : currentStatus === "closed" ? "status-closed" : ""}`} >
-            {currentStatus} 
+      {/* Top Header Bar */}
+      <div className="timeline__topbar">
+        <div className="timeline__status-group">
+          <label className="timeline__status-label">Ticket Status:</label>
+          <div
+            className={`status__badge ${
+              currentStatus === "opened"
+                ? "status-opened"
+                : currentStatus === "closed"
+                ? "status-closed"
+                : ""
+            }`}
+          >
+            {currentStatus || "-"}
           </div>
         </div>
-        <Button 
-          label="All Support Tickets" 
-          icon="pi pi-arrow-left" 
-          onClick={() => navigate("/admin/tickets")} 
+        <Button
+          label="All Support Tickets"
+          icon="pi pi-arrow-left"
+          onClick={() => navigate("/admin/tickets")}
+          className="timeline__back-btn"
         />
       </div>
 
-      <div className="timeline__container" style={{ marginTop: "2rem", minHeight: "300px" }}>
+      {/* Messages Feed */}
+      <div className="timeline__container">
         {loading ? (
-          <div style={{ textAlign: "center", padding: "2rem" }}><i className="pi pi-spin pi-spinner" style={{ fontSize: '2rem' }}></i></div>
+          <div className="timeline__loading-wrap">
+            <i className="pi pi-spin pi-spinner timeline__loading-icon" />
+          </div>
         ) : (
-          <Timeline value={messages} align="alternate" marker={customizedMarker} content={customizedContent} />
+          <Timeline
+            value={messages}
+            align="alternate"
+            marker={customizedMarker}
+            content={customizedContent}
+          />
         )}
       </div>
 
-      {/* REPLY SECTION */}
-      <div className="reply__section" style={{ marginTop: "3rem" }}>
-        <Card title="Add a Comment">
+      {/* Reply Section */}
+      <div className="reply__section">
+        <Card title="Add a Comment" className="reply__card">
           <div className="p-fluid">
-            <InputTextarea 
-              value={replyMessage} 
-              onChange={(e) => setReplyMessage(e.target.value)} 
-              rows={4} 
-              autoResize 
+            <InputTextarea
+              value={replyMessage}
+              onChange={(e) => setReplyMessage(e.target.value)}
+              rows={4}
+              autoResize
               placeholder="Type your response here..."
-              disabled={isSending || currentStatus === "closed"} 
+              disabled={isSending || currentStatus === "closed"}
+              className="reply__textarea"
             />
-            <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "1rem" }}>
-              <Button 
-                label="Post Reply" 
-                icon="pi pi-send" 
-                onClick={handleSendReply} 
-                loading={isSending} 
-                className="p-button-primary"
-                style={{ width: "auto" }}
+            <div className="reply__action-wrap">
+              <Button
+                label="Post Reply"
+                icon="pi pi-send"
+                onClick={handleSendReply}
+                loading={isSending}
+                className="p-button-primary reply__submit-btn"
                 disabled={currentStatus === "closed"}
               />
             </div>

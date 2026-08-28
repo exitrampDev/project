@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRecoilValue } from "recoil";
-import { Navigate, Outlet } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 
 import { authState } from "../../recoil/ctaState";
 import DashboardSidebar from "./DashboardSidebar";
@@ -8,8 +8,11 @@ import mobileLogo from "../../assets/mobile-Bar-logo.PNG";
 
 const Dashboard = () => {
   const user = useRecoilValue(authState).user;
+    const location = useLocation();
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
-
+ useEffect(() => {
+    setIsMobileSidebarOpen(false);
+  }, [location.pathname]);
   const toggleMobileSidebar = () => {
     setIsMobileSidebarOpen((previousState) => !previousState);
   };

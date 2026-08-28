@@ -8611,7 +8611,164 @@ footer.footer__section_broker_page_container {
 .mobile-menu-toggle {
   display: none;
 }
+/* ==========================================================================
+   Ticket Timeline Page Styles
+   ========================================================================== */
 
+.ticket__timeline_page {
+  padding: 1.5rem;
+}
+
+/* --- Topbar & Status Selector --- */
+.timeline__topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 1rem 0;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.timeline__status-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.timeline__status-label {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.timeline__status-dropdown {
+  width: 140px;
+}
+
+.timeline__status-spinner {
+  color: #6c757d;
+}
+
+.timeline__back-btn {
+  width: auto;
+}
+
+/* --- Timeline Main Container --- */
+.timeline__container {
+  margin-top: 2rem;
+  min-height: 300px;
+}
+
+.timeline__loading-wrap {
+  text-align: center;
+  padding: 2rem;
+}
+
+.timeline__loading-icon {
+  font-size: 2rem;
+}
+
+/* --- Custom Timeline Markers --- */
+.timeline__marker {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+}
+
+.timeline__marker--admin {
+  background-color: #ffb100;
+}
+
+.timeline__marker--user {
+  background-color: #002f68;
+}
+
+.timeline__marker-icon {
+  color: #ffffff;
+}
+
+/* --- Timeline Message Cards --- */
+.timeline__card {
+  margin-bottom: 1rem;
+}
+
+.timeline__card--user {
+  border-left: 4px solid #002f68;
+  background-color: #ffffff;
+}
+
+.timeline__card--admin {
+  border-left: 4px solid #ffb100;
+  background-color: #f0f7ff;
+}
+
+.timeline__card-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+}
+
+.timeline__sender-label {
+  font-weight: 600;
+}
+
+.timeline__sender-label--user {
+  color: #002f68;
+}
+
+.timeline__sender-label--admin {
+  color: #ffb100;
+}
+
+.timeline__date-label {
+  color: #6c757d;
+}
+
+.timeline__card-text {
+  white-space: pre-line;
+  margin: 0;
+}
+
+/* --- Reply Form Section --- */
+.reply__section {
+  margin-top: 3rem;
+}
+
+.reply__card {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.reply__textarea {
+  margin-bottom: 0.5rem;
+}
+
+.reply__action-wrap {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+.reply__submit-btn {
+  width: auto !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .timeline__topbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .timeline__status-group {
+    justify-content: space-between;
+  }
+
+  .timeline__back-btn {
+    width: 100% !important;
+  }
+}
 /* --- Mobile Breakpoint Optimization --- */
 @media (max-width: 960px) {
   .mobile-menu-toggle {
@@ -8980,5 +9137,16 @@ button.login-btn a img, .signup_content button img{width:15px}
     left: 0;
     background: #000000ab;
     z-index: 9;
+}
+.dashboard__free_buyer_complete_profile button.p-button-primary.p-button.p-component {
+    padding: 10px 8px;
+}
+.p-timeline-event-separator{display:none} 
+.p-timeline-event{flex-wrap:wrap;gap:10px} 
+.p-timeline-vertical.p-timeline-alternate .p-timeline-event:nth-child(even) .p-timeline-event-content,.p-timeline-vertical.p-timeline-alternate .p-timeline-event:nth-child(odd) .p-timeline-event-opposite{
+      flex: 100%;
+}
+.p-timeline-vertical.p-timeline-alternate .p-timeline-event:nth-child(even) .p-timeline-event-content  .timeline__card.timeline__card--user.p-card.p-component {
+  text-align: left;
 }
 } 

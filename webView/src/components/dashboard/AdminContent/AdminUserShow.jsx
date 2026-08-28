@@ -1,16 +1,15 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { DataTable } from "primereact/datatable";
 import { InputText } from "primereact/inputtext";
 import { Password } from "primereact/password";
 import { Dropdown } from "primereact/dropdown";
-import { Column } from "primereact/column";
 import { Dialog } from "primereact/dialog";
 import { Button } from "primereact/button";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { authState, apiBaseUrlState } from "../../../recoil/ctaState";
 import DashboardHeaderAdmin from "./DaashboardHeaderAdmin";
 import { useNavigate } from "react-router-dom";
+import ResponsiveDataTable from "../../customcomponent/ResponsiveDataTable";
 
 const AdminUserShow = () => {
   const [users, setUsers] = useState([]);
@@ -87,7 +86,7 @@ const AdminUserShow = () => {
           },
         });
 
-        setUsers(res.data.data);
+        setUsers(res.data.data || []);
       } catch (err) {
         console.error("Error fetching users:", err);
       } finally {
@@ -149,7 +148,9 @@ const AdminUserShow = () => {
     }
   };
 
-  // Format created date
+  /* ===========================
+     Helpers
+  ============================ */
   const formatDate = (isoDate) => {
     if (!isoDate) return "-";
     const date = new Date(isoDate);
@@ -160,7 +161,15 @@ const AdminUserShow = () => {
     });
   };
 
-  // ⬇️ LOGIN-AS-USER Using Recoil + Navigation ONLY
+  const fullNameBody = (row) => {
+    const first = row?.first_name || "";
+    const last = row?.last_name || "";
+    return `${first} ${last}`.trim() || "-";
+  };
+
+  /* ===========================
+     LOGIN-AS-USER Handler
+  ============================ */
   const loginAsUser = async (userId) => {
     try {
       const res = await axios.post(
@@ -178,7 +187,6 @@ const AdminUserShow = () => {
       localStorage.setItem("user", JSON.stringify(user));
       localStorage.setItem("tokenLocalStorage", token);
 
-      // ⬇️ Set new auth state (NO localStorage)
       setAuth({
         access_token: token,
         user: user,
@@ -193,16 +201,57 @@ const AdminUserShow = () => {
     }
   };
 
-  const loginButtonTemplate = (row) => {
-    return (
-      <Button
-        label="Login"
-        icon="pi pi-sign-in"
-        className="p-button-warning p-button-sm"
-        onClick={() => loginAsUser(row._id)}
-      />
-    );
-  };
+  const loginButtonTemplate = (row) => (
+    <Button
+      label="Login"
+      icon="pi pi-sign-in"
+      className="p-button-warning p-button-sm"
+      onClick={() => loginAsUser(row._id)}
+    />
+  );
+
+  /* ===========================
+     Table Columns Configuration
+  ============================ */
+  const userColumns = [
+    {
+      field: "fullName",
+      header: "User Name",
+      primary: true, // Used as the main header title in responsive card view
+      body: fullNameBody,
+    },
+    {
+      field: "first_name",
+      header: "First Name",
+    },
+    {
+      field: "last_name",
+      header: "Last Name",
+    },
+    {
+      field: "email",
+      header: "Email",
+    },
+    {
+      field: "user_type",
+      header: "User Type",
+    },
+    {
+      field: "email_verified",
+      header: "Verified",
+      body: (row) => (row?.email_verified ? "Yes" : "No"),
+    },
+    {
+      field: "createdAt",
+      header: "Created At",
+      body: (row) => formatDate(row.createdAt),
+    },
+    {
+      field: "actions",
+      header: "Actions",
+      body: loginButtonTemplate,
+    },
+  ];
 
   return (
     <>
@@ -221,29 +270,25 @@ const AdminUserShow = () => {
         />
       </div>
 
-      {/* Table */}
+      {/* Responsive Table Wrapper */}
       <div className="my__save_listing_wrap my__listing_table">
-        <DataTable value={users} paginator rows={10} loading={loading}>
-          <Column field="first_name" header="First Name" />
-          <Column field="last_name" header="Last Name" />
-          <Column field="email" header="Email" />
-          <Column field="user_type" header="User Type" />
-          <Column field="email_verified" header="Verified" />
-          <Column
-            field="createdAt"
-            header="Created At"
-            body={(row) => formatDate(row.createdAt)}
-          />
-
-          <Column header="Actions" body={loginButtonTemplate} />
-        </DataTable>
+        <ResponsiveDataTable
+          value={users}
+          columns={userColumns}
+          loading={loading}
+          paginator
+          rows={10}
+          dataKey="_id"
+          emptyMessage="No users found."
+          cardBreakpoint="768px"
+        />
       </div>
 
-      {/* Popup */}
+      {/* Registration Popup Modal */}
       <Dialog
         header="Register New User"
         visible={visible}
-        style={{ width: "40vw" }}
+        style={{ width: "90vw", maxWidth: "600px" }}
         modal
         onHide={() => setVisible(false)}
       >
