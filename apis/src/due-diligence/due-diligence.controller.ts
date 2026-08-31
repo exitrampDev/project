@@ -16,11 +16,13 @@ import { AddCommentDto } from './dto/add-comment.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { User } from 'src/common/decorators/user.decorator';
 import { UsersService } from '../users/users.service';
+import { NdaService } from 'src/nda/nda.service';
 @Controller('due-diligence')
 export class DueDiligenceController {
   constructor(
     private readonly dueDiligenceService: DueDiligenceService,
     private readonly usersService: UsersService,
+    private readonly ndaService: NdaService
   ) {}
 //   constructor(private readonly dueDiligenceService: DueDiligenceService) {}
 
@@ -35,8 +37,17 @@ export class DueDiligenceController {
   }
 
   // 👇 Changed from businessId → ndaId
+  @UseGuards(JwtAuthGuard)
   @Get('nda/:ndaId')
-  async findByNda(@Param('ndaId') ndaId: string) {
+  async findByNda(@Param('ndaId') ndaId: string, @User() user: any) {
+
+  const dbUser = await this.usersService.findOne(user.userId);
+   if (!dbUser) throw new NotFoundException('User not found');
+
+   const nda = await this.ndaService.findOneByIdAndUserId(ndaId, user.userId); // Check if NDA exists, throws NotFoundException if not
+   if (!nda) throw new NotFoundException(`NDA not found for ID ${ndaId}`);
+
+
     const records = await this.dueDiligenceService.findByNda(ndaId);
     if (!records || records.length === 0) {
       throw new NotFoundException(`No due diligence records found for NDA ${ndaId}`);

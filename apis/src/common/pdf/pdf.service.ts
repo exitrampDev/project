@@ -1,5 +1,6 @@
+
 import { Injectable } from '@nestjs/common';
-import * as htmlToPdf from 'html-pdf-node';
+import puppeteer from 'puppeteer';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { v4 as uuid } from 'uuid';
@@ -7,17 +8,43 @@ import * as Handlebars from 'handlebars';
 
 @Injectable()
 export class PdfService {
+  /**
+   * Generate PDF from HTML and save it to uploads/nds
+   */
   async generateAndSave(html: string): Promise<string> {
-    // Define PDF options
-    const options = { format: 'A4' };
+    const browser = await puppeteer.launch({
+      headless: true,
+    });
 
-    // Create PDF buffer
-    const file = { content: html };
-    const pdfBuffer = await htmlToPdf.generatePdf(file, options);
+    let pdfBuffer: Buffer;
+
+    try {
+      const page = await browser.newPage();
+
+      await page.setContent(html, {
+        waitUntil: 'networkidle0',
+      });
+
+      pdfBuffer = Buffer.from(
+        await page.pdf({
+          format: 'A4',
+          printBackground: true,
+        }),
+      );
+    } finally {
+      await browser.close();
+    }
 
     // Define folder path
-    const folderPath = path.join(process.cwd(), 'uploads', 'nds');
-    await fs.mkdir(folderPath, { recursive: true });
+    const folderPath = path.join(
+      process.cwd(),
+      'uploads',
+      'nds',
+    );
+
+    await fs.mkdir(folderPath, {
+      recursive: true,
+    });
 
     // Define file name
     const fileName = `${uuid()}.pdf`;
@@ -30,50 +57,122 @@ export class PdfService {
     return `/uploads/nds/${fileName}`;
   }
 
-async generateNda(nda: any): Promise<string> {
+  /**
+   * Generate NDA PDF from Handlebars template
+   */
+  async generateNda(nda: any): Promise<string> {
+    // Path to template
+    const templatePath = path.join(
+      process.cwd(),
+      'src',
+      'common',
+      'templates',
+      'nda',
+      'nda.hbs',
+    );
 
-    // path to template
-    const templatePath = path.join(process.cwd(), 'src','common','templates','nda', 'nda.hbs');
+    // Read template
+    const templateHtml = await fs.readFile(
+      templatePath,
+      'utf8',
+    );
 
-    // read template
-    const templateHtml = await fs.readFile(templatePath, 'utf8');
-
-    // compile handlebars template
+    // Compile Handlebars template
     const template = Handlebars.compile(templateHtml);
 
-    // dynamic data
-    console.log('NDA Data:====>', nda.createdAt);
-    console.log('NDA Data:====>', nda.businessOwnerId.first_name);
-    console.log('NDA Data:====>', nda.submittedBy.first_name);
+    // Dynamic data
+    console.log('NDA Data:', nda.createdAt);
+    console.log(
+      'Business Owner:',
+      nda.businessOwnerId.first_name,
+    );
+    console.log(
+      'Submitted By:',
+      nda.submittedBy.first_name,
+    );
+
     const html = template({
-      ndaDate: nda.createdAt.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+      ndaDate: nda.createdAt.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      }),
+
       listingTitle: nda.businessId.listingTitle,
       listingId: nda.businessId._id,
+
       partyA: nda.businessOwnerId.first_name,
       ownerEmail: nda.businessOwnerId.email,
-      ownerResponseOn: nda.sellerResponseOn ? nda.sellerResponseOn.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'N/A',
+
+      ownerResponseOn: nda.sellerResponseOn
+        ? nda.sellerResponseOn.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          })
+        : 'N/A',
+
       ownerSignature: nda.sellerSignature || '',
-      
+
       partyB: nda.submittedBy.first_name,
       buyerEmail: nda.submittedBy.email,
-      buyerSignature: nda.buyerSignature || '',
 
+      buyerSignature: nda.buyerSignature || '',
     });
 
-    const options = { format: 'A4' };
+    // Launch Puppeteer
+    const browser = await puppeteer.launch({
+      headless: true,
+    });
 
-    const file = { content: html };
+    let pdfBuffer: Buffer;
 
-    const pdfBuffer = await htmlToPdf.generatePdf(file, options);
+    try {
+      const page = await browser.newPage();
 
-    const folderPath = path.join(process.cwd(), 'src','common','templates','nda',);
-    await fs.mkdir(folderPath, { recursive: true });
+      // Load HTML
+      await page.setContent(html, {
+        waitUntil: 'networkidle0',
+      });
 
+      // Generate A4 PDF
+      pdfBuffer = Buffer.from(
+        await page.pdf({
+          format: 'A4',
+          printBackground: true,
+        }),
+      );
+    } finally {
+      await browser.close();
+    }
+
+    // Define folder path
+    const folderPath = path.join(
+      process.cwd(),
+      'src',
+      'common',
+      'templates',
+      'nda',
+    );
+
+    await fs.mkdir(folderPath, {
+      recursive: true,
+    });
+
+    // Define file name
     const fileName = `${uuid()}.pdf`;
-    const filePath = path.join(folderPath, fileName);
+    const filePath = path.join(
+      folderPath,
+      fileName,
+    );
 
-    await fs.writeFile(filePath, pdfBuffer);
+    // Save PDF
+    await fs.writeFile(
+      filePath,
+      pdfBuffer,
+    );
 
-    return `${filePath}`;
+    return filePath;
   }
 }
+

@@ -4,13 +4,15 @@ import { DueDiligenceService } from './due-diligence.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { DueDiligence, DueDiligenceSchema } from './schemas/due-diligence.schema';
 import { UsersModule } from 'src/users/users.module';
+import { NdaModule } from 'src/nda/nda.module';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: DueDiligence.name, schema: DueDiligenceSchema },
     ]),
-    UsersModule
+    UsersModule,
+    NdaModule
   ],
   controllers: [DueDiligenceController],
   providers: [DueDiligenceService],

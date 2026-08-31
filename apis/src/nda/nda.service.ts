@@ -23,6 +23,18 @@ export class NdaService {
        private readonly pdfService: PdfService,
   ) {}
 
+  // get nda by id and userId
+  async findOneByIdAndUserId(ndaId: string, userId: string | Types.ObjectId) {
+    const userObjectId = typeof userId === 'string' ? new Types.ObjectId(userId) : userId;
+    return this.ndaModel.findOne({
+              _id: ndaId,
+              $or: [
+                { submittedBy: userObjectId },
+                { businessOwnerId: userObjectId },
+              ],
+            });
+  }
+
   // User submits NDA
   async create(dto: CreateNdaDto, userId: string | Types.ObjectId) {
     const userObjectId = typeof userId === 'string' ? new Types.ObjectId(userId) : userId;
